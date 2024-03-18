@@ -1,18 +1,11 @@
-/** @type {import("tailwindcss").Config} */
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
 	content: [
 		"./index.html",
-		"./src/**/*.{vue,js,ts,jsx,tsx}",
-		"./node_modules/flowbite/**/*.js"
+		"./src/**/*.{js,ts,jsx,tsx,vue}"
 	],
 	theme: {
-		extend: {
-			colors: {
-				"vert": "#55d696"
-			}
-		}
+		extend: {}
 	},
-	plugins: [
-		require("flowbite/plugin")
-	]
+	plugins: []
 }

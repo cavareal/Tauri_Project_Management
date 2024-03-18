@@ -2,42 +2,25 @@
 	"name": "tauri",
 	"version": "0.1.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
-		"dev": "vue-cli-service serve --port 8081",
-		"build": "vue-cli-service build --dest ../equipe4Back/src/main/resources/static",
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix"
 	},
 	"dependencies": {
-		"@fortawesome/fontawesome-svg-core": "^6.2.1",
-		"@fortawesome/free-solid-svg-icons": "^6.2.1",
-		"axios": "^1.1.3",
-		"core-js": "^3.8.3",
-		"dotenv": "^16.0.3",
-		"flat-icons": "^1.0.0",
-		"flowbite": "^1.5.3",
-		"leaflet": "^1.9.2",
-		"vue": "^2.6.14",
-		"vue-html2pdf": "^1.8.0",
-		"vue2-leaflet": "^2.7.1",
-		"vuelidate": "^0.7.7"
+		"vue": "^3.4.21",
+		"vue-router": "^4.3.0"
 	},
 	"devDependencies": {
-		"@babel/core": "^7.12.16",
-		"@babel/eslint-parser": "^7.12.16",
-		"@vue/cli-plugin-babel": "^5.0.0",
-		"@vue/cli-plugin-eslint": "^5.0.0",
-		"@vue/cli-service": "^5.0.8",
-		"autoprefixer": "^10.4.13",
-		"eslint": "^8.57.0",
-		"eslint-plugin-vue": "^8.0.3",
-		"postcss": "^8.4.18",
-		"tailwindcss": "^3.2.2",
-		"vue-template-compiler": "^2.6.14"
-	},
-	"browserslist": [
-		"> 1%",
-		"last 2 versions",
-		"not dead"
-	]
+		"@vitejs/plugin-vue": "^5.0.4",
+		"autoprefixer": "^10.4.18",
+		"eslint": "^8.49.0",
+		"eslint-plugin-vue": "^9.17.0",
+		"postcss": "^8.4.36",
+		"tailwindcss": "^3.4.1",
+		"vite": "^5.1.5"
+	}
 }

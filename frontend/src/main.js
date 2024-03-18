@@ -1,15 +1,11 @@
-import Vue from "vue"
+import "./assets/main.css"
+
+import { createApp } from "vue"
 import App from "./App.vue"
+import router from "./router"
 
-Vue.config.productionTip = false
+const app = createApp(App)
 
-// Variable global, lien serveur
-// Vue.prototype.$servApp = 'https://172.24.6.20/app/'
+app.use(router)
 
-// Variable d'environement, lien localhost
-Vue.prototype.$servApp = "http://127.0.0.1:8080/"
-
-
-new Vue({
-	render: h => h(App)
-}).$mount("#app")
+app.mount("#app")
