@@ -1,15 +1,15 @@
 plugins {
-	id 'java'
-	id 'war'
-	id 'org.springframework.boot' version '3.2.3'
-	id 'io.spring.dependency-management' version '1.1.4'
+	id "java"
+	id "war"
+	id "org.springframework.boot" version "3.2.3"
+	id "io.spring.dependency-management" version "1.1.4"
 }
 
-group = 'fr.eseo'
-version = '0.0.1-SNAPSHOT'
+group = "fr.eseo"
+version = "0.0.1-SNAPSHOT"
 
 java {
-	sourceCompatibility = '17'
+	sourceCompatibility = "17"
 }
 
 repositories {
@@ -17,11 +17,18 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation "org.springframework.boot:spring-boot-starter-web"
+	providedRuntime "org.springframework.boot:spring-boot-starter-tomcat"
+	testImplementation "org.springframework.boot:spring-boot-starter-test"
+	implementation "org.hibernate.orm:hibernate-core:6.4.4.Final"
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.2.3'
+	implementation 'com.mysql:mysql-connector-j:8.3.0'
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'
+	testCompileOnly 'org.projectlombok:lombok:1.18.30'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
-tasks.named('test') {
+tasks.named("test") {
 	useJUnitPlatform()
 }
