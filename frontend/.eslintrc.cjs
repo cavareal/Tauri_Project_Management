@@ -8,6 +8,10 @@ module.exports = {
 	parserOptions: {
 		ecmaVersion: 'latest'
 	},
+	ignorePatterns: [
+		"@/components/ui/*.vue",
+		"@/components/ui/*.js"
+	],
 	rules: {
 		"indent": ["error", "tab"],
 		"quotes": ["error", "double"],

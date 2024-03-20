@@ -4,7 +4,8 @@
 			"@/*": [
 				"./src/*"
 			]
-		}
+		},
+		"baseUrl": "."
 	},
 	"exclude": [
 		"node_modules",
