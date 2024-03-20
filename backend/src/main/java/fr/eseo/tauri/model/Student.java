@@ -1,6 +1,6 @@
 package fr.eseo.tauri.model;
 
-import fr.eseo.tauri.model.enumeration.Gendre;
+import fr.eseo.tauri.model.enumeration.Gender;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +15,7 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Gendre gendre;
+    private Gender gender;
 
     private String bachelor;
 

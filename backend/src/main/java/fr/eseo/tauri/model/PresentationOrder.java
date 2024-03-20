@@ -6,7 +6,7 @@ import lombok.Setter;
 
 
 @Entity
-@Table(name = "presentation_order")
+@Table(name = "presentation_orders")
 @Getter
 @Setter
 public class PresentationOrder {

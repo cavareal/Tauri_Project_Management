@@ -3,15 +3,15 @@ package fr.eseo.tauri.model.enumeration;
 import lombok.Getter;
 
 @Getter
-public enum Gendre {
+public enum Gender {
     FEMME("Femme"),
     HOMME("Homme"),
     AUTRE("Autre");
 
-    private final String genreName;
+    private final String genderName;
 
-    Gendre(String genreName) {
-        this.genreName = genreName;
+    Gender(String genderName) {
+        this.genderName = genderName;
     }
 
 }
