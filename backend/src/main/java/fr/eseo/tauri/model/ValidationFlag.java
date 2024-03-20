@@ -10,6 +10,9 @@ import lombok.Setter;
 @Setter
 public class ValidationFlag {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private boolean confirmed;
 }
