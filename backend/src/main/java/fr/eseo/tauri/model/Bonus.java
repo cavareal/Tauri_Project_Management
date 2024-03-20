@@ -3,18 +3,21 @@ package fr.eseo.tauri.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 @Entity
-@Table(name = "grades")
+@Table(name = "bonuses")
 @Getter
 @Setter
 
-public class Grade {
+public class Bonus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int value;
+    private String value;
 
     private String comment;
+
+    private boolean limited;
+
+    private boolean confirmed;
 }

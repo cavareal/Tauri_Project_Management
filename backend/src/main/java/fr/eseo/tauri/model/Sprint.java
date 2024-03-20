@@ -4,17 +4,21 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
-@Table(name = "grades")
+@Table(name = "sprints")
 @Getter
 @Setter
 
-public class Grade {
+public class Sprint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private int value;
+    private LocalDate startDate;
 
-    private String comment;
+    private LocalDate endDate;
+
+    private String endType;
 }
