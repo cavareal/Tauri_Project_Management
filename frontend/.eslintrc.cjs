@@ -9,8 +9,8 @@ module.exports = {
 		ecmaVersion: 'latest'
 	},
 	ignorePatterns: [
-		"@/components/ui/*.vue",
-		"@/components/ui/*.js"
+		"src/components/ui/**/*.vue",
+		"src/components/ui/**/*.js"
 	],
 	rules: {
 		"indent": ["error", "tab"],
