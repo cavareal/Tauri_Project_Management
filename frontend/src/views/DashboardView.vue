@@ -1,11 +1,17 @@
 <script setup>
-
+import {
+	ResizableHandle,
+	ResizablePanel,
+	ResizablePanelGroup
+} from "@/components/ui/resizable"
 </script>
 
 <template>
-	<div class="flex flex-row items-center justify-center h-full">
-		<h1 class="text-red-700 font-bold text-6xl">Dashboard</h1>
-	</div>
+	<ResizablePanelGroup direction="horizontal">
+		<ResizablePanel class="bg-gray-200 flex items-center justify-center min-w-56 max-w-96">Sidebar</ResizablePanel>
+		<ResizableHandle />
+		<ResizablePanel class="flex items-center justify-center">Content</ResizablePanel>
+	</ResizablePanelGroup>
 </template>
 
 <style scoped>
