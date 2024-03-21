@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -11,7 +14,7 @@ import lombok.Setter;
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Integer id;
 
 	private String name;
 
@@ -20,4 +23,7 @@ public class User {
 	private String password;
 
 	private String key;
+
+	@ManyToMany(mappedBy = "users")
+	private Set<Role> roles = new HashSet<>();
 }
