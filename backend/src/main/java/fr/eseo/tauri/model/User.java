@@ -22,8 +22,8 @@ public class User {
 
 	private String password;
 
-	private String key;
+	private String privateKey;
 
-	@ManyToMany(mappedBy = "users")
-	private Set<Role> roles = new HashSet<>();
+//	@ManyToMany(mappedBy = "users")
+//	private Set<Role> roles = new HashSet<>();
 }

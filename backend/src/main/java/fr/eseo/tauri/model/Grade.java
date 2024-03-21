@@ -12,9 +12,9 @@ import lombok.Setter;
 public class Grade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
-    private int value;
+    private Integer value;
 
     private String comment;
 }

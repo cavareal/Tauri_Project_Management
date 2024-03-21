@@ -12,7 +12,7 @@ import lombok.Setter;
 public class ValidationBonus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id; //Change it later, this tables primary key is the combination of the two foreign keys
+    private Integer id; //Change it later, this tables primary key is the combination of the two foreign keys
 
-    private boolean confirmed;
+    private Boolean confirmed;
 }

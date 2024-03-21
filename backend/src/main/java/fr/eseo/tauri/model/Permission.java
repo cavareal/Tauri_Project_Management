@@ -12,9 +12,9 @@ import lombok.Setter;
 public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private PermissionType type;
 
-    private boolean value;
+    private Boolean value;
 }

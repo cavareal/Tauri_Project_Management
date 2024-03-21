@@ -12,13 +12,13 @@ import lombok.Setter;
 public class GradeType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String name;
 
-    private int factor;
+    private Integer factor;
 
-    private boolean group;
+    private Boolean forGroup;
 
-    private boolean imported;
+    private Boolean imported;
 }

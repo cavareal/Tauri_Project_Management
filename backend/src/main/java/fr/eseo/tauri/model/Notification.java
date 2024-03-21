@@ -13,11 +13,11 @@ import lombok.Setter;
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String message;
 
-    private boolean read;
+    private Boolean isRead;
 
     private NotificationType type;
 }

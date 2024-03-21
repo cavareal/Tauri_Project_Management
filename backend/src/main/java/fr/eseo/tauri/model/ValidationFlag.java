@@ -12,7 +12,7 @@ public class ValidationFlag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
-    private boolean confirmed;
+    private Boolean confirmed;
 }

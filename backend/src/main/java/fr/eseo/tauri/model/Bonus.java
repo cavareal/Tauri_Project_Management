@@ -11,13 +11,13 @@ import lombok.Setter;
 public class Bonus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String value;
 
     private String comment;
 
-    private boolean limited;
+    private Boolean limited;
 
-    private boolean confirmed;
+    private Boolean confirmed;
 }
