@@ -16,8 +16,10 @@ https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 
 3. Cliquer sur `Import Gradle Project` dans la fenêtre de notification
 
+4. Modifier dans le fichier "application.properties" : datasource.url, datasource.username et datasource.password
 
 4. Cliquer sur l'icône `Gradle` dans la sidebar de droite et cliquer sur `Tasks > application > bootRun`
+
 
 
 ### Frontend

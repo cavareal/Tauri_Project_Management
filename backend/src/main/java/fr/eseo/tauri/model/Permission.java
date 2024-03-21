@@ -17,4 +17,8 @@ public class Permission {
     private PermissionType type;
 
     private Boolean value;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 }
