@@ -1,6 +1,5 @@
 package fr.eseo.tauri.controller;
 
-
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +15,10 @@ public class UserController {
 
 	@PostMapping(path = "/add")
 	public @ResponseBody String addUser(@RequestParam String name, @RequestParam String email) {
-		User n = new User();
-		n.name(name);
-		n.email(email);
-		userRepository.save(n);
+		User user = new User();
+		user.name(name);
+		user.email(email);
+		userRepository.save(user);
 		return "Saved";
 	}
 
@@ -27,4 +26,30 @@ public class UserController {
 	public @ResponseBody Iterable<User> allUsers() {
 		return userRepository.findAll();
 	}
+
+	@GetMapping(path = "/{id}")
+	public @ResponseBody User getUser(@PathVariable Long id) {
+		return userRepository.findById(id).orElse(null);
+	}
+
+	@PutMapping(path = "/update")
+	public @ResponseBody String updateUser(@RequestParam Long id, @RequestParam String name, @RequestParam String email) {
+		User user = userRepository.findById(id).orElse(null);
+		if (user != null) {
+			user.name(name);
+			user.email(email);
+			userRepository.save(user);
+			return "Updated";
+		}
+		return "User not found";
+	}
+
+ 	@DeleteMapping(path = "/delete/{id}")
+	public @ResponseBody String deleteUser(@PathVariable Long id) {
+		userRepository.deleteById(id);
+		return "Deleted";
+	}
+
+
+
 }
