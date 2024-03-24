@@ -8,7 +8,6 @@ import lombok.Setter;
 @Table(name = "validation_bonuses")
 @Getter
 @Setter
-
 public class ValidationBonus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

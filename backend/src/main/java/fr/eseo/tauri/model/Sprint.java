@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Table(name = "sprints")
 @Getter
 @Setter
-
 public class Sprint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

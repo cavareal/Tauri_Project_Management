@@ -7,7 +7,6 @@ import lombok.Setter;
 @Table(name = "bonuses")
 @Getter
 @Setter
-
 public class Bonus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
