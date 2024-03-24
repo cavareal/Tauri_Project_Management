@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/validation_bonuses")
 public class ValidationBonusController {
 
-    @Autowired
-    private ValidationBonusRepository validationBonusRepository;
+    private final ValidationBonusRepository validationBonusRepository;
 
+    @Autowired
+    public ValidationBonusController(ValidationBonusRepository validationBonusRepository) {
+        this.validationBonusRepository = validationBonusRepository;
+    }
     @PostMapping("/add")
     public ValidationBonus addValidationBonus(@RequestBody ValidationBonus validationBonus) {
         return validationBonusRepository.save(validationBonus);

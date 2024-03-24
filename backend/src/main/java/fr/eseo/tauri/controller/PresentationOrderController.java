@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/presentation_orders")
 public class PresentationOrderController {
 
-    @Autowired
-    private PresentationOrderRepository presentationOrderRepository;
+    private final PresentationOrderRepository presentationOrderRepository;
+
+    public PresentationOrderController(PresentationOrderRepository presentationOrderRepository) {
+        this.presentationOrderRepository = presentationOrderRepository;
+    }
 
     @PostMapping("/add")
     public PresentationOrder addPresentationOrder(@RequestBody PresentationOrder presentationOrder) {

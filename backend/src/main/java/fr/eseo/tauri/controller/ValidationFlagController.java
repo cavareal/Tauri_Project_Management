@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/validation_flags")
 public class ValidationFlagController {
 
+    private final ValidationFlagRepository validationFlagRepository;
+
     @Autowired
-    private ValidationFlagRepository validationFlagRepository;
+    public ValidationFlagController(ValidationFlagRepository validationFlagRepository) {
+        this.validationFlagRepository = validationFlagRepository;
+    }
 
     @PostMapping("/add")
     public ValidationFlag addValidationFlag(@RequestBody ValidationFlag validationFlag) {

@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/bonuses")
 public class BonusController {
 
+    private final BonusRepository bonusRepository;
+
     @Autowired
-    private BonusRepository bonusRepository;
+    public BonusController(BonusRepository bonusRepository) {
+        this.bonusRepository = bonusRepository;
+    }
 
     @PostMapping("/add")
     public Bonus addBonus(@RequestBody Bonus bonus) {

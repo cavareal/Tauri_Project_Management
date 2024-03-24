@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/flags")
 public class FlagController {
 
+    private final FlagRepository flagRepository;
+
     @Autowired
-    private FlagRepository flagRepository;
+    public FlagController(FlagRepository flagRepository) {
+        this.flagRepository = flagRepository;
+    }
 
     @PostMapping("/add")
     public Flag addFlag(@RequestBody Flag flag) {

@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/comments")
 public class CommentController {
 
+    private final CommentRepository commentRepository;
+
     @Autowired
-    private CommentRepository commentRepository;
+    public CommentController(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
+    }
 
     @PostMapping("/add")
     public Comment addComment(@RequestBody Comment comment) {

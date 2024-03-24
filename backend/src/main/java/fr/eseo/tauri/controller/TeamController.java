@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/teams")
 public class TeamController {
 
+    private final TeamRepository teamRepository;
+
     @Autowired
-    private TeamRepository teamRepository;
+    public TeamController(TeamRepository teamRepository) {
+        this.teamRepository = teamRepository;
+    }
 
     @PostMapping("/add")
     public Team addTeam(@RequestBody Team team) {

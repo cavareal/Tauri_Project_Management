@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/permissions")
 public class PermissionController {
 
+    private final PermissionRepository permissionRepository;
+
     @Autowired
-    private PermissionRepository permissionRepository;
+    public PermissionController(PermissionRepository permissionRepository) {
+        this.permissionRepository = permissionRepository;
+    }
 
     @PostMapping("/add")
     public Permission addPermission(@RequestBody Permission permission) {

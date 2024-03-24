@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/students")
 public class StudentController {
 
+    private final StudentRepository studentRepository;
     @Autowired
-    private StudentRepository studentRepository;
+    public StudentController(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     @PostMapping("/add")
     public Student addStudent(@RequestBody Student student) {

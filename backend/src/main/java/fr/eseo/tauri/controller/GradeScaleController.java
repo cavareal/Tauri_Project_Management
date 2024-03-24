@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/grade_scales")
 public class GradeScaleController {
 
+    private final GradeScaleRepository gradeScaleRepository;
+
     @Autowired
-    private GradeScaleRepository gradeScaleRepository;
+    public GradeScaleController(GradeScaleRepository gradeScaleRepository) {
+        this.gradeScaleRepository = gradeScaleRepository;
+    }
 
     @PostMapping("/add")
     public GradeScale addGradeScale(@RequestBody GradeScale gradeScale) {

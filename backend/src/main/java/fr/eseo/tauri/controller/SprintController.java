@@ -9,8 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sprints")
 public class SprintController {
 
-    @Autowired
-    private SprintRepository sprintRepository;
+    private final SprintRepository sprintRepository;
+
+    public SprintController(SprintRepository sprintRepository) {
+        this.sprintRepository = sprintRepository;
+    }
 
     @PostMapping("/add")
     public Sprint addSprint(@RequestBody Sprint sprint) {
