@@ -1,5 +1,5 @@
 <script>
-import { Bell, LayoutDashboard, LogOut, Settings, Users } from "lucide-vue-next"
+import { Bell, LayoutDashboard, LogOut, Settings, Users, GraduationCap } from "lucide-vue-next"
 import SidebarLink from "@/components/molecules/SidebarLink.vue"
 import Separator from "@/components/ui/separator/Separator.vue"
 import { cn } from "@/utils/utils.js"
@@ -7,7 +7,7 @@ import { cn } from "@/utils/utils.js"
 export default {
 	name: "Sidebar",
 	methods: { Users },
-	components: { Separator, SidebarLink, LayoutDashboard, Users, Bell, Settings, LogOut },
+	components: { Separator, SidebarLink, LayoutDashboard, Users, GraduationCap, Bell, Settings, LogOut },
 	props: {
 		className: {
 			type: String,
@@ -38,7 +38,7 @@ export default {
 				<Users/> Équipes
 			</SidebarLink>
       <SidebarLink link="/grades">
-        <Users/> Notes
+        <GraduationCap /> Notes
       </SidebarLink>
 		</div>
 
