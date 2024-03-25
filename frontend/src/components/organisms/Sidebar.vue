@@ -41,13 +41,13 @@ export default {
 
 		<div>
 			<Separator/>
-			<SidebarLink link="/notifications">
+			<SidebarLink link="/">
 				<Bell/> Notifications
 			</SidebarLink>
 			<SidebarLink link="/settings">
 				<Settings/> Paramètres
 			</SidebarLink>
-			<SidebarLink link="/logout">
+			<SidebarLink link="/">
 				<LogOut/> Déconnexion
 			</SidebarLink>
 		</div>

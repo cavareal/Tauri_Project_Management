@@ -4,22 +4,24 @@ const router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
+			path: "/login",
+			name: "login",
+			component: () => import("@/components/pages/ConnectionView.vue")
+		},
+		{
 			path: "/",
 			name: "dashboard",
-			component: () => import("../views/DashboardView.vue")
+			component: () => import("@/components/pages/DashboardView.vue")
 		},
 		{
-			path: "/about",
-			name: "about",
-			// route level code-splitting
-			// this generates a separate chunk (About.[hash].js) for this route
-			// which is lazy-loaded when the route is visited.
-			component: () => import("../views/AboutView.vue")
+			path: "/teams",
+			name: "teams",
+			component: () => import("@/components/pages/TeamsView.vue")
 		},
 		{
-			path: "/connection",
-			name: "connection",
-			component: () => import("../views/ConnectionView.vue")
+			path: "/settings",
+			name: "settings",
+			component: () => import("@/components/pages/SettingsPage.vue")
 		}
 	]
 })
