@@ -37,6 +37,9 @@ export default {
 			<SidebarLink link="/teams">
 				<Users/> Équipes
 			</SidebarLink>
+      <SidebarLink link="/grades">
+        <Users/> Notes
+      </SidebarLink>
 		</div>
 
 		<div>
