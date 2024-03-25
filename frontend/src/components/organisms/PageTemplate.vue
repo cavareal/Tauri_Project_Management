@@ -2,10 +2,25 @@
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable/index.js"
 import Sidebar from "@/components/organisms/Sidebar.vue"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area/index.js"
+import { cn } from "@/utils/utils.js"
 
 export default {
 	name: "PageTemplate",
-	components: { ResizablePanelGroup, ResizableHandle, ScrollArea, ScrollBar, Sidebar, ResizablePanel }
+	components: { ResizablePanelGroup, ResizableHandle, ScrollArea, ScrollBar, Sidebar, ResizablePanel },
+	props: {
+		className: {
+			type: String,
+			default: ""
+		}
+	},
+	computed: {
+		style() {
+			return cn(
+				"h-full w-full p-8",
+				this.className
+			)
+		}
+	}
 }
 </script>
 
@@ -16,7 +31,7 @@ export default {
 		</ResizablePanel>
 		<ResizableHandle />
 		<ResizablePanel class="flex items-center justify-center">
-			<ScrollArea class="h-[100%] w-[100%] rounded-md border p-4">
+			<ScrollArea :class="style">
 				<slot/>
 				<ScrollBar/>
 			</ScrollArea>
