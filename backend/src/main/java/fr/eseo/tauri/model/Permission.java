@@ -16,7 +16,7 @@ public class Permission {
 
     private PermissionType type;
 
-    @ManyToOne
+    @ManyToOne(cascade = cascadeType.REMOVE)
     @JoinColumn(name = "role_id")
     private Role role;
 }
