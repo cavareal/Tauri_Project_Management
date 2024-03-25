@@ -13,6 +13,8 @@ module.exports = {
 		"src/components/ui/**/*.js"
 	],
 	rules: {
+		"vue/multi-word-component-names": "off",
+		"vue/no-reserved-component-names": "off",
 		"indent": ["error", "tab"],
 		"quotes": ["error", "double"],
 		"semi": ["error", "never"],

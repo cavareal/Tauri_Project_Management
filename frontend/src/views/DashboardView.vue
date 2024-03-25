@@ -4,18 +4,21 @@ import {
 	ResizablePanel,
 	ResizablePanelGroup
 } from "@/components/ui/resizable"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area/index.js"
+import Sidebar from "@/components/organisms/Sidebar.vue"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 </script>
 
 <template>
 	<ResizablePanelGroup direction="horizontal">
-		<ResizablePanel class="bg-gray-200 flex items-center justify-center min-w-56 max-w-96">Sidebar</ResizablePanel>
+		<ResizablePanel class="" :default-size="16" :min-size="16" :max-size="24">
+			<Sidebar />
+		</ResizablePanel>
 		<ResizableHandle />
 		<ResizablePanel class="flex items-center justify-center">
-      <ScrollArea class="h-[100%] w-[100%] rounded-md border p-4">
-        <ScrollBar/>
-      </ScrollArea>
-    </ResizablePanel>
+			<ScrollArea class="h-[100%] w-[100%] rounded-md border p-4">
+				<ScrollBar/>
+			</ScrollArea>
+		</ResizablePanel>
 	</ResizablePanelGroup>
 </template>
 
