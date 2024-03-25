@@ -25,7 +25,7 @@ export default {
 			bachelor: Math.random() > 0.9,
 			grades: grades.map(grade => ({
 				id: grade.id,
-				grade: Math.round(Math.random() * 2000) / 100
+				value: Math.round(Math.random() * 2000) / 100
 			}))
 		}))
 
@@ -40,25 +40,27 @@ export default {
 <template>
 	<Table>
 		<TableHeader>
-			<TableRow class="flex flex-row justify-between items-center">
-				<TableHead class="flex flex-col items-center justify-center">Nom</TableHead>
-				<TableHead class="flex flex-col items-center justify-center">Genre</TableHead>
-				<TableHead class="flex flex-col items-center justify-center">Bachelor</TableHead>
-				<TableHead v-for="grade in grades" :key="grade.id" class="flex flex-col justify-center items-center">
-					{{ grade.name }}
-					<p class="text-xs text-gray-400">Coefficient {{ grade.factor }}</p>
+			<TableRow>
+				<TableHead>Nom</TableHead>
+				<TableHead>Genre</TableHead>
+				<TableHead>Bachelor</TableHead>
+				<TableHead v-for="(grade, i) in grades" :key="i">
+					<div class="flex flex-col items-start justify-center">
+						{{ grade.name }}
+						<p class="text-xs text-gray-400 font-normal">Coefficient {{ grade.factor }}</p>
+					</div>
 				</TableHead>
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="student in students" :key="student.id">
+			<TableRow v-for="(student, i) in students" :key="i">
 				<TableCell class="font-medium">
 					{{ student.name }}
 				</TableCell>
 				<TableCell>{{ student.gender }}</TableCell>
 				<TableCell>{{ student.bachelor ? "Oui" : "Non" }}</TableCell>
-				<TableCell class="text-right">
-					{{ }}
+				<TableCell v-for="grade in grades" :key="grade.id">
+					{{ student.grades.find(g => g.id === grade.id).value }}
 				</TableCell>
 			</TableRow>
 		</TableBody>
