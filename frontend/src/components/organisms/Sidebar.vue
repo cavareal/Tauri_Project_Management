@@ -50,7 +50,7 @@ export default {
 			<SidebarLink link="/settings">
 				<Settings/> Paramètres
 			</SidebarLink>
-			<SidebarLink link="/">
+			<SidebarLink link="/login">
 				<LogOut/> Déconnexion
 			</SidebarLink>
 		</div>
