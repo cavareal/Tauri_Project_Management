@@ -67,7 +67,3 @@ function formSubmit() {
     </Card>
   </div>
 </template>
-
-<style scoped>
-
-</style>
