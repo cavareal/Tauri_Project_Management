@@ -3,12 +3,19 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription }
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Label } from "../ui/label"
 import { Button } from "../ui/button"
+function formSubmit() {
+	let role = document.querySelector("input[name=\"role\"]:checked").value
+	document.cookie = `role=${role}; path=/;`
+}
 </script>
 
 <template>
-  <div class="bg-cover bg-white bg-center size-full flex items-center justify-center" style="background-image: url('http://localhost:5173/bg_connection.svg')">
+  <div
+      class="bg-cover bg-white bg-center size-full flex items-center justify-center"
+      style="background-image: url('http://localhost:5173/bg_connection.svg')"
+  >
     <Card class="w-1/3 h-auto">
-      <form action="./">
+      <form @submit="formSubmit" action="./">
         <CardHeader>
           <CardTitle>Sélection du rôle</CardTitle>
           <CardDescription>Ceci est une fenêtre de connexion temporaire</CardDescription>
