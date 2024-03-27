@@ -19,9 +19,8 @@ public class Notification {
 
     private Boolean isRead;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('Bonus Malus')")
     private NotificationType type;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
 }
