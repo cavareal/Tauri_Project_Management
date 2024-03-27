@@ -1,5 +1,5 @@
 <script>
-import { Bell, LayoutDashboard, LogOut, Settings, Users, GraduationCap } from "lucide-vue-next"
+import { Bell, GraduationCap, LayoutDashboard, LogOut, Settings, Users } from "lucide-vue-next"
 import SidebarLink from "@/components/molecules/SidebarLink.vue"
 import Separator from "@/components/ui/separator/Separator.vue"
 import { cn } from "@/utils/utils.js"
@@ -7,7 +7,7 @@ import { cn } from "@/utils/utils.js"
 export default {
 	name: "Sidebar",
 	methods: { Users },
-	components: { Separator, SidebarLink, LayoutDashboard, Users, GraduationCap, Bell, Settings, LogOut },
+	components: { Separator, SidebarLink, LayoutDashboard, Users, Bell, Settings, LogOut, GraduationCap },
 	props: {
 		className: {
 			type: String,
@@ -30,6 +30,10 @@ export default {
 <template>
 	<nav :class="style">
 		<div>
+			<div class="flex flex-row items-end justify-center gap-4 my-2">
+				<img src="/icon.svg" alt="Logo" class="w-8" />
+				<h3 class="text-2xl font-title-medium">Tauri</h3>
+			</div>
 			<SidebarLink link="/">
 				<LayoutDashboard/> Tableau de bord
 			</SidebarLink>
@@ -37,9 +41,12 @@ export default {
 			<SidebarLink link="/teams">
 				<Users/> Équipes
 			</SidebarLink>
-      <SidebarLink link="/grades">
-        <GraduationCap /> Notes
-      </SidebarLink>
+			<SidebarLink link="/students">
+				<GraduationCap/> Étudiants
+			</SidebarLink>
+			<SidebarLink link="/grades">
+       			<GraduationCap /> Notes
+    		</SidebarLink>
 		</div>
 
 		<div>

@@ -24,6 +24,12 @@ module.exports = {
 			}
 		},
 		extend: {
+			fontFamily: {
+				"title-regular": ["CA Slalom Extended Regular", "sans-serif"],
+				"title-medium": ["CA Slalom Extended Medium", "sans-serif"],
+				"title-bold": ["CA Slalom Extended Bold", "sans-serif"],
+				"sans": ["Roboto", "sans-serif"]
+			},
 			colors: {
 				"dark-blue": "#1B1336",
 				border: "hsl(var(--border))",

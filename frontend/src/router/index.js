@@ -19,6 +19,11 @@ const router = createRouter({
 			component: () => import("@/components/pages/TeamsView.vue")
 		},
 		{
+			path: "/students",
+			name: "students",
+			component: () => import("@/components/pages/StudentsView.vue")
+		},
+		{
 			path: "/grades",
 			name: "grades",
 			component: () => import("@/components/pages/GradeView.vue")
@@ -27,6 +32,11 @@ const router = createRouter({
 			path: "/settings",
 			name: "settings",
 			component: () => import("@/components/pages/SettingsPage.vue")
+		},
+		{
+			path: "/test",
+			name: "test",
+			component: () => import("@/components/pages/TestPage.vue")
 		}
 	]
 })
