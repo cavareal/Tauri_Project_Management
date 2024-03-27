@@ -3,6 +3,8 @@ package fr.eseo.tauri.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 @Entity
@@ -16,6 +18,16 @@ public class Team {
     private Integer id;
 
     private String name;
+
+    @OneToOne()
+    @JoinColumn(name = "project_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Project projectId;
+
+    @OneToOne()
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User leaderId;
 
 }
 

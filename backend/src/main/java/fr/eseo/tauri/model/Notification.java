@@ -5,12 +5,14 @@ import fr.eseo.tauri.model.enumeration.NotificationType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "notifications")
 @Getter
 @Setter
-public class Notification {
+public class    Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -23,4 +25,13 @@ public class Notification {
     @Column(columnDefinition = "ENUM('Bonus Malus')")
     private NotificationType type;
 
+    @OneToOne()
+    @JoinColumn(name = "user_to")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User userTo;
+
+    @OneToOne()
+    @JoinColumn(name = "user_from")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User userFrom;
 }
