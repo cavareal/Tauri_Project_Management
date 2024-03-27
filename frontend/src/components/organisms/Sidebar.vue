@@ -30,6 +30,10 @@ export default {
 <template>
 	<nav :class="style">
 		<div>
+			<div class="flex flex-row items-end justify-center gap-4 my-2">
+				<img src="/icon.svg" alt="Logo" class="w-8" />
+				<h3 class="text-2xl font-title-medium">Tauri</h3>
+			</div>
 			<SidebarLink link="/">
 				<LayoutDashboard/> Tableau de bord
 			</SidebarLink>
