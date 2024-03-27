@@ -22,6 +22,25 @@ public class ProjectController {
     }
 
 
+    @PutMapping("/update-teams-number")
+    public ResponseEntity<String> updateProjectTeamsNumber(@RequestParam Integer id, @RequestParam Integer newTeamsNumber) {
+        // Check for token, if user is GOOD, with authService ??
+        if(true) {
+            try {
+                Project project = projectService.updateProjectTeamsNumber(id, newTeamsNumber);
+                if (project != null) {
+                    return ResponseEntity.ok("Le nouveau ratio à bien été enregistré"); // Retourne true avec code 200
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour"); // Erreur 500
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage()); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+        }
+    }
+
     @PutMapping("/update-ratio-gender")
     public ResponseEntity<String> updateProjectRatioGender(@RequestParam Integer id, @RequestParam Integer newRatioGender) {
         // Check for token, if user is GOOD, with authService ??

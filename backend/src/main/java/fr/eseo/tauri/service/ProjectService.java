@@ -15,7 +15,17 @@ public class ProjectService {
         this.projectRepository = projectRepository;
     }
 
-    // Update ratio gendre of the project, with id of project and new ratio
+    // Update nb of teams in the project, with id of project and nb
+    public Project updateProjectTeamsNumber(Integer projectId, Integer newTeamsNumber) {
+        Project project = projectRepository.findById(projectId).orElse(null);
+        if (project != null) {
+            project.nbTeams(newTeamsNumber);
+            return projectRepository.save(project);
+        }
+        return null;
+    }
+
+
     public Project updateProjectRatioGender(Integer projectId, Integer newRatioGender) {
         Project project = projectRepository.findById(projectId).orElse(null);
         if (project != null) {
