@@ -1,27 +1,20 @@
-<script>
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable/index.js"
+<script setup lang="ts">
+import { defineProps, computed } from "vue"
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable/index"
 import Sidebar from "@/components/organisms/Sidebar.vue"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area/index.js"
-import { cn } from "@/utils/utils.js"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area/index"
+import { cn } from "@/utils/utils"
 
-export default {
-	name: "PageTemplate",
-	components: { ResizablePanelGroup, ResizableHandle, ScrollArea, ScrollBar, Sidebar, ResizablePanel },
-	props: {
-		className: {
-			type: String,
-			default: ""
-		}
-	},
-	computed: {
-		style() {
-			return cn(
-				"h-full w-full p-8",
-				this.className
-			)
-		}
-	}
-}
+const props = defineProps<{
+	className?: string
+}>()
+
+const style = computed(() => {
+	return cn(
+		"h-full w-full p-8",
+		props.className
+	)
+})
 </script>
 
 <template>
@@ -32,13 +25,9 @@ export default {
 		<ResizableHandle />
 		<ResizablePanel class="flex items-center justify-center">
 			<ScrollArea :class="style">
-				<slot/>
-				<ScrollBar/>
+				<slot />
+				<ScrollBar />
 			</ScrollArea>
 		</ResizablePanel>
 	</ResizablePanelGroup>
 </template>
-
-<style scoped>
-
-</style>

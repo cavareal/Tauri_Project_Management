@@ -1,20 +1,15 @@
-<script setup>
-import { computed } from "vue";
-import { Label } from "radix-vue";
-import { cn } from "@/utils/utils.js";
+<script setup lang="ts">
+import { type HTMLAttributes, computed } from 'vue'
+import { Label, type LabelProps } from 'radix-vue'
+import { cn } from '@/utils/utils.ts'
 
-const props = defineProps({
-  for: { type: String, required: false },
-  asChild: { type: Boolean, required: false },
-  as: { type: null, required: false },
-  class: { type: null, required: false },
-});
+const props = defineProps<LabelProps & { class?: HTMLAttributes['class'] }>()
 
 const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props;
+  const { class: _, ...delegated } = props
 
-  return delegated;
-});
+  return delegated
+})
 </script>
 
 <template>
@@ -23,7 +18,7 @@ const delegatedProps = computed(() => {
     :class="
       cn(
         'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-        props.class
+        props.class,
       )
     "
   >

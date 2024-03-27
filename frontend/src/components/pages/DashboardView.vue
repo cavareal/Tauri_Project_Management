@@ -1,7 +1,7 @@
-<script setup>
+<script setup lang="ts">
 import PageTemplate from "@/components/organisms/PageTemplate.vue"
 import { ref } from "vue"
-import  getCookie  from "@/utils/cookiesUtils.js"
+import getCookie from "@/utils/cookiesUtils.ts"
 
 const message = ref("World")
 
@@ -10,10 +10,6 @@ message.value = getCookie("role")
 
 <template>
 	<PageTemplate>
-    Hello {{message}}
+		Hello {{ message }}
 	</PageTemplate>
 </template>
-
-<style scoped>
-
-</style>

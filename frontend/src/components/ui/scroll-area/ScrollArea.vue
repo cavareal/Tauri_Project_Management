@@ -1,34 +1,25 @@
-<script setup>
-import { computed } from "vue";
+<script setup lang="ts">
+import { type HTMLAttributes, computed } from 'vue'
 import {
   ScrollAreaCorner,
   ScrollAreaRoot,
+  type ScrollAreaRootProps,
   ScrollAreaViewport,
-} from "radix-vue";
-import ScrollBar from "./ScrollBar.vue";
-import { cn } from "@/utils/utils.js";
+} from 'radix-vue'
+import ScrollBar from './ScrollBar.vue'
+import { cn } from '@/utils/utils.ts'
 
-const props = defineProps({
-  type: { type: String, required: false },
-  dir: { type: String, required: false },
-  scrollHideDelay: { type: Number, required: false },
-  asChild: { type: Boolean, required: false },
-  as: { type: null, required: false },
-  class: { type: null, required: false },
-});
+const props = defineProps<ScrollAreaRootProps & { class?: HTMLAttributes['class'] }>()
 
 const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props;
+  const { class: _, ...delegated } = props
 
-  return delegated;
-});
+  return delegated
+})
 </script>
 
 <template>
-  <ScrollAreaRoot
-    v-bind="delegatedProps"
-    :class="cn('relative overflow-hidden', props.class)"
-  >
+  <ScrollAreaRoot v-bind="delegatedProps" :class="cn('relative overflow-hidden', props.class)">
     <ScrollAreaViewport class="h-full w-full rounded-[inherit]">
       <slot />
     </ScrollAreaViewport>

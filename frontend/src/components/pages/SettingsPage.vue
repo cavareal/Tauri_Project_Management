@@ -1,10 +1,5 @@
-<script>
+<script setup lang="ts">
 import PageTemplate from "@/components/organisms/PageTemplate.vue"
-
-export default {
-	name: "SettingsPage",
-	components: { PageTemplate }
-}
 </script>
 
 <template>
@@ -12,7 +7,3 @@ export default {
 		Settings
 	</PageTemplate>
 </template>
-
-<style scoped>
-
-</style>

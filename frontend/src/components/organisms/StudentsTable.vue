@@ -1,14 +1,6 @@
-<script>
+<script setup lang="ts">
 import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@/components/ui/table"
-import { grades, students } from "@/utils/students.js"
-
-export default {
-	name: "StudentsTable",
-	components: { Table, TableHeader, TableHead, TableBody, TableRow, TableCell },
-	data() {
-		return { grades, students }
-	}
-}
+import { grades, students } from "@/utils/students"
 </script>
 
 <template>
@@ -34,13 +26,9 @@ export default {
 				<TableCell>{{ student.gender }}</TableCell>
 				<TableCell>{{ student.bachelor ? "Oui" : "Non" }}</TableCell>
 				<TableCell v-for="grade in grades" :key="grade.id">
-					{{ student.grades.find(g => g.id === grade.id).value }}
+					{{ student.grades.find(g => g.id === grade.id)?.value ?? "" }}
 				</TableCell>
 			</TableRow>
 		</TableBody>
 	</Table>
 </template>
-
-<style scoped>
-
-</style>

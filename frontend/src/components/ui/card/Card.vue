@@ -1,9 +1,10 @@
-<script setup>
-import { cn } from "@/utils/utils.js";
+<script setup lang="ts">
+import type { HTMLAttributes } from 'vue'
+import { cn } from '@/utils/utils.ts'
 
-const props = defineProps({
-  class: { type: null, required: false },
-});
+const props = defineProps<{
+  class?: HTMLAttributes['class']
+}>()
 </script>
 
 <template>
@@ -11,7 +12,7 @@ const props = defineProps({
     :class="
       cn(
         'rounded-lg border bg-card text-card-foreground shadow-sm',
-        props.class
+        props.class,
       )
     "
   >

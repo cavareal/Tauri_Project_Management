@@ -1,44 +1,27 @@
-<script>
-import Button from "@/components/ui/button/Button.vue"
-import { cn } from "@/utils/utils.js"
+<script setup lang="ts">
+import { computed } from "vue"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/utils/utils"
 
-export default {
-	name: "SidebarLink",
-	components: { Button },
-	props: {
-		selected: {
-			type: Boolean,
-			default: false
-		},
-		link: {
-			type: String,
-			default: ""
-		},
-		className: {
-			type: String,
-			default: ""
-		}
-	},
-	computed: {
-		style() {
-			return cn(
-				"w-full my-1",
-				"flex flex-row items-center justify-start gap-2",
-				this.className
-			)
-		}
-	}
-}
+const props = defineProps<{
+	link: string
+	selected?: boolean
+	class?: string
+}>()
+
+const style = computed(() => {
+	return cn(
+		"w-full my-1",
+		"flex flex-row items-center justify-start gap-2",
+		props.class
+	)
+})
 </script>
 
 <template>
 	<RouterLink :to="link">
 		<Button :variant="selected ? 'secondary' : 'ghost'" :class="style">
-			<slot/>
+			<slot />
 		</Button>
 	</RouterLink>
 </template>
-
-<style scoped>
-
-</style>

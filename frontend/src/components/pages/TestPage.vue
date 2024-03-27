@@ -5,7 +5,7 @@ import DataTable from "@/components/test/DataTable.vue"
 
 const data = ref([])
 
-async function getData() {
+function getData() {
 	// Fetch data from your API here.
 	return [
 		{
@@ -18,8 +18,8 @@ async function getData() {
 	]
 }
 
-onMounted(async() => {
-	data.value = await getData()
+onMounted(() => {
+	data.value = getData()
 })
 </script>
 
