@@ -19,17 +19,17 @@ public class Grade {
 
     private String comment;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "grade_type_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private GradeType gradeTypeId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student studentId;

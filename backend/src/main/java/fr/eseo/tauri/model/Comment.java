@@ -19,17 +19,17 @@ public class Comment {
 
     private String feedback;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "team_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Team teamId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Sprint sprintId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User authorId;

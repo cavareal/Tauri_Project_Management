@@ -15,13 +15,13 @@ public class ValidationBonus {
     private Boolean confirmed;
 
     @Id
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userId;
 
     @Id
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "bonus_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Bonus bonusId;

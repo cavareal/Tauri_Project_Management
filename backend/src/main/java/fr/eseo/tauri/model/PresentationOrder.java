@@ -16,13 +16,13 @@ public class PresentationOrder {
     private Integer value;
 
     @Id
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User sprintId;
 
     @Id
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student studentId;

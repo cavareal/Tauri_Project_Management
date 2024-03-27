@@ -23,17 +23,17 @@ public class Flag {
     @Column(columnDefinition = "ENUM('Reporting')")
     private FlagType type;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "first_student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student firstStudentId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "second_student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student secondStudentId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userId;
