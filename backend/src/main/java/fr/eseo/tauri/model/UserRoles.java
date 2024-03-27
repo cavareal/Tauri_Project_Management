@@ -1,6 +1,5 @@
 package fr.eseo.tauri.model;
 
-import fr.eseo.tauri.model.enumeration.PermissionType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,19 +7,22 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "permissions")
+@Table(name = "user_roles")
 @Getter
 @Setter
-public class Permission {
+public class UserRoles {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    private PermissionType type;
-
-    @ManyToOne()
+    @OneToOne
     @JoinColumn(name = "role_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Role role;
+    private Role roleId;
+
+    @Id
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User userId;
+
 }
+

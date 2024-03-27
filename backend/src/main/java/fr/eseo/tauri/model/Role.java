@@ -19,14 +19,4 @@ public class Role {
 
     private RoleType type;
 
-    @ManyToMany()
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users = new HashSet<>();
-
-//    @OneToMany(mappedBy = "user")
-//    private Set<Permission> permissions;
-
 }
