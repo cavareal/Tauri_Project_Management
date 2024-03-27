@@ -22,14 +22,54 @@ public class ProjectController {
     }
 
 
+
+    @PostMapping("/new-project")
+    public ResponseEntity<String> newProject(@RequestParam Integer teamsNumber, @RequestParam Integer genderRatio, @RequestParam Integer sprintsNumber, @RequestParam String phase) {
+        // Check for token, if user is GOOD, with authService ??
+        if(true) {
+            try {
+                Project project = projectService.newProject(teamsNumber, genderRatio, sprintsNumber, phase);
+                if (project != null) {
+                    return ResponseEntity.ok("L'ajout a bien été enregistré"); // Retourne true avec code 200
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour"); // Erreur 500
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage()); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+        }
+    }
+
+
     @PutMapping("/update-teams-number")
+    public ResponseEntity<String> updateProjectSprintsNumber(@RequestParam Integer id, @RequestParam Integer newSprintsNumber) {
+        // Check for token, if user is GOOD, with authService ??
+        if(true) {
+            try {
+                Project project = projectService.updateProjectSprintsNumber(id, newSprintsNumber);
+                if (project != null) {
+                    return ResponseEntity.ok("L'édit à bien été enregistré"); // Retourne true avec code 200
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour"); // Erreur 500
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage()); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+        }
+    }
+
+    @PutMapping("/update-sprints-number")
     public ResponseEntity<String> updateProjectTeamsNumber(@RequestParam Integer id, @RequestParam Integer newTeamsNumber) {
         // Check for token, if user is GOOD, with authService ??
         if(true) {
             try {
                 Project project = projectService.updateProjectTeamsNumber(id, newTeamsNumber);
                 if (project != null) {
-                    return ResponseEntity.ok("Le nouveau ratio à bien été enregistré"); // Retourne true avec code 200
+                    return ResponseEntity.ok("L'édit à bien été enregistré"); // Retourne true avec code 200
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour"); // Erreur 500
                 }
@@ -48,7 +88,7 @@ public class ProjectController {
             try {
                 Project project = projectService.updateProjectRatioGender(id, newRatioGender);
                 if (project != null) {
-                    return ResponseEntity.ok("Le nouveau ratio à bien été enregistré"); // Retourne true avec code 200
+                    return ResponseEntity.ok("L'édit à bien été enregistré"); // Retourne true avec code 200
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour"); // Erreur 500
                 }
