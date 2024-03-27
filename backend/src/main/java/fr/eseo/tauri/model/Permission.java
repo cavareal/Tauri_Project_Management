@@ -21,7 +21,7 @@ public class Permission {
     @Column(columnDefinition = "ENUM('Team Creation',Team Suppression','Rate','Attribution Bonus/Malus','Manage Sprints','View Other Team Mark','Role Creation','View Own Team Mark','View Mark for All Students','View Mark')")
     private PermissionType type;
 
-    @ManyToOne()
+    @OneToOne
     @JoinColumn(name = "role_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Role role;

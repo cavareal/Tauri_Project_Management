@@ -25,12 +25,12 @@ public class    Notification {
     @Column(columnDefinition = "ENUM('Bonus Malus')")
     private NotificationType type;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_to")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userTo;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_from")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userFrom;

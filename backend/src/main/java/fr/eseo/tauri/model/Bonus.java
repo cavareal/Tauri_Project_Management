@@ -23,17 +23,17 @@ public class Bonus {
 
     private Boolean confirmed;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Sprint sprintId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student studentId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userId;

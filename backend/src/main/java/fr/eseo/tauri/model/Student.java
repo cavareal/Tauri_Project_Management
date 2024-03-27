@@ -25,17 +25,17 @@ public class Student {
 
     private String role;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "team_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Team teamId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project projectId;

@@ -26,7 +26,7 @@ public class Sprint {
     @Column(columnDefinition = "ENUM('Sprint Normal', 'Sprint Final)")
     private SprintEndType endType;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project projectId;

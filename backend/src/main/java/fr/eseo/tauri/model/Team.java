@@ -19,12 +19,12 @@ public class Team {
 
     private String name;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project projectId;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User leaderId;
