@@ -26,7 +26,7 @@ public class ProjectService {
     }
 
 
-    public Project updateProjectRatioGendre(Integer projectId, Integer newRatioGender) {
+    public Project updateProjectRatioGender(Integer projectId, Integer newRatioGender) {
         Project project = projectRepository.findById(projectId).orElse(null);
         if (project != null) {
             project.ratioGender(newRatioGender);
