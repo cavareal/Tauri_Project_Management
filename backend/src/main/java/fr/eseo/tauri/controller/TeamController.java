@@ -2,48 +2,60 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.repository.TeamRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller class for managing teams.
+ */
 @RestController
 @RequestMapping("/teams")
 public class TeamController {
 
     private final TeamRepository teamRepository;
+    private final AuthService authService;
+    private final TeamService teamService;
 
+    /**
+     * Constructor for TeamController.
+     * @param teamRepository the team repository
+     * @param authService the authentication service
+     * @param teamService the team service
+     */
     @Autowired
-    public TeamController(TeamRepository teamRepository) {
+    public TeamController(TeamRepository teamRepository, AuthService authService, TeamService teamService) {
         this.teamRepository = teamRepository;
+        this.authService = authService;
+        this.teamService = teamService;
     }
 
-    @PostMapping("/add")
-    public Team addTeam(@RequestBody Team team) {
-        return teamRepository.save(team);
-    }
-
-    @GetMapping("/all")
-    public Iterable<Team> getAllTeams() {
-        return teamRepository.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Team getTeamById(@PathVariable Integer id) {
-        return teamRepository.findById(id).orElse(null);
-    }
-
-    @PutMapping("/update/{id}")
-    public Team updateTeam(@PathVariable Integer id, @RequestBody Team teamDetails) {
-        Team team = teamRepository.findById(id).orElse(null);
-        if (team != null) {
-            team.name(teamDetails.name());
-            return teamRepository.save(team);
+    /**
+     * Update the leader of a team.
+     * @param token the authorization token
+     * @param idTeam the ID of the team
+     * @param idLeader the ID of the new leader
+     * @return a response entity with a success message if the update was successful, otherwise an error message
+     */
+    @PostMapping("/update-leader-team")
+    public ResponseEntity<String> updateLeaderTeam(@RequestHeader("Authorization") String token, @RequestParam Integer idTeam, @RequestParam Integer idLeader) {
+        String permission = "teamCreation";
+        if(authService.checkAuth(token, permission)) {
+            try {
+                Team team = teamService.updateLeaderTeam(idTeam, idLeader);
+                if (team != null) {
+                    return ResponseEntity.ok("La suppression a bien été prise en compte");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
         }
-        return null;
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String deleteTeam(@PathVariable Integer id) {
-        teamRepository.deleteById(id);
-        return "Team deleted";
     }
 }
