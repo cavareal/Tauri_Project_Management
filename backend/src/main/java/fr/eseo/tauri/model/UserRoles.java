@@ -10,7 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "user_roles")
 @Getter
 @Setter
-public class userRoles {
+public class UserRoles {
 
     @Id
     @OneToOne
@@ -25,3 +25,4 @@ public class userRoles {
     private User userId;
 
 }
+
