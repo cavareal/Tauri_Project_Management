@@ -4,6 +4,8 @@ import fr.eseo.tauri.model.enumeration.PermissionType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "permissions")
@@ -16,7 +18,8 @@ public class Permission {
 
     private PermissionType type;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne()
     @JoinColumn(name = "role_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Role role;
 }
