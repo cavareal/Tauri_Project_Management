@@ -2,50 +2,42 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.repository.ProjectRepository;
+import fr.eseo.tauri.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
 
     private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
 
-    public ProjectController(ProjectRepository projectRepository) {
+    @Autowired
+    public ProjectController(ProjectRepository projectRepository, ProjectService projectService) {
         this.projectRepository = projectRepository;
+        this.projectService = projectService;
     }
 
-    @PostMapping("/add")
-    public Project addProject(@RequestBody Project project) {
-        return projectRepository.save(project);
-    }
 
-    @GetMapping("/all")
-    public Iterable<Project> getAllProjects() {
-        return projectRepository.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Project getProjectById(@PathVariable Integer id) {
-        return projectRepository.findById(id).orElse(null);
-    }
-
-    @PutMapping("/update/{id}")
-    public Project updateProject(@PathVariable Integer id, @RequestBody Project projectDetails) {
-        Project project = projectRepository.findById(id).orElse(null);
-        if (project != null) {
-            project.nbTeams(projectDetails.nbTeams());
-            project.ratioGendre(projectDetails.ratioGendre());
-            project.nbSprint(projectDetails.nbSprint());
-            project.phase(projectDetails.phase());
-            return projectRepository.save(project);
+    @PutMapping("/update-ratio-gendre")
+    public ResponseEntity<String> updateProjectRatioGendre(@RequestParam Integer id, @RequestParam Integer newRatioGendre) {
+        // Check for token, if user is GOOD, with authService ??
+        if(true) {
+            try {
+                Project project = projectService.updateProjectRatioGendre(id, newRatioGendre);
+                if (project != null) {
+                    return ResponseEntity.ok("Le nouveau ratio à bien été enregistré"); // Retourne true avec code 200
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour"); // Erreur 500
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage()); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
         }
-        return null;
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String deleteProject(@PathVariable Integer id) {
-        projectRepository.deleteById(id);
-        return "Project deleted";
     }
 }
