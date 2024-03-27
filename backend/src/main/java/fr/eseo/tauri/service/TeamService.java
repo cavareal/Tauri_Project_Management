@@ -17,6 +17,8 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
+
 
     /**
      * Constructor for TeamService.
@@ -24,9 +26,10 @@ public class TeamService {
      * @param userRepository the user repository
      */
     @Autowired
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
+        this.projectRepository = projectRepository;
     }
 
     /**
@@ -58,6 +61,27 @@ public class TeamService {
             team.name(newName);
             return teamRepository.save(team);
         }
+        return null;
+    }
+
+
+    /**
+     * Create teams.
+     * @return true if teams are created, otherwise null
+     */
+    public Team createTeams() {
+
+        Project project = projectRepository.findById(1).orElse(null);
+        if(project == null){
+            return null;
+        }
+
+        Integer ratioGender = project.ratioGender();
+        Integer nbTeams = project.nbTeams();
+
+        
+
+
         return null;
     }
 

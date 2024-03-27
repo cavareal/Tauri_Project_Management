@@ -40,7 +40,7 @@ public class TeamController {
      * @param idLeader the ID of the new leader
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
-    @PostMapping("/update-leader-team")
+    @PutMapping("/update-leader-team")
     public ResponseEntity<String> updateLeaderTeam(@RequestHeader("Authorization") String token, @RequestParam Integer idTeam, @RequestParam Integer idLeader) {
         String permission = "teamCreation";
         if(authService.checkAuth(token, permission)) {
@@ -67,7 +67,7 @@ public class TeamController {
      * @param newName the new name of a team
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
-    @PostMapping("/update-name-team")
+    @PutMapping("/update-name-team")
     public ResponseEntity<String> updateNameTeam(@RequestHeader("Authorization") String token, @RequestParam Integer idTeam, @RequestParam String newName) {
         String permission = "teamRename";
         if(authService.checkAuth(token, permission)) {
@@ -75,6 +75,30 @@ public class TeamController {
                 Team team = teamService.updateNameTeam(idTeam, newName);
                 if (team != null) {
                     return ResponseEntity.ok("La modification a bien été prise en compte");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+        }
+    }
+
+    /**
+     * Create teams.
+     * @param token the authorization token
+     * @return a response entity with a success message if the update was successful, otherwise an error message
+     */
+    @PostMapping("/create-teams")
+    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token) {
+        String permission = "teamCreate";
+        if(authService.checkAuth(token, permission)) {
+            try {
+                Team team = teamService.createTeams();
+                if (team != null) {
+                    return ResponseEntity.ok("La création a bien été prise en compte");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
                 }
