@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model;
 
+import fr.eseo.tauri.model.enumeration.SprintEndType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,5 +20,7 @@ public class Sprint {
 
     private LocalDate endDate;
 
-    private String endType;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('Sprint Normal', 'Sprint Final)")
+    private SprintEndType endType;
 }

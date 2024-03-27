@@ -17,6 +17,8 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('Supervising Staff')")
     private RoleType type;
 
 }
