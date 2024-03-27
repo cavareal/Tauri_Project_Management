@@ -20,7 +20,7 @@ public class Flag {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('Reporting')")
+    @Column(name="type")
     private FlagType type;
 
     @OneToOne

@@ -18,7 +18,7 @@ public class Role {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('Supervising Staff')")
+    @Column(name="type")
     private RoleType type;
 
 }

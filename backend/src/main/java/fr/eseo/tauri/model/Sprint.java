@@ -22,8 +22,8 @@ public class Sprint {
 
     private LocalDate endDate;
 
-    //@Enumerated(EnumType.STRING)
-    //@Column(columnDefinition = "ENUM('Sprint Normal', 'Sprint Final)")
+    @Enumerated(EnumType.STRING)
+    @Column(name="end_type")
     private SprintEndType endType;
 
     @ManyToOne

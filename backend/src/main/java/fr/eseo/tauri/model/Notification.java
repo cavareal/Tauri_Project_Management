@@ -22,7 +22,7 @@ public class    Notification {
     private Boolean isRead;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('Bonus Malus')")
+    @Column(name="type")
     private NotificationType type;
 
     @OneToOne
