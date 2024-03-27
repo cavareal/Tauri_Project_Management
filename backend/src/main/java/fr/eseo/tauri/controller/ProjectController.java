@@ -145,6 +145,33 @@ public class ProjectController {
     }
 
     /**
+     * Update the gender ratio for a project.
+     * @param token the authentication token
+     * @param id the project ID
+     * @param newPhase the new phase of the project
+     * @return a response entity with a success message or an error message
+     */
+    @PutMapping("/update-project-phase")
+    public ResponseEntity<String> updateProjectPhase(@RequestHeader("Authorization") String token, @RequestParam Integer id, @RequestParam String newPhase) {
+        // Check token, if user is GOOD
+        String permission = "manageProjectPhase";
+        if(authService.checkAuth(token, permission)) {
+            try {
+                Project project = projectService.updateProjectPhase(id, newPhase);
+                if (project != null) {
+                    return ResponseEntity.ok("L'edit à bien été enregistré"); // Retourne true avec code 200
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour"); // Erreur 500
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage()); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+        }
+    }
+
+    /**
      * Delete a project.
      * @param token the authentication token
      * @param id the project ID

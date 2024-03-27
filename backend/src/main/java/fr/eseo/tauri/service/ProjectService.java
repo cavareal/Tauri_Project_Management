@@ -91,6 +91,21 @@ public class ProjectService {
     }
 
     /**
+     * Update the gender ratio in a project.
+     * @param projectId the ID of the project
+     * @param newPhase the new phase of the project
+     * @return the updated project, or null if the project was not found
+     */
+    public Project updateProjectPhase(Integer projectId, String newPhase) {
+        Project project = projectRepository.findById(projectId).orElse(null);
+        if (project != null) {
+            project.phase(newPhase);
+            return projectRepository.save(project);
+        }
+        return null;
+    }
+
+    /**
      * Delete a project.
      * @param id the ID of the project to delete
      * @return the deleted project, or null if the project was not found
