@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "user_roles")
+@IdClass(UserRolesId.class)
 @Getter
 @Setter
 public class UserRoles {

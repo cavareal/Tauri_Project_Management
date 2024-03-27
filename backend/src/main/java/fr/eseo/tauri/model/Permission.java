@@ -17,8 +17,8 @@ public class Permission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('Team Creation',Team Suppression','Rate','Attribution Bonus/Malus','Manage Sprints','View Other Team Mark','Role Creation','View Own Team Mark','View Mark for All Students','View Mark')")
+    //@Enumerated(EnumType.STRING)
+    //@Column(columnDefinition = "ENUM('Team Creation',Team Suppression','Rate','Attribution Bonus/Malus','Manage Sprints','View Other Team Mark','Role Creation','View Own Team Mark','View Mark for All Students','View Mark')")
     private PermissionType type;
 
     @OneToOne

@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "grade_teams")
+@IdClass(GradeTeamsId.class)
 @Getter
 @Setter
 

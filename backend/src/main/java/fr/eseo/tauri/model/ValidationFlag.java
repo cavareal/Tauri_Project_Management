@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "validation_flags")
+@IdClass(ValidationFlagId.class)
 @Getter
 @Setter
 public class ValidationFlag {

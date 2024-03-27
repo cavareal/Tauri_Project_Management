@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "scale_types")
+@IdClass(ScaleTypesId.class)
 @Getter
 @Setter
 

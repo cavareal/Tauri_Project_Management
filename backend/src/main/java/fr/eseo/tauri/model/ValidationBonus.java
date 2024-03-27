@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "validation_bonuses")
+@IdClass(ValidationBonusId.class)
 @Getter
 @Setter
 public class ValidationBonus {
@@ -24,5 +25,6 @@ public class ValidationBonus {
     @OneToOne
     @JoinColumn(name = "bonus_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
+
     private Bonus bonusId;
 }

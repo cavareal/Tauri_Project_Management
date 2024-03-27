@@ -17,8 +17,8 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('Femme', 'Homme', 'Autre)")
+    //@Enumerated(EnumType.STRING)
+    //@Column(columnDefinition = "ENUM('Femme', 'Homme', 'Autre)")
     private Gender gender;
 
     private String bachelor;

@@ -9,17 +9,16 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "presentation_orders")
+@IdClass(PresentationOrderId.class)
 @Getter
 @Setter
 public class PresentationOrder {
-
-    private Integer value;
 
     @Id
     @OneToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User sprintId;
+    private Sprint sprintId;
 
     @Id
     @OneToOne
@@ -27,5 +26,6 @@ public class PresentationOrder {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student studentId;
 
+    private Integer value;
 
 }
