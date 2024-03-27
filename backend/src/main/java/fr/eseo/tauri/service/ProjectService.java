@@ -16,10 +16,10 @@ public class ProjectService {
     }
 
     // Update ratio gendre of the project, with id of project and new ratio
-    public Project updateProjectRatioGendre(Integer projectId, Integer newRatioGendre) {
+    public Project updateProjectRatioGender(Integer projectId, Integer newRatioGender) {
         Project project = projectRepository.findById(projectId).orElse(null);
         if (project != null) {
-            project.ratioGendre(newRatioGendre);
+            project.ratioGender(newRatioGender);
             return projectRepository.save(project);
         }
         return null;

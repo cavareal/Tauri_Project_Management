@@ -22,12 +22,12 @@ public class ProjectController {
     }
 
 
-    @PutMapping("/update-ratio-gendre")
-    public ResponseEntity<String> updateProjectRatioGendre(@RequestParam Integer id, @RequestParam Integer newRatioGendre) {
+    @PutMapping("/update-ratio-gender")
+    public ResponseEntity<String> updateProjectRatioGender(@RequestParam Integer id, @RequestParam Integer newRatioGender) {
         // Check for token, if user is GOOD, with authService ??
         if(true) {
             try {
-                Project project = projectService.updateProjectRatioGendre(id, newRatioGendre);
+                Project project = projectService.updateProjectRatioGender(id, newRatioGender);
                 if (project != null) {
                     return ResponseEntity.ok("Le nouveau ratio à bien été enregistré"); // Retourne true avec code 200
                 } else {
