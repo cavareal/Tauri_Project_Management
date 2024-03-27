@@ -17,7 +17,7 @@ public class Project {
 
     private Integer nbTeams;
 
-    private Integer ratioGendre;        // Ratio/100
+    private Integer ratioGender;        // Ratio/100
 
     private Integer nbSprint;
 

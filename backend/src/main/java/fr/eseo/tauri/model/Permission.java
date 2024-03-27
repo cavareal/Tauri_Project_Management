@@ -12,6 +12,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 public class Permission {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
