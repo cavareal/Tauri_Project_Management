@@ -47,7 +47,34 @@ public class TeamController {
             try {
                 Team team = teamService.updateLeaderTeam(idTeam, idLeader);
                 if (team != null) {
-                    return ResponseEntity.ok("La suppression a bien été prise en compte");
+                    return ResponseEntity.ok("La modification a bien été prise en compte");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+        }
+    }
+
+
+    /**
+     * Update the name of a team.
+     * @param token the authorization token
+     * @param idTeam the ID of the team
+     * @param newName the new name of a team
+     * @return a response entity with a success message if the update was successful, otherwise an error message
+     */
+    @PostMapping("/update-name-team")
+    public ResponseEntity<String> updateNameTeam(@RequestHeader("Authorization") String token, @RequestParam Integer idTeam, @RequestParam String newName) {
+        String permission = "teamRename";
+        if(authService.checkAuth(token, permission)) {
+            try {
+                Team team = teamService.updateNameTeam(idTeam, newName);
+                if (team != null) {
+                    return ResponseEntity.ok("La modification a bien été prise en compte");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
                 }

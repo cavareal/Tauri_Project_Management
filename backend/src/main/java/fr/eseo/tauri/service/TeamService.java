@@ -44,4 +44,22 @@ public class TeamService {
         }
         return null;
     }
+
+    /**
+     * Update the name of a team.
+     * @param teamId the ID of the team
+     * @param newName the new name of the team
+     * @return the updated team if successful, otherwise null
+     */
+    public Team updateNameTeam(Integer teamId, String newName) {
+
+        Team team = teamRepository.findById(teamId).orElse(null);
+        if (team != null) {
+            team.name(newName);
+            return teamRepository.save(team);
+        }
+        return null;
+    }
+
+
 }
