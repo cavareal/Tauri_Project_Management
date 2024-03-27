@@ -1,4 +1,7 @@
-package fr.eseo.tauri.model;
+package fr.eseo.tauri.model.idClass;
+
+import fr.eseo.tauri.model.Grade;
+import fr.eseo.tauri.model.Team;
 
 import java.io.Serializable;
 import java.util.Objects;

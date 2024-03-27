@@ -1,4 +1,7 @@
-package fr.eseo.tauri.model;
+package fr.eseo.tauri.model.idClass;
+
+import fr.eseo.tauri.model.Role;
+import fr.eseo.tauri.model.User;
 
 import java.io.Serializable;
 import java.util.Objects;

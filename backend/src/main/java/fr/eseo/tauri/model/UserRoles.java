@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model;
 
+import fr.eseo.tauri.model.idClass.UserRolesId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
