@@ -36,7 +36,7 @@ public class StudentController {
         if (student != null) {
             student.gender(studentDetails.gender());
             student.bachelor(studentDetails.bachelor());
-            student.role(studentDetails.role());
+            student.teamRole(studentDetails.teamRole());
             return studentRepository.save(student);
         }
         return null;
