@@ -40,8 +40,8 @@ public class TeamController {
      * @param idLeader the ID of the new leader
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
-    @PutMapping("/update-leader-team")
-    public ResponseEntity<String> updateLeaderTeam(@RequestHeader("Authorization") String token, @RequestParam Integer idTeam, @RequestParam Integer idLeader) {
+    @PutMapping("/update-leader-team/{idTeam}")
+    public ResponseEntity<String> updateLeaderTeam(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam, @RequestParam Integer idLeader) {
         String permission = "teamCreation";
         if(authService.checkAuth(token, permission)) {
             try {
@@ -67,8 +67,8 @@ public class TeamController {
      * @param newName the new name of a team
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
-    @PutMapping("/update-name-team")
-    public ResponseEntity<String> updateNameTeam(@RequestHeader("Authorization") String token, @RequestParam Integer idTeam, @RequestParam String newName) {
+    @PutMapping("/update-name-team/{idTeam}")
+    public ResponseEntity<String> updateNameTeam(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam, @RequestParam String newName) {
         String permission = "teamRename";
         if(authService.checkAuth(token, permission)) {
             try {
