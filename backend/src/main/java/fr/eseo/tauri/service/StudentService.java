@@ -1,4 +1,4 @@
-package fr.eseo.tauri.controller;
+package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
 import fr.eseo.tauri.repository.StudentRepository;

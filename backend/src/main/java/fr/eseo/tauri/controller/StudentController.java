@@ -1,4 +1,4 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.StudentRepository;
