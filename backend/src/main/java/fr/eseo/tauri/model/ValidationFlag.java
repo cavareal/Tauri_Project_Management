@@ -17,13 +17,13 @@ public class ValidationFlag {
     private Boolean confirmed;
 
     @Id
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User authorId;
 
     @Id
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "flag_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Flag flagId;

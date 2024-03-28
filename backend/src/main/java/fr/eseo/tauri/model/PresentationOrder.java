@@ -16,13 +16,13 @@ import org.hibernate.annotations.OnDeleteAction;
 public class PresentationOrder {
 
     @Id
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Sprint sprintId;
 
     @Id
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student studentId;

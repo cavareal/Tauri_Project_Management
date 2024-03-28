@@ -21,7 +21,7 @@ public class Permission {
     @Column(name="type")
     private PermissionType type;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "role_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Role role;

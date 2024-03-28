@@ -23,18 +23,18 @@ public class Bonus {
 
     private Boolean confirmed;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Sprint sprintId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student studentId;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User userId;
+    private User authorId;
 }

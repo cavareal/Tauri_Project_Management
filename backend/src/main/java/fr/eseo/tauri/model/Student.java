@@ -10,12 +10,10 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "students")
+@PrimaryKeyJoinColumn(name="user_id")
 @Getter
 @Setter
-public class Student {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Student extends User {
 
     @Enumerated(EnumType.STRING)
     @Column(name="gender")
@@ -25,17 +23,12 @@ public class Student {
 
     private String teamRole; //Enumeration avec PO / SA / etc etc + laisser la possibilitié d'y rajouter des trucs à la main par les étudiants ? Pour setup des trucs plus tard comme des canaux de discution entre SA / PO et PL
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "team_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Team teamId;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User userId;
-
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Project projectId;

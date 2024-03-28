@@ -23,18 +23,18 @@ public class Flag {
     @Column(name="type")
     private FlagType type;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "first_student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student firstStudentId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "second_student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Student secondStudentId;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne
+    @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User userId;
+    private User authorId;
 }

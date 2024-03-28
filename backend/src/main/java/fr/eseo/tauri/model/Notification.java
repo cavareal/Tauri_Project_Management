@@ -25,12 +25,12 @@ public class    Notification {
     @Column(name="type")
     private NotificationType type;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_to")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userTo;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_from")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User userFrom;
