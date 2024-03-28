@@ -66,17 +66,17 @@ public class ProjectController {
     /**
      * Update the number of sprints for a project.
      * @param token the authentication token
-     * @param id the project ID
+     * @param idProject the project ID
      * @param newSprintsNumber the new number of teams
      * @return a response entity with a success message or an error message
      */
-    @PutMapping("/update-sprints-number")
-    public ResponseEntity<String> updateProjectSprintsNumber(@RequestHeader("Authorization") String token, @RequestParam Integer id, @RequestParam Integer newSprintsNumber) {
+    @PutMapping("/update-sprints-number/{idProject}")
+    public ResponseEntity<String> updateProjectSprintsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam Integer newSprintsNumber) {
         // Check token, if user is GOOD
         String permission = "ManageTeamsNumber";
         if(authService.checkAuth(token, permission)) {
             try {
-                Project project = projectService.updateProjectSprintsNumber(id, newSprintsNumber);
+                Project project = projectService.updateProjectSprintsNumber(idProject, newSprintsNumber);
                 if (project != null) {
                     return ResponseEntity.ok("L'edit à bien été enregistré"); // Retourne true avec code 200
                 } else {
@@ -93,17 +93,17 @@ public class ProjectController {
     /**
      * Update the number of teams for a project.
      * @param token the authentication token
-     * @param id the project ID
+     * @param idProject the project ID
      * @param newTeamsNumber the new number of teams
      * @return a response entity with a success message or an error message
      */
-    @PutMapping("/update-teams-number")
-    public ResponseEntity<String> updateProjectTeamsNumber(@RequestHeader("Authorization") String token, @RequestParam Integer id, @RequestParam Integer newTeamsNumber) {
+    @PutMapping("/update-teams-number/{idProject}")
+    public ResponseEntity<String> updateProjectTeamsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam Integer newTeamsNumber) {
         // Check token, if user is GOOD
         String permission = "manageSprint";
         if(authService.checkAuth(token, permission)) {
             try {
-                Project project = projectService.updateProjectTeamsNumber(id, newTeamsNumber);
+                Project project = projectService.updateProjectTeamsNumber(idProject, newTeamsNumber);
                 if (project != null) {
                     return ResponseEntity.ok("L'edit à bien été enregistré"); // Retourne true avec code 200
                 } else {
@@ -120,17 +120,17 @@ public class ProjectController {
     /**
      * Update the gender ratio for a project.
      * @param token the authentication token
-     * @param id the project ID
+     * @param idProject the project ID
      * @param newRatioGender the new gender ratio
      * @return a response entity with a success message or an error message
      */
-    @PutMapping("/update-ratio-gender")
-    public ResponseEntity<String> updateProjectRatioGender(@RequestHeader("Authorization") String token, @RequestParam Integer id, @RequestParam Integer newRatioGender) {
+    @PutMapping("/update-ratio-gender/{idProject}")
+    public ResponseEntity<String> updateProjectRatioGender(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam Integer newRatioGender) {
         // Check token, if user is GOOD
         String permission = "manageRatioGender";
         if(authService.checkAuth(token, permission)) {
             try {
-                Project project = projectService.updateProjectRatioGender(id, newRatioGender);
+                Project project = projectService.updateProjectRatioGender(idProject, newRatioGender);
                 if (project != null) {
                     return ResponseEntity.ok("L'edit à bien été enregistré"); // Retourne true avec code 200
                 } else {
@@ -147,17 +147,17 @@ public class ProjectController {
     /**
      * Update the gender ratio for a project.
      * @param token the authentication token
-     * @param id the project ID
+     * @param idProject the project ID
      * @param newPhase the new phase of the project
      * @return a response entity with a success message or an error message
      */
-    @PutMapping("/update-project-phase")
-    public ResponseEntity<String> updateProjectPhase(@RequestHeader("Authorization") String token, @RequestParam Integer id, @RequestParam String newPhase) {
+    @PutMapping("/update-project-phase/{idProject}")
+    public ResponseEntity<String> updateProjectPhase(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam String newPhase) {
         // Check token, if user is GOOD
         String permission = "manageProjectPhase";
         if(authService.checkAuth(token, permission)) {
             try {
-                Project project = projectService.updateProjectPhase(id, newPhase);
+                Project project = projectService.updateProjectPhase(idProject, newPhase);
                 if (project != null) {
                     return ResponseEntity.ok("L'edit à bien été enregistré"); // Retourne true avec code 200
                 } else {
