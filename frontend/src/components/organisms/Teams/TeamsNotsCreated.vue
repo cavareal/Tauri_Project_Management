@@ -1,44 +1,44 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from "vue"
 import { Button } from "@/components/ui/button"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 // Définir les références pour les valeurs des inputs
-const nbTeams = ref('6');
-const ratioGender = ref('20');
+const nbTeams = ref("6")
+const ratioGender = ref("20")
 
 // Méthode pour envoyer la requête POST
-const generateTeams = async () => {
-    console.log(nbTeams, ratioGender)
+const generateTeams = async() => {
+	console.log(nbTeams, ratioGender)
 
 
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nbTeams: nbTeams.value, ratioGender: ratioGender.value })
-    };
+	const requestOptions = {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ nbTeams: nbTeams.value, ratioGender: ratioGender.value })
+	}
 
-    try {
-        const response = await fetch( import.meta.env.BASE_URL + '/api/generate', requestOptions);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log(data); // Gérer la réponse ici
-    } catch (error) {
-        console.error('There was an error!', error);
-    }
-};
+	try {
+		const response = await fetch(import.meta.env.BASE_URL + "/api/generate", requestOptions)
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`)
+		}
+		const data = await response.json()
+		console.log(data) // Gérer la réponse ici
+	} catch (error) {
+		console.error("There was an error!", error)
+	}
+}
 </script>
 
 <template>
