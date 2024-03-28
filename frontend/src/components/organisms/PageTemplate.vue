@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, computed } from "vue"
+import { computed } from "vue"
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable/index"
 import Sidebar from "@/components/organisms/Sidebar.vue"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area/index"

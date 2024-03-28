@@ -1,8 +1,8 @@
-export default function getCookie(name: string) {
+export default function getCookie(name: string): string | null {
 	const cookies = document.cookie
 	const index = cookies.search(name)
 
-	if (index === -1)  return "World !"
+	if (index === -1) return null
 
 	let end = cookies.indexOf(";", index)
 	end = end === -1 ? cookies.length : end

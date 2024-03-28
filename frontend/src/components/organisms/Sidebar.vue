@@ -8,13 +8,11 @@ const props = defineProps<{
 	class?: string
 }>()
 
-const style = () => {
-	return cn(
-		"w-full h-full p-2",
-		"flex flex-col items-stretch justify-between gap-2",
-		props.class
-	)
-}
+const style = cn(
+	"w-full h-full p-2",
+	"flex flex-col items-stretch justify-between gap-2",
+	props.class
+)
 </script>
 
 <template>
