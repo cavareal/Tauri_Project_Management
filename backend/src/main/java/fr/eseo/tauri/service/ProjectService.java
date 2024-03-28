@@ -2,6 +2,7 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.repository.ProjectRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
@@ -21,6 +22,19 @@ public class ProjectService {
     @Autowired
     public ProjectService(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
+    }
+
+    @PostConstruct
+    public void initDataIfTableIsEmpty() {
+        if (projectRepository.count() == 0) {
+            // Ajouter une ligne dans la table projects si elle est vide
+            Project project = new Project();
+            project.nbTeams(6);
+            project.ratioGender(10);
+            project.nbSprint(3);
+            project.phase("Initial"); // Par exemple
+            projectRepository.save(project);
+        }
     }
 
     /**
