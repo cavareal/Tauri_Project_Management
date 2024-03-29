@@ -17,7 +17,7 @@ public class UserController {
 		this.userRepository = userRepository;
 	}
 
-	@PostMapping(path = "/add")
+	@PostMapping(path = "/")
 	public @ResponseBody String addUser(@RequestParam String name, @RequestParam String email) {
 		User user = new User();
 		user.name(name);
@@ -26,7 +26,7 @@ public class UserController {
 		return "Saved";
 	}
 
-	@GetMapping(path = "/all")
+	@GetMapping(path = "/")
 	public @ResponseBody Iterable<User> allUsers() {
 		return userRepository.findAll();
 	}
