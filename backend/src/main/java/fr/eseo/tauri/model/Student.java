@@ -10,6 +10,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "students")
+@OnDelete(action = OnDeleteAction.CASCADE)
 @PrimaryKeyJoinColumn(name="user_id")
 @Getter
 @Setter
@@ -25,7 +26,7 @@ public class Student extends User {
 
     @ManyToOne
     @JoinColumn(name = "team_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Team teamId;
 
     @ManyToOne

@@ -28,3 +28,5 @@ public class GradeTeams {
     private Team teamId;
 
 }
+
+// /!\ Make sure that, if a team is deleted, all the grades that were attributed to it are deleted as well, but not the other way around. /!\

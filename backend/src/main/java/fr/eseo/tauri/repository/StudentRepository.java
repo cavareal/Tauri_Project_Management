@@ -1,8 +1,11 @@
 package fr.eseo.tauri.repository;
 
+import fr.eseo.tauri.model.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import fr.eseo.tauri.model.Student;
 
+import java.util.List;
+
 public interface StudentRepository extends JpaRepository<Student, Integer> {
-    // Vous pouvez ajouter des requêtes personnalisées ici si nécessaire
+    List<Student> findByTeamId(Team teamId);
 }
