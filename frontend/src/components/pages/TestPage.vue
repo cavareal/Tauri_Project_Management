@@ -39,7 +39,7 @@ onMounted(async() => {
 <template>
 	<div class="py-10 mx-auto">
 		<Suspense>
-		<h1 class="text-2xl font-bold text-black">Phase : {{ data?.phase }}</h1>
-	</Suspense>
+			<h1 class="text-2xl font-bold text-black">Phase : {{ data?.phase }}</h1>
+		</Suspense>
 	</div>
 </template>
