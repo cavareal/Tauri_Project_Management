@@ -9,11 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 /**
  * Controller class for managing teams.
  */
 @RestController
-@RequestMapping("/teams")
+@RequestMapping("/api/teams")
 public class TeamController {
 
     private final TeamRepository teamRepository;
@@ -86,19 +88,24 @@ public class TeamController {
         }
     }
 
+
     /**
      * Create teams.
      * @param token the authorization token
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
     @PostMapping("/create-teams")
-    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
+
+        Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
+        Integer ratioGender = Integer.valueOf(request.get("ratioGender"));
         String permission = "teamCreate";
-        if(authService.checkAuth(token, permission)) {
+
+        if(authService.checkAuth(token, permission)) {  // Check if role is authorised to do this request, in fonction of the permissions
             try {
-                Team team = teamService.createTeams();
+                Team team = teamService.createTeams(nbTeams, ratioGender);
                 if (team != null) {
-                    return ResponseEntity.ok("La création a bien été prise en compte");
+                    return ResponseEntity.ok("La creation a bien été prise en compte");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
                 }
@@ -109,4 +116,5 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
         }
     }
+
 }

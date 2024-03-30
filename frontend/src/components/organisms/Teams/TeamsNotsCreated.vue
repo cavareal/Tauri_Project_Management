@@ -1,43 +1,66 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, reactive } from "vue"
 import { Button } from "@/components/ui/button"
 import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import getCookie from "@/utils/cookiesUtils"
+import { Loader2 } from 'lucide-vue-next'
 
 // Définir les références pour les valeurs des inputs
 const nbTeams = ref("6")
 const ratioGender = ref("20")
 
+// État pour contrôler l'affichage des boutons
+const buttonsState = reactive({
+    generateTeams: true,
+    loading: false,
+    showGeneratedTeams: false
+})
+
+// Message d'erreur
+const errorMessage = ref("")
+
 // Méthode pour envoyer la requête POST
-const generateTeams = async() => {
-	console.log(nbTeams, ratioGender)
+const generateTeams = async () => {
+    buttonsState.generateTeams = false
+    buttonsState.loading = true
+    buttonsState.showGeneratedTeams = false
 
+    const requestOptions = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: getCookie("token") || "null"
+        },
+        body: JSON.stringify({ nbTeams: nbTeams.value, ratioGender: ratioGender.value })
+    }
 
-	const requestOptions = {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ nbTeams: nbTeams.value, ratioGender: ratioGender.value })
-	}
+    try {
+        const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "teams/create-teams", requestOptions)
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        buttonsState.loading = false
+        buttonsState.showGeneratedTeams = true
+        buttonsState.generateTeams = true
+    } catch (error) {
+        errorMessage.value = "Erreur lors de la communication avec le serveur"
+        buttonsState.loading = false
+        buttonsState.generateTeams = true
+    }
+}
 
-	try {
-		const response = await fetch(import.meta.env.BASE_URL + "/api/generate", requestOptions)
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`)
-		}
-		const data = await response.json()
-		console.log(data) // Gérer la réponse ici
-	} catch (error) {
-		console.error("There was an error!", error)
-	}
+const showGeneratedTeams = () => {
+    console.log("ouai la teams")
 }
 </script>
 
@@ -76,10 +99,18 @@ const generateTeams = async() => {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button type="submit" variant="destructive" @click="generateTeams">
+                        <Button type="submit" variant="destructive" v-if="buttonsState.generateTeams" @click="generateTeams">
                             Générer les équipes
                         </Button>
+                        <Button type="submit" variant="destructive" v-if="buttonsState.loading" disabled>
+                            <Loader2 class="w-4 h-4 mr-2 animate-spin" />
+                            Veuillez patienter
+                        </Button>
+                        <Button type="submit" variant="destructive" v-if="buttonsState.showGeneratedTeams" @click="showGeneratedTeams">
+                            Voir les équipes générées
+                        </Button>
                     </DialogFooter>
+                    <p v-if="errorMessage">{{ errorMessage }}</p>
                 </DialogContent>
             </Dialog>
         </div>

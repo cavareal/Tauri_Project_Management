@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
@@ -8,8 +7,8 @@ import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -131,23 +130,23 @@ public class TeamService {
 
     /**
      * Create teams.
-     * @return true if teams are created, otherwise null
+     *
+     * @return .. if teams are created, otherwise null
      */
-    public Team createTeams() {
+    @Async
+    public Team createTeams(Integer nbTeams, Integer ratioGender) {
+        System.out.println("Create teams");
+        System.out.println(nbTeams);
+        System.out.println(ratioGender);
 
-        Project project = projectRepository.findById(1).orElse(null);
-        if(project == null){
-            return null;
+        // Set logic code to generate teams
+        // You can delete this try/catch. It's use ti simulate loader on the frontend
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-
-        Integer ratioGender = project.ratioGender();
-        Integer nbTeams = project.nbTeams();
-
-        
-
-
-        return null;
+        return new Team();
     }
-
 
 }
