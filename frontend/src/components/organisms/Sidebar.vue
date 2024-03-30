@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Bell, GraduationCap, LayoutDashboard, LogOut, Settings, Users } from "lucide-vue-next"
+import { Bell, GraduationCap, LayoutDashboard, LogOut, Scale, Users, Check, Tag, Play, User } from "lucide-vue-next"
 import SidebarLink from "@/components/molecules/SidebarLink.vue"
 import Separator from "@/components/ui/separator/Separator.vue"
+import Logo from "@/components/icons/Logo.vue"
 import { cn } from "@/utils/utils"
 
 const props = defineProps<{
@@ -9,8 +10,9 @@ const props = defineProps<{
 }>()
 
 const style = cn(
-	"w-full h-full p-2",
+	"w-64 h-full p-6",
 	"flex flex-col items-stretch justify-between gap-2",
+	"bg-dark-blue drop-shadow-sidebar",
 	props.class
 )
 </script>
@@ -18,32 +20,42 @@ const style = cn(
 <template>
 	<nav :class="style">
 		<div>
-			<div class="flex flex-row items-end justify-center gap-4 my-2">
-				<img src="/icon.svg" alt="Logo" class="w-8" />
-				<h3 class="text-2xl font-title-medium">Tauri</h3>
+			<div class="flex flex-row items-center justify-center gap-4 mt-4 mb-8">
+				<Logo class="h-12 fill-light-blue" />
+				<!-- <img src="/icon.svg" alt="Logo" class="w-8 text-light-blue" /> -->
+				<h3 class="text-3xl uppercase font-title-medium text-light-blue">Tauri</h3>
 			</div>
 			<SidebarLink link="/">
 				<LayoutDashboard /> Tableau de bord
 			</SidebarLink>
-			<Separator />
-			<SidebarLink link="/teams">
-				<Users /> Équipes
-			</SidebarLink>
+			<Separator class="my-2" />
 			<SidebarLink link="/students">
 				<GraduationCap /> Étudiants
 			</SidebarLink>
+			<SidebarLink link="/teams">
+				<Users /> Équipes
+			</SidebarLink>
+			<SidebarLink link="/my-team">
+				<User /> Mon équipe
+			</SidebarLink>
+			<SidebarLink link="/sprints">
+				<Play /> Sprints
+			</SidebarLink>
 			<SidebarLink link="/grades">
-				<GraduationCap /> Notes
+				<Tag /> Notes
+			</SidebarLink>
+			<SidebarLink link="/rating">
+				<Check /> Évaluations
+			</SidebarLink>
+			<SidebarLink link="/grade-scales">
+				<Scale /> Barèmes
 			</SidebarLink>
 		</div>
 
 		<div>
-			<Separator />
-			<SidebarLink link="/">
+			<Separator class="my-2" />
+			<SidebarLink>
 				<Bell /> Notifications
-			</SidebarLink>
-			<SidebarLink link="/settings">
-				<Settings /> Paramètres
 			</SidebarLink>
 			<SidebarLink link="/login">
 				<LogOut /> Déconnexion

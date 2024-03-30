@@ -11,23 +11,19 @@ const props = defineProps<{
 
 const style = computed(() => {
 	return cn(
-		"h-full w-full p-8",
+		"h-screen w-screen",
+		"flex flex-row items-stretch justify-start",
 		props.className
 	)
 })
 </script>
 
 <template>
-	<ResizablePanelGroup direction="horizontal">
-		<ResizablePanel class="" :default-size="16" :min-size="16" :max-size="24">
-			<Sidebar />
-		</ResizablePanel>
-		<ResizableHandle />
-		<ResizablePanel class="flex items-center justify-center">
-			<ScrollArea :class="style">
-				<slot />
-				<ScrollBar />
-			</ScrollArea>
-		</ResizablePanel>
-	</ResizablePanelGroup>
+	<section :class="style">
+		<Sidebar />
+		<ScrollArea class="flex-1">
+			<slot />
+			<ScrollBar />
+		</ScrollArea>
+	</section>
 </template>
