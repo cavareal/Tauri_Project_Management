@@ -4,6 +4,7 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Label } from "../ui/label"
 import { Button } from "../ui/button"
 import { ref } from "vue"
+import Logo from "../icons/Logo.vue"
 
 const selectedRole = ref("OL")
 
@@ -15,19 +16,23 @@ function formSubmit() {
 <template>
 	<div
 		class="bg-cover bg-white bg-center size-full flex items-center justify-center"
-		style="background-image: url('http://localhost:5173/bg_connection.svg')"
+		style="background-image: url('/eseo.jpg')"
 	>
-		<Card class="w-1/3 h-auto">
+		<div class="absolute top-12 flex flex-col items-center gap-4">
+			<Logo class="h-36 fill-dark-blue" />
+			<h1 class="text-4xl font-title-medium text-dark-blue">Bienvenue sur Tauri !</h1>
+		</div>
+		<Card class="border-none drop-shadow-login-card">
 			<form @submit="formSubmit" action="./">
 				<CardHeader>
-					<CardTitle>Sélection du rôle</CardTitle>
-					<CardDescription>Ceci est une fenêtre de connexion temporaire</CardDescription>
+					<CardTitle>Connexion</CardTitle>
+					<CardDescription>Sélectionnez vôtre rôle pour vous connecter. Cette page de connexion est temporaire.</CardDescription>
 				</CardHeader>
 
 				<CardContent>
-					<RadioGroup class="flex justify-center flex-row size-full" v-model="selectedRole">
-						<div class="flex flex-col w-1/2">
-							<h4>Rôles professeurs :</h4>
+					<RadioGroup class="flex justify-center flex-row" v-model="selectedRole">
+						<div class="flex flex-col gap-2 w-1/2">
+							<h4 class="mb-1 font-medium">Rôles professeurs</h4>
 							<div class="flex items-center space-x-2">
 								<RadioGroupItem name="role" id="OL" value="OL" />
 								<Label for="OL">[OL] Option Leader</Label>
@@ -50,8 +55,8 @@ function formSubmit() {
 							</div>
 						</div>
 
-						<div class="flex flex-col w-1/2">
-							<h4>Rôles étudiants :</h4>
+						<div class="flex flex-col gap-2 w-1/2">
+							<h4 class="mb-1 font-medium">Rôles étudiants</h4>
 							<div class="flex items-center space-x-2">
 								<RadioGroupItem name="role" id="OS" value="OS" />
 								<Label for="OS">[OS] Option Student</Label>
@@ -63,8 +68,8 @@ function formSubmit() {
 						</div>
 					</RadioGroup>
 				</CardContent>
-				<CardFooter class="flex justify-center">
-					<Button class="w-5/6" type="submit">Connexion</Button>
+				<CardFooter class="flex justify-end">
+					<Button class="text-white" type="submit">Connexion</Button>
 				</CardFooter>
 			</form>
 		</Card>

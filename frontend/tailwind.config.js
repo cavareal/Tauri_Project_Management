@@ -32,6 +32,8 @@ module.exports = {
 			},
 			colors: {
 				"dark-blue": "#1B1336",
+				"light-blue": "#32AEFF",
+				"grey": "#888888",
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",
@@ -65,6 +67,10 @@ module.exports = {
 					DEFAULT: "hsl(var(--card))",
 					foreground: "hsl(var(--card-foreground))"
 				}
+			},
+			dropShadow: {
+				"sidebar": "4px 0 4px rgba(0, 0, 0, 0.25)",
+				"login-card": "0 0 100px rgba(0, 0, 0, 0.25)"
 			},
 			borderRadius: {
 				xl: "calc(var(--radius) + 4px)",
