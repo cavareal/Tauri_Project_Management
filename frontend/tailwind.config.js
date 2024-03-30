@@ -69,7 +69,8 @@ module.exports = {
 				}
 			},
 			dropShadow: {
-				"sidebar": "4px 0 4px rgba(0, 0, 0, 0.25)"
+				"sidebar": "4px 0 4px rgba(0, 0, 0, 0.25)",
+				"login-card": "0 0 100px rgba(0, 0, 0, 0.25)"
 			},
 			borderRadius: {
 				xl: "calc(var(--radius) + 4px)",

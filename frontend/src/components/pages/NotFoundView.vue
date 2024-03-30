@@ -13,7 +13,7 @@ import Button from "../ui/button/Button.vue"
 				<p class="text-md">La page que vous avez cherché n'existe pas...</p>
 			</div>
 			<RouterLink to="/">
-				<Button class="bg-primary hover:bg-primary/90 text-white">Retour à l'accueil</Button>
+				<Button class="text-white">Retour à l'accueil</Button>
 			</RouterLink>
 		</div>
 	</PageTemplate>
