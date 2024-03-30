@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/validation_bonuses")
+@RequestMapping("/api/validation_bonuses")
 public class ValidationBonusController {
 
     private final ValidationBonusRepository validationBonusRepository;

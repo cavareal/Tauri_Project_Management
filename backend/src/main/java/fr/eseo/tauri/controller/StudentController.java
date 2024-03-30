@@ -14,7 +14,7 @@ import java.io.File;
 import java.util.List;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping("/api/students")
 public class StudentController {
 
     private final StudentRepository studentRepository;

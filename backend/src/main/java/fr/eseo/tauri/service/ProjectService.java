@@ -32,7 +32,7 @@ public class ProjectService {
             project.nbTeams(6);
             project.ratioGender(10);
             project.nbSprint(3);
-            project.phase("Initial"); // Par exemple
+            project.phase("COMPOSING"); // Par exemple
             projectRepository.save(project);
         }
     }
@@ -133,4 +133,21 @@ public class ProjectService {
             return null;
         }
     }
+
+    /**
+     * Get the current phase of the project.
+     *
+     * @return the current phase of the project, or "Aucun projet trouvé" if no project is found
+     */
+    public String getCurrentPhase() {
+        Project currentProject = projectRepository.findAll().get(0);
+        if (currentProject != null) {
+            return currentProject.phase();
+        } else {
+            return "Aucun projet trouvé";
+        }
+    }
+
+
+
 }

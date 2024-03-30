@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/grades")
+@RequestMapping("/api/grades")
 public class GradeController {
 
     private final GradeRepository gradeRepository;

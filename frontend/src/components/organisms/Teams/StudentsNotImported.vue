@@ -9,9 +9,9 @@ import { ExternalLink } from "lucide-vue-next"
         <p class="text-gray-400 text-sm">Pour générer les équipes, il faut commencer par importer les étudiants.</p>
         <div class="w-full pt-5 pb-2 px-0 flex justify-center">
             <a href="students">
-                <Button variant="destructive">
+                <Button variant="link" class="flex items-center">
                     <ExternalLink class="w-5 h-5" />
-                    <span class="mx-5 my-0">Importer les étudiants</span>
+                    <span class="mx-1 my-0">Importer les étudiants</span>
                 </Button>
             </a>
         </div>
