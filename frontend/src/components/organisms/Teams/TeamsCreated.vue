@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
-const defaultValue = 'item-1'
+const defaultValue = "item-1"
 
 const accordionItems = [
-    { value: 'item-1', title: 'Team 1', content: 'content' },
-    { value: 'item-2', title: 'Team 2', content: 'content' },
-    { value: 'item-3', title: 'Team 3', content: 'Content' },
+	{ value: "item-1", title: "Team 1", content: "content" },
+	{ value: "item-2", title: "Team 2", content: "content" },
+	{ value: "item-3", title: "Team 3", content: "Content" }
 ]
 
 </script>

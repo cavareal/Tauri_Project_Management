@@ -1,8 +1,16 @@
 <script setup lang="ts">
+import Logo from "@/components/icons/Logo.vue"
 </script>
 
 <template>
-    <div class="border border-gray-300 rounded-lg p-2 md:p-3 my-4">
-        <h1 class="font-bold text-base">Vous n'avez pas l'authorisation d'accéder à cette page pour le moment</h1>
-    </div>
+    <div class="w-full h-screen flex flex-col items-center justify-center gap-6">
+		<Logo class="h-64 fill-grey" />
+		<div class="flex flex-col items-center justify-center">
+			<h1 class="text-4xl font-title-medium">Non autorisé</h1>
+			<p class="text-md">Vous n'avez pas l'autorisation d'accéder à cette page.</p>
+		</div>
+		<RouterLink to="/">
+			<Button class="text-white">Retour à l'accueil</Button>
+		</RouterLink>
+		</div>
 </template>
