@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
  */
 @RestController
 @RequestMapping("/projects")
+@CrossOrigin(origins = "http://localhost:5173", maxAge = 3600)
 public class ProjectController {
 
     private final ProjectRepository projectRepository;
@@ -33,6 +34,15 @@ public class ProjectController {
         this.authService = authService;
     }
 
+    @GetMapping("/current")
+    public ResponseEntity<Project> getCurrentProject() {
+        var project = projectRepository.findAll().get(0);
+        if (project == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        // return ResponseEntity.ok(project);
+        return ResponseEntity.status(HttpStatus.OK).body(project);
+    }
 
     /**
      * Create a new project.
