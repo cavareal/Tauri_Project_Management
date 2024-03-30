@@ -8,14 +8,12 @@ import { ExternalLink } from "lucide-vue-next"
         <h1 class="font-bold text-base">Vous n'avez pas encore importé les étudiants</h1>
         <p class="text-gray-400 text-sm">Pour générer les équipes, il faut commencer par importer les étudiants.</p>
         <div class="w-full pt-5 pb-2 px-0 flex justify-center">
-            <a href="students">
-                <Button variant="link" class="flex items-center">
-                    <ExternalLink class="w-5 h-5" />
-                    <span class="mx-1 my-0">Importer les étudiants</span>
+            <RouterLink to="/students">
+                <Button class="text-white bg-primary hover:bg-primary/90 flex items-center">
+                    <ExternalLink class="w-4 h-4 mr-2" />
+					Importer les étudiants
                 </Button>
-            </a>
+            </RouterLink>
         </div>
-
-
     </div>
 </template>
