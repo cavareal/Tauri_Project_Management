@@ -9,12 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Controller class for managing projects.
  */
 @RestController
-@RequestMapping("/projects")
 @CrossOrigin(origins = "http://localhost:5173", maxAge = 3600)
+@RequestMapping("/api/projects")
 public class ProjectController {
 
     private final ProjectRepository projectRepository;
@@ -204,6 +208,29 @@ public class ProjectController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+        }
+    }
+
+
+    /**
+     * Get the current phase of the project.
+     *
+     * @param token the authentication token
+     * @return a response entity with the current phase of the project if successful, or an error message if an exception occurs or if the user is not authorized
+     */
+    @GetMapping("/current-phase")
+    public ResponseEntity<String> getCurrentPhase(@RequestHeader("Authorization") String token) {
+        String permission = "readProjectPhase";
+        if (authService.checkAuth(token, permission)) {
+            try {
+                String currentPhase = projectService.getCurrentPhase();
+                System.out.println(currentPhase);
+                return ResponseEntity.status(HttpStatus.OK).body(currentPhase);
+            }catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération de la phase actuelle du projet : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
         }
     }
 

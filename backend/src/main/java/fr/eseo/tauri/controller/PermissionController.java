@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/permissions")
+@RequestMapping("/api/permissions")
 public class PermissionController {
 
     private final PermissionRepository permissionRepository;
