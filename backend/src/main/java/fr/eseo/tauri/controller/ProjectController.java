@@ -17,7 +17,6 @@ import java.util.Map;
  * Controller class for managing projects.
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:5173", maxAge = 3600)
 @RequestMapping("/api/projects")
 public class ProjectController {
 
