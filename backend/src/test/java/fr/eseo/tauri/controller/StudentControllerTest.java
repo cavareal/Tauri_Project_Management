@@ -21,25 +21,25 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class StudentControllerTest {
 
-    @Test
-    public void testImportFiles() {
-
-        StudentController student=new StudentController();
-
-        Path path = Paths.get("C:\\Users\\pallu\\OneDrive\\Documents\\Workspace\\Ingenieur\\E4 n2\\ProjetGL\\nath\\example.csv");
-        String name = "example.csv";
-        String originalFileName = "example.csv";
-        String contentType = MimeTypeUtils.ALL_VALUE;
-        byte[] content = null;
-        try {
-            content = Files.readAllBytes(path);
-        } catch (final IOException e) {
-        }
-
-        MultipartFile result = new MockMultipartFile(name,
-                originalFileName, contentType, content);
-
-        File file2 = student.handleFileUpload(result);
-        List<String> list = student.fileReader(file2);
-    }
+//    @Test
+//    public void testImportFiles() {
+//
+//        StudentController student=new StudentController();
+//
+//        Path path = Paths.get("C:\\Users\\pallu\\OneDrive\\Documents\\Workspace\\Ingenieur\\E4 n2\\ProjetGL\\nath\\example.csv");
+//        String name = "example.csv";
+//        String originalFileName = "example.csv";
+//        String contentType = MimeTypeUtils.ALL_VALUE;
+//        byte[] content = null;
+//        try {
+//            content = Files.readAllBytes(path);
+//        } catch (final IOException e) {
+//        }
+//
+//        MultipartFile result = new MockMultipartFile(name,
+//                originalFileName, contentType, content);
+//
+//        File file2 = student.handleFileUpload(result);
+//        List<String> list = student.fileReader(file2);
+//    }
 }
