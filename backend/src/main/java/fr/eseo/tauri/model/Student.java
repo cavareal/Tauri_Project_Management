@@ -20,7 +20,7 @@ public class Student extends User {
     @Column(name="gender")
     private Gender gender;
 
-    private String bachelor;
+    private Boolean bachelor;
 
     private String teamRole; //Enumeration avec PO / SA / etc etc + laisser la possibilitié d'y rajouter des trucs à la main par les étudiants ? Pour setup des trucs plus tard comme des canaux de discution entre SA / PO et PL
 
