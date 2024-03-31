@@ -72,7 +72,7 @@ const showGeneratedTeams = () => {
         <div class="w-full pt-5 pb-2 px-0 flex justify-center">
             <Dialog>
                 <DialogTrigger as-child>
-                    <Button>
+                    <Button class="text-white bg-primary hover:bg-primary/90">
                         <span class="mx-5 my-0">Générer les équipes</span>
                     </Button>
                 </DialogTrigger>

@@ -27,38 +27,22 @@ public class StudentController {
         this.authService = authService;
     }
 
-    @PostMapping("/add")
-    public Student addStudent(@RequestBody Student student) {
-        return studentRepository.save(student);
-    }
 
-    @GetMapping("/all")
-    public Iterable<Student> getAllStudents() {
-        return studentRepository.findAll();
-    }
+    @GetMapping("/quantity-all")
+    public ResponseEntity<String> getStudentQuantity(@RequestHeader("Authorization") String token) {
+        // Check token, if user is GOOD
+        String permission = "readStudentQuantity";
+        if(authService.checkAuth(token, permission)) {
+            try {
+                Integer quantity = studentService.getStudentQuantity();
+                return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(quantity));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage()); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+        }    }
 
-    @GetMapping("/{id}")
-    public Student getStudentById(@PathVariable Integer id) {
-        return studentRepository.findById(id).orElse(null);
-    }
-
-    @PutMapping("/update/{id}")
-    public Student updateStudent(@PathVariable Integer id, @RequestBody Student studentDetails) {
-        Student student = studentRepository.findById(id).orElse(null);
-        if (student != null) {
-            student.gender(studentDetails.gender());
-            student.bachelor(studentDetails.bachelor());
-            student.teamRole(studentDetails.teamRole());
-            return studentRepository.save(student);
-        }
-        return null;
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public String deleteStudent(@PathVariable Integer id) {
-        studentRepository.deleteById(id);
-        return "Student deleted";
-    }
 
     /**
      * Handles the upload of a file containing student data.

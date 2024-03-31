@@ -223,7 +223,6 @@ public class ProjectController {
         if (authService.checkAuth(token, permission)) {
             try {
                 String currentPhase = projectService.getCurrentPhase();
-                System.out.println(currentPhase);
                 return ResponseEntity.status(HttpStatus.OK).body(currentPhase);
             }catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération de la phase actuelle du projet : " + e.getMessage());

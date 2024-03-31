@@ -1,6 +1,7 @@
 package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,4 +87,17 @@ public class StudentService {
         }
         return resultList;
     }
+
+    /**
+     * Retrieves the quantity of students.
+     *
+     * @return the quantity of students
+     */
+    public Integer getStudentQuantity(){
+        List<Student> students = studentRepository.findAll();
+        return students.size();
+    }
+
+
+
 }
