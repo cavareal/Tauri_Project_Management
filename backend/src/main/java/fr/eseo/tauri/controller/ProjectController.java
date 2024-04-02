@@ -1,6 +1,7 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
@@ -57,7 +58,7 @@ public class ProjectController {
      * @return a response entity with a success message or an error message
      */
     @PostMapping("/new-project")
-    public ResponseEntity<String> newProject(@RequestHeader("Authorization") String token, @RequestParam Integer teamsNumber, @RequestParam Integer genderRatio, @RequestParam Integer sprintsNumber, @RequestParam String phase) {
+    public ResponseEntity<String> newProject(@RequestHeader("Authorization") String token, @RequestParam Integer teamsNumber, @RequestParam Integer genderRatio, @RequestParam Integer sprintsNumber, @RequestParam ProjectPhase phase) {
         // Check for token, if user is GOOD, with authService ??
         String permission = "teamCreation";
         if(authService.checkAuth(token, permission)) {
@@ -165,7 +166,7 @@ public class ProjectController {
      * @return a response entity with a success message or an error message
      */
     @PutMapping("/update-project-phase/{idProject}")
-    public ResponseEntity<String> updateProjectPhase(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam String newPhase) {
+    public ResponseEntity<String> updateProjectPhase(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam ProjectPhase newPhase) {
         // Check token, if user is GOOD
         String permission = "manageProjectPhase";
         if(authService.checkAuth(token, permission)) {

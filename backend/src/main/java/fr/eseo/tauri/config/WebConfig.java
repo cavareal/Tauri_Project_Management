@@ -15,4 +15,5 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // Autoriser les méthodes HTTP
                 .allowedHeaders("*"); // Autoriser tous les en-têtes
     }
+
 }

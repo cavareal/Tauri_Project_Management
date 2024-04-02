@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.idClass.PresentationOrderId;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,14 +20,17 @@ public class PresentationOrder {
     @ManyToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Sprint sprintId;
+    @JsonProperty
+    private Sprint sprint;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Student studentId;
+    @JsonProperty
+    private Student student;
 
+    @JsonProperty
     private Integer value;
 
 }

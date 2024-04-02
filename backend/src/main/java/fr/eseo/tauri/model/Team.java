@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.TeamService;
 import jakarta.persistence.*;
@@ -20,19 +21,23 @@ public class Team {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty
     private Integer id;
 
+    @JsonProperty
     private String name;
 
     @ManyToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Project projectId;
+    @JsonProperty
+    private Project project;
 
     @ManyToOne
     @JoinColumn(name = "leader_id")
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    private User leaderId;
+    @JsonProperty
+    private User leader;
 
 }
 
