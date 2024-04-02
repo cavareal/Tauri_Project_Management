@@ -1,8 +1,6 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.repository.ProjectRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;

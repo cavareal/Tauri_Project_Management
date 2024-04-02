@@ -1,11 +1,9 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.*;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -56,10 +54,10 @@ public class TeamService {
                 studentRepository.save(student);
             }
 
-            List<Grade> grades = gradeRepository.findByTeam(team.get());
-            for (Grade grade : grades) {
-                gradeRepository.delete(grade);
-            }
+            // List<Grade> grades = gradeRepository.findByTeam(team.get());
+            // for (Grade grade : grades) {
+            //    gradeRepository.delete(grade);
+            // }
 
             teamRepository.deleteById(id);
         }
