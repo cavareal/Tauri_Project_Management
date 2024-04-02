@@ -1,6 +1,7 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class ProjectService {
             project.nbTeams(6);
             project.ratioGender(10);
             project.nbSprint(3);
-            project.phase("COMPOSING"); // Par exemple
+            project.phase(ProjectPhase.COMPOSING); // Par exemple
             projectRepository.save(project);
         }
     }
@@ -45,7 +46,7 @@ public class ProjectService {
      * @param phase the project phase
      * @return the newly created project, or null if an error occurred
      */
-    public Project newProject(Integer teamsNumber, Integer genderRatio, Integer nbSprints, String phase) {
+    public Project newProject(Integer teamsNumber, Integer genderRatio, Integer nbSprints, ProjectPhase phase) {
         Project project = new Project();
         project.nbTeams(teamsNumber);
         project.ratioGender(genderRatio);
@@ -110,7 +111,7 @@ public class ProjectService {
      * @param newPhase the new phase of the project
      * @return the updated project, or null if the project was not found
      */
-    public Project updateProjectPhase(Integer projectId, String newPhase) {
+    public Project updateProjectPhase(Integer projectId, ProjectPhase newPhase) {
         Project project = projectRepository.findById(projectId).orElse(null);
         if (project != null) {
             project.phase(newPhase);
@@ -142,7 +143,7 @@ public class ProjectService {
     public String getCurrentPhase() {
         Project currentProject = projectRepository.findAll().get(0);
         if (currentProject != null) {
-            return currentProject.phase();
+            return currentProject.phase().name();
         } else {
             return "Aucun projet trouvé";
         }
