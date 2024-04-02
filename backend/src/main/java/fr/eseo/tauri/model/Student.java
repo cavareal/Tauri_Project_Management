@@ -27,12 +27,12 @@ public class Student extends User {
     @ManyToOne
     @JoinColumn(name = "team_id")
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    private Team teamId;
+    private Team team;
 
     @ManyToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Project projectId;
+    private Project project;
 
 }
 

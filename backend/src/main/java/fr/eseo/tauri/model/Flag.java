@@ -26,15 +26,15 @@ public class Flag {
     @ManyToOne
     @JoinColumn(name = "first_student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Student firstStudentId;
+    private Student firstStudent;
 
     @ManyToOne
     @JoinColumn(name = "second_student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Student secondStudentId;
+    private Student secondStudent;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User authorId;
+    private User author;
 }

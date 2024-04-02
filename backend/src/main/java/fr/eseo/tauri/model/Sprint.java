@@ -29,5 +29,5 @@ public class Sprint {
     @ManyToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Project projectId;
+    private Project project;
 }

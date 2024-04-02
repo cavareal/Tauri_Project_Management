@@ -27,12 +27,12 @@ public class Team {
     @ManyToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Project projectId;
+    private Project project;
 
     @ManyToOne
     @JoinColumn(name = "leader_id")
     @OnDelete(action = OnDeleteAction.NO_ACTION)
-    private User leaderId;
+    private User leader;
 
 }
 

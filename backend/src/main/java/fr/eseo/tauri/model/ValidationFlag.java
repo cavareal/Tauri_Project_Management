@@ -20,11 +20,11 @@ public class ValidationFlag {
     @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User authorId;
+    private User author;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "flag_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Flag flagId;
+    private Flag flag;
 }

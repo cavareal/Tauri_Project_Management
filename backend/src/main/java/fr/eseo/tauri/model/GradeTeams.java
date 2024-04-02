@@ -19,13 +19,13 @@ public class GradeTeams {
     @OneToOne
     @JoinColumn(name = "grade_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Grade gradeId;
+    private Grade grade;
 
     @Id
     @OneToOne
     @JoinColumn(name = "team_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Team teamId;
+    private Team team;
 
 }
 

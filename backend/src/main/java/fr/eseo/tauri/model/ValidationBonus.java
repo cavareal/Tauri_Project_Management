@@ -20,12 +20,11 @@ public class ValidationBonus {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User userId;
+    private User user;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "bonus_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-
-    private Bonus bonusId;
+    private Bonus bonus;
 }

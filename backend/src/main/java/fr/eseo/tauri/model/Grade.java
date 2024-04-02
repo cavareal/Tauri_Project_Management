@@ -22,15 +22,15 @@ public class Grade {
     @ManyToOne
     @JoinColumn(name = "grade_type_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private GradeType gradeTypeId;
+    private GradeType gradeType;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User authorId;
+    private User author;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Student studentId;
+    private Student student;
 }

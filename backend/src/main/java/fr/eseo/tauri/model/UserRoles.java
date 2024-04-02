@@ -18,13 +18,13 @@ public class UserRoles {
     @OneToOne
     @JoinColumn(name = "role_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Role roleId;
+    private Role role;
 
     @Id
     @OneToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User userId;
+    private User user;
 
 }
 

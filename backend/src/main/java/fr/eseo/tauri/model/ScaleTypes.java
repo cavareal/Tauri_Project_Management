@@ -19,12 +19,12 @@ public class ScaleTypes {
     @OneToOne
     @JoinColumn(name = "grade_scale_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private GradeScale gradeScaleId;
+    private GradeScale gradeScale;
 
     @Id
     @OneToOne
     @JoinColumn(name = "grade_type_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private GradeType gradeTypeId;
+    private GradeType gradeType;
 
 }

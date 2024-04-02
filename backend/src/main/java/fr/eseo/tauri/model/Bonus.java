@@ -26,15 +26,15 @@ public class Bonus {
     @ManyToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Sprint sprintId;
+    private Sprint sprint;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Student studentId;
+    private Student student;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User authorId;
+    private User author;
 }

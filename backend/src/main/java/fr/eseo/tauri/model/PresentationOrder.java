@@ -19,13 +19,13 @@ public class PresentationOrder {
     @ManyToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Sprint sprintId;
+    private Sprint sprint;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Student studentId;
+    private Student student;
 
     private Integer value;
 
