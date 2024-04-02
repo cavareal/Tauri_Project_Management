@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model.idClass;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.Team;
 
@@ -7,7 +8,11 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class GradeTeamsId implements Serializable {
+
+    @JsonProperty
     private Grade gradeId;
+
+    @JsonProperty
     private Team teamId;
 
     @Override

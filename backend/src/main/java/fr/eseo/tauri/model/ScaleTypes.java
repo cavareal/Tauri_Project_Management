@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.idClass.ScaleTypesId;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,12 +20,14 @@ public class ScaleTypes {
     @OneToOne
     @JoinColumn(name = "grade_scale_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
     private GradeScale gradeScale;
 
     @Id
     @OneToOne
     @JoinColumn(name = "grade_type_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
     private GradeType gradeType;
 
 }

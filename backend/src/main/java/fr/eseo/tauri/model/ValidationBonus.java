@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.idClass.ValidationBonusId;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,11 +21,13 @@ public class ValidationBonus {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
     private User user;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "bonus_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
     private Bonus bonus;
 }

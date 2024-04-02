@@ -14,14 +14,19 @@ public class Project {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty
     private Integer id;
 
+    @JsonProperty
     private Integer nbTeams;
 
+    @JsonProperty
     private Integer ratioGender;        // Ratio/100
 
+    @JsonProperty
     private Integer nbSprint;
 
+    @JsonProperty
     private String phase;
 
 }

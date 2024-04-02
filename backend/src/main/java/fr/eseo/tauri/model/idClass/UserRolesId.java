@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model.idClass;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
 
@@ -7,7 +8,11 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class UserRolesId implements Serializable {
+
+    @JsonProperty
     private User userId;
+
+    @JsonProperty
     private Role roleId;
 
     @Override

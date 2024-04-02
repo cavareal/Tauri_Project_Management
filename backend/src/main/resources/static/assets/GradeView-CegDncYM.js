@@ -1,0 +1,1 @@
+import{_ as e}from"./PageTemplate.vue_vue_type_script_setup_true_lang-CIGvSZZL.js";import{d as a,b as t,w as o,o as r,h as s}from"./index-CerfY1v_.js";import"./Logo-Dfytd5dW.js";const d=a({__name:"GradeView",setup(_){return(n,c)=>(r(),t(e,null,{default:o(()=>[s(" Grades ")]),_:1}))}});export{d as default};
