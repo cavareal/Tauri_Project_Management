@@ -56,10 +56,10 @@ public class TeamService {
                 studentRepository.save(student);
             }
 
-            List<Grade> grades = gradeRepository.findByTeam(team.get());
-            for (Grade grade : grades) {
-                gradeRepository.delete(grade);
-            }
+//            List<Grade> grades = gradeRepository.findByTeam(team.get());
+//            for (Grade grade : grades) {
+//                gradeRepository.delete(grade);
+//            }
 
             teamRepository.deleteById(id);
         }

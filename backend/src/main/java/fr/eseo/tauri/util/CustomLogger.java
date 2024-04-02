@@ -7,6 +7,11 @@ public class CustomLogger {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomLogger.class);
 
+    // Private constructor to hide the implicit public one
+    private CustomLogger() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void logInfo(String message) {
         logger.info(message);
     }
