@@ -1,5 +1,6 @@
 package fr.eseo.tauri.controller;
 
+import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -57,7 +59,7 @@ public class StudentController {
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) {
         // Check token, if user is GOOD
         String permission = "addStudentFile";
-        if (authService.checkAuth(token, permission)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 File file2 = studentService.handleFileUpload(file);
                 List<String> listFile = studentService.fileReader(file2);
@@ -75,7 +77,7 @@ public class StudentController {
     }
 
     /**
-     * Test function to upload a file for the user story uplaod student list
+     * Test function to upload a file for the user story upload student list
      *
      * Handles the upload of a file containing student data.
      *
@@ -94,7 +96,7 @@ public class StudentController {
             studentService.populateDatabaseFromCsv(file);
             return ResponseEntity.ok("File uploaded successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process the uploaded file");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
     }
 }

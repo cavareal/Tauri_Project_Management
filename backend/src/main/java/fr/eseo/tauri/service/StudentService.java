@@ -65,6 +65,7 @@ public class StudentService {
      * @param fileToRead the CSV file to be read
      * @return a list of strings representing the data read from the CSV file
      */
+    // TODO: Delete this function and refactor the /uplaod of StudentController since we do not need to locally save the file
     public List<String> fileReader(File fileToRead) {
         List<String> resultList = new ArrayList<>();
 
@@ -120,9 +121,6 @@ public class StudentService {
      * </p>
      */
     public static List<List<String>> extractNamesGenderAndBachelor(InputStream inputStream) {
-        if (inputStream == null) {
-            throw new IllegalArgumentException("Input stream cannot be null");
-        }
 
         List<List<String>> result = new ArrayList<>();
         List<String> names = new ArrayList<>();
