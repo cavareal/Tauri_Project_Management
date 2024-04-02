@@ -24,7 +24,6 @@ const props = defineProps({
 onMounted(async() => {
 	const data = await getStudentsByTeamId(props.teamId)
 	students.value = data
-	console.log(data)
 })
 
 </script>

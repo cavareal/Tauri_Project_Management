@@ -5,7 +5,7 @@ import { UserSchema } from "@/type/User"
 
 export const TeamSchema = z.object({
 	id: z.number(),
-	name: z.string().optional().nullable(),
+	name: z.string(),
 	projectId: ProjectSchema.optional(),
 	leaderId: UserSchema.optional()
 })
