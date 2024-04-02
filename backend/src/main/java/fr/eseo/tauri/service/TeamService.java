@@ -1,12 +1,11 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
-import fr.eseo.tauri.repository.ProjectRepository;
-import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.repository.TeamRepository;
-import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.repository.*;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -25,19 +24,23 @@ public class TeamService {
     private final ProjectRepository projectRepository;
     private final StudentRepository studentRepository;
 
+    private final GradeRepository gradeRepository;
+
     /**
      * Constructor for TeamService.
      * @param teamRepository the team repository
      * @param userRepository the user repository
      * @param projectRepository the project repository
      * @param studentRepository the student repository
+     * @param gradeRepository the grade repository
      */
     @Autowired
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository, StudentRepository studentRepository) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository, StudentRepository studentRepository, GradeRepository gradeRepository) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.studentRepository = studentRepository;
+        this.gradeRepository = gradeRepository;
     }
 
     /**
@@ -49,9 +52,15 @@ public class TeamService {
         if (team.isPresent()) {
             List<Student> students = studentRepository.findByTeamId(team.get());
             for (Student student : students) {
-                student.teamId(null);
+                student.team(null);
                 studentRepository.save(student);
             }
+
+            List<Grade> grades = gradeRepository.findByTeam(team.get());
+            for (Grade grade : grades) {
+                gradeRepository.delete(grade);
+            }
+
             teamRepository.deleteById(id);
         }
     }
@@ -69,9 +78,9 @@ public class TeamService {
         if (teamRepository.count() == 0) {
             // Ajouter une ligne dans la table teams si elle est vide
             Team team = new Team();
-            team.projectId(projectRepository.findById(1).get());
+            team.project(projectRepository.findById(1).get());
             if (userRepository.count() != 0){
-                team.leaderId(userRepository.findById(Long.valueOf(1)).get());
+                team.leader(userRepository.findById(Long.valueOf(1)).get());
             }
             teamRepository.save(team);
         }
@@ -79,10 +88,16 @@ public class TeamService {
         if(studentRepository.count() == 0){
             Student student = new Student();
             Student student2 = new Student();
-            student.teamId(teamRepository.findById(1).get());
-            student2.teamId(teamRepository.findById(1).get());
+            student.team(teamRepository.findById(1).get());
+            student2.team(teamRepository.findById(1).get());
             studentRepository.save(student);
             studentRepository.save(student2);
+        }
+
+        if(gradeRepository.count() == 0){
+            Grade grade = new Grade();
+            //grade.team(teamRepository.findById(1).get());
+            gradeRepository.save(grade);
         }
 
         if (teamRepository.count() != 0) {
@@ -105,7 +120,7 @@ public class TeamService {
         User leader = userRepository.findById(Long.valueOf(leaderId)).orElse(null);
         Team team = teamRepository.findById(teamId).orElse(null);
         if (team != null && leader != null) {
-            team.leaderId(leader);
+            team.leader(leader);
             return teamRepository.save(team);
         }
         return null;
