@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,7 +108,7 @@ public class StudentService {
     /**
      * Extracts names, genders, and bachelor status from a CSV file.
      *
-     * @param filePath the path to the CSV file
+     * @param inputStream the path to the CSV file
      * @return a list containing three lists: names, genders, and bachelor status
      * <p>
      * The returned list contains three inner lists:
@@ -121,9 +119,9 @@ public class StudentService {
      * </ul>
      * </p>
      */
-    private static List<List<String>> extractNamesGenderAndBachelor(String filePath) {
-        if (filePath == null || filePath.trim().isEmpty()) {
-            throw new IllegalArgumentException("File path cannot be null or empty");
+    public static List<List<String>> extractNamesGenderAndBachelor(InputStream inputStream) {
+        if (inputStream == null) {
+            throw new IllegalArgumentException("Input stream cannot be null");
         }
 
         List<List<String>> result = new ArrayList<>();
@@ -133,7 +131,7 @@ public class StudentService {
 
         boolean namesStarted = false;
 
-        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+        try (CSVReader reader = new CSVReader(new InputStreamReader(inputStream))) {
             String[] nextLine;
             while ((nextLine = reader.readNext()) != null) {
                 if (!namesStarted && hasNonEmptyValue(nextLine, 1)) {
@@ -151,7 +149,7 @@ public class StudentService {
                 }
             }
         } catch (IOException e) {
-            CustomLogger.logError("An IOException occurred while reading the file in extractNamesGenderAndBachelor", e);
+            CustomLogger.logError("An IOException occurred while reading the input stream in extractNamesGenderAndBachelor", e);
         } catch (CsvValidationException e) {
             CustomLogger.logError("A CsvValidationException occurred in extractNamesGenderAndBachelor", e);
         }
@@ -161,6 +159,7 @@ public class StudentService {
         result.add(bachelors);
         return result;
     }
+
 
     /**
      * Helper method
@@ -222,32 +221,36 @@ public class StudentService {
     /**
      * Populates the database with user and student records from a CSV file.
      *
-     * @param filePath The path to the CSV file containing user and student data.
+     * @param file The path to the CSV file containing user and student data.
      */
-    public void populateDatabaseFromCsv(String filePath) {
-        // Extract data from CSV
-        List<List<String>> extractedData;
-        try {
-            extractedData = extractNamesGenderAndBachelor(filePath);
-        } catch (Exception e) {
-            CustomLogger.logError("An error occurred while extracting data from the CSV file", e);
+    public void populateDatabaseFromCsv(MultipartFile file) {
+        // Check if the file is empty
+        if (file.isEmpty()) {
+            CustomLogger.logInfo("Uploaded file is empty");
             return;
         }
 
-        List<String> names = extractedData.get(0);
-        List<String> genders = extractedData.get(1);
-        List<String> bachelors = extractedData.get(2);
+        // Handle the uploaded file in memory
+        try {
+            // Extract data from CSV
+            List<List<String>> extractedData = extractNamesGenderAndBachelor(file.getInputStream());
 
-        // Process extracted data
-        for (int i = 0; i < names.size(); i++) {
+            // Process extracted data
+            for (int i = 0; i < extractedData.get(0).size(); i++) {
+                // Create student
+                Student student = createStudentFromData(
+                        extractedData.get(0).get(i),
+                        extractedData.get(1).get(i),
+                        extractedData.get(2).get(i)
+                );
 
-//             Create student
-            Student student = createStudentFromData(names.get(i), genders.get(i), bachelors.get(i));
-
-//             Save student
-            studentRepository.save(student);
+                // Save student
+                studentRepository.save(student);
+            }
+            CustomLogger.logInfo("Successfully populated database with " + extractedData.get(0).size() + " students.");
+        } catch (IOException e) {
+            CustomLogger.logError("An error occurred while handling the uploaded file", e);
         }
-        CustomLogger.logInfo("Successfully populated database with " + names.size() + " students.");
     }
 
 }

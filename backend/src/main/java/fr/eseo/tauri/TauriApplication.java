@@ -13,8 +13,6 @@ public class TauriApplication {
 
 	public static void main(String[] args) {
 		ApplicationContext context = SpringApplication.run(TauriApplication.class, args);
-		StudentService studentService = context.getBean(StudentService.class);
-		studentService.populateDatabaseFromCsv("C:\\Users\\coren\\Downloads\\Equipes1.csv");
 	}
 
 }

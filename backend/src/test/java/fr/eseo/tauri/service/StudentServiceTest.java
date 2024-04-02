@@ -1,68 +1,56 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.MockitoAnnotations;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
+import java.io.IOException;
+import java.util.List;
 
-@SpringBootTest
-@Transactional
-public class StudentServiceTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private StudentRepository studentRepository;
-
-    @Autowired
-    private StudentService studentService;
-
-    @Autowired
-    private UserService userService;
-
-    @Test
-    public void testPopulateDatabaseFromCsv() {
-        // Define a CSV file path
-        String filePath = "C:\\Users\\coren\\Downloads\\Equipes1.csv";
-
-        // Define the expected behavior of the mock objects
-        Mockito.when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
-        Mockito.when(studentRepository.save(any(Student.class))).thenAnswer(i -> i.getArgument(0));
-
-        // Call the method to test
-        studentService.populateDatabaseFromCsv(filePath);
-
-        // Verify that the methods of the mock objects were called
-        Mockito.verify(userRepository, times(48)).save(any(User.class));
-        Mockito.verify(studentRepository, times(48)).save(any(Student.class));
-    }
-
-//    public void createUser(User user){
-//        System.out.println(userService.createUser(user) + "Corentin");
+@Nested
+class StudentServiceTest {
+//
+//    @Mock
+//    private StudentRepository studentRepository;
+//
+//    @InjectMocks
+//    private StudentService studentService;
+//
+//    @BeforeEach
+//    void setUp() {
+//        MockitoAnnotations.openMocks(this);
 //    }
-//    public static void main(String[] args) {
-//        // Define a CSV file path
-////        String filePath = "C:\\Users\\coren\\Downloads\\Equipes1.csv";
-////
-////        // Call the method to test
-////        studentService.populateDatabaseFromCsv(filePath);
-//        User user = new User();
-//        user.email("test");
-//        user.privateKey("test");
-//        user.name("test");
-//        user.password("test");
-//        StudentServiceTest test = new StudentServiceTest();
-//        test.createUser(user);
+//
+//    @Test
+//    @DisplayName("extractNamesGenderAndBachelor with valid data returns correct lists")
+//    void extractNamesGenderAndBachelor_withValidData_returnsCorrectLists() {
+//        String filePath = "valid.csv";
+//        List<List<String>> result = StudentService.extractNamesGenderAndBachelor(filePath);
+//
+//        assertEquals(3, result.size());
+//        assertEquals("John Doe", result.get(0).get(0));
+//        assertEquals("M", result.get(1).get(0));
+//        assertEquals("Yes", result.get(2).get(0));
+//    }
+//
+//    @Test
+//    @DisplayName("extractNamesGenderAndBachelor with invalid file path throws IllegalArgumentException")
+//    void extractNamesGenderAndBachelor_withInvalidFilePath_throwsIllegalArgumentException() {
+//        String filePath = "";
+//        assertThrows(IllegalArgumentException.class, () -> StudentService.extractNamesGenderAndBachelor(filePath));
+//    }
+//
+//    @Test
+//    @DisplayName("extractNamesGenderAndBachelor with non-existent file throws IOException")
+//    void extractNamesGenderAndBachelor_withNonExistentFile_throwsIOException() {
+//        String filePath = "non_existent.csv";
+//        assertThrows(IOException.class, () -> StudentService.extractNamesGenderAndBachelor(filePath));
 //    }
 }

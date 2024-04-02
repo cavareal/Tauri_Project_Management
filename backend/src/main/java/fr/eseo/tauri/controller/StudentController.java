@@ -20,6 +20,7 @@ public class StudentController {
     private final StudentRepository studentRepository;
     private final StudentService studentService;
     private final AuthService authService;
+
     @Autowired
     public StudentController(StudentRepository studentRepository, StudentService studentService, AuthService authService) {
         this.studentRepository = studentRepository;
@@ -32,7 +33,7 @@ public class StudentController {
     public ResponseEntity<String> getStudentQuantity(@RequestHeader("Authorization") String token) {
         // Check token, if user is GOOD
         String permission = "readStudentQuantity";
-        if(authService.checkAuth(token, permission)) {
+        if (authService.checkAuth(token, permission)) {
             try {
                 Integer quantity = studentService.getStudentQuantity();
                 return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(quantity));
@@ -41,7 +42,8 @@ public class StudentController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
-        }    }
+        }
+    }
 
 
     /**
@@ -55,7 +57,7 @@ public class StudentController {
     public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String token) {
         // Check token, if user is GOOD
         String permission = "addStudentFile";
-        if(authService.checkAuth(token, permission)) {
+        if (authService.checkAuth(token, permission)) {
             try {
                 File file2 = studentService.handleFileUpload(file);
                 List<String> listFile = studentService.fileReader(file2);
@@ -69,6 +71,30 @@ public class StudentController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+        }
+    }
+
+    /**
+     * Test function to upload a file for the user story uplaod student list
+     *
+     * Handles the upload of a file containing student data.
+     *
+     * @param file  the file to be uploaded
+     * @return a ResponseEntity containing the result of the upload operation
+     *
+     */
+    @PostMapping("/uploadTest")
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Uploaded file is empty");
+        }
+
+        try {
+            // Pass the uploaded file to the service method for further processing
+            studentService.populateDatabaseFromCsv(file);
+            return ResponseEntity.ok("File uploaded successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process the uploaded file");
         }
     }
 }
