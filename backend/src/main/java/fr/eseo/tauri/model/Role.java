@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,10 +16,12 @@ import java.util.Set;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty
     private Integer id;
 
     @Enumerated(EnumType.STRING)
     @Column(name="type")
+    @JsonProperty
     private RoleType type;
 
 }

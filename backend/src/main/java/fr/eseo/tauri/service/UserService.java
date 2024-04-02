@@ -49,7 +49,7 @@ public class UserService {
         if (user.isPresent()) {
             List<Team> teams = teamRepository.findByleaderId(user.get());
             for (Team team : teams) {
-                team.leaderId(null);
+                team.leader(null);
                 teamRepository.save(team);
             }
             userRepository.deleteById(Long.valueOf(id));

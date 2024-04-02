@@ -1,5 +1,6 @@
 package fr.eseo.tauri.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.idClass.ValidationFlagId;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,11 +21,13 @@ public class ValidationFlag {
     @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User authorId;
+    @JsonProperty
+    private User author;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "flag_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Flag flagId;
+    @JsonProperty
+    private Flag flag;
 }
