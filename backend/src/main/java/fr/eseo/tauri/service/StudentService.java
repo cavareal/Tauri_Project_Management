@@ -4,7 +4,11 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.StudentRepository;
+import fr.eseo.tauri.repository.TeamRepository;
+import fr.eseo.tauri.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,15 +27,26 @@ import java.util.List;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final UserRepository userRepository;
+
+    private final TeamRepository teamRepository;
+
+    private final ProjectRepository projectRepository;
 
     /**
      * Constructs a new StudentService with the specified StudentRepository.
      *
      * @param studentRepository the student repository to be used
+     * @param userRepository    the user repository to be used
+     * @param teamRepository    the team repository to be used
+     * @param projectRepository the project repository to be used
      */
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, UserRepository userRepository, TeamRepository teamRepository, ProjectRepository projectRepository) {
         this.studentRepository = studentRepository;
+        this.userRepository = userRepository;
+        this.teamRepository = teamRepository;
+        this.projectRepository = projectRepository;
     }
 
     public void createStudent(Student student) {
@@ -175,32 +190,81 @@ public class StudentService {
         return line.length > index && line[index].trim().isEmpty();
     }
 
+    /**
+     * Populates the database with user and student records from a CSV file.
+     *
+     * @param filePath The path to the CSV file containing user and student data.
+     */
     public void populateDatabaseFromCsv(String filePath) {
+        // TODO: What about the projectId ?
+        // Extract data from CSV
         List<List<String>> extractedData = extractNamesGenderAndBachelor(filePath);
-
         List<String> names = extractedData.get(0);
         List<String> genders = extractedData.get(1);
         List<String> bachelors = extractedData.get(2);
 
+        // Process extracted data
         for (int i = 0; i < names.size(); i++) {
-            //TODO : Create functions to create users and students and retrieve id of a user based on specific information in user service
-//            User user = new User();
-//            user.setName(names.get(i));
-//            user.setEmail(names.get(i).toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
-//            user.setPassword("password");
-//            user.setPrivateKey("privateKey");
-//
-//            userRepository.save(user);
-//
-//            Student student = new Student();
-//            student.setName(names.get(i));
-//            student.setGender(genders.get(i));
-//            student.setBachelor(bachelors.get(i).isEmpty() ? false : true);
-//            student.setTeamRole("Not assigned");
-//            student.setProjectId(null);
-//            student.setTeamId(null);
-//            student.setUserId(null);
-        }
+            // Create user
+            User user = createUserFromName(names.get(i));
 
+            // Save user and retrieve user ID
+            int userId = saveUserAndGetId(user);
+
+            // Create student
+            Student student = createStudentFromData(names.get(i), genders.get(i), bachelors.get(i), userId);
+
+            // Save student
+            studentRepository.save(student);
+        }
     }
+
+    /**
+     * Creates a user object from a given name.
+     *
+     * @param name The complete name of the user.
+     * @return The created user object.
+     */
+    private User createUserFromName(String name) {
+        User user = new User();
+        user.name(name);
+        user.email(name.toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
+        user.password("password");
+        user.privateKey("privateKey");
+        return user;
+    }
+
+    /**
+     * Saves a user object to the database and retrieves its auto-generated ID.
+     *
+     * @param user The user object to be saved.
+     * @return The auto-generated ID of the saved user.
+     */
+    private int saveUserAndGetId(User user) {
+        User savedUser = userRepository.save(user);
+        return savedUser.id();
+    }
+
+    /**
+     * Creates a student object from extracted data.
+     *
+     * @param name     The name of the student.
+     * @param gender   The gender of the student.
+     * @param bachelor The bachelor status of the student.
+     * @param userId   The ID of the corresponding user.
+     * @return The created student object.
+     */
+    private Student createStudentFromData(String name, String gender, String bachelor, int userId) {
+        Student student = new Student();
+        student.name(name);
+        student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
+        student.bachelor(!bachelor.isEmpty());
+        student.teamRole("Not assigned");
+        student.projectId(null);
+        student.teamId(null);
+        student.id(userId);
+        return student;
+    }
+
+
 }

@@ -56,9 +56,12 @@ public class UserService {
         }
     }
 
-    public void createUser(User user) {
-        userRepository.save(user);
+    public int createUser(User user) {
+        User savedUser = userRepository.save(user);
+        return savedUser.id(); //TODO replace by getId() when it will work again
     }
+
+
 
     /*@PostConstruct //Test function for the deleteUser function
     public void initDataIfTableIsEmpty() {
