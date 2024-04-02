@@ -10,22 +10,22 @@ import java.util.Objects;
 public class ScaleTypesId implements Serializable {
 
     @JsonProperty
-    private GradeScale gradeScaleId;
+    private GradeScale gradeScale;
 
     @JsonProperty
-    private GradeType gradeTypeId;
+    private GradeType gradeType;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScaleTypesId that = (ScaleTypesId) o;
-        return Objects.equals(gradeScaleId, that.gradeScaleId) &&
-                Objects.equals(gradeTypeId, that.gradeTypeId);
+        return Objects.equals(gradeScale, that.gradeScale) &&
+                Objects.equals(gradeType, that.gradeType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gradeScaleId, gradeTypeId);
+        return Objects.hash(gradeScale, gradeType);
     }
 }

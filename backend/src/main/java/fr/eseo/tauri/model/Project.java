@@ -1,6 +1,8 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.eseo.tauri.model.enumeration.PermissionType;
+import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,8 +28,10 @@ public class Project {
     @JsonProperty
     private Integer nbSprint;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="phase")
     @JsonProperty
-    private String phase;
+    private ProjectPhase phase;
 
 }
 

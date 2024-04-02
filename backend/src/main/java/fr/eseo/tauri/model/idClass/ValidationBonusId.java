@@ -10,22 +10,22 @@ import java.util.Objects;
 public class ValidationBonusId implements Serializable {
 
     @JsonProperty
-    private User userId;
+    private User user;
 
     @JsonProperty
-    private Bonus bonusId;
+    private Bonus bonus;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ValidationBonusId that = (ValidationBonusId) o;
-        return Objects.equals(userId, that.userId) &&
-                Objects.equals(bonusId, that.bonusId);
+        return Objects.equals(user, that.user) &&
+                Objects.equals(bonus, that.bonus);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, bonusId);
+        return Objects.hash(user, bonus);
     }
 }
