@@ -29,7 +29,7 @@ public class Project {
     private Integer nbSprint;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="project_phase")
+    @Column(name="phase")
     @JsonProperty
     private ProjectPhase phase;
 
