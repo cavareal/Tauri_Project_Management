@@ -122,6 +122,10 @@ public class StudentService {
      * </p>
      */
     private static List<List<String>> extractNamesGenderAndBachelor(String filePath) {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("File path cannot be null or empty");
+        }
+
         List<List<String>> result = new ArrayList<>();
         List<String> names = new ArrayList<>();
         List<String> genders = new ArrayList<>();
@@ -146,8 +150,10 @@ public class StudentService {
                     bachelors.add(nextLine.length > 3 ? nextLine[3] : ""); // Add bachelor status or empty string
                 }
             }
-        } catch (IOException | CsvValidationException e) {
-            CustomLogger.logError("An error occurred in extractNamesGenderAndBachelor", e);
+        } catch (IOException e) {
+            CustomLogger.logError("An IOException occurred while reading the file in extractNamesGenderAndBachelor", e);
+        } catch (CsvValidationException e) {
+            CustomLogger.logError("A CsvValidationException occurred in extractNamesGenderAndBachelor", e);
         }
 
         result.add(names);
@@ -190,6 +196,16 @@ public class StudentService {
      * @return The created student object.
      */
     private Student createStudentFromData(String name, String gender, String bachelor) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        if (gender == null || gender.trim().isEmpty()) {
+            throw new IllegalArgumentException("Gender cannot be null or empty");
+        }
+        if (bachelor == null) {
+            throw new IllegalArgumentException("Bachelor status cannot be null");
+        }
+
         Student student = new Student();
         student.name(name);
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
@@ -209,9 +225,15 @@ public class StudentService {
      * @param filePath The path to the CSV file containing user and student data.
      */
     public void populateDatabaseFromCsv(String filePath) {
-
         // Extract data from CSV
-        List<List<String>> extractedData = extractNamesGenderAndBachelor(filePath);
+        List<List<String>> extractedData;
+        try {
+            extractedData = extractNamesGenderAndBachelor(filePath);
+        } catch (Exception e) {
+            CustomLogger.logError("An error occurred while extracting data from the CSV file", e);
+            return;
+        }
+
         List<String> names = extractedData.get(0);
         List<String> genders = extractedData.get(1);
         List<String> bachelors = extractedData.get(2);
@@ -225,6 +247,7 @@ public class StudentService {
 //             Save student
             studentRepository.save(student);
         }
+        CustomLogger.logInfo("Successfully populated database with " + names.size() + " students.");
     }
 
 }
