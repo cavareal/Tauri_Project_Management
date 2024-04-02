@@ -3,10 +3,12 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -56,7 +58,7 @@ public class TeamService {
         }
     }
 
-    /*@PostConstruct //Test function for the deleteTeam function
+    @PostConstruct //Test function for the deleteTeam function
     public void initDataIfTableIsEmpty() {
 
         if(userRepository.count() == 0){
@@ -69,20 +71,44 @@ public class TeamService {
         if (teamRepository.count() == 0) {
             // Ajouter une ligne dans la table teams si elle est vide
             Team team = new Team();
+            Team team2 = new Team();
             team.projectId(projectRepository.findById(1).get());
+            team.name("Tauri");
+            team2.projectId(projectRepository.findById(1).get());
+            team2.name("LesAutres");
             if (userRepository.count() != 0){
                 team.leaderId(userRepository.findById(Long.valueOf(1)).get());
+                team2.leaderId(userRepository.findById(Long.valueOf(1)).get());
             }
             teamRepository.save(team);
+            teamRepository.save(team2);
         }
 
         if(studentRepository.count() == 0){
             Student student = new Student();
             Student student2 = new Student();
+            student.name("toto");
+            student2.name("tata");
+            student.teamRole("SM");
+            student2.teamRole("PO");
+            student.gender(Gender.MAN);
+            student2.gender(Gender.OTHER);
             student.teamId(teamRepository.findById(1).get());
             student2.teamId(teamRepository.findById(1).get());
+            Student student3 = new Student();
+            Student student4 = new Student();
+            student3.name("titi");
+            student4.name("tete");
+            student3.teamRole("SM");
+            student4.teamRole("PO");
+            student3.gender(Gender.MAN);
+            student4.gender(Gender.OTHER);
+            student3.teamId(teamRepository.findById(2).get());
+            student4.teamId(teamRepository.findById(2).get());
             studentRepository.save(student);
             studentRepository.save(student2);
+            studentRepository.save(student3);
+            studentRepository.save(student4);
         }
 
         if (teamRepository.count() != 0) {
@@ -93,7 +119,7 @@ public class TeamService {
             //UserService.deleteUser(1);
         }
 
-    }*/
+    }
 
     /**
      * Update the leader of a team.
@@ -147,6 +173,23 @@ public class TeamService {
             e.printStackTrace();
         }
         return new Team();
+    }
+
+    /**
+     * Get all teams.
+     * @return the list of all teams
+     */
+    public List<Team> getAllTeams() {
+        return teamRepository.findAll();
+    }
+
+    /**
+     * Get a team by its ID.
+     * @param id the ID of the team
+     * @return the team if it exists, otherwise null
+     */
+    public Team getTeamById(Integer id) {
+        return teamRepository.findById(id).orElse(null);
     }
 
 }

@@ -2,6 +2,7 @@ package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
 import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ import java.util.List;
 public class StudentService {
 
     private final StudentRepository studentRepository;
+
+    @Autowired
+    private TeamService teamService;
 
     /**
      * Constructs a new StudentService with the specified StudentRepository.
@@ -96,6 +100,16 @@ public class StudentService {
     public Integer getStudentQuantity(){
         List<Student> students = studentRepository.findAll();
         return students.size();
+    }
+
+    /**
+     * Retrieves students form a team.
+     * @param teamId The id of the team
+     * @return a list of students
+     */
+    public List<Student> getStudentsByTeamId(Integer teamId) {
+        Team team = teamService.getTeamById(teamId);
+        return studentRepository.findStudentsByTeam(team);
     }
 
 
