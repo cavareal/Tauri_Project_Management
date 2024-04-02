@@ -5,10 +5,9 @@ import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.Gender;
-import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,24 +28,17 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final UserRepository userRepository;
 
-    private final TeamRepository teamRepository;
-
-    private final ProjectRepository projectRepository;
 
     /**
      * Constructs a new StudentService with the specified StudentRepository.
      *
      * @param studentRepository the student repository to be used
      * @param userRepository    the user repository to be used
-     * @param teamRepository    the team repository to be used
-     * @param projectRepository the project repository to be used
      */
     @Autowired
-    public StudentService(StudentRepository studentRepository, UserRepository userRepository, TeamRepository teamRepository, ProjectRepository projectRepository) {
+    public StudentService(StudentRepository studentRepository, UserRepository userRepository) {
         this.studentRepository = studentRepository;
         this.userRepository = userRepository;
-        this.teamRepository = teamRepository;
-        this.projectRepository = projectRepository;
     }
 
     public void createStudent(Student student) {
@@ -69,7 +61,7 @@ public class StudentService {
 
                 file.transferTo(savedFile);
             } catch (IOException e) {
-                e.printStackTrace();
+                CustomLogger.logError("An error occurred while saving the file", e);
             }
         }
         return savedFile;
@@ -88,22 +80,24 @@ public class StudentService {
 
             // Create an object of FileReader
             // class with CSV file as a parameter.
-            FileReader filereader = new FileReader(fileToRead);
+            CSVReader csvReader;
+            try (FileReader filereader = new FileReader(fileToRead)) {
 
-            // Create CSVReader object passing
-            // file reader as a parameter
-            CSVReader csvReader = new CSVReader(filereader);
+                // Create CSVReader object passing
+                // file reader as a parameter
+                csvReader = new CSVReader(filereader);
+            }
             String[] nextRecord;
 
             // Read data line by line
             while ((nextRecord = csvReader.readNext()) != null) {
                 for (String cell : nextRecord) {
                     resultList.add(cell);
-                    System.out.println(cell);
+                    CustomLogger.logInfo(cell);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            CustomLogger.logError("An error occurred while reading the file in fileReader", e);
         }
         return resultList;
     }
@@ -159,7 +153,7 @@ public class StudentService {
                 }
             }
         } catch (IOException | CsvValidationException e) {
-            e.printStackTrace();
+            CustomLogger.logError("An error occurred in extractNamesGenderAndBachelor", e);
         }
 
         result.add(names);
@@ -260,11 +254,10 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.teamRole("Not assigned");
-        student.projectId(null);
-        student.teamId(null);
+        student.project(null); // TODO: Discuss with clement how the project is assigned on the front
+        student.team(null); // Team is not assigned yet
         student.id(userId);
         return student;
     }
-
 
 }
