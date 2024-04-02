@@ -162,4 +162,8 @@ public class TeamService {
         return new Team();
     }
 
+    public List<String> getAllTeamNames() {
+        return teamRepository.findAllTeamNames();
+    }
+
 }

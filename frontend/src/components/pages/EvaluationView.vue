@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { defineComponent, ref } from "vue"
 import PageTemplate from "@/components/organisms/PageTemplate.vue"
-import { defineComponent } from "vue"
 import Tab from "@/components/ui/tab/Tab.vue"
 import Tabs from "@/components/ui/tab/Tabs.vue"
 import NotAutorized from "@/components/organisms/Teams/NotAuthorized.vue"
@@ -11,6 +10,7 @@ import getCookie from "@/utils/cookiesUtils"
 const token = getCookie("token")
 const role = getCookie("role")
 const sprintList = ref([1, 2, 3])
+const teamsName = ref([])
 
 defineComponent({
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -19,6 +19,30 @@ defineComponent({
 		return { dynamicTabs: [1, 2, 3] }
 	}
 })
+
+const request = {
+	method: "GET",
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: token || "null"
+	}
+}
+
+const fetchTeamNames = async() => {
+	try {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "teams/all-team-names", request)
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`)
+		}
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,max-len
+		teamsName.value = await response.json()
+		console.log(teamsName.value)
+	} catch (error) {
+		console.error(error)
+	}
+}
+
+fetchTeamNames()
 
 </script>
 

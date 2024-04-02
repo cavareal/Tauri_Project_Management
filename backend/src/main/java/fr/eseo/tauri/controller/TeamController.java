@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -114,6 +116,22 @@ public class TeamController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+        }
+    }
+
+    @GetMapping("/all-team-names")
+    public ResponseEntity<List<String>> getAllTeamNames(@RequestHeader("Authorization") String token) {
+        String permission = "teamRead";
+        if(authService.checkAuth(token, permission)) {
+            try {
+                System.out.println("Liste des noms d'équipes : "); //+ teamNames.toString());
+                List<String> teamNames = teamService.getAllTeamNames();
+                return ResponseEntity.ok(Collections.singletonList(teamNames.toString()));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList("Erreur lors de la récupération des noms d'équipes : " + e.getMessage()));
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonList("Non autorisé"));
         }
     }
 

@@ -1,5 +1,6 @@
 package fr.eseo.tauri.config;
 
+import fr.eseo.tauri.seeder.TeamSeeder;
 import fr.eseo.tauri.seeder.UserSeeder;
 import net.datafaker.Faker;
 import org.jetbrains.annotations.NotNull;
@@ -16,15 +17,19 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private final Faker faker;
 	private final UserSeeder userSeeder;
 
+	private final TeamSeeder teamSeeder;
+
 	@Autowired
-	public SeedConfig(UserSeeder userSeeder) {
+	public SeedConfig(UserSeeder userSeeder, TeamSeeder teamSeeder) {
 		this.userSeeder = userSeeder;
-		this.faker = new Faker(new Locale("en-US"));
+        this.teamSeeder = teamSeeder;
+        this.faker = new Faker(new Locale("en-US"));
 	}
 
 	@Override
 	public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
 		userSeeder.seed(faker);
+		teamSeeder.seed(faker);
 	}
 
 }
