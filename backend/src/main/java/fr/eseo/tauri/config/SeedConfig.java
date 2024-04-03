@@ -1,5 +1,6 @@
 package fr.eseo.tauri.config;
 
+import fr.eseo.tauri.seeder.TeamSeeder;
 import fr.eseo.tauri.seeder.UserSeeder;
 import net.datafaker.Faker;
 import org.jetbrains.annotations.NotNull;
