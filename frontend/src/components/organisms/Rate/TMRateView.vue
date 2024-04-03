@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { ref } from "vue"
 import {
 	Dialog,
+	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -12,6 +14,51 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 
+const selectedTeam = ref("")
+const note = ref("")
+const evaluations = ref<Record<string, { team: string, note: number }[]>>({})
+
+const props = defineProps({
+	myProp: String,
+	listTeam: Array
+})
+
+console.log(props.myProp)
+console.log(props.listTeam)
+
+function addEvaluation() {
+	if (!evaluations.value[selectedTeam.value]) {
+		evaluations.value[selectedTeam.value] = []
+	}
+
+	const teamIndex = evaluations.value[selectedTeam.value].findIndex(e => e.team === selectedTeam.value)
+	if (teamIndex !== -1) {
+		evaluations.value[selectedTeam.value][teamIndex].note = Number(note.value)
+	} else {
+		evaluations.value[selectedTeam.value].push({ team: selectedTeam.value, note: Number(note.value) })
+	}
+}
+
+const sendGrade = async(evaluations : never) => {
+	try {
+		const response = await fetch("http://backend-url/endpoint", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(evaluations)
+		})
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`)
+		}
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return await response.json()
+	} catch (error) {
+		console.error(error)
+	}
+}
 </script>
 
 <template>
@@ -26,33 +73,43 @@ import { Button } from "@/components/ui/button"
         </DialogTrigger>
         <DialogContent class="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Evaluer la performance gloable</DialogTitle>
+            <DialogTitle>Evaluer la performance globale</DialogTitle>
             <DialogDescription>
               Sélectionnez l'équipe à évaluer et indiquez la note que vous souhaitez leur accorder
             </DialogDescription>
           </DialogHeader>
           <div class="grid gap-4 py-4">
-            <div class="grid grid-cols-4 items-center gap-4">
+            <div class="grid grid-cols-3 items-center gap-4">
               <Label for="equipe">Equipe :</Label>
-              <select id="equipe" name="equipe">
-                <option value="equipe1">Equipe 1</option>
-                <option value="equipe2">Equipe 2</option>
-                <option value="equipe3">Equipe 3</option>
-                <!-- Ajoutez plus d'options au besoin -->
+              <select v-model="selectedTeam">
+                <option value="" disabled selected hidden>Choisir une équipe</option>
+                <option v-for="(teamName, index) in listTeam?.[0]" :key="index" :value="teamName">{{ teamName }}</option>
               </select>
             </div>
-            <div class="grid grid-cols-4 items-center gap-4">
+            <div class="grid grid-cols-3 items-center gap-4">
               <Label for="note">Note :</Label>
-              <Input id="note" type="gradeGlobalPerformance" min="0" max="20" />
+              <Input id="note" type="number" min="0" max="20" v-model="note" />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" variant="destructive" class="text-white bg-primary hover:bg-primary/90">
-              Evaluer
-            </Button>
+            <DialogClose>
+              <Button type="submit" variant="destructive" class="text-white bg-primary hover:bg-primary/90" @click="addEvaluation">
+                Evaluer
+              </Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+
+    <!-- Afficher les évaluations -->
+    <div v-for="(teamEvaluations, teamName) in evaluations" :key="teamName">
+      <h2>{{ teamName }}</h2>
+      <ul>
+        <li v-for="(evaluation, index) in teamEvaluations" :key="index">
+          {{ evaluation.note }}
+        </li>
+      </ul>
     </div>
   </div>
 </template>

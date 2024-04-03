@@ -1,24 +1,19 @@
 <script setup lang="ts">
-import { defineComponent, ref } from "vue"
+import { computed, defineComponent, provide, ref } from "vue"
 import PageTemplate from "@/components/organisms/PageTemplate.vue"
 import Tab from "@/components/ui/tab/Tab.vue"
 import Tabs from "@/components/ui/tab/Tabs.vue"
 import NotAutorized from "@/components/organisms/Teams/NotAuthorized.vue"
 import TMRateView from "@/components/organisms/Rate/TMRateView.vue"
 import getCookie from "@/utils/cookiesUtils"
+import { Label } from "@/components/ui/label"
 
 const token = getCookie("token")
 const role = getCookie("role")
 const sprintList = ref([1, 2, 3])
-const teamsName = ref([])
+const teamsName = ref<string[]>([])
+const parentData = ref("Hello from parent")
 
-defineComponent({
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	components: { PageTemplate, Tabs, Tab },
-	data: () => {
-		return { dynamicTabs: [1, 2, 3] }
-	}
-})
 
 const request = {
 	method: "GET",
@@ -36,13 +31,25 @@ const fetchTeamNames = async() => {
 		}
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,max-len
 		teamsName.value = await response.json()
-		console.log(teamsName.value)
 	} catch (error) {
 		console.error(error)
 	}
 }
+void fetchTeamNames()
 
-fetchTeamNames()
+const parsedTeams = computed(() => {
+	return teamsName.value.map(team => team.replace(/[\[\]"]+/g, "").split(", "))
+})
+
+defineComponent({
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	components: { PageTemplate, Tabs, Tab },
+	data: () => {
+		return { dynamicTabs: [1, 2, 3] }
+	}
+})
+
+console.log(parsedTeams)
 
 </script>
 
@@ -55,7 +62,7 @@ fetchTeamNames()
           <template v-for="(sprint, index) in sprintList" :key="index">
             <Tab :title="`Sprint ${index + 1}`">
               <NotAutorized v-if="!token || !role" />
-              <TMRateView v-else-if="role === 'TM'"/>
+              <TMRateView v-else-if="role === 'TM'" :myProp="parentData" :listTeam="parsedTeams"/>
               <NotAutorized v-else />
             </Tab>
           </template>
