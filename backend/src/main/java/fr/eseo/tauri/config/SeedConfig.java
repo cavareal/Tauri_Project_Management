@@ -1,8 +1,9 @@
 package fr.eseo.tauri.config;
 
-import fr.eseo.tauri.seeder.StudentSeeder;
+import fr.eseo.tauri.seeder.StudentsWithAverageGradeSeeder;
 import fr.eseo.tauri.seeder.UserSeeder;
 import net.datafaker.Faker;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -16,20 +17,19 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final Faker faker;
 	private final UserSeeder userSeeder;
-
-	private final StudentSeeder studentSeeder;
+	private final StudentsWithAverageGradeSeeder studentsWithAverageGradeSeeder;
 
 	@Autowired
-	public SeedConfig(UserSeeder userSeeder, StudentSeeder studentSeeder) {
+	public SeedConfig(UserSeeder userSeeder, StudentsWithAverageGradeSeeder studentsWithAverageGradeSeeder) {
 		this.userSeeder = userSeeder;
-		this.studentSeeder = studentSeeder;
+		this.studentsWithAverageGradeSeeder = studentsWithAverageGradeSeeder;
 		this.faker = new Faker(new Locale("en-US"));
 	}
 
 	@Override
 	public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
 		userSeeder.seed(faker);
-		studentSeeder.seed(faker);
+		studentsWithAverageGradeSeeder.seed(faker);
 	}
 
 }
