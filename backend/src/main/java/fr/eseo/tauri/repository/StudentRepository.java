@@ -11,6 +11,7 @@ import java.util.List;
 public interface StudentRepository extends JpaRepository<Student, Integer> {
     List<Student> findByTeamId(Team teamId);
 
+    // TODO: change the average grade name to the correct one
     @Query("SELECT s FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gt.name = 'average' ORDER BY gr.value DESC")
     List<Student> findAllOrderByImportedAvg();
 }

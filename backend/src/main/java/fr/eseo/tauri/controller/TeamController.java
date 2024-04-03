@@ -108,10 +108,10 @@ public class TeamController {
                 List<Team> teams = teamService.createTeams(nbTeams, ratioGender);
 
                 if (teams != null) {
-                    System.out.println("Teams hae been created");
+                    System.out.println("Teams have been created");
                     return ResponseEntity.ok("La creation a bien été prise en compte");
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : les équipes n'ont pas pu être créées");
                 }
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());

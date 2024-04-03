@@ -3,7 +3,10 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.Project;
+
 import fr.eseo.tauri.repository.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -145,28 +148,40 @@ public class TeamService {
     /**
      * Create teams with the given number of teams and the given ratio
      * TODO : take into account the ratioGender and try to create teams with the same average grade
+     * TODO : add a parameter to choose the project ?
      * @param nbTeams the number of teams to create
      * @param ratioGender the ratio of women in the teams
      * @return a List<Teams> if teams are created, otherwise null
      */
-    @Async
     public List<Team> createTeams(Integer nbTeams, Integer ratioGender) {
+        System.out.println("TeamService.createTeams : Creating Teams");
 
-        List<Student> students = this.studentRepository.findAllOrderByImportedAvg();
+        // Get all students ordered by average grade
+//        List<Student> students = this.studentRepository.findAllOrderByImportedAvg();
+        List<Student> students = this.studentRepository.findAll();
         int nbStudent = students.size();
 
+        System.out.println("    nbStudent : " + nbStudent);
+
+        Project project = projectRepository.getReferenceById(1);
+
+        // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams || nbTeams < 1) {
+            System.out.println("    ERROR  : Not enough students to create the teams");
             return null;
         }else {
-            List<Team> teams = new ArrayList<Team>();
+            List<Team> teams = new ArrayList<>();
 
+            // Create the teams
             for (int i = 0; i < nbTeams; i++) {
                 Team team = new Team();
                 team.name("Team " + (i + 1));
+                team.project(project);
                 teamRepository.save(team);
                 teams.add(team);
             }
 
+            // Assign students to the teams
             for (int i = 0; i < nbStudent; i++) {
                 Student student = students.get(i);
                 student.team(teams.get(i % nbTeams));
