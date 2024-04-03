@@ -28,6 +28,9 @@ class StudentServiceTest {
     @InjectMocks
     private StudentService studentService;
 
+    @InjectMocks
+    private GradeService gradeService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);

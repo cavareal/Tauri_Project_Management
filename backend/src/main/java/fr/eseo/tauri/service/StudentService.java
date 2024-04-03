@@ -23,14 +23,18 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
+    private final GradeService gradeService;
+
     /**
      * Constructs a new StudentService with the specified StudentRepository.
      *
      * @param studentRepository the student repository to be used
+     * @param gradeService      the grade service to be used
      */
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, GradeService gradeService) {
         this.studentRepository = studentRepository;
+        this.gradeService = gradeService;
     }
 
     public void createStudent(Student student) {
@@ -129,6 +133,7 @@ public class StudentService {
         List<String> names = new ArrayList<>();
         List<String> genders = new ArrayList<>();
         List<String> bachelors = new ArrayList<>();
+        List<String> averages = new ArrayList<>();
 
         boolean namesStarted = false;
 
@@ -147,6 +152,8 @@ public class StudentService {
                     names.add(nextLine[1]); // Assuming complete name is in the second column
                     genders.add(nextLine[2]);
                     bachelors.add(nextLine.length > 3 ? nextLine[3] : ""); // Add bachelor status or empty string
+                    averages.add(nextLine[4]);
+                    CustomLogger.logInfo(("Average : " + nextLine[4]) + " Name : " + nextLine[1]);
                 }
             }
         } catch (IOException e) {
@@ -158,6 +165,7 @@ public class StudentService {
         result.add(names);
         result.add(genders);
         result.add(bachelors);
+        result.add(averages);
         return result;
     }
 
@@ -234,10 +242,13 @@ public class StudentService {
                 );
 
                 // Save student
-                studentRepository.save(student);
+                createStudent(student);
+
+                gradeService.createGradeFromAverage(extractedData.get(3).get(i), student);
+
             }
             CustomLogger.logInfo("Successfully populated database with " + extractedData.get(0).size() + " students.");
-        } catch (IOException e) {
+        } catch (Exception e) {
             CustomLogger.logError("An error occurred while handling the uploaded file", e);
         }
     }

@@ -18,7 +18,7 @@ public class Grade {
     private Integer id;
 
     @JsonProperty
-    private Integer value;
+    private Double value;
 
     @JsonProperty
     private String comment;
