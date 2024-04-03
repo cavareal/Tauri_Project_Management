@@ -157,8 +157,7 @@ public class TeamService {
         System.out.println("TeamService.createTeams : Creating Teams");
 
         // Get all students ordered by average grade
-//        List<Student> students = this.studentRepository.findAllOrderByImportedAvg();
-        List<Student> students = this.studentRepository.findAll();
+        List<Student> students = this.studentRepository.findAllOrderByImportedAvg();
         int nbStudent = students.size();
 
         System.out.println("    nbStudent : " + nbStudent);
