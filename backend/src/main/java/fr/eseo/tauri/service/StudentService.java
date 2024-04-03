@@ -34,6 +34,9 @@ public class StudentService {
     }
 
     public void createStudent(Student student) {
+        if (student.name() == null || student.name().trim().isEmpty()) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
         studentRepository.save(student);
     }
 
@@ -120,7 +123,7 @@ public class StudentService {
      * </ul>
      * </p>
      */
-    public static List<List<String>> extractNamesGenderAndBachelor(InputStream inputStream) {
+    public List<List<String>> extractNamesGenderAndBachelor(InputStream inputStream) {
 
         List<List<String>> result = new ArrayList<>();
         List<String> names = new ArrayList<>();
@@ -136,11 +139,11 @@ public class StudentService {
                     namesStarted = true;
                 }
 
-                if (namesStarted && !names.isEmpty() && isEmpty(nextLine, 1)) {
+                if (namesStarted && !names.isEmpty() && !hasNonEmptyValue(nextLine, 1)) {
                     break;
                 }
 
-                if (namesStarted && !isEmpty(nextLine, 1)) {
+                if (namesStarted && hasNonEmptyValue(nextLine, 1)) {
                     names.add(nextLine[1]); // Assuming complete name is in the second column
                     genders.add(nextLine[2]);
                     bachelors.add(nextLine.length > 3 ? nextLine[3] : ""); // Add bachelor status or empty string
@@ -167,20 +170,8 @@ public class StudentService {
      * @param index the index to check
      * @return {@code true} if the index contains a non-empty value, {@code false} otherwise
      */
-    private static boolean hasNonEmptyValue(String[] line, int index) {
+    static boolean hasNonEmptyValue(String[] line, int index) {
         return line.length > index && !line[index].trim().isEmpty();
-    }
-
-    /**
-     * Helper method
-     * Checks if the specified index in the given line contains an empty value.
-     *
-     * @param line  the array representing a line from the CSV file
-     * @param index the index to check
-     * @return {@code true} if the index contains an empty value, {@code false} otherwise
-     */
-    private static boolean isEmpty(String[] line, int index) {
-        return line.length > index && line[index].trim().isEmpty();
     }
 
     /**
@@ -192,7 +183,7 @@ public class StudentService {
      * @param bachelor The bachelor status of the student.
      * @return The created student object.
      */
-    private Student createStudentFromData(String name, String gender, String bachelor) {
+    Student createStudentFromData(String name, String gender, String bachelor) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
