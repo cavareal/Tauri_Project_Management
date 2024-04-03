@@ -1,5 +1,6 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.AuthService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -103,8 +105,10 @@ public class TeamController {
 
         if(authService.checkAuth(token, permission)) {  // Check if role is authorised to do this request, in fonction of the permissions
             try {
-                Team team = teamService.createTeams(nbTeams, ratioGender);
-                if (team != null) {
+                List<Team> teams = teamService.createTeams(nbTeams, ratioGender);
+
+                if (teams != null) {
+                    System.out.println("Teams hae been created");
                     return ResponseEntity.ok("La creation a bien été prise en compte");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");

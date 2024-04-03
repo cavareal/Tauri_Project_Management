@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -142,24 +143,38 @@ public class TeamService {
 
 
     /**
-     * Create teams.
-     *
-     * @return .. if teams are created, otherwise null
+     * Create teams with the given number of teams and the given ratio
+     * TODO : take into account the ratioGender and try to create teams with the same average grade
+     * @param nbTeams the number of teams to create
+     * @param ratioGender the ratio of women in the teams
+     * @return a List<Teams> if teams are created, otherwise null
      */
     @Async
-    public Team createTeams(Integer nbTeams, Integer ratioGender) {
-        System.out.println("Create teams");
-        System.out.println(nbTeams);
-        System.out.println(ratioGender);
+    public List<Team> createTeams(Integer nbTeams, Integer ratioGender) {
 
-        // Set logic code to generate teams
-        // You can delete this try/catch. It's use ti simulate loader on the frontend
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        List<Student> students = this.studentRepository.findAllOrderByImportedAvg();
+        int nbStudent = students.size();
+
+        if (nbStudent < nbTeams || nbTeams < 1) {
+            return null;
+        }else {
+            List<Team> teams = new ArrayList<Team>();
+
+            for (int i = 0; i < nbTeams; i++) {
+                Team team = new Team();
+                team.name("Team " + (i + 1));
+                teamRepository.save(team);
+                teams.add(team);
+            }
+
+            for (int i = 0; i < nbStudent; i++) {
+                Student student = students.get(i);
+                student.team(teams.get(i % nbTeams));
+                studentRepository.save(student);
+            }
+
+            return teams;
         }
-        return new Team();
     }
 
 }
