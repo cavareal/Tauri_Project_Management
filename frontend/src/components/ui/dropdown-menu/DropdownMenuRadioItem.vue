@@ -8,7 +8,7 @@ import {
   useForwardPropsEmits,
 } from 'radix-vue'
 import { Circle } from 'lucide-vue-next'
-import { cn } from '@/utils/utils.ts'
+import { cn } from '@/utils/utils'
 
 const props = defineProps<DropdownMenuRadioItemProps & { class?: HTMLAttributes['class'] }>()
 

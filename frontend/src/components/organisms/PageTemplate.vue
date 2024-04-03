@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable/index"
-import Sidebar from "@/components/organisms/Sidebar.vue"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area/index"
+import { Sidebar } from "@/components/organisms/sidebar"
 import { cn } from "@/utils/utils"
 
 const props = defineProps<{
-	className?: string
+	class?: string
 }>()
 
 const style = computed(() => {
 	return cn(
 		"h-screen w-screen",
 		"flex flex-row items-stretch justify-start",
-		props.className
+		"overflow-hidden",
+		props.class
 	)
 })
 </script>
@@ -21,9 +20,9 @@ const style = computed(() => {
 <template>
 	<section :class="style">
 		<Sidebar />
-		<ScrollArea class="flex-1">
+
+		<div class="flex-1 flex flex-col items-stretch justify-start gap-4 p-8 overflow-scroll">
 			<slot />
-			<ScrollBar />
-		</ScrollArea>
+		</div>
 	</section>
 </template>

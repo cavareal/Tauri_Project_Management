@@ -8,7 +8,7 @@ import {
   useForwardPropsEmits,
 } from 'radix-vue'
 import { Check } from 'lucide-vue-next'
-import { cn } from '@/utils/utils.ts'
+import { cn } from '@/utils/utils'
 
 const props = defineProps<DropdownMenuCheckboxItemProps & { class?: HTMLAttributes['class'] }>()
 const emits = defineEmits<DropdownMenuCheckboxItemEmits>()

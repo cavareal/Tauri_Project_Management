@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Bell, GraduationCap, LayoutDashboard, LogOut, Scale, Users, Check, Tag, Play, User } from "lucide-vue-next"
-import SidebarLink from "@/components/molecules/SidebarLink.vue"
+import SidebarLink from "./SidebarLink.vue"
 import Separator from "@/components/ui/separator/Separator.vue"
-import Logo from "@/components/icons/Logo.vue"
+import { Logo } from "@/components/atoms/logo"
 import { cn } from "@/utils/utils"
 
 const props = defineProps<{
@@ -22,31 +22,39 @@ const style = cn(
 		<div>
 			<div class="flex flex-row items-center justify-center gap-4 mt-4 mb-8">
 				<Logo class="h-12 fill-light-blue" />
-				<!-- <img src="/icon.svg" alt="Logo" class="w-8 text-light-blue" /> -->
 				<h3 class="text-3xl uppercase font-title-medium text-light-blue">Tauri</h3>
 			</div>
+
 			<SidebarLink link="/">
 				<LayoutDashboard /> Tableau de bord
 			</SidebarLink>
+
 			<Separator class="my-2" />
+
 			<SidebarLink link="/students">
 				<GraduationCap /> Étudiants
 			</SidebarLink>
+
 			<SidebarLink link="/teams">
 				<Users /> Équipes
 			</SidebarLink>
+
 			<SidebarLink link="/my-team">
 				<User /> Mon équipe
 			</SidebarLink>
+
 			<SidebarLink link="/sprints">
 				<Play /> Sprints
 			</SidebarLink>
+
 			<SidebarLink link="/grades">
 				<Tag /> Notes
 			</SidebarLink>
+
 			<SidebarLink link="/rating">
 				<Check /> Évaluations
 			</SidebarLink>
+
 			<SidebarLink link="/grade-scales">
 				<Scale /> Barèmes
 			</SidebarLink>
@@ -54,9 +62,11 @@ const style = cn(
 
 		<div>
 			<Separator class="my-2" />
+
 			<SidebarLink>
 				<Bell /> Notifications
 			</SidebarLink>
+
 			<SidebarLink link="/login">
 				<LogOut /> Déconnexion
 			</SidebarLink>

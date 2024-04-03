@@ -10,9 +10,7 @@ export type ApiQueryRequest<T> = {
 export type ApiQueryResponse<T> = {
     status: "success"
     data: T
-    error?: never
 } | {
     status: "error"
-    data?: never
     error: string
 }

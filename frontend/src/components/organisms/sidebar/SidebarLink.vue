@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue"
-import { Button } from "@/components/ui/button"
 import { cn } from "@/utils/utils"
 import { useRoute } from "vue-router"
+import { ButtonLink } from "@/components/molecules/button-link"
 
 const route = useRoute()
 
@@ -17,7 +17,7 @@ const style = computed(() => {
 	return cn(
 		"w-full my-1",
 		"flex flex-row items-center justify-start gap-2",
-		"text-white hover:bg-white/10 transition-colors",
+		"text-white hover:bg-white/10 hover:text-white transition-colors",
 		{ "bg-white/20": selected.value },
 		props.class
 	)
@@ -25,9 +25,7 @@ const style = computed(() => {
 </script>
 
 <template>
-	<RouterLink :to="link ?? ''">
-		<Button variant="ghost" :class="style">
-			<slot />
-		</Button>
-	</RouterLink>
+	<ButtonLink :link="link" :class="style" variant="ghost">
+		<slot />
+	</ButtonLink>
 </template>
