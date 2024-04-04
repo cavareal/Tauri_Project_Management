@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
     List<Student> findByTeamId(Team teamId);
+
+    List<Student> findByTeamName(String teamName);
 }

@@ -124,7 +124,6 @@ public class TeamController {
         String permission = "teamRead";
         if(authService.checkAuth(token, permission)) {
             try {
-                System.out.println("Liste des noms d'équipes : "); //+ teamNames.toString());
                 List<String> teamNames = teamService.getAllTeamNames();
                 return ResponseEntity.ok(Collections.singletonList(teamNames.toString()));
             } catch (Exception e) {

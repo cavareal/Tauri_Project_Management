@@ -15,7 +15,6 @@ import {
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableHead,
 	TableHeader,
@@ -33,7 +32,6 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { SelectContent, SelectItem } from "@/components/ui/select"
 
 const token = getCookie("token")
 const selectedTeam = ref("")
@@ -153,8 +151,8 @@ const sendGrades = async(evaluations : never) => {
               <DropdownMenu >
                 <DropdownMenuTrigger><Ellipsis/></DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem><Pencil/>    Modifier</DropdownMenuItem>
-                  <DropdownMenuItem><Trash2/>    Supprimer</DropdownMenuItem>
+                  <DropdownMenuItem><Pencil/>Modifier</DropdownMenuItem>
+                  <DropdownMenuItem><Trash2/>Supprimer</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </TableCell>
