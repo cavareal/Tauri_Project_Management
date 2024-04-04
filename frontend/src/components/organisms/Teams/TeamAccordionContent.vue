@@ -3,7 +3,6 @@ import { ref, onMounted, defineProps } from "vue"
 import { getStudentsByTeamId } from "@/service/StudentService"
 import type { Student } from "@/type/Student"
 import { AccordionContent } from "@/components/ui/accordion"
-import { TableCell } from "@/components/ui/table"
 
 const students = ref<Student[]>([])
 
@@ -23,9 +22,11 @@ onMounted(async() => {
 <template>
   <div v-for="(student, i) in students" :key="i" :value="student">
     <AccordionContent>
-      <TableCell>{{ student.name }}</TableCell>
-      <TableCell>{{ student.teamRole }}</TableCell>
-      <TableCell>{{ student.gender }}</TableCell>
+      <div class="flex">
+        <div class="flex-grow">{{ student.name }}</div>
+        <div class="flex-grow">{{ student.teamRole }}</div>
+        <div class="flex-grow">{{ student.gender }}</div>
+      </div>
     </AccordionContent>
   </div>
 </template>

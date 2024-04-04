@@ -23,8 +23,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
-    @Autowired
-    private TeamService teamService;
+    private final TeamService teamService;
 
     /**
      * Constructs a new StudentService with the specified StudentRepository.
@@ -32,8 +31,9 @@ public class StudentService {
      * @param studentRepository the student repository to be used
      */
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, TeamService teamService) {
         this.studentRepository = studentRepository;
+        this.teamService = teamService;
     }
 
     /**

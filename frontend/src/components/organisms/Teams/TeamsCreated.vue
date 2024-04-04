@@ -3,7 +3,7 @@ import TeamAccordion from "@/components/organisms/Teams/TeamAccordion.vue"
 </script>
 
 <template>
-	<div>
+	<div class="p-10">
       <TeamAccordion/>
-    </div>
+  </div>
 </template>
