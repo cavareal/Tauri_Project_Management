@@ -1,6 +1,5 @@
 package fr.eseo.tauri.repository;
 
-import fr.eseo.tauri.model.Comment;
 import fr.eseo.tauri.model.Grade;
 import org.springframework.data.jpa.repository.JpaRepository;
 

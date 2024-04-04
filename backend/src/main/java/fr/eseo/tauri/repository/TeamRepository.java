@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface TeamRepository extends JpaRepository<Team, Integer> {
-    List<Team> findByleaderId(User leaderId);
+    List<Team> findByLeader(User leader);
 
     @Query("SELECT t.name FROM Team t")
     List<String> findAllTeamNames();
