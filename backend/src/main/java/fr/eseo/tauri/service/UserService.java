@@ -36,7 +36,7 @@ public class UserService {
     public void deleteUser(Integer id) {
         Optional<User> user = userRepository.findById(Long.valueOf(id));
         if (user.isPresent()) {
-            List<Team> teams = teamRepository.findByleaderId(user.get());
+            List<Team> teams = teamRepository.findByLeader(user.get());
             for (Team team : teams) {
                 team.leader(null);
                 teamRepository.save(team);

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import Logo from "@/components/icons/Logo.vue"
+import { Logo } from "@/components/atoms/logo"
+import { Button } from "@/components/ui/button"
+import { RouterLink } from "vue-router"
 </script>
 
 <template>
@@ -10,7 +12,7 @@ import Logo from "@/components/icons/Logo.vue"
 			<p class="text-md">Vous n'avez pas l'autorisation d'accéder à cette page.</p>
 		</div>
 		<RouterLink to="/">
-			<Button class="text-white">Retour à l'accueil</Button>
+			<Button>Retour à l'accueil</Button>
 		</RouterLink>
 		</div>
 </template>

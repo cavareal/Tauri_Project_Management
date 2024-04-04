@@ -4,7 +4,7 @@ import {
   DropdownMenuSeparator,
   type DropdownMenuSeparatorProps,
 } from 'radix-vue'
-import { cn } from '@/utils/utils.ts'
+import { cn } from '@/utils/utils'
 
 const props = defineProps<DropdownMenuSeparatorProps & {
   class?: HTMLAttributes['class']

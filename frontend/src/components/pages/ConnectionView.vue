@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "../ui/card"
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
-import { Label } from "../ui/label"
-import { Button } from "../ui/button"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
 import { ref } from "vue"
-import Logo from "../icons/Logo.vue"
+import { Logo } from "@/components/atoms/logo"
 
 const selectedRole = ref("OL")
 
@@ -16,10 +16,10 @@ function formSubmit() {
 
 <template>
 	<div
-		class="bg-cover bg-white bg-center size-full flex items-center justify-center"
+		class="bg-cover bg-white bg-center size-full flex flex-col items-center justify-start gap-12 pt-12"
 		style="background-image: url('/eseo.jpg')"
 	>
-		<div class="absolute top-12 flex flex-col items-center gap-4">
+		<div class="flex flex-col items-center gap-4">
 			<Logo class="h-36 fill-dark-blue" />
 			<h1 class="text-4xl font-title-medium text-dark-blue">Bienvenue sur Tauri !</h1>
 		</div>
@@ -70,7 +70,7 @@ function formSubmit() {
 					</RadioGroup>
 				</CardContent>
 				<CardFooter class="flex justify-end">
-					<Button class="text-white" type="submit">Connexion</Button>
+					<Button type="submit">Connexion</Button>
 				</CardFooter>
 			</form>
 		</Card>

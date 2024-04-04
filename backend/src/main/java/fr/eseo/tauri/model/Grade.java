@@ -40,4 +40,10 @@ public class Grade {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Student student;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
+    private Team team;
 }

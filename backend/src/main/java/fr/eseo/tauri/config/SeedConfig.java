@@ -21,9 +21,9 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 
 	@Autowired
 	public SeedConfig(UserSeeder userSeeder, TeamSeeder teamSeeder) {
+		this.faker = new Faker(new Locale("fr-FR"));
 		this.userSeeder = userSeeder;
         this.teamSeeder = teamSeeder;
-        this.faker = new Faker(new Locale("en-US"));
 	}
 
 	@Override

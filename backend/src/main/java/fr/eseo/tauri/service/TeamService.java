@@ -1,9 +1,8 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.repository.*;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -22,23 +21,19 @@ public class TeamService {
     private final ProjectRepository projectRepository;
     private final StudentRepository studentRepository;
 
-    private final GradeRepository gradeRepository;
-
     /**
      * Constructor for TeamService.
      * @param teamRepository the team repository
      * @param userRepository the user repository
      * @param projectRepository the project repository
      * @param studentRepository the student repository
-     * @param gradeRepository the grade repository
      */
     @Autowired
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository, StudentRepository studentRepository, GradeRepository gradeRepository) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository, StudentRepository studentRepository){
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.studentRepository = studentRepository;
-        this.gradeRepository = gradeRepository;
     }
 
     /**
@@ -48,17 +43,11 @@ public class TeamService {
     public void deleteTeam(Integer id) {
         Optional<Team> team = teamRepository.findById(id);
         if (team.isPresent()) {
-            List<Student> students = studentRepository.findByTeamId(team.get());
+            List<Student> students = studentRepository.findByTeam(team.get());
             for (Student student : students) {
                 student.team(null);
                 studentRepository.save(student);
             }
-
-            // List<Grade> grades = gradeRepository.findByTeam(team.get());
-            // for (Grade grade : grades) {
-            //    gradeRepository.delete(grade);
-            // }
-
             teamRepository.deleteById(id);
         }
     }
@@ -66,7 +55,7 @@ public class TeamService {
     /*@PostConstruct //Test function for the deleteTeam function
     public void initDataIfTableIsEmpty() {
 
-        if(userRepository.count() == 0){
+        /*if(userRepository.count() == 0){
             User user = new User();
             User user2 = new User();
             userRepository.save(user);
@@ -87,19 +76,20 @@ public class TeamService {
             Student student = new Student();
             Student student2 = new Student();
             student.team(teamRepository.findById(1).get());
-            student2.team(teamRepository.findById(1).get());
+            //student2.team(teamRepository.findById(1).get());
             studentRepository.save(student);
             studentRepository.save(student2);
         }
 
-        if(gradeRepository.count() == 0){
+
+        /*if(gradeRepository.count() == 0){
             Grade grade = new Grade();
             //grade.team(teamRepository.findById(1).get());
             gradeRepository.save(grade);
         }
 
         if (teamRepository.count() != 0) {
-            //this.deleteTeam(1);
+            this.deleteTeam(1);
         }
 
         if(userRepository.count() != 0){
