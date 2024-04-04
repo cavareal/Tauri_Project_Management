@@ -35,7 +35,7 @@ public class PermissionController {
     public Permission updatePermission(@PathVariable Integer id, @RequestBody Permission permissionDetails) {
         Permission permission = permissionRepository.findById(id).orElse(null);
         if (permission != null) {
-            permission.type(permissionDetails.type());
+            permission.type (permissionDetails.type());
             // Si vous avez un champ Role, vous pouvez également mettre à jour ici
             return permissionRepository.save(permission);
         }

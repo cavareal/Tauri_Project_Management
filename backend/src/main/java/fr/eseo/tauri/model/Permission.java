@@ -2,6 +2,7 @@ package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.enumeration.PermissionType;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,13 +21,18 @@ public class Permission {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name="type")
+    @Column(name="permission")
     @JsonProperty
     private PermissionType type;
 
-    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    @Column(name="role")
+    @JsonProperty
+    private RoleType role;
+
+    /*@ManyToOne
     @JoinColumn(name = "role_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
-    private Role role;
+    private Role role;*/
 }
