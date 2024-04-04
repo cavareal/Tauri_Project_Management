@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
+import { Ellipsis, Pencil, Trash2 } from "lucide-vue-next"
+
 import {
 	Dialog,
 	DialogClose,
@@ -10,10 +12,30 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from "@/components/ui/dialog"
+import {
+	Table,
+	TableBody,
+	TableCaption,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow
+} from "@/components/ui/table"
+
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import getCookie from "@/utils/cookiesUtils"
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
+import { SelectContent, SelectItem } from "@/components/ui/select"
 
+const token = getCookie("token")
 const selectedTeam = ref("")
 const note = ref("")
 const evaluations = ref<Record<string, { team: string, note: number }[]>>({})
@@ -39,9 +61,17 @@ function addEvaluation() {
 	}
 }
 
-const sendGrade = async(evaluations : never) => {
+const request = {
+	method: "GET",
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: token || "null"
+	}
+}
+
+const sendGrades = async(evaluations : never) => {
 	try {
-		const response = await fetch("http://backend-url/endpoint", {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grade/add", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -101,15 +131,42 @@ const sendGrade = async(evaluations : never) => {
         </DialogContent>
       </Dialog>
     </div>
-
-    <!-- Afficher les évaluations -->
-    <div v-for="(teamEvaluations, teamName) in evaluations" :key="teamName">
-      <h2>{{ teamName }}</h2>
-      <ul>
-        <li v-for="(evaluation, index) in teamEvaluations" :key="index">
-          {{ evaluation.note }}
-        </li>
-      </ul>
+    <div class="w-1/2 mx-auto py-4">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead class="w-[200px]">
+              Nom de l'équipe
+            </TableHead>
+            <TableHead>Note</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow v-for="(teamEvaluations, teamName) in evaluations" :key="teamName">
+            <TableCell>
+              {{ teamName }}
+            </TableCell>
+            <TableCell v-for="(evaluation, index) in teamEvaluations" :key="index">
+              {{ evaluation.note }}
+            </TableCell>
+            <TableCell class="text-right">
+              <DropdownMenu >
+                <DropdownMenuTrigger><Ellipsis/></DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem><Pencil/>    Modifier</DropdownMenuItem>
+                  <DropdownMenuItem><Trash2/>    Supprimer</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div>
+    <div class="flex justify-center">
+<!--      attention à ajouter une propriété pour etre sur que les évaluations sont non vides-->
+      <Button type="submit" variant="destructive" class="mx-auto bg-secondary hover:bg-secondary/90" v-if="evaluations" @click="sendGrades">
+        Valider
+      </Button>
     </div>
   </div>
 </template>

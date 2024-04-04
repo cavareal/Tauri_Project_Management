@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, defineComponent, provide, ref } from "vue"
 import PageTemplate from "@/components/organisms/PageTemplate.vue"
-import Tab from "@/components/ui/tab/Tab.vue"
-import Tabs from "@/components/ui/tab/Tabs.vue"
+import Tab from "@/components/molecules/tab/Tab.vue"
+import Tabs from "@/components/molecules/tab/Tabs.vue"
 import NotAutorized from "@/components/organisms/Teams/NotAuthorized.vue"
 import TMRateView from "@/components/organisms/Rate/TMRateView.vue"
 import getCookie from "@/utils/cookiesUtils"
