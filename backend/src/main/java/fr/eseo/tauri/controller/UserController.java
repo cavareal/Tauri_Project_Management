@@ -32,12 +32,12 @@ public class UserController {
 	}
 
 	@GetMapping(path = "/{id}")
-	public @ResponseBody User getUser(@PathVariable Long id) {
+	public @ResponseBody User getUser(@PathVariable Integer id) {
 		return userRepository.findById(id).orElse(null);
 	}
 
 	@PutMapping(path = "/update")
-	public @ResponseBody String updateUser(@RequestParam Long id, @RequestParam String name, @RequestParam String email) {
+	public @ResponseBody String updateUser(@RequestParam Integer id, @RequestParam String name, @RequestParam String email) {
 		User user = userRepository.findById(id).orElse(null);
 		if (user != null) {
 			user.name(name);
@@ -49,7 +49,7 @@ public class UserController {
 	}
 
  	@DeleteMapping(path = "/delete/{id}")
-	public @ResponseBody String deleteUser(@PathVariable Long id) {
+	public @ResponseBody String deleteUser(@PathVariable Integer id) {
 		userRepository.deleteById(id);
 		return "Deleted";
 	}

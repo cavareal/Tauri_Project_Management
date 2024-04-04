@@ -67,7 +67,7 @@ public class TeamService {
             Team team = new Team();
             team.project(projectRepository.findById(1).get());
             if (userRepository.count() != 0){
-                team.leader(userRepository.findById(Long.valueOf(1)).get());
+                team.leader(userRepository.findById(1).get());
             }
             teamRepository.save(team);
         }
@@ -105,7 +105,7 @@ public class TeamService {
      * @return the updated team if successful, otherwise null
      */
     public Team updateLeaderTeam(Integer teamId, Integer leaderId) {
-        User leader = userRepository.findById(Long.valueOf(leaderId)).orElse(null);
+        User leader = userRepository.findById(leaderId).orElse(null);
         Team team = teamRepository.findById(teamId).orElse(null);
         if (team != null && leader != null) {
             team.leader(leader);

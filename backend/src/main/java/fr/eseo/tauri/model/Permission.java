@@ -30,9 +30,4 @@ public class Permission {
     @JsonProperty
     private RoleType role;
 
-    /*@ManyToOne
-    @JoinColumn(name = "role_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonProperty
-    private Role role;*/
 }
