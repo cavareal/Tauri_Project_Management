@@ -19,7 +19,7 @@ vuejs-build:
   stage: build
   image: node:16.19.1-alpine3.17
   script:
-    - cd front
+    - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only
   cache:
@@ -101,7 +101,7 @@ vuejs-deploy-dev:
     expire_in: 1 hrs
   cache:
     paths:
-      - front/node_modules
+      - frontend/node_modules
   only:
     - dev
     - gitlab-ci
@@ -132,18 +132,18 @@ angular-deploy-prod:
   stage: deploy-vuejs
   image: node:16.19.1-alpine3.17
   script:
-    - cd front
+    - cd frontend
     - npm install --legacy-peer-deps
     - npm install -g @angular/cli
     - ng build --configuration=production --base-href "."
   dependencies: []
   artifacts:
     paths:
-      - front/dist
+      - frontend/dist
     expire_in: 1 hrs
   cache:
     paths:
-      - front/node_modules
+      - frontend/node_modules
   only:
     - master
 
@@ -151,7 +151,7 @@ java-deploy-prod:
   stage: deploy-java
   image: gradle:8.4-jdk11
   script:
-    - cp -r front/dist/front/* back/src/main/resources/static/
+    - cp -r frontend/dist/frontend/* back/src/main/resources/static/
     - cd back
     - gradle --no-daemon clean build -Pprod -x test
   dependencies:
