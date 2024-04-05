@@ -1,45 +1,83 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.repository.StudentRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.StudentService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import fr.eseo.tauri.controller.StudentController;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.multipart.MultipartFile;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-@SpringBootTest
 class StudentControllerTest {
 
+    @Mock
+    private StudentService studentService;
+
+    @Mock
+    private AuthService authService;
+
+    @InjectMocks
+    private StudentController studentController;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
-    public void testImportFiles() {
+    @Order(1)
+    @DisplayName("Test getStudentQuantity endpoint - Success")
+    void getStudentQuantity_returnsQuantity_whenAuthorized() {
+        // Arrange
+        String token = "validToken";
+        when(authService.checkAuth(token, "readStudentQuantity")).thenReturn(true);
+        when(studentService.getStudentQuantity()).thenReturn(10);
 
-        StudentController student=new StudentController();
+        // Act
+        ResponseEntity<String> response = studentController.getStudentQuantity(token);
 
-        Path path = Paths.get("C:\\Users\\pallu\\OneDrive\\Documents\\Workspace\\Ingenieur\\E4 n2\\ProjetGL\\nath\\example.csv");
-        String name = "example.csv";
-        String originalFileName = "example.csv";
-        String contentType = MimeTypeUtils.ALL_VALUE;
-        byte[] content = null;
-        try {
-            content = Files.readAllBytes(path);
-        } catch (final IOException e) {
-        }
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("10", response.getBody());
+    }
 
-        MultipartFile result = new MockMultipartFile(name,
-                originalFileName, contentType, content);
+    @Test
+    @Order(2)
+    @DisplayName("Test getStudentQuantity endpoint - Unauthorized")
+    void getStudentQuantity_returnsUnauthorized_whenNotAuthorized() {
+        // Arrange
+        String token = "invalidToken";
+        when(authService.checkAuth(token, "readStudentQuantity")).thenReturn(false);
 
-        File file2 = student.handleFileUpload(result);
-        List<String> list = student.fileReader(file2);
+        // Act
+        ResponseEntity<String> response = studentController.getStudentQuantity(token);
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("Non autorisé", response.getBody());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Test getStudentQuantity endpoint - Internal Server Error")
+    void getStudentQuantity_returnsInternalServerError_whenExceptionThrown() {
+        // Arrange
+        String token = "validToken";
+        when(authService.checkAuth(token, "readStudentQuantity")).thenReturn(true);
+        when(studentService.getStudentQuantity()).thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act
+        ResponseEntity<String> response = studentController.getStudentQuantity(token);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Erreur lors de la mise à jour : Unexpected error", response.getBody());
     }
 }
