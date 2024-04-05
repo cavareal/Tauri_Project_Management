@@ -4,10 +4,11 @@ import { UserSchema } from "@/type/User"
 
 
 export const TeamSchema = z.object({
+	//TO-DO: Delete optional and nullable
 	id: z.number(),
 	name: z.string(),
-	projectId: ProjectSchema.optional(),
-	leaderId: UserSchema
+	project: ProjectSchema.optional().nullable(),
+	leader: UserSchema.optional().nullable()
 })
 
 export type Team = z.infer<typeof TeamSchema>;

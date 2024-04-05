@@ -3,12 +3,11 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
-import fr.eseo.tauri.model.*;
-import fr.eseo.tauri.repository.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -50,16 +49,16 @@ public class TeamService {
     public void deleteTeam(Integer id) {
         Optional<Team> team = teamRepository.findById(id);
         if (team.isPresent()) {
-            List<Student> students = studentRepository.findByTeamId(team.get());
+            List<Student> students = studentRepository.findByTeam(team.get());
             for (Student student : students) {
-                student.teamId(null);
+                student.team(null);
                 studentRepository.save(student);
             }
             teamRepository.deleteById(id);
         }
     }
 
-   /* @PostConstruct //Test function for the deleteTeam function
+    @PostConstruct //Test function for the deleteTeam function
     public void initDataIfTableIsEmpty() {
 
         if(userRepository.count() == 0){
@@ -75,13 +74,13 @@ public class TeamService {
             // Ajouter une ligne dans la table teams si elle est vide
             Team team = new Team();
             Team team2 = new Team();
-            team.projectId(projectRepository.findById(1).get());
+            team.project(projectRepository.findById(1).get());
             team.name("Tauri");
-            team2.projectId(projectRepository.findById(1).get());
+            team2.project(projectRepository.findById(1).get());
             team2.name("LesAutres");
             if (userRepository.count() != 0){
-                team.leaderId(userRepository.findById(Long.valueOf(1)).get());
-                team2.leaderId(userRepository.findById(Long.valueOf(2)).get());
+                team.leader(userRepository.findById(1).get());
+                team2.leader(userRepository.findById(2).get());
             }
             teamRepository.save(team);
             teamRepository.save(team2);
@@ -96,8 +95,8 @@ public class TeamService {
             student2.teamRole("PO");
             student.gender(Gender.MAN);
             student2.gender(Gender.OTHER);
-            student.teamId(teamRepository.findById(1).get());
-            student2.teamId(teamRepository.findById(1).get());
+            student.team(teamRepository.findById(1).get());
+            student2.team(teamRepository.findById(1).get());
             Student student3 = new Student();
             Student student4 = new Student();
             student3.name("titi");
@@ -106,8 +105,8 @@ public class TeamService {
             student4.teamRole("PO");
             student3.gender(Gender.MAN);
             student4.gender(Gender.OTHER);
-            student3.teamId(teamRepository.findById(2).get());
-            student4.teamId(teamRepository.findById(2).get());
+            student3.team(teamRepository.findById(2).get());
+            student4.team(teamRepository.findById(2).get());
             studentRepository.save(student);
             studentRepository.save(student2);
             studentRepository.save(student3);
@@ -127,7 +126,7 @@ public class TeamService {
 
         if(userRepository.count() != 0){
             //UserService.deleteUser(1);
-        }
+        }*/
 
     }
 
@@ -138,10 +137,10 @@ public class TeamService {
      * @return the updated team if successful, otherwise null
      */
     public Team updateLeaderTeam(Integer teamId, Integer leaderId) {
-        User leader = userRepository.findById(Long.valueOf(leaderId)).orElse(null);
+        User leader = userRepository.findById(leaderId).orElse(null);
         Team team = teamRepository.findById(teamId).orElse(null);
         if (team != null && leader != null) {
-            team.leaderId(leader);
+            team.leader(leader);
             return teamRepository.save(team);
         }
         return null;

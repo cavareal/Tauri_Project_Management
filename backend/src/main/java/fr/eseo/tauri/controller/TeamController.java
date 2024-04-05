@@ -143,4 +143,22 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
         }
     }
+
+    @GetMapping("/names")
+    public ResponseEntity<List<String>> getAllTeamNames(@RequestHeader("Authorization") String token) {
+        String permission = "readStudentByTeam";
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+            try {
+                List<String> teams = teamService.getAllTeamNames();
+                if (teams.isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(teams);
+                }
+                return ResponseEntity.ok(teams);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+        }
+    }
 }

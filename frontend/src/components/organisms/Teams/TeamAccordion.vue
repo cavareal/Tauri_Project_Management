@@ -3,7 +3,6 @@ import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/acco
 import type { Team } from "@/type/Team"
 import { getTeams } from "@/service/TeamService"
 import { ref, onMounted } from "vue"
-import { getStudentsByTeamId } from "@/service/StudentService"
 import TeamAccordionContent from "@/components/organisms/Teams/TeamAccordionContent.vue"
 
 const teams = ref<Team[]>([])
@@ -14,15 +13,13 @@ onMounted(async() => {
 	console.log(data)
 })
 
-console.log(getStudentsByTeamId(1))
-
 </script>
 
 <template>
 	<Accordion type="multiple" class="w-full">
     <AccordionItem v-for="team in teams" :key="team.id" :value="team.name">
     <AccordionTrigger>{{ team.name }}</AccordionTrigger>
-      <TeamAccordionContent :teamId="team.id" :leader="team.leaderId.name"/>
+      <TeamAccordionContent :teamId="team.id" :leader="team.leader?.name"/>
     </AccordionItem>
   </Accordion>
 </template>

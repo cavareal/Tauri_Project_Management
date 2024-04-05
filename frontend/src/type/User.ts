@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 export const UserSchema = z.object({
+	//TO-DO: Delete optional and nullable
 	id: z.number(),
 	name: z.string().optional().nullable(),
 	email: z.string().optional().nullable(),
