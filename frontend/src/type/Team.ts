@@ -7,7 +7,7 @@ export const TeamSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	projectId: ProjectSchema.optional(),
-	leaderId: UserSchema.optional()
+	leaderId: UserSchema
 })
 
 export type Team = z.infer<typeof TeamSchema>;

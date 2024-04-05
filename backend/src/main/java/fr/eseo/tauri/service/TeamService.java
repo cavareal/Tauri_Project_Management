@@ -64,6 +64,8 @@ public class TeamService {
         if(userRepository.count() == 0){
             User user = new User();
             User user2 = new User();
+            user.name("Mickael Clavreul");
+            user2.name("Maissa Berrada");
             userRepository.save(user);
             userRepository.save(user2);
         }
@@ -78,7 +80,7 @@ public class TeamService {
             team2.name("LesAutres");
             if (userRepository.count() != 0){
                 team.leaderId(userRepository.findById(Long.valueOf(1)).get());
-                team2.leaderId(userRepository.findById(Long.valueOf(1)).get());
+                team2.leaderId(userRepository.findById(Long.valueOf(2)).get());
             }
             teamRepository.save(team);
             teamRepository.save(team2);

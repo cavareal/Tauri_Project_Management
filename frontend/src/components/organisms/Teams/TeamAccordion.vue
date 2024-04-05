@@ -22,7 +22,7 @@ console.log(getStudentsByTeamId(1))
 	<Accordion type="multiple" class="w-full">
     <AccordionItem v-for="team in teams" :key="team.id" :value="team.name">
     <AccordionTrigger>{{ team.name }}</AccordionTrigger>
-      <TeamAccordionContent :teamId="team.id"/>
+      <TeamAccordionContent :teamId="team.id" :leader="team.leaderId.name"/>
     </AccordionItem>
   </Accordion>
 </template>

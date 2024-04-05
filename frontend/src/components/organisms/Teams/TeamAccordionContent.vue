@@ -10,6 +10,10 @@ const props = defineProps({
 	teamId: {
 		type: Number,
 		required: true
+	},
+	leader: {
+		type: String,
+		required: true
 	}
 })
 
@@ -29,4 +33,9 @@ onMounted(async() => {
       </div>
     </AccordionContent>
   </div>
+  <AccordionContent>
+    <div class="flex">
+      <div class="font-bold">{{ leader }}</div>
+    </div>
+  </AccordionContent>
 </template>
