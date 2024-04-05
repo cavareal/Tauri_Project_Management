@@ -1,4 +1,6 @@
 import type { ApiQueryRequest, ApiQueryResponse } from "."
+import getCookie from "@/utils/cookiesUtils"
+
 
 export const apiQuery = async <T>({ route, responseSchema, method, body }: ApiQueryRequest<T>): Promise<ApiQueryResponse<T>> => {
 	let url = import.meta.env.VITE_TAURI_API_URL
@@ -10,7 +12,14 @@ export const apiQuery = async <T>({ route, responseSchema, method, body }: ApiQu
 	}
 	if (!url.endsWith("/")) url += "/"
 
-	const response = await fetch(`${url}${route}`, { method, body: body ? JSON.stringify(body) : undefined })
+	const token = getCookie("token")
+
+	const headers = {
+		"Content-Type": "application/json",
+		Authorization: token || "null"
+	}
+
+	const response = await fetch(`${url}${route}`, { method, body: body ? JSON.stringify(body) : undefined, headers })
 	if (!response.ok) {
 		return {
 			status: "error",
