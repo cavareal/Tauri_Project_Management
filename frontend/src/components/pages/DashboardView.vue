@@ -11,7 +11,5 @@ message.value = getCookie("role") ?? "World"
 <template>
 	<PageTemplate>
 		Hello {{ message }}
-		<TeamTable />
-		<TeamTable />
 	</PageTemplate>
 </template>
