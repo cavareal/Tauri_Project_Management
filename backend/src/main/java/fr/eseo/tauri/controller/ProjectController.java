@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller class for managing projects.
@@ -40,12 +41,13 @@ public class ProjectController {
 
     @GetMapping("/current")
     public ResponseEntity<Project> getCurrentProject() {
-        var project = projectRepository.findAll().get(0);
-        if (project == null) {
+        Optional<Project> projectOptional = projectRepository.findAll().stream().findFirst();
+        if (projectOptional.isPresent()) {
+            Project project = projectOptional.get();
+            return ResponseEntity.status(HttpStatus.OK).body(project);
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        // return ResponseEntity.ok(project);
-        return ResponseEntity.status(HttpStatus.OK).body(project);
     }
 
     /**

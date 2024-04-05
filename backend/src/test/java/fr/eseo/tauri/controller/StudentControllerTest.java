@@ -1,24 +1,20 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-
+import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.util.Arrays;
-import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
 class StudentControllerTest {
 
     @Mock
@@ -30,49 +26,58 @@ class StudentControllerTest {
     @InjectMocks
     private StudentController studentController;
 
-    @Test
-    void testGetStudentsByTeam() {
-        // Arrange
-        Student student1 = new Student();
-        Student student2 = new Student();
-        when(studentService.getStudentsByTeamId(1)).thenReturn(Arrays.asList(student1, student2));
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-
-        // Act
-        ResponseEntity<List<Student>> response = studentController.getStudentsByTeam("mockToken", 1);
-
-        // Assert
-        assertThat(response.getBody()).hasSize(2);
-        verify(studentService, times(1)).getStudentsByTeamId(1);
-        verify(authService, times(1)).checkAuth(anyString(), anyString());
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void testGetStudentsByTeamReturnsInternalServerError() {
+    @Order(1)
+    @DisplayName("Test getStudentQuantity endpoint - Success")
+    void getStudentQuantity_returnsQuantity_whenAuthorized() {
         // Arrange
-        when(studentService.getStudentsByTeamId(1)).thenThrow(new RuntimeException("Unexpected error"));
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        String token = "validToken";
+        when(authService.checkAuth(token, "readStudentQuantity")).thenReturn(true);
+        when(studentService.getStudentQuantity()).thenReturn(10);
 
         // Act
-        ResponseEntity<List<Student>> response = studentController.getStudentsByTeam("mockToken", 1);
+        ResponseEntity<String> response = studentController.getStudentQuantity(token);
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-        verify(studentService, times(1)).getStudentsByTeamId(1);
-        verify(authService, times(1)).checkAuth(anyString(), anyString());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("10", response.getBody());
     }
 
     @Test
-    void testGetStudentsByTeamReturnsUnauthorized() {
+    @Order(2)
+    @DisplayName("Test getStudentQuantity endpoint - Unauthorized")
+    void getStudentQuantity_returnsUnauthorized_whenNotAuthorized() {
         // Arrange
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+        String token = "invalidToken";
+        when(authService.checkAuth(token, "readStudentQuantity")).thenReturn(false);
 
         // Act
-        ResponseEntity<List<Student>> response = studentController.getStudentsByTeam("mockToken", 1);
+        ResponseEntity<String> response = studentController.getStudentQuantity(token);
 
         // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        verify(authService, times(1)).checkAuth(anyString(), anyString());
-        verify(studentService, never()).getStudentsByTeamId(anyInt());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals("Non autorisé", response.getBody());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("Test getStudentQuantity endpoint - Internal Server Error")
+    void getStudentQuantity_returnsInternalServerError_whenExceptionThrown() {
+        // Arrange
+        String token = "validToken";
+        when(authService.checkAuth(token, "readStudentQuantity")).thenReturn(true);
+        when(studentService.getStudentQuantity()).thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act
+        ResponseEntity<String> response = studentController.getStudentQuantity(token);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("Erreur lors de la mise à jour : Unexpected error", response.getBody());
     }
 }

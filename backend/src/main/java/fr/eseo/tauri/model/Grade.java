@@ -23,6 +23,9 @@ public class Grade {
     @JsonProperty
     private String comment;
 
+    @JsonProperty
+    private Boolean confirmed;
+
     @ManyToOne
     @JoinColumn(name = "grade_type_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
