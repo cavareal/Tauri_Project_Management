@@ -41,7 +41,8 @@ java-build:
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
-
+  dependencies:
+    - vuejs-build
 
 # Tests d'intégrations
 # robotframework-test:
