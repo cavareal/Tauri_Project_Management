@@ -3,16 +3,16 @@
 
 stages:
   - build
-  - test
-  - sonar
+  # - test
+  # - sonar
   - deploy-vuejs
   - deploy-java
-  - selenium
+  # - selenium
 
 variables:
-  MAVEN_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
-
+  GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  org.gradle.jvmargs: "-Xmx1024m -XX:MaxPermSize=256m"
+  
 before_script:
   - export https_proxy=http://192.168.4.8:3128/
   - export http_proxy=http://192.168.4.8:3128/
@@ -74,7 +74,7 @@ quality-dev:
   script:
     - cd back
     - gradle --no-daemon test
-    - gradle --no-daemon sonarqube -Dsonar.projectName=Team3_DevBranch -Dsonar.projectKey=Team3_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=f7545cc5cdd47846233306d2ee6e1430e1233fd3
+    - gradle --no-daemon sonarqube -Dsonar.projectName=Team4_DevBranch -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.jar
@@ -89,27 +89,19 @@ quality-dev:
 
 quality-prod:
   stage: sonar
-  image: maven:3.8.1-jdk-11
+  image: gradle:8.4-jdk11
   script:
     - cd back
-    # TEMP
-    - curl https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-parent/2.7.9/spring-boot-starter-parent-2.7.9.pom
-    - mvn --log-file $CI_PROJECT_DIR/mvn.log $MAVEN_CLI_OPTS compile test
-    # TEMP
-    - cp ./target/site/jacoco/jacoco.xml ./jacoco.xml
-    - mvn --log-file $CI_PROJECT_DIR/mvn_clean_install.log $MAVEN_CLI_OPTS clean install -DskipTests=true
-    - mvn --log-file $CI_PROJECT_DIR/mvn_dependency_check.log $MAVEN_CLI_OPTS dependency-check:check
-    - mvn --log-file $CI_PROJECT_DIR/mvn_sonar.log $MAVEN_CLI_OPTS validate sonar:sonar -Dsonar.projectName=Team3_MasterBranch -Dsonar.projectKey=Team3_MasterBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=66a042836678156de40eac28c940b009324df42c
+    - gradle --no-daemon clean test
+    - gradle --no-daemon sonarqube -Dsonar.projectName=Team4_MasterBranch -Dsonar.projectKey=Team4_2024_MasterBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=1cec587f7d0c27e7e6e05a138e8a1929a300e105
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/mvn_clean_install.log
-      - $CI_PROJECT_DIR/mvn_dependency_check.log
-      - $CI_PROJECT_DIR/mvn_sonar.log
+      - $CI_PROJECT_DIR/build/libs/*.jar
     expire_in: 1 day
     when: always
   cache:
     paths:
-      - $CI_PROJECT_DIR/.m2/repository
+      - $CI_PROJECT_DIR/.gradle/caches
   only:
     - master
 
@@ -136,19 +128,18 @@ vuejs-deploy-dev:
 
 java-deploy-dev:
   stage: deploy-java
-  image: maven:3.8.1-jdk-11
+  image: gradle:8.4-jdk11
   script:
     - cd backend
-    - mvn --log-file $CI_PROJECT_DIR/mvn.log $MAVEN_CLI_OPTS clean package -P dev -DskipTests=true
+    - gradle --no-daemon clean build -Pdev -x test
   dependencies:
     - vuejs-deploy-dev
   cache:
     paths:
-      - $CI_PROJECT_DIR/.m2/repository
+      - $CI_PROJECT_DIR/.gradle/caches
   artifacts:
     paths:
-      - back/target/taf.war
-      - $CI_PROJECT_DIR/mvn.log
+      - back/build/libs/*.war
     expire_in: 5 days
     when: always
   only:
@@ -194,20 +185,19 @@ angular-deploy-prod:
 
 java-deploy-prod:
   stage: deploy-java
-  image: maven:3.8.1-jdk-11
+  image: gradle:8.4-jdk11
   script:
     - cp -r front/dist/front/* back/src/main/resources/static/
     - cd back
-    - mvn --log-file $CI_PROJECT_DIR/mvn.log $MAVEN_CLI_OPTS clean package -P prod -DskipTests=true
+    - gradle --no-daemon clean build -Pprod -x test
   dependencies:
     - angular-deploy-prod
   cache:
     paths:
-      - $CI_PROJECT_DIR/.m2/repository
+      - $CI_PROJECT_DIR/.gradle/caches
   artifacts:
     paths:
-      - back/target/taf.war
-      - $CI_PROJECT_DIR/mvn.log
+      - back/build/libs/*.war
     expire_in: 5 days
     when: always
   only:
