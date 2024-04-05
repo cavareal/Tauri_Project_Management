@@ -26,8 +26,8 @@ public class Bonus {
     @JsonProperty
     private Boolean limited;
 
-    //@JsonProperty
-    //private Boolean confirmed;
+//    @JsonProperty
+//    private Boolean confirmed;
 
     @ManyToOne
     @JoinColumn(name = "sprint_id")
