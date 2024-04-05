@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.Project;
 
+import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,30 +148,38 @@ public class TeamService {
 
     /**
      * Create teams with the given number of teams and the given ratio
-     * TODO : take into account the ratioGender and try to create teams with the same average grade
+     * TODO : take into account the nbWomen and try to create teams with the same average grade
      * TODO : add a parameter to choose the project ?
      * @param nbTeams the number of teams to create
-     * @param ratioGender the ratio of women in the teams
+     * @param womenPerTeam the ratio of women in the teams
      * @return a List<Teams> if teams are created, otherwise null
      */
-    public List<Team> createTeams(Integer nbTeams, Integer ratioGender) {
-        System.out.println("TeamService.createTeams : Creating Teams");
+    public List<Team> createTeams(Integer nbTeams, Integer womenPerTeam) {
+        System.out.println("    TeamService.createTeams : Creating Teams");
 
         // Get all students ordered by average grade
         List<Student> students = this.studentRepository.findAllOrderByImportedAvg();
-        int nbStudent = students.size();
 
-        System.out.println("    nbStudent : " + nbStudent);
+//        int nbStudent = students.size();
 
+        List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
+        List<Student> men = this.studentRepository.findByGender(Gender.MAN);
+
+        int nbWomen = women.size();
+        int nbMen = men.size();
+        int nbStudent = nbMen + nbWomen;
+
+        // TODO : get the ACTUAL project (not the first one)
         Project project = projectRepository.getReferenceById(1);
 
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams || nbTeams < 1) {
-            System.out.println("    ERROR  : Not enough students to create the teams");
+            System.out.println("ERROR : TeamService.createTeams : Not enough students to create the teams");
             return null;
         }else {
             List<Team> teams = new ArrayList<>();
 
+            System.out.println("INFO : TeamService.createTeams : nbTeams : " + nbTeams);
             // Create the teams
             for (int i = 0; i < nbTeams; i++) {
                 Team team = new Team();
@@ -180,15 +189,26 @@ public class TeamService {
                 teams.add(team);
             }
 
-            // Assign students to the teams
-            for (int i = 0; i < nbStudent; i++) {
-                Student student = students.get(i);
+            System.out.println("INFO : TeamService.createTeams : nbWomen : " + nbWomen);
+            // Assign women to the teams
+            for (int i = 0; i < nbWomen; i++) {
+                Student student = women.get(i);
                 student.team(teams.get(i % nbTeams));
+                studentRepository.save(student);
+            }
+
+            int index = nbWomen % nbTeams;
+            System.out.println("INFO : TeamService.createTeams : index : " + index);
+
+            System.out.println("INFO : TeamService.createTeams : nbMen : " + nbMen);
+            // Assign students to the teams
+            for (int i = 0; i < nbMen; i++) {
+                Student student = men.get(i);
+                student.team(teams.get((index + i) % nbTeams));
                 studentRepository.save(student);
             }
 
             return teams;
         }
     }
-
 }
