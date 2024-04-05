@@ -81,7 +81,7 @@ public class ProjectController {
      * Update the number of sprints for a project.
      * @param token the authentication token
      * @param idProject the project ID
-     * @param newSprintsNumber the new number of teams
+     * @param request data from the front
      * @return a response entity with a success message or an error message
      */
     @PutMapping("/update-sprints-number/{idProject}")
