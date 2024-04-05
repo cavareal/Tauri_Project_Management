@@ -174,7 +174,6 @@ public class TeamService {
         }else {
             List<Team> teams = new ArrayList<>();
 
-            System.out.println("INFO : TeamService.createTeams : nbTeams : " + nbTeams);
             // Create the teams
             for (int i = 0; i < nbTeams; i++) {
                 Team team = new Team();
@@ -184,7 +183,6 @@ public class TeamService {
                 teams.add(team);
             }
 
-            System.out.println("INFO : TeamService.createTeams : nbWomen : " + nbWomen);
             // Assign women to the teams
             for (int i = 0; i < nbWomen/womenPerTeam; i++) {
                 for (int y = 0; y < womenPerTeam; y++) {
@@ -223,7 +221,6 @@ public class TeamService {
                 }
             }
 
-            System.out.println("INFO : TeamService.createTeams : menIndex : " + (nbMen - (nbStudent - nbTeams * womenPerTeam)));
             menIndex = nbMen - (nbStudent - nbTeams * womenPerTeam);
 
             // Assign men to the teams

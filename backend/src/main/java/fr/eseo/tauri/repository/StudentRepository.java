@@ -2,7 +2,6 @@ package fr.eseo.tauri.repository;
 
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 import fr.eseo.tauri.model.Student;
 import org.springframework.data.jpa.repository.Query;

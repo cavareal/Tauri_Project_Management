@@ -100,12 +100,12 @@ public class TeamController {
     public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
 
         Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
-        Integer ratioGender = Integer.valueOf(request.get("ratioGender"));
+        Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
         String permission = "teamCreate";
 
         if(authService.checkAuth(token, permission)) {  // Check if role is authorised to do this request, in fonction of the permissions
             try {
-                List<Team> teams = teamService.createTeams(nbTeams, ratioGender);
+                List<Team> teams = teamService.createTeams(nbTeams, womenPerTeam);
 
                 if (teams != null) {
                     System.out.println("Teams have been created");
