@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PageTemplate from "@/components/organisms/PageTemplate.vue"
+import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import { ref } from "vue"
 import getCookie from "@/utils/cookiesUtils"
 

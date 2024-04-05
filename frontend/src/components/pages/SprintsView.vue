@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import PageTemplate from "@/components/organisms/PageTemplate.vue"
+import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import getCookie from "@/utils/cookiesUtils"
 import EditNbSprints from "@/components/organisms/sprints/EditNbSprints.vue";
 import NotAuthorized from "../organisms/errors/NotAuthorized.vue";

@@ -1,8 +1,8 @@
 import { apiQuery } from "@/utils/api"
-import { TeamSchema } from "@/type/Team"
-import type { Team } from "@/type/Team"
+import { TeamSchema } from "@/types/team"
+import type { Team } from "@/types/team"
 
-export async function getTeams(): Promise<Team[]> {
+export const getTeams = async(): Promise<Team[]> => {
 	const response = await apiQuery({
 		route: "teams",
 		responseSchema: TeamSchema.array(),
@@ -12,5 +12,6 @@ export async function getTeams(): Promise<Team[]> {
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+
 	return response.data
 }

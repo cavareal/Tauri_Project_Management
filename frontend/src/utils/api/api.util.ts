@@ -2,7 +2,7 @@ import type { ApiQueryRequest, ApiQueryResponse } from "."
 import getCookie from "@/utils/cookiesUtils"
 
 
-export const apiQuery = async <T>({ route, responseSchema, method, body }: ApiQueryRequest<T>): Promise<ApiQueryResponse<T>> => {
+export const apiQuery = async <T>({ route, responseSchema, method, body, delay = 0 }: ApiQueryRequest<T>): Promise<ApiQueryResponse<T>> => {
 	let url = import.meta.env.VITE_TAURI_API_URL
 	if (!url) {
 		return {
@@ -11,12 +11,15 @@ export const apiQuery = async <T>({ route, responseSchema, method, body }: ApiQu
 		}
 	}
 	if (!url.endsWith("/")) url += "/"
+	if (route.startsWith("/")) route = route.slice(1)
+
+	if (delay) await new Promise(resolve => setTimeout(resolve, delay))
 
 	const token = getCookie("token")
 
 	const headers = {
 		"Content-Type": "application/json",
-		Authorization: token || "null"
+		"Authorization": token || "null"
 	}
 
 	const response = await fetch(`${url}${route}`, { method, body: body ? JSON.stringify(body) : undefined, headers })
@@ -31,7 +34,7 @@ export const apiQuery = async <T>({ route, responseSchema, method, body }: ApiQu
 	if (!data.success) {
 		return {
 			status: "error",
-			error: `Failed to parse ${route}`
+			error: `Failed to parse ${route}: ${data.error.message}`
 		}
 	}
 

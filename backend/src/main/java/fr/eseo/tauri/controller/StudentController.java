@@ -20,6 +20,7 @@ public class StudentController {
     private final StudentRepository studentRepository;
     private final StudentService studentService;
     private final AuthService authService;
+
     @Autowired
     public StudentController(StudentRepository studentRepository, StudentService studentService, AuthService authService) {
         this.studentRepository = studentRepository;
@@ -27,6 +28,10 @@ public class StudentController {
         this.authService = authService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<Student>> getStudents() {
+        return ResponseEntity.ok(studentRepository.findAll());
+    }
 
     @GetMapping("/quantity-all")
     public ResponseEntity<String> getStudentQuantity(@RequestHeader("Authorization") String token) {

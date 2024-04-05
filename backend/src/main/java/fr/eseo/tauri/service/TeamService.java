@@ -58,7 +58,7 @@ public class TeamService {
         }
     }
 
-    @PostConstruct //Test function for the deleteTeam function
+    // @PostConstruct //Test function for the deleteTeam function
     public void initDataIfTableIsEmpty() {
 
         if(userRepository.count() == 0){

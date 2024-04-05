@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import PageTemplate from "@/components/organisms/PageTemplate.vue"
+import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import TeamsCreated from "@/components/organisms/Teams/TeamsCreated.vue"
 import TeamsNotsCreated from "@/components/organisms/Teams/TeamsNotsCreated.vue"
 import StudentsNotImported from "@/components/organisms/Teams/StudentsNotImported.vue"

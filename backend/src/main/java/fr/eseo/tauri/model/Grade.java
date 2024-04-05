@@ -18,7 +18,7 @@ public class Grade {
     private Integer id;
 
     @JsonProperty
-    private Integer value;
+    private Float value;
 
     @JsonProperty
     private String comment;
@@ -36,13 +36,13 @@ public class Grade {
     private User author;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Student student;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
+    @JoinColumn(name = "team_id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Team team;

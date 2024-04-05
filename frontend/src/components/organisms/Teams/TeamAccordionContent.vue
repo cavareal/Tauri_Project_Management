@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, defineProps } from "vue"
-import { getStudentsByTeamId } from "@/service/StudentService"
-import type { Student } from "@/type/Student"
+import { getStudentsByTeamId } from "@/services/student-service"
+import type { Student } from "@/types/student"
 import { AccordionContent } from "@/components/ui/accordion"
 
 const students = ref<Student[]>([])

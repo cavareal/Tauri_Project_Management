@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PageTemplate from "@/components/organisms/PageTemplate.vue"
+import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 </script>
 
 <template>

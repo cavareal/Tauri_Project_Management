@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import PageTemplate from "@/components/organisms/PageTemplate.vue"
+import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import { defineComponent } from "vue"
 import Tab from "@/components/ui/tab/Tab.vue"
 import Tabs from "@/components/ui/tab/Tabs.vue"

@@ -3,6 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.repository.GradeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,14 +17,14 @@ public class GradeController {
         this.gradeRepository = gradeRepository;
     }
 
+    @GetMapping
+    public ResponseEntity<Iterable<Grade>> getAllGrades() {
+        return ResponseEntity.ok(gradeRepository.findAll());
+    }
+
     @PostMapping("/add")
     public Grade addGrade(@RequestBody Grade grade) {
         return gradeRepository.save(grade);
-    }
-
-    @GetMapping("/all")
-    public Iterable<Grade> getAllGrades() {
-        return gradeRepository.findAll();
     }
 
     @GetMapping("/{id}")

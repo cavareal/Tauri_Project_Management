@@ -8,9 +8,9 @@ import {
 	TableRow
 } from "@/components/ui/table"
 import TableFooter from "@/components/ui/table/TableFooter.vue"
-import type { Student } from "@/type/Student"
+import type { Student } from "@/types/student"
 import { ref, onMounted } from "vue"
-import { getStudentsByTeamId } from "@/service/StudentService"
+import { getStudentsByTeamId } from "@/services/student-service"
 
 const students = ref<Student[]>([])
 
