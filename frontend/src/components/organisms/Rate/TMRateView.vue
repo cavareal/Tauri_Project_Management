@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PropType, Ref } from "vue"
+import { type PropType, reactive, type Ref } from "vue"
 import { ref } from "vue"
 import { Ellipsis, Loader2, Pencil, Trash2 } from "lucide-vue-next"
 
@@ -35,7 +35,7 @@ import {
 
 const token = getCookie("token")
 const selectedTeam = ref("")
-const note = ref("")
+let note = ref("")
 interface Evaluation {
 	team: string;
 	note: number;
@@ -52,18 +52,20 @@ const props = defineProps({
 		default: () => []
 	}
 })
-const flatListTeam = props.listTeam.flat()
+
+const buttonsState = reactive({
+	validate: true,
+	loading: false
+})
 
 function redirect() : void {
 	window.location.href = "/rating"
 }
 
-
 function addEvaluation() {
 	if (!evaluations.value[selectedTeam.value]) {
 		evaluations.value[selectedTeam.value] = []
 	}
-
 	const teamIndex = evaluations.value[selectedTeam.value].findIndex(e => e.team === selectedTeam.value)
 	if (teamIndex !== -1) {
 		evaluations.value[selectedTeam.value][teamIndex].note = Number(note.value)
@@ -74,6 +76,8 @@ function addEvaluation() {
 
 const grades = async() => {
 	try {
+		buttonsState.validate = false
+		buttonsState.loading = true
 		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addOverallPerformance", {
 			method: "POST",
 			headers: {
@@ -86,11 +90,24 @@ const grades = async() => {
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}
+		buttonsState.loading = false
+		buttonsState.validate = true
 		redirect()
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return await response.json()
 	} catch (error) {
+		buttonsState.loading = false
+		buttonsState.validate = true
 		console.error(error)
+	}
+}
+
+function handleNoteInput(event: InputEvent) {
+	const inputNote = parseInt((event.target as HTMLInputElement).value)
+	if (inputNote > 20) {
+		note.value = String(20)
+	} else {
+		note.value = String(inputNote)
 	}
 }
 
@@ -124,14 +141,14 @@ function sendGrades() {
 							<Label for="equipe">Equipe :</Label>
 							<select v-model="selectedTeam">
 								<option value="" disabled selected hidden>Choisir une équipe</option>
-								<option v-for="(team, index) in flatListTeam" :key="index" :value="team">
+								<option v-for="(team, index) in listTeam" :key="index" :value="team">
 									{{ team }}
 								</option>
 							</select>
 						</div>
 						<div class="grid grid-cols-3 items-center gap-4">
 							<Label for="note">Note :</Label>
-							<Input id="note" type="number" min="0" max="20" v-model="note"/>
+							<Input id="note" type="number" min="0" max="20" v-model="note" @input="handleNoteInput"/>
 						</div>
 					</div>
 					<DialogFooter>
@@ -187,8 +204,12 @@ function sendGrades() {
 		<div class="flex justify-center">
 			<!--      attention à ajouter une propriété pour etre sur que les évaluations sont non vides-->
 			<Button type="submit" variant="destructive" class="mx-auto text-black bg-secondary hover:bg-secondary/90"
-					v-if="evaluations" @click="sendGrades" >
+					v-if="evaluations && buttonsState.validate" @click="sendGrades" >
 				Valider
+			</Button>
+			<Button type="submit" variant="destructive" v-if="buttonsState.loading" class="mx-auto text-black bg-secondary hover:bg-secondary/90">
+				<Loader2 class="w-4 h-4 mr-2 animate-spin" />
+				Veuillez patienter
 			</Button>
 		</div>
 	</div>

@@ -36,7 +36,8 @@ const fetchTeamNames = async() => {
 void fetchTeamNames()
 
 const parsedTeams = computed(() => {
-	return teamsName.value.map(team => team.replace(/[\[\]"]+/g, "").split(", "))
+	teamsName.value.map(team => team.replace(/[\[\]"]+/g, "").split(", "))
+	return teamsName.value.flat()
 })
 
 defineComponent({
@@ -48,7 +49,6 @@ defineComponent({
 })
 
 console.log(parsedTeams)
-
 </script>
 
 <template>
