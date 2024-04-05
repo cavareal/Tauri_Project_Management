@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineComponent, provide, ref } from "vue"
+import { computed, defineComponent, ref } from "vue"
 import PageTemplate from "@/components/organisms/PageTemplate.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
@@ -12,7 +12,6 @@ const token = getCookie("token")
 const role = getCookie("role")
 const sprintList = ref([1, 2, 3])
 const teamsName = ref<string[]>([])
-const parentData = ref("Hello from parent")
 
 
 const request = {
@@ -25,7 +24,7 @@ const request = {
 
 const fetchTeamNames = async() => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "teams/all-team-names", request)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "teams/names", request)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}
@@ -49,25 +48,23 @@ defineComponent({
 	}
 })
 
-console.log(parsedTeams)
-
 </script>
 
 <template>
-  <PageTemplate>
-    <h1 class="text-3xl font-title-bold">Evaluation</h1>
-    <div class="tabs-example">
-      <div class="example example-1">
-        <Tabs>
-          <template v-for="(sprint, index) in sprintList" :key="index">
-            <Tab :title="`Sprint ${index + 1}`">
-              <NotAutorized v-if="!token || !role" />
-              <TMRateView v-else-if="role === 'TM'" :myProp="parentData" :listTeam="parsedTeams"/>
-              <NotAutorized v-else />
-            </Tab>
-          </template>
-        </Tabs>
-      </div>
-    </div>
-  </PageTemplate>
+	<PageTemplate>
+		<h1 class="text-3xl font-title-bold">Evaluation</h1>
+		<div class="tabs-example">
+			<div class="example example-1">
+				<Tabs>
+					<template v-for="(sprint, index) in sprintList" :key="index">
+						<Tab :title="`Sprint ${index + 1}`">
+							<NotAutorized v-if="!token || !role"/>
+							<TMRateView v-else-if="role === 'TM'" :listTeam="parsedTeams"/>
+							<NotAutorized v-else/>
+						</Tab>
+					</template>
+				</Tabs>
+			</div>
+		</div>
+	</PageTemplate>
 </template>

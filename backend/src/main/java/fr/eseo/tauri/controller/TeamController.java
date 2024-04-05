@@ -119,7 +119,7 @@ public class TeamController {
         }
     }
 
-    @GetMapping("/all-team-names")
+    @GetMapping("/names")
     public ResponseEntity<List<String>> getAllTeamNames(@RequestHeader("Authorization") String token) {
         String permission = "teamRead";
         if(authService.checkAuth(token, permission)) {
