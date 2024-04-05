@@ -7,6 +7,7 @@ import autoprefixer from "autoprefixer"
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	base: '/tauri/',		// Base path for build files, for deploiement
 	css: {
 		postcss: {
 			plugins: [tailwind(), autoprefixer()],
