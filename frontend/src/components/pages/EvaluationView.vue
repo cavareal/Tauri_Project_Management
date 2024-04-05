@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { computed, defineComponent, ref } from "vue"
-import PageTemplate from "@/components/organisms/PageTemplate.vue"
+import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
 import NotAutorized from "@/components/organisms/Teams/NotAuthorized.vue"
 import TMRateView from "@/components/organisms/Rate/TMRateView.vue"
 import getCookie from "@/utils/cookiesUtils"
-import { Label } from "@/components/ui/label"
 
 const token = getCookie("token")
 const role = getCookie("role")
@@ -47,6 +46,8 @@ defineComponent({
 		return { dynamicTabs: [1, 2, 3] }
 	}
 })
+
+console.log(parsedTeams)
 
 </script>
 

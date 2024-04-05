@@ -54,7 +54,7 @@ public class GradeService {
         Team team = teamRepository.findByName(teamName);
         if (team != null) {
             Grade grade = new Grade();
-            grade.value(value);
+            grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.team(team);
 //            grade.author(author);
@@ -72,7 +72,7 @@ public class GradeService {
         Student student = studentRepository.findByName(studentName);
         if (student != null) {
             Grade grade = new Grade();
-            grade.value(value);
+            grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.student(student);
             //grade.author(author);

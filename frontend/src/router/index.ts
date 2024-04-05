@@ -40,9 +40,9 @@ const router = createRouter({
 			component: () => import("@/components/pages/SettingsPage.vue")
 		},
 		{
-			path:"/rating"
-			,name:"rating"
-			,component: () => import("@/components/pages/EvaluationView.vue")
+			path: "/rating",
+			name: "rating",
+			component: () => import("@/components/pages/EvaluationView.vue")
 		},
 		{
 			path: "/test",

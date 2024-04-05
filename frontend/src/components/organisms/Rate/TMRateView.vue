@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Ref } from "vue"
+import type { PropType, Ref } from "vue"
 import { ref } from "vue"
-import { Ellipsis, Pencil, Trash2 } from "lucide-vue-next"
+import { Ellipsis, Loader2, Pencil, Trash2 } from "lucide-vue-next"
 
 import {
 	Dialog,
@@ -40,12 +40,19 @@ interface Evaluation {
 	team: string;
 	note: number;
 }
+interface Team {
+	name: string;
+}
+
 const evaluations: Ref<Record<string, Evaluation[]>> = ref({})
 
 const props = defineProps({
-	listTeam: Array
+	listTeam: {
+		type: Array as PropType<Team[]>,
+		default: () => []
+	}
 })
-
+const flatListTeam = props.listTeam.flat()
 
 function redirect() : void {
 	window.location.href = "/rating"
@@ -117,8 +124,8 @@ function sendGrades() {
 							<Label for="equipe">Equipe :</Label>
 							<select v-model="selectedTeam">
 								<option value="" disabled selected hidden>Choisir une équipe</option>
-								<option v-for="(teamName, index) in listTeam?.[0]" :key="index" :value="teamName">
-									{{ teamName }}
+								<option v-for="(team, index) in flatListTeam" :key="index" :value="team">
+									{{ team }}
 								</option>
 							</select>
 						</div>
