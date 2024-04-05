@@ -9,6 +9,7 @@ public enum RoleType {
     PROJECT_LEADER("Chef de Projet"),
     OPTION_STUDENT("Etudiant de l'option"),
     TEAM_MEMBER("Membre de l'équipe"),
+    SYSTEM_ADMINISTRATOR("Administrateur Système"),
     TECHNICAL_COACH("Coach Technique"),
     JURY_MEMBER("Membre du Jury"),
     ESEO_ADMINISTRATION("Administration ESEO"),
