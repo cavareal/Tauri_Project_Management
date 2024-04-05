@@ -49,7 +49,7 @@ public class TeamService {
     public void deleteTeam(Integer id) {
         Optional<Team> team = teamRepository.findById(id);
         if (team.isPresent()) {
-            List<Student> students = studentRepository.findByTeam(team.get());
+            List<Student> students = studentRepository.findByTeamId(team.get());
             for (Student student : students) {
                 student.team(null);
                 studentRepository.save(student);

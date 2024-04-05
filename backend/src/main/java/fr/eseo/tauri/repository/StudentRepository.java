@@ -9,6 +9,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
+    List<Student> findByTeamId(Team teamId);
+
+    List<Student> findByTeamName(String teamName);
+
+    Student findByName(String studentName);
     List<Student> findByTeam(Team team);
 
     @Query("SELECT s FROM Student s WHERE s.team = :team")

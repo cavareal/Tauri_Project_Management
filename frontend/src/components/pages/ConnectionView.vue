@@ -11,6 +11,7 @@ const selectedRole = ref("OL")
 function formSubmit() {
 	document.cookie = `role=${selectedRole.value}; path=/;`
 	document.cookie = "token=bonamyRule34; path=/;"
+	document.cookie = "user=112; path=/;"
 }
 </script>
 

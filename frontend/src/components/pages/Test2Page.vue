@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import { defineComponent } from "vue"
-import Tab from "@/components/ui/tab/Tab.vue"
-import Tabs from "@/components/ui/tab/Tabs.vue"
+import Tab from "@/components/molecules/tab/Tab.vue"
+import Tabs from "@/components/molecules/tab/Tabs.vue"
 
 defineComponent({
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
