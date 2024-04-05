@@ -4,7 +4,7 @@
 stages:
   - build
   # - test
-  # - sonar
+  - sonar
   - deploy-vuejs
   - deploy-java
   # - selenium
@@ -45,22 +45,22 @@ java-build:
       - $CI_PROJECT_DIR/.gradle/caches
 
 
-junit-test:
-  stage: test
-  image: gradle:8.4-jdk11
-  script:
-    - cd back
-    - gradle --no-daemon test
-  artifacts:
-    reports:
-      junit: back/build/test-results/test/TEST*.xml
-    paths:
-      - $CI_PROJECT_DIR/build/libs/*.jar
-    expire_in: 1 day
-    when: always
-  cache:
-    paths:
-      - $CI_PROJECT_DIR/.gradle/caches
+# junit-test:
+#   stage: test
+#   image: gradle:8.4-jdk11
+#   script:
+#     - cd back
+#     - gradle --no-daemon test
+#   artifacts:
+#     reports:
+#       junit: back/build/test-results/test/TEST*.xml
+#     paths:
+#       - $CI_PROJECT_DIR/build/libs/*.jar
+#     expire_in: 1 day
+#     when: always
+#   cache:
+#     paths:
+#       - $CI_PROJECT_DIR/.gradle/caches
 
 
 # Tests d'intégrations
