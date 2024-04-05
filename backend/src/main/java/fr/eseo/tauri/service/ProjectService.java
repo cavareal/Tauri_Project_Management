@@ -74,6 +74,20 @@ public class ProjectService {
         }
         return null;
     }
+    /**
+     * Get the nb of sprints of the project.
+     *
+     * @return the nb of sprints of the project, or "Aucun projet trouvé" if no project is found
+     */
+    public String getNumberSprints() {
+        Project currentProject = projectRepository.findAll().get(0);
+        if (currentProject != null) {
+            return String.valueOf(currentProject.nbSprint());
+        } else {
+            return "Aucun projet trouvé";
+        }
+    }
+
 
     /**
      * Update the number of teams in a project.
