@@ -20,11 +20,12 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private final StudentSeeder studentSeeder;
 	private final GradeTypeSeeder gradeTypeSeeder;
 	private final GradeSeeder gradeSeeder;
+	private final PermissionSeeder permissionSeeder;
 
 	@Autowired
 	public SeedConfig(
 			UserSeeder userSeeder, TeamSeeder teamSeeder, StudentSeeder studentSeeder,
-			GradeTypeSeeder gradeTypeSeeder, GradeSeeder gradeSeeder
+			GradeTypeSeeder gradeTypeSeeder, GradeSeeder gradeSeeder, PermissionSeeder permissionSeeder
 	) {
 		this.faker = new Faker(new Locale("fr-FR"));
 
@@ -33,6 +34,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		this.studentSeeder = studentSeeder;
 		this.gradeTypeSeeder = gradeTypeSeeder;
 		this.gradeSeeder = gradeSeeder;
+		this.permissionSeeder = permissionSeeder;
 	}
 
 	@Override
@@ -42,6 +44,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		studentSeeder.seed(faker);
 		gradeTypeSeeder.seed(faker);
 		gradeSeeder.seed(faker);
+		permissionSeeder.seed();
 	}
 
 }

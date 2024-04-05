@@ -12,7 +12,6 @@ import java.util.Map;
 
 @Service
 public class PermissionSeeder {
-    private final PermissionRepository permissionRepository;
 
     private final Map<RoleType, List<PermissionType>> associationTable = Map.of(
             RoleType.IDENTIFIED_USER, List.of(PermissionType.LOGIN_OUT, PermissionType.VIEW_GRADE_SCALE, PermissionType.IMPORT_GENERATED_KEY),
@@ -27,25 +26,28 @@ public class PermissionSeeder {
             RoleType.JURY_MEMBER, List.of()
     );
 
+    private final PermissionRepository permissionRepository;
+
     public PermissionSeeder(PermissionRepository permissionRepository) {
         this.permissionRepository = permissionRepository;
     }
 
     private void attributePermission(RoleType role, PermissionType permission) {
         var permissionEntity = new Permission();
+
         permissionEntity.role(role);
         permissionEntity.type(permission);
+
         permissionRepository.save(permissionEntity);
     }
 
-    @PostConstruct
-    public void setDefaultPermissions () {
+    public void seed() {
         RoleType role;
-        for (Map.Entry<RoleType, List<PermissionType>> entry : associationTable.entrySet()) {
+        for (var entry : associationTable.entrySet()) {
             role = entry.getKey();
-            List<PermissionType> permissions = entry.getValue();
+            var permissions = entry.getValue();
 
-            for (PermissionType permission : permissions) {
+            for (var permission : permissions) {
                 attributePermission(role, permission);
             }
         }

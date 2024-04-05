@@ -2,6 +2,7 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
+import fr.eseo.tauri.service.GradeTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +12,12 @@ import org.springframework.web.bind.annotation.*;
 public class GradeTypeController {
 
     private final GradeTypeRepository gradeTypeRepository;
+    private final GradeTypeService gradeTypeService;
 
     @Autowired
-    public GradeTypeController(GradeTypeRepository gradeTypeRepository) {
+    public GradeTypeController(GradeTypeRepository gradeTypeRepository, GradeTypeService gradeTypeService) {
         this.gradeTypeRepository = gradeTypeRepository;
+        this.gradeTypeService = gradeTypeService;
     }
 
     @GetMapping
@@ -24,14 +27,11 @@ public class GradeTypeController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<GradeType> partialUpdateGradeType(@PathVariable Integer id, @RequestBody GradeType gradeType) {
-        GradeType gradeTypeToUpdate = gradeTypeRepository.findById(id).orElse(null);
-        if (gradeTypeToUpdate == null) {
-            return ResponseEntity.notFound().build();
+        if (gradeType.factor() == null) {
+            return ResponseEntity.badRequest().build();
         }
 
-        if (gradeType.factor() != null) gradeTypeToUpdate.factor(gradeType.factor());
-
-        return ResponseEntity.ok(gradeTypeRepository.save(gradeTypeToUpdate));
+        return ResponseEntity.ok(gradeTypeService.updateFactor(id, gradeType.factor()));
     }
 
     @PostMapping("/add")

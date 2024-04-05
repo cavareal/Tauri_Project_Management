@@ -2,15 +2,17 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.repository.*;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class GradeService {
+
+    private final StudentRepository studentRepository;
     private final GradeRepository gradeRepository;
     private final TeamRepository teamRepository;
-
 
     /**
      * Constructor for TeamService.
@@ -18,7 +20,8 @@ public class GradeService {
      * @param gradeRepository the grade repository
      */
     @Autowired
-    public GradeService(TeamRepository teamRepository, GradeRepository gradeRepository) {
+    public GradeService(StudentRepository studentRepository, TeamRepository teamRepository, GradeRepository gradeRepository) {
+        this.studentRepository = studentRepository;
         this.teamRepository = teamRepository;
         this.gradeRepository = gradeRepository;
     }
@@ -38,5 +41,35 @@ public class GradeService {
             //gradeRepository.save(grade2);
         }
     }*/
+
+    public void updateImportedMean() {
+        var students = studentRepository.findAll();
+        var grades = gradeRepository.findAll();
+
+        for (var student : students) {
+            if (student.bachelor()) continue;
+
+            var studentGrades = grades.stream()
+                    .filter(grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && !grade.gradeType().name().equals("mean"))
+                    .toList();
+
+            var mean = mean(studentGrades);
+
+            gradeRepository.updateImportedMeanByStudentId(mean, student.id());
+        }
+    }
+
+    private float mean(List<Grade> grades) {
+        var total = 0f;
+        var factors = 0f;
+
+        for (var grade : grades) {
+            total += grade.value() * grade.gradeType().factor();
+            factors += grade.gradeType().factor();
+        }
+
+        if (factors == 0) return 0;
+        return total / factors;
+    }
 
 }
