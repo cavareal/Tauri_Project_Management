@@ -33,4 +33,3 @@ pnpm-lock.yaml
 *.tsbuildinfo
 
 .env
-vite.config.ts
