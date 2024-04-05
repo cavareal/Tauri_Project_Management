@@ -5,6 +5,7 @@ export type ApiQueryRequest<T> = {
 	method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 	body?: unknown
 	responseSchema: z.ZodType<T>
+	delay?: number
 }
 
 export type ApiQueryResponse<T> = {

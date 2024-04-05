@@ -27,14 +27,14 @@ public class GradeController {
         this.gradeService = gradeService;
     }
 
+    @GetMapping
+    public ResponseEntity<Iterable<Grade>> getAllGrades() {
+        return ResponseEntity.ok(gradeRepository.findAll());
+    }
+
     @PostMapping("/add")
     public Grade addGrade(@RequestBody Grade grade) {
         return gradeRepository.save(grade);
-    }
-
-    @GetMapping("/all")
-    public Iterable<Grade> getAllGrades() {
-        return gradeRepository.findAll();
     }
 
     @GetMapping("/{id}")

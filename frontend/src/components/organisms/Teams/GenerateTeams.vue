@@ -76,7 +76,7 @@ const showGeneratedTeams = () => {
                         <span class="mx-5 my-0">Générer les équipes</span>
                     </Button>
                 </DialogTrigger>
-                <DialogContent class="sm:max-w-[500px]">
+                <DialogContent class="sm:max-w-[600px]">
                     <DialogHeader>
                         <DialogTitle>Générer les équipes</DialogTitle>
                         <DialogDescription>
@@ -89,13 +89,13 @@ const showGeneratedTeams = () => {
                             <Label for="nbTeams" class="text-right">
                                 Nombre d'équipes
                             </Label>
-                            <Input id="nbTeams" v-model="nbTeams" class="col-span-3" />
+                            <Input id="nbTeams" type="number" v-model="nbTeams" class="col-span-3" />
                         </div>
                         <div class="grid grid-cols-4 items-center gap-4">
                             <Label for="ratioGender" class="text-right">
                                 Ratio H/F (%)
                             </Label>
-                            <Input id="ratioGender" v-model="ratioGender" class="col-span-3" />
+                            <Input id="ratioGender" type="number" v-model="ratioGender" class="col-span-3" />
                         </div>
                     </div>
                     <DialogFooter>

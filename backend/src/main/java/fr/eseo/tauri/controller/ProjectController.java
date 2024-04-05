@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller class for managing projects.
@@ -40,12 +41,13 @@ public class ProjectController {
 
     @GetMapping("/current")
     public ResponseEntity<Project> getCurrentProject() {
-        var project = projectRepository.findAll().get(0);
-        if (project == null) {
+        Optional<Project> projectOptional = projectRepository.findAll().stream().findFirst();
+        if (projectOptional.isPresent()) {
+            Project project = projectOptional.get();
+            return ResponseEntity.status(HttpStatus.OK).body(project);
+        } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        // return ResponseEntity.ok(project);
-        return ResponseEntity.status(HttpStatus.OK).body(project);
     }
 
     /**
@@ -81,12 +83,14 @@ public class ProjectController {
      * Update the number of sprints for a project.
      * @param token the authentication token
      * @param idProject the project ID
-     * @param newSprintsNumber the new number of teams
+     * @param request data from the front
      * @return a response entity with a success message or an error message
      */
     @PutMapping("/update-sprints-number/{idProject}")
-    public ResponseEntity<String> updateProjectSprintsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam Integer newSprintsNumber) {
+    public ResponseEntity<String> updateProjectSprintsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer idProject,  @RequestBody Map<String, String> request) {
         // Check token, if user is GOOD
+        Integer newSprintsNumber = Integer.valueOf(request.get("nbSprints"));
+
         String permission = "ManageTeamsNumber";
         if(authService.checkAuth(token, permission)) {
             try {
@@ -103,6 +107,28 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
         }
     }
+    /**
+     * Get the number of sprints of this project.
+     *
+     * @param token the authentication token
+     * @return a response entity with the nb of sprints of the project if successful, or an error message if an exception occurs or if the user is not authorized
+     */
+    @GetMapping("/sprints-number")
+    public ResponseEntity<String> getNumberSprints(@RequestHeader("Authorization") String token) {
+        String permission = "readSprintNumber";
+        if (authService.checkAuth(token, permission)) {
+            try {
+                String currentPhase = projectService.getNumberSprints();
+                return ResponseEntity.status(HttpStatus.OK).body(currentPhase);
+            }catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération de la phase actuelle du projet : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+        }
+    }
+
+
 
     /**
      * Update the number of teams for a project.

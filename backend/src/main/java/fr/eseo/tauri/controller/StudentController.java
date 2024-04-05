@@ -20,6 +20,7 @@ public class StudentController {
     private final StudentRepository studentRepository;
     private final StudentService studentService;
     private final AuthService authService;
+
     @Autowired
     public StudentController(StudentRepository studentRepository, StudentService studentService, AuthService authService) {
         this.studentRepository = studentRepository;
@@ -27,6 +28,10 @@ public class StudentController {
         this.authService = authService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<Student>> getStudents() {
+        return ResponseEntity.ok(studentRepository.findAll());
+    }
 
     @GetMapping("/quantity-all")
     public ResponseEntity<String> getStudentQuantity(@RequestHeader("Authorization") String token) {
@@ -69,6 +74,22 @@ public class StudentController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+        }
+    }
+
+    @GetMapping("/team/{id}")
+    public ResponseEntity<List<Student>> getStudentsByTeam(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        // Check token, if user is GOOD
+        String permission = "readStudentByTeam";
+        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+            try {
+                List<Student> students = studentService.getStudentsByTeamId(id);
+                return ResponseEntity.ok(students);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
         }
     }
 }

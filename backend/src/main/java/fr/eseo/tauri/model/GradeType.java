@@ -19,7 +19,7 @@ public class GradeType {
     private String name;
 
     @JsonProperty
-    private Integer factor;
+    private Float factor;
 
     @JsonProperty
     private Boolean forGroup;

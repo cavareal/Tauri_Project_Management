@@ -34,14 +34,14 @@ public class UserService {
      */
 
     public void deleteUser(Integer id) {
-        Optional<User> user = userRepository.findById(Long.valueOf(id));
+        Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
             List<Team> teams = teamRepository.findByLeader(user.get());
             for (Team team : teams) {
                 team.leader(null);
                 teamRepository.save(team);
             }
-            userRepository.deleteById(Long.valueOf(id));
+            userRepository.deleteById(id);
         }
     }
 

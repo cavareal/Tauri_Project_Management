@@ -1,7 +1,6 @@
 package fr.eseo.tauri.config;
 
-import fr.eseo.tauri.seeder.TeamSeeder;
-import fr.eseo.tauri.seeder.UserSeeder;
+import fr.eseo.tauri.seeder.*;
 import net.datafaker.Faker;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,21 +14,34 @@ import java.util.Locale;
 public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 
 	private final Faker faker;
-	private final UserSeeder userSeeder;
 
+	private final UserSeeder userSeeder;
 	private final TeamSeeder teamSeeder;
+	private final StudentSeeder studentSeeder;
+	private final GradeTypeSeeder gradeTypeSeeder;
+	private final GradeSeeder gradeSeeder;
 
 	@Autowired
-	public SeedConfig(UserSeeder userSeeder, TeamSeeder teamSeeder) {
+	public SeedConfig(
+			UserSeeder userSeeder, TeamSeeder teamSeeder, StudentSeeder studentSeeder,
+			GradeTypeSeeder gradeTypeSeeder, GradeSeeder gradeSeeder
+	) {
 		this.faker = new Faker(new Locale("fr-FR"));
+
 		this.userSeeder = userSeeder;
         this.teamSeeder = teamSeeder;
+		this.studentSeeder = studentSeeder;
+		this.gradeTypeSeeder = gradeTypeSeeder;
+		this.gradeSeeder = gradeSeeder;
 	}
 
 	@Override
 	public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
 		userSeeder.seed(faker);
 		teamSeeder.seed(faker);
+		studentSeeder.seed(faker);
+		gradeTypeSeeder.seed(faker);
+		gradeSeeder.seed(faker);
 	}
 
 }

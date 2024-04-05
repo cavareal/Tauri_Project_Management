@@ -6,12 +6,13 @@ import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.StudentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TeamSeeder {
 
-    private final TeamRepository teamRepository;
+	private final TeamRepository teamRepository;
     private final StudentRepository studentRepository;
 
     public TeamSeeder(TeamRepository teamRepository, StudentRepository studentRepository) {

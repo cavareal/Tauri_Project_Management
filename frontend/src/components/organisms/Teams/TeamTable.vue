@@ -7,17 +7,24 @@ import {
 	TableHeader,
 	TableRow
 } from "@/components/ui/table"
-import { students } from "@/utils/students"
 import TableFooter from "@/components/ui/table/TableFooter.vue"
+import type { Student } from "@/types/student"
+import { ref, onMounted } from "vue"
+import { getStudentsByTeamId } from "@/services/student-service"
 
-const getRandomColor = () => {
-	const letters = "0123456789ABCDEF"
-	let color = "#"
-	for (let i = 0; i < 6; i++) {
-		color += letters[Math.floor(Math.random() * 16)]
+const students = ref<Student[]>([])
+
+const props = defineProps({
+	teamId: {
+		type: Number,
+		required: true
 	}
-	return color
-}
+})
+
+onMounted(async() => {
+	const data = await getStudentsByTeamId(props.teamId)
+	students.value = data
+})
 
 </script>
 
@@ -37,11 +44,11 @@ const getRandomColor = () => {
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="(student, i) in students.slice(0, 7)" :key="i" class="TableRaw">
+			<TableRow v-for="(student, i) in students" :key="i" class="TableRaw">
 				<TableCell>{{ student.name }}</TableCell>
 				<TableCell>
 					<p :style="{ 'border-radius': '12px', 'background': 'red' }" class="Role">
-						{{ student.role }}
+						{{ student.teamRole }}
 					</p>
 				</TableCell>
 				<TableCell>{{ student.gender }}</TableCell>

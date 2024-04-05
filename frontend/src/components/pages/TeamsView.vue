@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import PageTemplate from "@/components/organisms/PageTemplate.vue"
+import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import TeamsCreated from "@/components/organisms/Teams/TeamsCreated.vue"
 import TeamsNotsCreated from "@/components/organisms/Teams/TeamsNotsCreated.vue"
 import StudentsNotImported from "@/components/organisms/Teams/StudentsNotImported.vue"
@@ -10,7 +10,7 @@ import getCookie from "@/utils/cookiesUtils"
 
 const token = getCookie("token")
 const role = getCookie("role")
-const currentPhase = ref("")
+const currentPhase = ref("PREPUBLISHED")
 const nbStudents = ref("0")
 
 /* Get phase of project */
@@ -33,7 +33,7 @@ const fetchCurrentPhase = async() => {
 		console.error(error)
 	}
 }
-fetchCurrentPhase()
+//fetchCurrentPhase()
 
 /* GET number of students, to see if there are imported */
 const requestOptionsStudents = {

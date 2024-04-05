@@ -5,6 +5,8 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,5 +25,11 @@ public class Role {
     @Column(name="type")
     @JsonProperty
     private RoleType type;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
+    private User user;
 
 }
