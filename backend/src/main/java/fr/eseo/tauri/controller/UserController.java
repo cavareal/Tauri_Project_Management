@@ -1,7 +1,9 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +13,13 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
 	private final UserRepository userRepository;
+	private final UserService userService;
 
 	@Autowired
-	public UserController(UserRepository userRepository) {
+	public UserController(UserRepository userRepository, UserService userService) {
 		this.userRepository = userRepository;
-	}
+        this.userService = userService;
+    }
 
 	@PostMapping(path = "/")
 	public @ResponseBody String addUser(@RequestParam String name, @RequestParam String email) {
@@ -34,6 +38,11 @@ public class UserController {
 	@GetMapping(path = "/{id}")
 	public @ResponseBody User getUser(@PathVariable Integer id) {
 		return userRepository.findById(id).orElse(null);
+	}
+
+	@GetMapping(path = "/{id}/hasPermission")
+	public @ResponseBody Boolean hasPermission(@PathVariable Integer id, @RequestParam PermissionType permissionRequired) {
+		return userService.hasPermission(id, permissionRequired);
 	}
 
 	@PutMapping(path = "/update")
