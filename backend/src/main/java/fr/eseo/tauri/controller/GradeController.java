@@ -84,4 +84,32 @@ public class GradeController {
                     .body(Map.of("error", "Error occurred while adding grades: " + e.getMessage()));
         }
     }
+
+    @PostMapping("/addMaterialSupportContentPresentation")
+    public ResponseEntity<Map<String, String>> addGradeMaterialSupportContentPresentation(@RequestBody String evaluations){
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {};
+            Map<String, List<Map<String, Object>>> evaluationsMap = objectMapper.readValue(evaluations, typeReference);
+
+            for (Map.Entry<String, List<Map<String, Object>>> entry : evaluationsMap.entrySet()) {
+                String teamName = entry.getKey();
+                List<Map<String, Object>> evaluationsList = entry.getValue();
+
+                for (Map<String, Object> evaluation : evaluationsList) {
+                    Integer contentPresentationNote = (Integer) evaluation.get("contentPresentationNote");
+                    Integer materialSupportNote = (Integer) evaluation.get("materialSupportNote");
+                    gradeService.assignGradeToTeam(teamName, contentPresentationNote, "Contenu de la présentation");
+                    gradeService.assignGradeToTeam(teamName, materialSupportNote, "Support Matériel");
+                }
+            }
+            return ResponseEntity.ok(Map.of("message", "Grades added successfully."));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid number format for grade value."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Error occurred while adding grades: " + e.getMessage()));
+        }
+    }
+
 }

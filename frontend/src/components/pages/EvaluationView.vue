@@ -6,6 +6,7 @@ import Tabs from "@/components/molecules/tab/Tabs.vue"
 import NotAutorized from "@/components/organisms/Teams/NotAuthorized.vue"
 import TMRateView from "@/components/organisms/Rate/TMRateView.vue"
 import getCookie from "@/utils/cookiesUtils"
+import SSRateView from "@/components/organisms/Rate/SSRateView.vue"
 
 const token = getCookie("token")
 const role = getCookie("role")
@@ -61,6 +62,7 @@ console.log(parsedTeams)
 						<Tab :title="`Sprint ${index + 1}`">
 							<NotAutorized v-if="!token || !role"/>
 							<TMRateView v-else-if="role === 'TM'" :listTeam="parsedTeams"/>
+							<SSRateView v-else-if="role === 'SS'" :listTeam="parsedTeams"/>
 							<NotAutorized v-else/>
 						</Tab>
 					</template>
