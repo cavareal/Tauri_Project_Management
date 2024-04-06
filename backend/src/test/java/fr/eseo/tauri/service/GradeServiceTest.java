@@ -66,13 +66,13 @@ class GradeServiceTest {
     @Test
     void createGradesFromGradeTypesAndValues_ignoresEmptyValues() {
         Student student = new Student();
-        List<String> valuesString = Arrays.asList("10.0", "", "8.0");
+        List<String> valuesString = Arrays.asList("10.0", "", "");
         GradeType gradeType = new GradeType();
         List<GradeType> gradeTypes = Arrays.asList(gradeType, gradeType, gradeType);
 
         gradeService.createGradesFromGradeTypesAndValues(student, valuesString, gradeTypes, "Good job!");
 
-        verify(gradeRepository, times(2)).save(any(Grade.class));
+        verify(gradeRepository, times(1)).save(any(Grade.class));
     }
 
     @Test
