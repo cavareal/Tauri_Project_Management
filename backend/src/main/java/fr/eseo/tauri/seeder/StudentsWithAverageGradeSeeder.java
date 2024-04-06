@@ -29,6 +29,8 @@ public class StudentsWithAverageGradeSeeder {
     public void seed(Faker faker) {
 
         int ratioWomen = 20; // in percent
+        int nbStudents = 48;
+
         Random random = new Random();
         Gender[] genders = {Gender.MAN, Gender.WOMAN};
 
@@ -40,7 +42,7 @@ public class StudentsWithAverageGradeSeeder {
         gradeType.imported(true);
         this.gradeTypeRepository.save(gradeType);
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < nbStudents; i++) {
             // Create and save a student
             int genderIndex = random.nextInt(100) < ratioWomen ? 1 : 0;
             var student = new Student();
