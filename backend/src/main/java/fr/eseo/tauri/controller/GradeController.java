@@ -59,10 +59,9 @@ public class GradeController {
         return "Grade deleted";
     }
 
-    @PostMapping("/addOverallPerformance")
-    public ResponseEntity<Map<String, String>> addGradeOverallPerformance(@RequestBody String evaluations){
+    @PostMapping("/addGradeToTeam")
+    public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations){
         try {
-            String gradeType = "Performance Globale";
             ObjectMapper objectMapper = new ObjectMapper();
             TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {};
             Map<String, List<Map<String, Object>>> evaluationsMap = objectMapper.readValue(evaluations, typeReference);
@@ -72,8 +71,13 @@ public class GradeController {
                 List<Map<String, Object>> evaluationsList = entry.getValue();
 
                 for (Map<String, Object> evaluation : evaluationsList) {
-                    Integer value = (Integer) evaluation.get("note");
-                    gradeService.assignGradeToTeam(teamName, value, gradeType);
+                    if (evaluation.containsKey("gradeOverallPerformance")) {
+                        Integer value = (Integer) evaluation.get("gradeOverallPerformance");
+                        gradeService.assignGradeToTeam(teamName, value, "Performance Globale");
+                    } else if (evaluation.containsKey("gradeMaterialSupport")) {
+                        Integer value = (Integer) evaluation.get("gradeMaterialSupport");
+                        gradeService.assignGradeToTeam(teamName, value, "Support Matériel");
+                    }
                 }
             }
             return ResponseEntity.ok(Map.of("message", "Grades added successfully."));
