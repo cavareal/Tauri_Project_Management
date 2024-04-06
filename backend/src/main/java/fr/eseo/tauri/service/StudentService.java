@@ -47,6 +47,12 @@ public class StudentService {
         this.gradeService = gradeService;
     }
 
+    /**
+     * This method is used to create a new student in the database.
+     *
+     * @param student the Student object to be created in the database
+     * @throws IllegalArgumentException if the student's name is null or empty
+     */
     public void createStudent(Student student) {
         if (student.name() == null || student.name().trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
@@ -66,6 +72,7 @@ public class StudentService {
     }
 
     /**
+     * <b>HELPER METHOD</b>
      * This method is used to extract student data from a CSV file.
      * The data includes the student's name, gender, bachelor status, and grades.
      *
@@ -111,7 +118,7 @@ public class StudentService {
 
 
     /**
-     * Helper method
+     * <b>HELPER METHOD</b>
      * Checks if the specified index in the given line contains a non-empty value.
      *
      * @param line  the array representing a line from the CSV file
@@ -122,14 +129,17 @@ public class StudentService {
         return line.length > index && !line[index].trim().isEmpty();
     }
 
+
     /**
-     * Helper method
-     * Creates a student object from extracted data.
+     * <b>HELPER  METHOD</b>
+     * This method is used to create a Student object from the provided data.
+     * The data includes the student's name, gender, and bachelor status.
      *
-     * @param name     The name of the student.
-     * @param gender   The gender of the student.
-     * @param bachelor The bachelor status of the student.
-     * @return The created student object.
+     * @param name the name of the student
+     * @param gender the gender of the student
+     * @param bachelor the bachelor status of the student
+     * @return the created Student object
+     * @throws IllegalArgumentException if the name or gender is null or empty, or if the bachelor status is null
      */
     Student createStudentFromData(String name, String gender, String bachelor) {
         if (name == null || name.trim().isEmpty()) {
@@ -156,12 +166,18 @@ public class StudentService {
     }
 
     /**
-     * Populates the database with user and student records from a CSV file.
-     *
-     * @param file The path to the CSV file containing user and student data.
+     * This method is used to populate the database with student data from a CSV file.
+     * The CSV file is expected to contain the following data for each student:
+     * - Name
+     * - Gender
+     * - Bachelor status
+     * - Grades
+     * - Coefficients
+     * - Ratings
+     * @param file The CSV file containing the student data.
      */
     @SuppressWarnings("unchecked")
-    public void populateDatabaseFromCsv(MultipartFile file) {
+    public void populateDatabaseFromCSV(MultipartFile file) {
         if (file.isEmpty()) {
             CustomLogger.logInfo("Uploaded file is empty");
             return;
@@ -182,7 +198,7 @@ public class StudentService {
                 gradeService.createGradesFromGradeTypesAndValues(student, gradesList.get(i), gradeTypes, "Imported grades");
             }
 
-            CustomLogger.logInfo("Successfully populated database with " + names.size() + " students.");
+            CustomLogger.logInfo(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
         } catch (Exception e) {
             CustomLogger.logError("An error occurred while handling the uploaded file", e);
         }

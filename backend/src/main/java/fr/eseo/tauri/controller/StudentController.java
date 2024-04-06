@@ -58,7 +58,7 @@ public class StudentController {
 
         try {
             // Pass the uploaded file to the service method for further processing
-            studentService.populateDatabaseFromCsv(file);
+            studentService.populateDatabaseFromCSV(file);
             return ResponseEntity.ok("File uploaded successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
