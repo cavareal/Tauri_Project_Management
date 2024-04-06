@@ -7,6 +7,7 @@ import type { Criteria } from "@/type/Criteria"
 import { getCriteria } from "@/service/TeamService"
 import { Separator } from "@/components/ui/separator"
 import { separateStringOnFirstSpace } from "@/utils/utils"
+import IsCheck from "@/components/atoms/isCheck.vue"
 
 const students = ref<Student[]>([])
 
