@@ -1,6 +1,9 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,6 +22,9 @@ public class TeamServiceTest {
 
     @Mock
     private TeamRepository teamRepository;
+
+    @Mock
+    private StudentRepository studentRepository;
 
     @InjectMocks
     private TeamService teamService;
@@ -78,5 +84,107 @@ public class TeamServiceTest {
         // Assert
         assertThat(result).isNull();
         verify(teamRepository, times(1)).findById(1);
+    }
+
+    @Test
+    public void testGetNbWomanByTeamId() {
+        // Arrange
+        Team team = new Team();
+        Student student1 = new Student();
+        student1.gender(Gender.WOMAN);
+        Student student2 = new Student();
+        student2.gender(Gender.MAN);
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+
+        // Act
+        Integer nbWoman = teamService.getNbWomanByTeamId(1);
+
+        // Assert
+        assertThat(nbWoman).isEqualTo(1);
+    }
+
+    @Test
+    public void testGetNbWomanByTeamIdZero() {
+        // Arrange
+        Team team = new Team();
+        Student student1 = new Student();
+        student1.gender(Gender.MAN);
+        Student student2 = new Student();
+        student2.gender(Gender.MAN);
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+
+        // Act
+        Integer nbWoman = teamService.getNbWomanByTeamId(1);
+
+        // Assert
+        assertThat(nbWoman).isEqualTo(0);
+    }
+
+    @Test
+    public void testGetNbBachelorsByTeamId() {
+        // Arrange
+        Team team = new Team();
+        Student student1 = new Student();
+        student1.bachelor(true);
+        Student student2 = new Student();
+        student2.bachelor(false);
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+
+        // Act
+        Integer nbBachelors = teamService.getNbBachelorByTeamId(1);
+
+        // Assert
+        assertThat(nbBachelors).isEqualTo(1);
+    }
+
+    @Test
+    public void testGetNbBachelorsByTeamIdZero() {
+        // Arrange
+        Team team = new Team();
+        Student student1 = new Student();
+        student1.bachelor(false);
+        Student student2 = new Student();
+        student2.bachelor(false);
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+
+        // Act
+        Integer nbBachelors = teamService.getNbBachelorByTeamId(1);
+
+        // Assert
+        assertThat(nbBachelors).isEqualTo(0);
+    }
+
+    @Test
+    public void testGetNbStudentsByTeamId() {
+        // Arrange
+        Team team = new Team();
+        Student student1 = new Student();
+        Student student2 = new Student();
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+
+        // Act
+        Integer nbStudents = teamService.getNbStudentsByTeamId(1);
+
+        // Assert
+        assertThat(nbStudents).isEqualTo(2);
+    }
+
+    @Test
+    public void testGetNbStudentsByTeamIdZero() {
+        // Arrange
+        Team team = new Team();
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList());
+
+        // Act
+        Integer nbStudents = teamService.getNbStudentsByTeamId(1);
+
+        // Assert
+        assertThat(nbStudents).isEqualTo(0);
     }
 }

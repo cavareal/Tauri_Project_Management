@@ -175,7 +175,7 @@ public class TeamController {
                 Integer ratioGender = projectService.getRatioGender();
                 Boolean validateWoman = false;
                 Boolean validateBachelor =false;
-                if(nbStudents > 0 && (nbWoman*100)/nbStudents > ratioGender){
+                if(nbStudents > 0 && (nbWoman*100)/nbStudents >= ratioGender){
                     validateWoman = true;
                 }
                 if (nbBachelor>=1){
