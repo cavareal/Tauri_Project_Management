@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,7 +87,7 @@ public class StudentController {
      *
      */
     @PostMapping("/uploadTest")
-    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file-upload") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("Uploaded file is empty");
         }
@@ -99,4 +100,11 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
     }
+
+    @PostMapping("/Test")
+    public ResponseEntity<String> handleFileUpload2(String key) {
+        CustomLogger.logInfo("cell");
+        return ResponseEntity.ok("File uploaded successfully");
+    }
+    
 }

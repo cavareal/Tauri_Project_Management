@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,7 +151,9 @@ public class StudentService {
 
                 if (namesStarted && hasNonEmptyValue(nextLine, 1)) {
                     names.add(nextLine[1]); // Assuming complete name is in the second column
+                    CustomLogger.logInfo(names.toString());
                     genders.add(nextLine[2]);
+                    CustomLogger.logInfo(genders.toString());
                     bachelors.add(nextLine.length > 3 ? nextLine[3] : ""); // Add bachelor status or empty string
                     averages.add(nextLine[4]);
                     CustomLogger.logInfo(("Average : " + nextLine[4]) + " Name : " + nextLine[1]);
