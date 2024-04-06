@@ -45,9 +45,9 @@ public class GradeTypeService {
      * This method is used to create a new GradeType object and save it to the database.
      *
      * @param coefficient the coefficient for the GradeType object
-     * @param rating the rating for the GradeType object
-     * @param forGroup the forGroup value for the GradeType object
-     * @param imported the imported value for the GradeType object
+     * @param rating      the rating for the GradeType object
+     * @param forGroup    the forGroup value for the GradeType object
+     * @param imported    the imported value for the GradeType object
      * @return the saved GradeType object
      */
     public GradeType createGradeType(double coefficient, String rating, Boolean forGroup, Boolean imported) {
@@ -63,12 +63,16 @@ public class GradeTypeService {
      * This method is used to create a list of GradeType objects from the provided coefficients and ratings.
      *
      * @param coefficients the list of coefficients for the GradeType objects
-     * @param ratings the list of ratings for the GradeType objects
-     * @param forGroup the forGroup value for the GradeType objects
-     * @param imported the imported value for the GradeType objects
+     * @param ratings      the list of ratings for the GradeType objects
+     * @param forGroup     the forGroup value for the GradeType objects
+     * @param imported     the imported value for the GradeType objects
      * @return a list of GradeType objects created from the provided coefficients and ratings
      */
     public List<GradeType> createGradeTypes(List<String> coefficients, List<String> ratings, Boolean forGroup, Boolean imported) {
+        if (coefficients == null || ratings == null || coefficients.isEmpty() || ratings.isEmpty()) {
+            LOGGER.error("Coefficients or ratings are null or empty");
+            return new ArrayList<>();
+        }
         List<GradeType> gradeTypes = new ArrayList<>();
         gradeTypes.add(createGradeType(0, "B3/E3 average grades", forGroup, imported));
         for (int i = 0; i < coefficients.size(); i++) {
@@ -112,7 +116,7 @@ public class GradeTypeService {
      * <b>HELPER METHOD</b>
      * This method is used to process a line from a CSV file and extract the coefficients.
      *
-     * @param nextLine the line from the CSV file as an array of strings
+     * @param nextLine     the line from the CSV file as an array of strings
      * @param coefficients the list of coefficients to which the extracted coefficients are added
      * @return the starting index of the coefficients in the line
      */
@@ -134,8 +138,8 @@ public class GradeTypeService {
      * <b>HELPER METHOD</b>
      * This method is used to process a line from a CSV file and extract the ratings.
      *
-     * @param nextLine the line from the CSV file as an array of strings
-     * @param ratings the list of ratings to which the extracted ratings are added
+     * @param nextLine             the line from the CSV file as an array of strings
+     * @param ratings              the list of ratings to which the extracted ratings are added
      * @param startingCoefficients the starting index of the coefficients in the line
      */
     private void processLineForRatings(String[] nextLine, List<String> ratings, int startingCoefficients) {

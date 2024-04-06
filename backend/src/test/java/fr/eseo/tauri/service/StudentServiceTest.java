@@ -42,14 +42,12 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(1)
     @DisplayName("Test if the student service is correctly instantiated")
     void testStudentServiceInstantiation() {
         assertNotNull(studentService);
     }
 
     @Test
-    @Order(2)
     @DisplayName("createStudent with valid data saves student")
     void createStudent_withValidData_savesStudent() {
 
@@ -73,7 +71,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(3)
     @DisplayName("createStudent with null name throws exception")
     void createStudent_withNullName_throwsException() {
         Student student = new Student();
@@ -82,7 +79,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(4)
     @DisplayName("getStudentQuantity returns correct quantity when students exist")
     void getStudentQuantity_returnsCorrectQuantity_whenStudentsExist() {
         List<Student> students = Arrays.asList(new Student(), new Student(), new Student());
@@ -94,7 +90,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(5)
     @DisplayName("getStudentQuantity returns zero when no students exist")
     void getStudentQuantity_returnsZero_whenNoStudentsExist() {
 
@@ -106,35 +101,30 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(9)
     @DisplayName("createStudentFromData throws exception when name is null")
     void createStudentFromData_throwsExceptionWhenNameIsNull() {
         assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData(null, "M", "B"));
     }
 
     @Test
-    @Order(10)
     @DisplayName("createStudentFromData throws exception when name is empty")
     void createStudentFromData_throwsExceptionWhenNameIsEmpty() {
         assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("", "M", "B"));
     }
 
     @Test
-    @Order(11)
     @DisplayName("createStudentFromData throws exception when gender is null")
     void createStudentFromData_throwsExceptionWhenGenderIsNull() {
         assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", null, "B"));
     }
 
     @Test
-    @Order(12)
     @DisplayName("createStudentFromData throws exception when gender is empty")
     void createStudentFromData_throwsExceptionWhenGenderIsEmpty() {
         assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", "", "B"));
     }
 
     @Test
-    @Order(13)
     @DisplayName("createStudentFromData throws exception when bachelor is null")
     void createStudentFromData_throwsExceptionWhenBachelorIsNull() {
         assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", "M", null));
@@ -142,7 +132,6 @@ class StudentServiceTest {
 
 
     @Test
-    @Order(14)
     @DisplayName("isEmpty returns true when line is empty at index")
     void isEmpty_returnsTrue_whenLineIsEmptyAtIndex() {
         String[] line = {"", "test", "example"};
@@ -150,7 +139,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(15)
     @DisplayName("isEmpty returns false when line is not empty at index")
     void isEmpty_returnsFalse_whenLineIsNotEmptyAtIndex() {
         String[] line = {"test", "example"};
@@ -158,7 +146,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(16)
     @DisplayName("isEmpty returns true when index is out of bounds")
     void isEmpty_returnsTrue_whenIndexIsOutOfBounds() {
         String[] line = {"test", "example"};
@@ -166,7 +153,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(18)
     @DisplayName("createStudentFromData creates student with valid data")
     void createStudentFromData_createsStudentWithValidData() {
         Student student = studentService.createStudentFromData("John Doe", "M", "B");
@@ -183,7 +169,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(19)
     @DisplayName("createStudentFromData creates student with empty bachelor status")
     void createStudentFromData_createsStudentWithEmptyBachelorStatus() {
         Student student = studentService.createStudentFromData("John Doe", "M", "");
@@ -200,7 +185,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(20)
     @DisplayName("createStudentFromData creates student with female gender")
     void createStudentFromData_createsStudentWithFemaleGender() {
         Student student = studentService.createStudentFromData("Jane Doe", "F", "B");
@@ -217,7 +201,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(26)
     @DisplayName("extractNamesGenderBachelorAndGrades extracts valid data from input stream")
     @SuppressWarnings("unchecked")
     void extractNamesGenderBachelorAndGrades_extractsValidDataFromInputStream(){
@@ -238,7 +221,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(27)
     @DisplayName("extractNamesGenderBachelorAndGrades handles empty input stream")
     @SuppressWarnings("unchecked")
     void extractNamesGenderBachelorAndGrades_handlesEmptyInputStream() {
@@ -258,7 +240,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(28)
     @DisplayName("extractNamesGenderBachelorAndGrades handles input stream with missing data")
     @SuppressWarnings("unchecked")
     void extractNamesGenderBachelorAndGrades_handlesInputStreamWithMissingData(){
@@ -279,7 +260,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(29)
     @DisplayName("populateDatabaseFromCSV populates database with students from valid CSV file")
     void populateDatabaseFromCSV_populatesDatabaseWithStudentsFromValidCSVFile() throws IOException {
         MultipartFile multipartFile = mock(MultipartFile.class);
@@ -309,7 +289,6 @@ class StudentServiceTest {
     }
 
     @Test
-    @Order(30)
     @DisplayName("populateDatabaseFromCSV handles empty file")
     void populateDatabaseFromCSV_handlesEmptyFile() {
         MultipartFile multipartFile = mock(MultipartFile.class);
