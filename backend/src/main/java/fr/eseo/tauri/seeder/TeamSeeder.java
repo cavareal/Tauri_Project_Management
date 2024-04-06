@@ -27,16 +27,16 @@ public class TeamSeeder {
             team.name(faker.team().name());
             teamRepository.save(team);
 
-            // Ajout de 6 utilisateurs à chaque équipe
-            for (int j = 0; j < 6; j++) {
-                var student = new Student();
-                student.name(faker.name().fullName());
-                student.email(faker.internet().emailAddress());
-                student.password(faker.internet().password());
-                student.privateKey(faker.number().digits(20));
-                student.team(team);
-                studentRepository.save(student);
-            }
+//            // Ajout de 6 utilisateurs à chaque équipe
+//            for (int j = 0; j < 6; j++) {
+//                var student = new Student();
+//                student.name(faker.name().fullName());
+//                student.email(faker.internet().emailAddress());
+//                student.password(faker.internet().password());
+//                student.privateKey(faker.number().digits(20));
+//                student.team(team);
+//                studentRepository.save(student);
+//            }
         }
     }
 }

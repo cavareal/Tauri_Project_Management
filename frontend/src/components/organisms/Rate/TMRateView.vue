@@ -59,7 +59,7 @@ const buttonsState = reactive({
 })
 
 function redirect() : void {
-	window.location.href = "/rating"
+	window.location.href = "/tauri/rating"
 }
 
 function addEvaluation() {
