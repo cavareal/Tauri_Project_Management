@@ -5,11 +5,16 @@ import org.slf4j.LoggerFactory;
 
 public class CustomLogger {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomLogger.class);
+    private static Logger logger = LoggerFactory.getLogger(CustomLogger.class);
 
     // Private constructor to hide the implicit public one
     private CustomLogger() {
         throw new IllegalStateException("Utility class");
+    }
+
+    // Method to set the logger, mainly for testing purposes
+    static void setLogger(Logger logger) {
+        CustomLogger.logger = logger;
     }
 
     public static void logInfo(String message) {
@@ -23,5 +28,4 @@ public class CustomLogger {
     public static void logError(String message, Throwable throwable) {
         logger.error(message, throwable);
     }
-
 }

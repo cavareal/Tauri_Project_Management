@@ -3,7 +3,6 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
