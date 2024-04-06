@@ -64,7 +64,7 @@ fetchNumberStudents()
 		<NotAutorized v-if="!token || !role" />
 		<StudentsNotImported v-else-if="role === 'PL' && currentPhase === 'COMPOSING' && nbStudents == '0'" />
 		<GenerateTeams v-else-if="role === 'PL' && currentPhase === 'COMPOSING'" />
-		<TeamsCreated v-else-if="(role === 'PL' || role === 'SS' || role === 'OL') && currentPhase === 'PREPUBLISHED'" />
+		<TeamsCreated v-else-if="(role === 'PL' || role === 'SS' || role === 'OL') && currentPhase === 'PREPUBLISHED'" :phase="currentPhase"/>
 		<TeamsNotsCreated v-else-if="(role === 'SS' || role === 'OL') && currentPhase === 'COMPOSING'" />
 		<NotAutorized v-else />
 	</PageTemplate>

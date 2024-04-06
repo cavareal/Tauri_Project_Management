@@ -164,5 +164,12 @@ public class ProjectService {
     }
 
 
-
+    public Integer getRatioGender() {
+        Project currentProject = projectRepository.findAll().get(0);
+        if (currentProject != null) {
+            return currentProject.ratioGender();
+        } else {
+            return 0;
+        }
+    }
 }
