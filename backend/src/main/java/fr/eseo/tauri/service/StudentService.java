@@ -2,18 +2,19 @@ package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.*;
 
 /**
  * Service class for handling student-related operations.
@@ -21,7 +22,14 @@ import java.util.List;
 @Service
 public class StudentService {
 
+    private static final String MAP_KEY_NAMES = "names";
+    private static final String MAP_KEY_GENDERS = "genders";
+    private static final String MAP_KEY_BACHELORS = "bachelors";
+    private static final String MAP_KEY_GRADES = "grades";
+
     private final StudentRepository studentRepository;
+
+    private final GradeTypeService gradeTypeService;
 
     private final GradeService gradeService;
 
@@ -29,11 +37,13 @@ public class StudentService {
      * Constructs a new StudentService with the specified StudentRepository.
      *
      * @param studentRepository the student repository to be used
+     * @param gradeTypeService  the grade service to be used
      * @param gradeService      the grade service to be used
      */
     @Autowired
-    public StudentService(StudentRepository studentRepository, GradeService gradeService) {
+    public StudentService(StudentRepository studentRepository, GradeTypeService gradeTypeService, GradeService gradeService) {
         this.studentRepository = studentRepository;
+        this.gradeTypeService = gradeTypeService;
         this.gradeService = gradeService;
     }
 
@@ -44,63 +54,6 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    /**
-     * Handles the upload of a file.
-     *
-     * @param file the file to be uploaded
-     * @return the uploaded file
-     */
-    public File handleFileUpload(@RequestParam("file") MultipartFile file) {
-        // Handle the file upload
-        File savedFile = null;
-        if (!file.isEmpty()) {
-            try {
-                // Save the file to the file system
-                savedFile = new File("C:\\Users\\pallu\\OneDrive\\Documents\\Workspace\\Ingenieur\\E4 n2\\ProjetGL\\nath\\example.csv" /*+ file.getOriginalFilename()*/);
-
-                file.transferTo(savedFile);
-            } catch (IOException e) {
-                CustomLogger.logError("An error occurred while saving the file", e);
-            }
-        }
-        return savedFile;
-    }
-
-    /**
-     * Reads data from a CSV file.
-     *
-     * @param fileToRead the CSV file to be read
-     * @return a list of strings representing the data read from the CSV file
-     */
-    // TODO: Delete this function and refactor the /uplaod of StudentController since we do not need to locally save the file
-    public List<String> fileReader(File fileToRead) {
-        List<String> resultList = new ArrayList<>();
-
-        try {
-
-            // Create an object of FileReader
-            // class with CSV file as a parameter.
-            CSVReader csvReader;
-            try (FileReader filereader = new FileReader(fileToRead)) {
-
-                // Create CSVReader object passing
-                // file reader as a parameter
-                csvReader = new CSVReader(filereader);
-            }
-            String[] nextRecord;
-
-            // Read data line by line
-            while ((nextRecord = csvReader.readNext()) != null) {
-                for (String cell : nextRecord) {
-                    resultList.add(cell);
-                    CustomLogger.logInfo(cell);
-                }
-            }
-        } catch (Exception e) {
-            CustomLogger.logError("An error occurred while reading the file in fileReader", e);
-        }
-        return resultList;
-    }
 
     /**
      * Retrieves the quantity of students.
@@ -112,28 +65,19 @@ public class StudentService {
         return students.size();
     }
 
-
     /**
-     * Extracts names, genders, and bachelor status from a CSV file.
+     * This method is used to extract student data from a CSV file.
+     * The data includes the student's name, gender, bachelor status, and grades.
      *
-     * @param inputStream the path to the CSV file
-     * @return a list containing three lists: names, genders, and bachelor status
-     * <p>
-     * The returned list contains three inner lists:
-     * <ul>
-     * <li>names: List of names extracted from the CSV file.</li>
-     * <li>genders: List of genders extracted from the CSV file.</li>
-     * <li>bachelor status: List of bachelor status extracted from the CSV file.</li>
-     * </ul>
-     * </p>
+     * @param inputStream The input stream of the CSV file.
+     * @return A map containing lists of names, genders, bachelor statuses, and grades.
      */
-    public List<List<String>> extractNamesGenderAndBachelor(InputStream inputStream) {
-
-        List<List<String>> result = new ArrayList<>();
+    public Map<String, Object> extractNamesGenderBachelorAndGrades(InputStream inputStream) {
+        Map<String, Object> result = new HashMap<>();
         List<String> names = new ArrayList<>();
         List<String> genders = new ArrayList<>();
         List<String> bachelors = new ArrayList<>();
-        List<String> averages = new ArrayList<>();
+        List<List<String>> grades = new ArrayList<>();
 
         boolean namesStarted = false;
 
@@ -143,29 +87,25 @@ public class StudentService {
                 if (!namesStarted && hasNonEmptyValue(nextLine, 1)) {
                     namesStarted = true;
                 }
-
                 if (namesStarted && !names.isEmpty() && !hasNonEmptyValue(nextLine, 1)) {
                     break;
                 }
-
                 if (namesStarted && hasNonEmptyValue(nextLine, 1)) {
-                    names.add(nextLine[1]); // Assuming complete name is in the second column
+                    names.add(nextLine[1]);
                     genders.add(nextLine[2]);
-                    bachelors.add(nextLine.length > 3 ? nextLine[3] : ""); // Add bachelor status or empty string
-                    averages.add(nextLine[4]);
-                    CustomLogger.logInfo(("Average : " + nextLine[4]) + " Name : " + nextLine[1]);
+                    bachelors.add(nextLine.length > 3 ? nextLine[3] : "");
+                    grades.add(Arrays.asList(Arrays.copyOfRange(nextLine, 4, nextLine.length)));
                 }
             }
-        } catch (IOException e) {
-            CustomLogger.logError("An IOException occurred while reading the input stream in extractNamesGenderAndBachelor", e);
-        } catch (CsvValidationException e) {
-            CustomLogger.logError("A CsvValidationException occurred in extractNamesGenderAndBachelor", e);
+        } catch (IOException | CsvValidationException e) {
+            CustomLogger.logError("An error occurred in extractNamesGenderAndBachelor", e);
         }
 
-        result.add(names);
-        result.add(genders);
-        result.add(bachelors);
-        result.add(averages);
+        result.put(MAP_KEY_NAMES, names);
+        result.put(MAP_KEY_GENDERS, genders);
+        result.put(MAP_KEY_BACHELORS, bachelors);
+        result.put(MAP_KEY_GRADES, grades);
+
         return result;
     }
 
@@ -207,7 +147,7 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.teamRole("Not assigned");
-        student.project(null); // TODO: Discuss with clement how the project is assigned on the front
+        student.project(null);
         student.team(null); // Team is not assigned yet
         student.password("password");
         student.privateKey("privateKey");
@@ -220,34 +160,29 @@ public class StudentService {
      *
      * @param file The path to the CSV file containing user and student data.
      */
+    @SuppressWarnings("unchecked")
     public void populateDatabaseFromCsv(MultipartFile file) {
-        // Check if the file is empty
         if (file.isEmpty()) {
             CustomLogger.logInfo("Uploaded file is empty");
             return;
         }
 
-        // Handle the uploaded file in memory
         try {
-            // Extract data from CSV
-            List<List<String>> extractedData = extractNamesGenderAndBachelor(file.getInputStream());
+            List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
+            Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
 
-            // Process extracted data
-            for (int i = 0; i < extractedData.get(0).size(); i++) {
-                // Create student
-                Student student = createStudentFromData(
-                        extractedData.get(0).get(i),
-                        extractedData.get(1).get(i),
-                        extractedData.get(2).get(i)
-                );
+            List<String> names = (List<String>) extractedData.get(MAP_KEY_NAMES);
+            List<String> genders = (List<String>) extractedData.get(MAP_KEY_GENDERS);
+            List<String> bachelors = (List<String>) extractedData.get(MAP_KEY_BACHELORS);
+            List<List<String>> gradesList = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
 
-                // Save student
+            for (int i = 0; i < names.size(); i++) {
+                Student student = createStudentFromData(names.get(i), genders.get(i), bachelors.get(i));
                 createStudent(student);
-
-                gradeService.createGradeFromAverage(extractedData.get(3).get(i), student);
-
+                gradeService.createGradesFromGradeTypesAndValues(student, gradesList.get(i), gradeTypes, "Imported grades");
             }
-            CustomLogger.logInfo("Successfully populated database with " + extractedData.get(0).size() + " students.");
+
+            CustomLogger.logInfo("Successfully populated database with " + names.size() + " students.");
         } catch (Exception e) {
             CustomLogger.logError("An error occurred while handling the uploaded file", e);
         }
