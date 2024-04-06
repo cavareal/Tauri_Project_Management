@@ -121,4 +121,18 @@ public class TeamController {
         }
     }
 
+    @GetMapping("/get-team-avg-grade/{idTeam}")
+    public ResponseEntity<String> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam) {
+        String permission = "readTeamAvgGrade";
+        if (authService.checkAuth(token, permission)) {
+            try {
+                double avgGrade = this.teamRepository.findAvgGradeByTeamId(this.teamRepository.findById(idTeam).get());
+                return ResponseEntity.ok(String.valueOf(avgGrade));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+        }
+    }
 }
