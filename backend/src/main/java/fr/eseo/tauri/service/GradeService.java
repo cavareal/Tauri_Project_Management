@@ -47,7 +47,7 @@ public class GradeService {
         var grades = gradeRepository.findAll();
 
         for (var student : students) {
-            if (student.bachelor()) continue;
+            if (Boolean.TRUE.equals(student.bachelor())) continue;
 
             var studentGrades = grades.stream()
                     .filter(grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && !grade.gradeType().name().equals("mean"))
