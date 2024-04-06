@@ -79,8 +79,9 @@ public class GradeService {
         return total / factors;
     }
 
-    public void assignGradeToTeam(String teamName, Integer value, GradeType gradeType/*,User author, String comment*/) {
+    public void assignGradeToTeam(String teamName, Integer value, String gradeName/*,User author, String comment*/) {
         Team team = teamRepository.findByName(teamName);
+        GradeType gradeType = gradeTypeRepository.findByName(gradeName);
         if (team != null) {
             Grade grade = new Grade();
             grade.value(Float.valueOf(value));
@@ -97,8 +98,9 @@ public class GradeService {
         }
     }
 
-    public void assignGradeToStudent(String studentName, Integer value, GradeType gradeType/*,User author, String comment*/) {
+    public void assignGradeToStudent(String studentName, Integer value, String gradeName/*,User author, String comment*/) {
         Student student = studentRepository.findByName(studentName);
+        GradeType gradeType = gradeTypeRepository.findByName(gradeName);
         if (student != null) {
             Grade grade = new Grade();
             grade.value(Float.valueOf(value));

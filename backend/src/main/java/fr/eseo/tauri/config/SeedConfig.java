@@ -45,6 +45,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		gradeTypeSeeder.seed(faker);
 		gradeSeeder.seed(faker);
 		permissionSeeder.seed();
+		gradeTypeSeeder.seedTeamGradeType();
 	}
 
 }

@@ -62,9 +62,7 @@ public class GradeController {
     @PostMapping("/addOverallPerformance")
     public ResponseEntity<Map<String, String>> addGradeOverallPerformance(@RequestBody String evaluations){
         try {
-            System.out.println(evaluations);
-
-            GradeType gradeType = new GradeType("Performance Gloable");
+            String gradeType = "Performance Globale";
             ObjectMapper objectMapper = new ObjectMapper();
             TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {};
             Map<String, List<Map<String, Object>>> evaluationsMap = objectMapper.readValue(evaluations, typeReference);

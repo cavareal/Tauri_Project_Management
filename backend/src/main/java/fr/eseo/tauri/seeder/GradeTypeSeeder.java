@@ -16,7 +16,13 @@ public class GradeTypeSeeder {
 			"IRS",
 			"Stage S7",
 			"S5",
-			"S6"
+			"S6",
+	};
+
+	private static final String[] NAMES_TEAM_GRADE = {
+			"Performance Globale",
+			"Support Matériel",
+			"Contenu de la présentation",
 	};
 
 	private final GradeTypeRepository gradeTypeRepository;
@@ -43,5 +49,17 @@ public class GradeTypeSeeder {
 		importedMean.imported(true);
 		gradeTypeRepository.save(importedMean);
 	}
+
+	public void seedTeamGradeType() {
+		for (String name : NAMES_TEAM_GRADE) {
+			var gradeType = new GradeType();
+			gradeType.name(name);
+			gradeType.factor((float) 1);
+			gradeType.forGroup(true);
+			gradeType.imported(false);
+			gradeTypeRepository.save(gradeType);
+		}
+	}
+
 
 }

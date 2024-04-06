@@ -10,4 +10,7 @@ public interface GradeTypeRepository extends JpaRepository<GradeType, Integer> {
 	@Query("SELECT g FROM GradeType g WHERE g.imported")
 	public GradeType findAllImported();
 
+	@Query("SELECT g FROM GradeType g WHERE g.name = ?1")
+	public GradeType findByName(String name);
+
 }
