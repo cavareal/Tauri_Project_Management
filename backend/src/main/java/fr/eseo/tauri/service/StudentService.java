@@ -22,10 +22,11 @@ import java.util.*;
 @Service
 public class StudentService {
 
-    private static final String MAP_KEY_NAMES = "names";
-    private static final String MAP_KEY_GENDERS = "genders";
-    private static final String MAP_KEY_BACHELORS = "bachelors";
-    private static final String MAP_KEY_GRADES = "grades";
+    static final String MAP_KEY_NAMES = "names";
+    static final String MAP_KEY_GENDERS = "genders";
+
+    static final String MAP_KEY_BACHELORS = "bachelors";
+    static final String MAP_KEY_GRADES = "grades";
 
     private final StudentRepository studentRepository;
 
