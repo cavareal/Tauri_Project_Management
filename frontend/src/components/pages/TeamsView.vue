@@ -33,7 +33,7 @@ const fetchCurrentPhase = async() => {
 		console.error(error)
 	}
 }
-//fetchCurrentPhase()
+fetchCurrentPhase()
 
 /* GET number of students, to see if there are imported */
 const requestOptionsStudents = {
