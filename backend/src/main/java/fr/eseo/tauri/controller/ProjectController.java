@@ -259,4 +259,24 @@ public class ProjectController {
         }
     }
 
+    @PutMapping("/current-phase")
+    public ResponseEntity<String> updateCurrentPhase(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
+        String permission = "manageProjectPhase";
+        if (authService.checkAuth(token, permission)) {
+            try {
+                ProjectPhase newPhase = ProjectPhase.valueOf(request.get("phase"));
+                Project project = projectService.updateCurrentPhase(newPhase);
+                if (project != null) {
+                    return ResponseEntity.ok("La modification a bien été prise en compte");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                }
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+        }
+    }
+
 }

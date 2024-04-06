@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -169,19 +171,30 @@ public class TeamService {
      * @return .. if teams are created, otherwise null
      */
     @Async
-    public Team createTeams(Integer nbTeams, Integer ratioGender) {
-        System.out.println("Create teams");
-        System.out.println(nbTeams);
-        System.out.println(ratioGender);
+    public void createTeams(Integer nbTeams, Integer ratioGender) {
+        var project = projectRepository.findAll().get(0);
 
-        // Set logic code to generate teams
-        // You can delete this try/catch. It's use ti simulate loader on the frontend
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        var teams = new ArrayList<Team>();
+        for (int i = 0; i < nbTeams; i++) {
+            Team team = new Team();
+            team.project(project);
+            team.name("Équipe " + (i + 1));
+            teams.add(team);
+            teamRepository.save(team);
         }
-        return new Team();
+
+        var students = studentRepository.findAll();
+        for (int i = 0; i < students.size(); i++) {
+            var student = students.get(i);
+            student.team(teams.get(i % nbTeams));
+            studentRepository.save(student);
+        }
+
+        var teamsToDelete = teamRepository.findAllByProjectId(project.id());
+        for (var team : teamsToDelete) {
+            if (teams.contains(team)) continue;
+            teamRepository.deleteById(team.id());
+        }
     }
 
     public List<String> getAllTeamNames() {
@@ -193,7 +206,8 @@ public class TeamService {
      * @return the list of all teams
      */
     public List<Team> getAllTeams() {
-        return teamRepository.findAll();
+        var project = projectRepository.findAll().get(0);
+        return teamRepository.findAllByProjectId(project.id());
     }
 
     /**

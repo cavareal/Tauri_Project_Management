@@ -51,7 +51,7 @@ public class GradeService {
 
     public void updateImportedMean() {
         var students = studentRepository.findAll();
-        var grades = gradeRepository.findAll();
+        var grades = gradeRepository.findAll().stream().filter(grade -> grade.student() != null).toList();
 
         for (var student : students) {
             if (Boolean.TRUE.equals(student.bachelor())) continue;

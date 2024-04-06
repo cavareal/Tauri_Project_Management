@@ -48,12 +48,14 @@ const onInputValueChange = (e: Event, gradeTypeId: number) => {
 const updateGradeFactors = async() => {
 	if (!gradeTypes.value) return
 	submitLoading.value = true
+
 	await Promise.all(gradeTypes.value?.map((gradeType) => apiQuery({
 		method: "PATCH",
 		responseSchema: GradeTypeSchema,
 		route: `grade_types/${gradeType.id}`,
 		body: { factor: gradeType.factor }
 	}))).then(() => location.reload())
+
 	submitLoading.value = false
 	open.value = false
 }

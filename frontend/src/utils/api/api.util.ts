@@ -1,8 +1,9 @@
+import { z } from "zod"
 import type { ApiQueryRequest, ApiQueryResponse } from "."
 import getCookie from "@/utils/cookiesUtils"
 
 
-export const apiQuery = async <T>({ route, responseSchema, method, body, delay = 0 }: ApiQueryRequest<T>): Promise<ApiQueryResponse<T>> => {
+export const apiQuery = async <T>({ route, responseSchema, method, body, delay = 0, textResponse = false }: ApiQueryRequest<T>): Promise<ApiQueryResponse<T>> => {
 	let url = import.meta.env.VITE_TAURI_API_URL
 	if (!url) {
 		return {
@@ -30,7 +31,16 @@ export const apiQuery = async <T>({ route, responseSchema, method, body, delay =
 		}
 	}
 
-	const data = responseSchema.safeParse(await response.json())
+	let data = null
+
+	if (textResponse) {
+		const textData = await response.text()
+		data = responseSchema.safeParse(textData)
+	} else {
+		const jsonData: unknown = await response.json()
+		data = responseSchema.safeParse(jsonData)
+	}
+
 	if (!data.success) {
 		return {
 			status: "error",

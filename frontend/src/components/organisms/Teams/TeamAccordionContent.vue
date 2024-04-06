@@ -27,18 +27,18 @@ onMounted(async() => {
 </script>
 
 <template>
-  <div v-for="(student, i) in students" :key="i" :value="student">
-    <AccordionContent>
-      <div class="flex">
-        <div class="flex-grow">{{ student.name }}</div>
-        <div class="flex-grow">{{ student.teamRole }}</div>
-        <div class="flex-grow">{{ student.gender }}</div>
-      </div>
-    </AccordionContent>
-  </div>
-  <AccordionContent>
-    <div class="flex">
-      <div class="font-bold">{{ leader }}</div>
-    </div>
-  </AccordionContent>
+	<div v-for="(student, i) in students" :key="i" :value="student">
+		<AccordionContent>
+			<div class="flex">
+				<div class="flex-grow">{{ student.name }}</div>
+				<div class="flex-grow">{{ student.teamRole }}</div>
+				<div class="flex-grow">{{ student.gender }}</div>
+			</div>
+		</AccordionContent>
+	</div>
+	<AccordionContent>
+		<div class="flex">
+			<div class="font-bold">{{ leader }}</div>
+		</div>
+	</AccordionContent>
 </template>

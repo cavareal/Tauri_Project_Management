@@ -17,4 +17,6 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     @Query("SELECT t.name FROM Team t")
     List<String> findAllTeamNames();
 
+    List<Team> findAllByProjectId(Integer projectId);
+
 }

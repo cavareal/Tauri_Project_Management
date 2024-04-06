@@ -6,6 +6,7 @@ export type ApiQueryRequest<T> = {
 	body?: unknown
 	responseSchema: z.ZodType<T>
 	delay?: number
+	textResponse?: boolean
 }
 
 export type ApiQueryResponse<T> = {

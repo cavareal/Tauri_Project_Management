@@ -1,71 +1,64 @@
 <script setup lang="ts">
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
-import TeamsCreated from "@/components/organisms/Teams/TeamsCreated.vue"
-import TeamsNotsCreated from "@/components/organisms/Teams/TeamsNotsCreated.vue"
-import StudentsNotImported from "@/components/organisms/Teams/StudentsNotImported.vue"
-import NotAutorized from "@/components/organisms/Teams/NotAuthorized.vue"
-import GenerateTeams from "@/components/organisms/Teams/GenerateTeams.vue"
+import TeamsCreated from "@/components/organisms/teams/TeamsCreated.vue"
+import TeamsNotsCreated from "@/components/organisms/teams/TeamsNotsCreated.vue"
+import { GenerateTeamsDialog, StudentsNotImported, PrepublishDialog } from "@/components/organisms/teams"
+import GenerateTeams from "@/components/organisms/teams/GenerateTeams.vue"
 import getCookie from "@/utils/cookiesUtils"
+import { Separator } from "@/components/ui/separator"
+import { Row } from "@/components/atoms/containers"
+import { Button } from "@/components/ui/button"
+import { getQuantityOfStudents } from "@/services/student-service"
+import { NotAuthorized } from "@/components/organisms/errors"
+import { getCurrentPhase } from "@/services/project-service"
+import type { ProjectPhase } from "@/types/project"
+import { getTeams } from "@/services/team-service"
+import type { Team } from "@/types/team"
 
 const token = getCookie("token")
 const role = getCookie("role")
-const currentPhase = ref("PREPUBLISHED")
-const nbStudents = ref("0")
+const currentPhase = ref<ProjectPhase>("COMPOSING")
+const nbStudents = ref(1)
+const teams = ref<Team[]>([])
 
-/* Get phase of project */
-const requestOptionsPhase = {
-	method: "GET",
-	headers: {
-		"Content-Type": "application/json",
-		Authorization: token || "null"
-	}
-}
-const fetchCurrentPhase = async() => {
-	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/current-phase", requestOptionsPhase)
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`)
-		}
-		const data = await response.text()
-		currentPhase.value = data
-	} catch (error) {
-		console.error(error)
-	}
-}
-fetchCurrentPhase()
+watch(() => { }, async() => {
+	currentPhase.value = await getCurrentPhase()
+}, { immediate: true })
 
-/* GET number of students, to see if there are imported */
-const requestOptionsStudents = {
-	method: "GET",
-	headers: {
-		"Content-Type": "application/json",
-		Authorization: token || "null"
-	}
-}
-const fetchNumberStudents = async() => {
-	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "students/quantity-all", requestOptionsStudents)
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`)
-		}
-		const data = await response.text()
-		nbStudents.value = data
-	} catch (error) {
-		console.error(error)
-	}
-}
-fetchNumberStudents()
+watch(() => { }, async() => {
+	nbStudents.value = await getQuantityOfStudents()
+}, { immediate: true })
+
+watch(() => { }, async() => {
+	teams.value = await getTeams()
+}, { immediate: true })
+
 </script>
 
 <template>
 	<PageTemplate>
-		<h1 class="text-3xl font-title-bold">Equipes</h1>
-		<NotAutorized v-if="!token || !role" />
-		<StudentsNotImported v-else-if="role === 'PL' && currentPhase === 'COMPOSING' && nbStudents == '0'" />
-		<GenerateTeams v-else-if="role === 'PL' && currentPhase === 'COMPOSING'" />
-		<TeamsCreated v-else-if="(role === 'PL' || role === 'SS' || role === 'OL') && currentPhase === 'PREPUBLISHED'" />
+		<Row class="items-center justify-between">
+			<h1 class="text-3xl font-title-bold">Équipes</h1>
+
+			<Row class="gap-4" v-if="role === 'PL' && teams.length > 0 && currentPhase === 'COMPOSING'">
+				<GenerateTeamsDialog>
+					<Button variant="outline">Regénérer les équipes</Button>
+				</GenerateTeamsDialog>
+				<PrepublishDialog>
+					<Button variant="default">Prépublier</Button>
+				</PrepublishDialog>
+			</Row>
+		</Row>
+
+		<Separator />
+
+		<NotAuthorized v-if="!token || !role" />
+		<StudentsNotImported v-else-if="role === 'PL' && currentPhase === 'COMPOSING' && nbStudents === 0" />
+		<GenerateTeams v-else-if="role === 'PL' && currentPhase === 'COMPOSING' && nbStudents > 0 && teams.length === 0" />
+		<!-- eslint-disable-next-line max-len -->
+		<TeamsCreated v-else-if="(role === 'PL' || role === 'SS' || role === 'OL' || (role === 'OS' && currentPhase !== 'COMPOSING')) && teams.length > 0" />
 		<TeamsNotsCreated v-else-if="(role === 'SS' || role === 'OL') && currentPhase === 'COMPOSING'" />
-		<NotAutorized v-else />
+		<NotAuthorized v-else />
 	</PageTemplate>
 </template>

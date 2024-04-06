@@ -163,6 +163,17 @@ public class ProjectService {
         }
     }
 
+    public Project updateCurrentPhase(ProjectPhase newPhase) {
+        Project currentProject = projectRepository.findAll().get(0);
+        if (currentProject != null) {
+            currentProject.phase(newPhase);
+            projectRepository.save(currentProject);
+            return currentProject;
+        } else {
+            return null;
+        }
+    }
+
 
 
 }

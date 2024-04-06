@@ -107,12 +107,8 @@ public class TeamController {
 
         if (authService.checkAuth(token, permission)) {  // Check if role is authorised to do this request, in fonction of the permissions
             try {
-                Team team = teamService.createTeams(nbTeams, ratioGender);
-                if (team != null) {
-                    return ResponseEntity.ok("La creation a bien été prise en compte");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
-                }
+                teamService.createTeams(nbTeams, ratioGender);
+                return ResponseEntity.ok("La creation a bien été prise en compte");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
             }
@@ -132,9 +128,6 @@ public class TeamController {
         if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 List<Team> teams = teamService.getAllTeams();
-                if (teams.isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(teams);
-                }
                 return ResponseEntity.ok(teams);
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
