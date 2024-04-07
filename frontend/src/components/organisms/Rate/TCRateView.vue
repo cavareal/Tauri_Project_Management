@@ -118,7 +118,7 @@ function sendGrades() {
 
 <template>
 	<div class="border border-gray-300 rounded-lg p-2 md:p-3 my-4">
-		<h1 class="font-bold text-base">Evaluer la performance globale d'une équipe</h1>
+		<h1 class="font-bold text-base">Evaluer le support matériel d'une équipe</h1>
 		<div class="w-full pt-5 pb-2 px-0 flex justify-center">
 			<Dialog>
 				<DialogTrigger as-child>
@@ -128,7 +128,7 @@ function sendGrades() {
 				</DialogTrigger>
 				<DialogContent class="sm:max-w-[500px]">
 					<DialogHeader>
-						<DialogTitle>Evaluer la performance globale</DialogTitle>
+						<DialogTitle>Evaluer le support matériel</DialogTitle>
 						<DialogDescription>
 							Sélectionnez l'équipe à évaluer et indiquez la note que vous souhaitez leur accorder
 						</DialogDescription>
