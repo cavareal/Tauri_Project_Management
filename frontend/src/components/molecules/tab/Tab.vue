@@ -1,9 +1,9 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent } from "vue"
 export default defineComponent({
-  name: "Tab",
-  props: ["title", "titleSlot", "disabled"],
-});
+	name: "Tab",
+	props: ["title", "titleSlot", "disabled"]
+})
 </script>
 
 <template>
