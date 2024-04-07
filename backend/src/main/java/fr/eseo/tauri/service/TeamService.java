@@ -168,7 +168,7 @@ public class TeamService {
         Project project = this.projectRepository.getReferenceById(1);
 
         // Check if the number of students is enough to create the teams
-        if (nbStudent < nbTeams || nbTeams < 1) {
+        if (nbStudent < nbTeams * womenPerTeam - 1) {
             System.out.println("ERROR : TeamService.createTeams : Not enough students to create the teams");
             return null;
         }else {
@@ -183,48 +183,29 @@ public class TeamService {
                 teams.add(team);
             }
 
-            // Assign women to the teams
-            for (int i = 0; i < nbWomen/womenPerTeam; i++) {
-                for (int y = 0; y < womenPerTeam; y++) {
-                    Student woman = women.get(womenPerTeam * i + y);
-                    woman.team(teams.get(i % nbTeams));
-                    this.studentRepository.save(woman);
+
+            int index = 0;
+
+            // Assign women to the teams first then even the teams with men
+            for (int i = 0; i < nbTeams; i++) {
+                for (int j = 0; j < womenPerTeam; j++) {
+                    index = i * womenPerTeam + j;
+                    if (index < nbWomen) {
+                        Student student = women.get(index);
+                        student.team(teams.get(i));
+                        this.studentRepository.save(student);
+                    } else if (index < nbStudent) {
+                        Student student = men.get(index - nbWomen);
+                        student.team(teams.get(i));
+                        this.studentRepository.save(student);
+                    }
                 }
             }
 
-            // Calculate the next team index
-            int teamIndex = nbWomen/womenPerTeam;
-            int womenIndex = nbWomen/womenPerTeam * womenPerTeam;
+            index = nbTeams * womenPerTeam - nbWomen;
 
-            // Assign the remaining women to the next team and complete with men
-            for (int i = 0; i < womenPerTeam; i++) {
-                Student student;
-                if (i <  nbWomen%womenPerTeam) {
-                    student = women.get(womenIndex + i);
-                }else {
-                    student = men.get(i - nbWomen%womenPerTeam);
-                }
-                student.team(teams.get(teamIndex));
-                this.studentRepository.save(student);
-            }
-
-            int menIndex = womenPerTeam - nbWomen%womenPerTeam;
-
-            // Assign men to even the remaining teams
-            for (int i = teamIndex + 1; i < nbTeams; i++) {
-                int y = 0;
-                while (y < womenPerTeam && menIndex + y < nbMen) {
-                    Student student = men.get(menIndex + y);
-                    student.team(teams.get(i));
-                    this.studentRepository.save(student);
-                    y++;
-                }
-            }
-
-            menIndex = nbMen - (nbStudent - nbTeams * womenPerTeam);
-
-            // Assign men to the teams
-            for (int i = menIndex; i < nbMen; i++) {
+            // Assign the remaining men to the teams
+            for (int i = index; i < nbMen; i++) {
                 Student student = men.get(i);
                 student.team(teams.get(i % nbTeams));
                 this.studentRepository.save(student);
