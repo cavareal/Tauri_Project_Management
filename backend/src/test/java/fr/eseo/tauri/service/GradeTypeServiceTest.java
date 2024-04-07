@@ -1,6 +1,7 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +33,7 @@ class GradeTypeServiceTest {
     @Test
     void createGradeType_withValidInput_savesGradeType() {
         GradeType gradeType = new GradeType();
-        gradeType.name("Test");
+        gradeType.name( GradeTypeName.DEFAULT);
         gradeTypeService.createGradeType(gradeType);
         verify(gradeTypeRepository, times(1)).save(gradeType);
     }
@@ -41,13 +42,6 @@ class GradeTypeServiceTest {
     void createGradeType_withNullName_throwsException() {
         GradeType gradeType = new GradeType();
         gradeType.name(null);
-        assertThrows(IllegalArgumentException.class, () -> gradeTypeService.createGradeType(gradeType));
-    }
-
-    @Test
-    void createGradeType_withEmptyName_throwsException() {
-        GradeType gradeType = new GradeType();
-        gradeType.name("");
         assertThrows(IllegalArgumentException.class, () -> gradeTypeService.createGradeType(gradeType));
     }
 

@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class GradeTypeService {
      * @throws IllegalArgumentException if the name of the GradeType object is null or empty
      */
     public GradeType createGradeType(GradeType gradeType) {
-        if (gradeType.name() == null || gradeType.name().trim().isEmpty()) {
+        if (gradeType.name() == null) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         gradeTypeRepository.save(gradeType);
@@ -50,7 +51,7 @@ public class GradeTypeService {
      * @param imported    the imported value for the GradeType object
      * @return the saved GradeType object
      */
-    public GradeType createGradeType(double coefficient, String rating, Boolean forGroup, Boolean imported) {
+    public GradeType createGradeType(double coefficient, GradeTypeName rating, Boolean forGroup, Boolean imported) {
         GradeType gradeType = new GradeType();
         gradeType.factor(coefficient);
         gradeType.name(rating);
@@ -74,9 +75,9 @@ public class GradeTypeService {
             return new ArrayList<>();
         }
         List<GradeType> gradeTypes = new ArrayList<>();
-        gradeTypes.add(createGradeType(0, "B3/E3 average grades", forGroup, imported));
+        gradeTypes.add(createGradeType(0, GradeTypeName.fromDisplayName("average"), forGroup, imported));
         for (int i = 0; i < coefficients.size(); i++) {
-            gradeTypes.add(createGradeType(Double.parseDouble(coefficients.get(i)), ratings.get(i), forGroup, imported));
+            gradeTypes.add(createGradeType(Double.parseDouble(coefficients.get(i)),GradeTypeName.fromDisplayName(ratings.get(i)), forGroup, imported));
         }
         return gradeTypes;
     }
