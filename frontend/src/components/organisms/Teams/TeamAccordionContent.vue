@@ -51,53 +51,48 @@ function getPrenom(nomPrenom: string) {
 </script>
 
 <template>
-  <div class="flex">
-    <div id="accordionStudents" class="pr-10 flex-grow">
-      <AccordionContent>
-        <div class="flex font-thin">
-          <div class="w-[25%]">Nom</div>
-          <div class="w-[25%]">Prénom</div>
-          <div v-if="phase!='PREPUBLISHED'" class="w-[25%]">Rôle</div>
-          <div class="w-[25%]">Sexe</div>
-          <div class="w-[25%]">Bachelore</div>
-        </div>
-        <Separator/>
-      </AccordionContent>
-      <div v-for="(student, i) in students" :key="i" :value="student">
-        <AccordionContent>
-          <div class="flex">
-            <div class="w-[25%]">{{getNom( student.name )}}</div>
-            <div class="w-[25%]">{{ getPrenom( student.name ) }}</div>
-            <div v-if="phase!='PREPUBLISHED'" class="w-[25%]">{{ student.teamRole }}</div>
-            <div class="w-[25%]">{{ student.gender }}</div>
-            <div class="w-[25%]">
-              <p v-if="student.bachelor">Oui</p>
-              <p v-else>Non</p>
-            </div>
-          </div>
-          <Separator/>
-        </AccordionContent>
-      </div>
-      <AccordionContent>
-        <div class="flex">
-          <div class="font-bold">{{ leader }}</div>
-        </div>
-      </AccordionContent>
-    </div>
-    <AccordionContent v-if="criteria" id="accordionCriteria" class="flex-grow w-auto border rounded">
-      <div class="flex flex-col p-3 pb-0">
-        <div>
-          Critères de génération
-        </div>
-        <div class="flex flex-row">
-          <isCheck :isCheck="criteria.validCriteriaWoman" class="pr-1"/>
-          <div>Nombre de femme : {{criteria.nbWomans}}</div>
-        </div>
-        <div class="flex flex-row">
-          <isCheck :isCheck="criteria.validCriteriaBachelor" class="pr-1"/>
-          <div>Nombre de bachelor : {{ criteria.nbBachelors }}</div>
-        </div>
-      </div>
-    </AccordionContent>
-  </div>
+	<AccordionContent class="w-full flex mb-4">
+		<div id="accordionStudents" class="pr-10 flex-grow flex-1 w-full">
+			<div>
+				<div class="flex font-thin">
+					<div class="w-[25%]">Nom</div>
+					<div class="w-[25%]">Prénom</div>
+					<div v-if="phase != 'PREPUBLISHED'" class="w-[25%]">Rôle</div>
+					<div class="w-[25%]">Sexe</div>
+					<div class="w-[25%]">Bachelor</div>
+				</div>
+				<Separator />
+			</div>
+			<div v-for="(student, i) in students" :key="i" :value="student">
+				<div>
+					<div class="flex">
+						<div class="w-[25%]">{{ getNom(student.name) }}</div>
+						<div class="w-[25%]">{{ getPrenom(student.name) }}</div>
+						<div v-if="phase != 'PREPUBLISHED'" class="w-[25%]">{{ student.teamRole }}</div>
+						<div class="w-[25%]">{{ student.gender }}</div>
+						<div class="w-[25%]">
+							<p v-if="student.bachelor">Oui</p>
+							<p v-else>Non</p>
+						</div>
+					</div>
+					<Separator />
+				</div>
+			</div>
+		</div>
+		<div v-if="criteria" id="accordionCriteria" class="w-auto border rounded">
+			<div class="flex flex-col p-3 pb-0">
+				<div>
+					Critères de génération
+				</div>
+				<div class="flex flex-row">
+					<isCheck :isCheck="criteria.validCriteriaWoman" class="pr-1" />
+					<div>Nombre de femme : {{ criteria.nbWomans }}</div>
+				</div>
+				<div class="flex flex-row">
+					<isCheck :isCheck="criteria.validCriteriaBachelor" class="pr-1" />
+					<div>Nombre de bachelor : {{ criteria.nbBachelors }}</div>
+				</div>
+			</div>
+		</div>
+	</AccordionContent>
 </template>

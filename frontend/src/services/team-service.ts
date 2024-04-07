@@ -19,6 +19,46 @@ export const getTeams = async(): Promise<Team[]> => {
 	return response.data
 }
 
+export const getTeamById = async(id: number): Promise<Team> => {
+	const response = await apiQuery({
+		route: `teams/${id}`,
+		responseSchema: TeamSchema,
+		method: "GET"
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const setTeamName = async(id: number, value: string): Promise<void> => {
+	const response = await apiQuery({
+		route: `teams/update-name-team/${id}?newName=${value}`,
+		responseSchema: z.string(),
+		method: "PUT",
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const setTeamLeader = async(id: number, value: string): Promise<void> => {
+	const response = await apiQuery({
+		route: `teams/update-leader-team/${id}?idLeader=${value}`,
+		responseSchema: z.string(),
+		method: "PUT",
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
 export const generateTeams = async(nbTeams: string, ratioGender: string): Promise<void> => {
 	const response = await apiQuery({
 		route: "teams/create-teams",

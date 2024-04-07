@@ -2,23 +2,26 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.service.RoleService;
 import fr.eseo.tauri.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping(path = "/users")
+@RestController
+@RequestMapping(path = "/api/users")
 public class UserController {
 
 	private final UserRepository userRepository;
 	private final UserService userService;
+	private final RoleService roleService;
 
 	@Autowired
-	public UserController(UserRepository userRepository, UserService userService) {
+	public UserController(UserRepository userRepository, UserService userService, RoleService roleService) {
 		this.userRepository = userRepository;
         this.userService = userService;
+		this.roleService = roleService;
     }
 
 	@PostMapping(path = "/")
@@ -33,6 +36,11 @@ public class UserController {
 	@GetMapping(path = "/")
 	public @ResponseBody Iterable<User> allUsers() {
 		return userRepository.findAll();
+	}
+
+	@GetMapping(path = "/roles/{roleType}")
+	public @ResponseBody Iterable<User> getUsersByRole(@PathVariable RoleType roleType) {
+		return roleService.getUsersByRoleType(roleType);
 	}
 
 	@GetMapping(path = "/{id}")

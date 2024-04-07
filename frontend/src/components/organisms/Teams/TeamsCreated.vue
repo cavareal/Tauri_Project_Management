@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import TeamAccordion from "@/components/organisms/Teams/TeamAccordion.vue"
+import TeamAccordion from "@/components/organisms/teams/TeamAccordion.vue"
 const props = defineProps({
 	phase: {
 		type: String,
