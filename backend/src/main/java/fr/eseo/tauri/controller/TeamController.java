@@ -1,15 +1,16 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Criteria;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class TeamController {
     private final TeamRepository teamRepository;
     private final AuthService authService;
     private final TeamService teamService;
-
+    private final ProjectService projectService;
     /**
      * Constructor for TeamController.
      * @param teamRepository the team repository
@@ -31,10 +32,11 @@ public class TeamController {
      * @param teamService    the team service
      */
     @Autowired
-    public TeamController(TeamRepository teamRepository, AuthService authService, TeamService teamService) {
+    public TeamController(TeamRepository teamRepository, AuthService authService, TeamService teamService, ProjectService projectService) {
         this.teamRepository = teamRepository;
         this.authService = authService;
         this.teamService = teamService;
+        this.projectService = projectService;
     }
 
     /**
@@ -147,6 +149,33 @@ public class TeamController {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(teams);
                 }
                 return ResponseEntity.ok(teams);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+        }
+    }
+
+    @GetMapping("/{teamId}/criteria")
+    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer teamId) {
+        String permission = "readCriteria";
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+            try {
+                Integer nbWoman = teamService.getNbWomanByTeamId(teamId);
+                Integer nbBachelor = teamService.getNbBachelorByTeamId(teamId);
+                Integer nbStudents = teamService.getNbStudentsByTeamId(teamId);
+                Integer ratioGender = projectService.getRatioGender();
+                Boolean validateWoman = false;
+                Boolean validateBachelor =false;
+                if(nbStudents > 0 && (nbWoman*100)/nbStudents >= ratioGender){
+                    validateWoman = true;
+                }
+                if (nbBachelor>=1){
+                    validateBachelor = true;
+                }
+                Criteria criteria = new Criteria(nbWoman, nbBachelor, nbStudents, validateWoman, validateBachelor);
+                return ResponseEntity.ok(criteria);
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
             }

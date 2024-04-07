@@ -1,7 +1,10 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Criteria;
 import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -24,7 +27,13 @@ public class TeamControllerTest {
     private TeamService teamService;
 
     @Mock
+    private TeamRepository teamRepository;
+
+    @Mock
     private AuthService authService;
+
+    @Mock
+    private ProjectService projectService;
 
     @InjectMocks
     private TeamController teamController;
@@ -88,5 +97,55 @@ public class TeamControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         verify(authService, times(1)).checkAuth(anyString(), anyString());
         verify(teamService, never()).getAllTeams();
+    }
+
+    @Test
+    public void testGetCriteriaByTeamId() {
+        // Arrange
+        Team team = new Team();
+        Criteria criteria = new Criteria(5, 3, 10, true, true);
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamService.getNbWomanByTeamId(1)).thenReturn(5);
+        when(teamService.getNbBachelorByTeamId(1)).thenReturn(3);
+        when(teamService.getNbStudentsByTeamId(1)).thenReturn(10);
+        when(projectService.getRatioGender()).thenReturn(50);
+
+        // Act
+        ResponseEntity<Criteria> result = teamController.getCriteriaByTeamId("token", 1);
+
+        // Assert
+        assertThat(result.getBody()).isEqualToComparingFieldByField(criteria);
+        verify(authService, times(1)).checkAuth(anyString(), anyString());
+        verify(teamService, times(1)).getNbWomanByTeamId(1);
+        verify(teamService, times(1)).getNbBachelorByTeamId(1);
+        verify(teamService, times(1)).getNbStudentsByTeamId(1);
+        verify(projectService, times(1)).getRatioGender();
+
+    }
+
+    @Test
+    public void testGetCriteriaByTeamIdTeamNotFound() {
+        // Arrange
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+
+        // Act
+        ResponseEntity<Criteria> result = teamController.getCriteriaByTeamId("token", 1);
+
+        // Assert
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        verify(authService, times(1)).checkAuth(anyString(), anyString());
+    }
+
+    @Test
+    public void testGetCriteriaByTeamIdUnauthorized() {
+        // Arrange
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        // Act
+        ResponseEntity<Criteria> result = teamController.getCriteriaByTeamId("token", 1);
+
+        // Assert
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        verify(authService, times(1)).checkAuth(anyString(), anyString());
     }
 }

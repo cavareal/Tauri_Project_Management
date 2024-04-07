@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ArrayUtils.isEquals;
+
 /**
  * Service class for managing teams.
  */
@@ -91,12 +93,12 @@ public class TeamService {
         if(studentRepository.count() == 0){
             Student student = new Student();
             Student student2 = new Student();
-            student.name("toto");
-            student2.name("tata");
+            student.name("Bonamy Maxence");
+            student2.name("Marques Theo");
             student.teamRole("SM");
             student2.teamRole("PO");
             student.gender(Gender.MAN);
-            student2.gender(Gender.OTHER);
+            student2.gender(Gender.WOMAN);
             student.team(teamRepository.findById(1).get());
             student2.team(teamRepository.findById(1).get());
             Student student3 = new Student();
@@ -106,7 +108,7 @@ public class TeamService {
             student3.teamRole("SM");
             student4.teamRole("PO");
             student3.gender(Gender.MAN);
-            student4.gender(Gender.OTHER);
+            student4.gender(Gender.WOMAN);
             student3.team(teamRepository.findById(2).get());
             student4.team(teamRepository.findById(2).get());
             studentRepository.save(student);
@@ -219,4 +221,32 @@ public class TeamService {
         return teamRepository.findById(id).orElse(null);
     }
 
+    public Integer getNbWomanByTeamId(Integer id){
+        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
+        Integer nbWoman = 0;
+        for (Student student : students) {
+            if (isEquals(student.gender(), Gender.WOMAN)) {
+                nbWoman++;
+            }
+        }
+        return nbWoman;
+    }
+
+    public Integer getNbBachelorByTeamId(Integer id){
+        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
+        Integer nbBachelor = 0;
+        for (Student student : students) {
+            if (student.bachelor() != null && student.bachelor()) {
+                nbBachelor++;
+            }
+        }
+        return nbBachelor;
+    }
+
+    public Integer getNbStudentsByTeamId(Integer id){
+        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
+        return students.size();
+    }
 }
+
+

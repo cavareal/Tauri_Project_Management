@@ -10,17 +10,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.dao.DataAccessException;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
-class ProjectServiceTest {
+@SpringBootTest
+public class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
@@ -186,5 +189,31 @@ class ProjectServiceTest {
 
         // Assert
         verify(projectRepository, times(1)).save(any(Project.class));
+    }
+
+    @Test
+    public void testGetRatioGender() {
+        // Arrange
+        Project project = new Project();
+        project.ratioGender(10);
+        when(projectRepository.findAll()).thenReturn(Arrays.asList(project));
+
+        // Act
+        Integer ratioGender = projectService.getRatioGender();
+
+        // Assert
+        assertThat(ratioGender).isEqualTo(10);
+    }
+
+    @Test
+    public void testGetRatioGenderZero() {
+        // Arrange
+        when(projectRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act
+        Integer ratioGender = projectService.getRatioGender();
+
+        // Assert
+        assertThat(ratioGender).isEqualTo(0);
     }
 }
