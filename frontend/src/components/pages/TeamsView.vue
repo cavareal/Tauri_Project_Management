@@ -14,6 +14,7 @@ import { NotAuthorized } from "@/components/organisms/errors"
 import type { ProjectPhase } from "@/types/project"
 import { getTeams } from "@/services/team-service"
 import type { Team } from "@/types/team"
+import { getCurrentPhase } from "@/services/project-service"
 
 const token = getCookie("token")
 const role = getCookie("role")
