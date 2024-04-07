@@ -100,11 +100,4 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
         }
     }
-
-    @PostMapping("/Test")
-    public ResponseEntity<String> handleFileUpload2(String key) {
-        CustomLogger.logInfo("cell");
-        return ResponseEntity.ok("File uploaded successfully");
-    }
-    
 }
