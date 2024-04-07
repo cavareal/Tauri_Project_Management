@@ -158,7 +158,7 @@ public class TeamService {
         System.out.println("INFO : TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
-        List<Student> men = this.studentRepository.findByGender(Gender.MAN);
+        List<Student> men = this.studentRepository.findByGenderOrderByBachelor(Gender.MAN);
 
         int nbWomen = women.size();
         int nbMen = men.size();
@@ -182,7 +182,6 @@ public class TeamService {
                 this.teamRepository.save(team);
                 teams.add(team);
             }
-
 
             int index = 0;
 

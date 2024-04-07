@@ -29,6 +29,7 @@ public class StudentsWithAverageGradeSeeder {
     public void seed(Faker faker) {
 
         int ratioWomen = 20; // in percent
+        int ratioBachelor = 20; // in percent
         int nbStudents = 48;
 
         Random random = new Random();
@@ -51,6 +52,7 @@ public class StudentsWithAverageGradeSeeder {
             student.password(faker.internet().password());
             student.privateKey(faker.number().digits(20));
             student.gender(genders[genderIndex]);
+            student.bachelor(random.nextInt(100) < ratioBachelor);
             this.studentRepository.save(student);
 
             // Create and save a grade for the student
