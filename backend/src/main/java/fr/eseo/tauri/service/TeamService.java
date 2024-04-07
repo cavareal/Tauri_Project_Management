@@ -185,7 +185,7 @@ public class TeamService {
 
             int index = 0;
 
-            // Assign women to the teams first then even the teams with men
+            // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
             for (int i = 0; i < nbTeams; i++) {
                 for (int j = 0; j < womenPerTeam; j++) {
                     index = i * womenPerTeam + j;
@@ -201,16 +201,27 @@ public class TeamService {
                 }
             }
 
+            // TODO : re-order the teams by average grade
+
             index = nbTeams * womenPerTeam - nbWomen;
 
-            // Assign the remaining men to the teams
-            for (int i = index; i < nbMen; i++) {
-                Student student = men.get(i);
-                student.team(teams.get(i % nbTeams));
+            // Assign the remaining students evenly to the teams
+            // TODO : assign students regarding their average grade
+            for (int i = index; i < nbStudent; i++) {
+                Student student;
+                if (i < nbWomen) {
+                    student = women.get(i);
+                    student.team(teams.get(i % nbTeams));
+                }else{
+                    student = men.get(i);
+                    student.team(teams.get(i % nbTeams));
+                }
                 this.studentRepository.save(student);
             }
 
             return teams;
         }
     }
+
+
 }
