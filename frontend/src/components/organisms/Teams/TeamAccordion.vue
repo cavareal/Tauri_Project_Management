@@ -22,7 +22,7 @@ onMounted(async() => {
 </script>
 
 <template>
-	<Accordion type="multiple" class="w-full">
+	<Accordion type="multiple">
     <AccordionItem v-for="team in teams" :key="team.id" :value="team.name">
     <AccordionTrigger>{{ team.name }}</AccordionTrigger>
         <TeamAccordionContent :teamId="team.id" :leader="team.leader?.name" :phase="props.phase"/>
