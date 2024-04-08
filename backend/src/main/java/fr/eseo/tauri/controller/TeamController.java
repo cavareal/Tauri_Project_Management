@@ -189,10 +189,10 @@ public class TeamController {
                 Integer nbWoman = teamService.getNbWomanByTeamId(teamId);
                 Integer nbBachelor = teamService.getNbBachelorByTeamId(teamId);
                 Integer nbStudents = teamService.getNbStudentsByTeamId(teamId);
-                Integer ratioGender = projectService.getRatioGender();
+                Integer womenPerTeam = projectService.getRatioGender();
                 Boolean validateWoman = false;
                 Boolean validateBachelor =false;
-                if(nbStudents > 0 && (nbWoman*100)/nbStudents >= ratioGender){
+                if(nbStudents > 0 && (nbWoman*100)/nbStudents >= womenPerTeam){
                     validateWoman = true;
                 }
                 if (nbBachelor>=1){

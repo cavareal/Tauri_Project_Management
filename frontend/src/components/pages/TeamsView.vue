@@ -59,6 +59,6 @@ watch(() => { }, async() => {
 		<!-- eslint-disable-next-line max-len -->
 		<TeamsCreated v-else-if="(role === 'PL' || (role === 'SS' && currentPhase !=='COMPOSING') || role === 'OL' || (role === 'OS' && currentPhase !== 'COMPOSING')) && teams.length > 0" :phase="currentPhase" />
 		<TeamsNotsCreated v-else-if="(role === 'SS' || role === 'OL') && currentPhase === 'COMPOSING'" />
-		<NotAutorized v-else />
+		<NotAuthorized v-else />
 	</PageTemplate>
 </template>
