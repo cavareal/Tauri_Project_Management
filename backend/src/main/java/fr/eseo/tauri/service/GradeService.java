@@ -44,7 +44,7 @@ public class GradeService {
             if (Boolean.TRUE.equals(student.bachelor())) continue;
 
             var studentGrades = grades.stream()
-                    .filter(grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && !grade.gradeType().name().equals("mean"))
+                    .filter(grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && !grade.gradeType().name().equalsIgnoreCase("mean") && !grade.gradeType().name().equalsIgnoreCase("average"))
                     .toList();
 
             var mean = mean(studentGrades);

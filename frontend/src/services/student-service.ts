@@ -44,3 +44,33 @@ export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => 
 
 	return response.data
 }
+
+export const importStudentFile = async(file: File): Promise<void> => {
+	const formData = new FormData()
+	formData.append("file-upload", file)
+
+	const response = await apiQuery({
+		method: "POST",
+		route: "students/uploadCSV",
+		body: formData,
+		responseSchema: z.string(),
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const deleteAllStudents = async(): Promise<void> => {
+	const response = await apiQuery({
+		method: "DELETE",
+		route: "students",
+		responseSchema: z.string(),
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
