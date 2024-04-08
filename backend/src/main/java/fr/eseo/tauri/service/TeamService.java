@@ -28,21 +28,21 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
-    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
     private final StudentRepository studentRepository;
 
     /**
      * Constructor for TeamService.
      * @param teamRepository the team repository
      * @param userRepository the user repository
-     * @param projectRepository the project repository
+     * @param projectService the project repository
      * @param studentRepository the student repository
      */
     @Autowired
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository, StudentRepository studentRepository) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectService projectService, StudentRepository studentRepository) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
-        this.projectRepository = projectRepository;
+        this.projectService = projectService;
         this.studentRepository = studentRepository;
     }
 
@@ -60,78 +60,6 @@ public class TeamService {
             }
             teamRepository.deleteById(id);
         }
-    }
-
-    // @PostConstruct //Test function for the deleteTeam function
-    public void initDataIfTableIsEmpty() {
-
-        if(userRepository.count() == 0){
-            User user = new User();
-            User user2 = new User();
-            user.name("Mickael Clavreul");
-            user2.name("Maissa Berrada");
-            userRepository.save(user);
-            userRepository.save(user2);
-        }
-
-        if (teamRepository.count() == 0) {
-            // Ajouter une ligne dans la table teams si elle est vide
-            Team team = new Team();
-            Team team2 = new Team();
-            team.project(projectRepository.findById(1).get());
-            team.name("Tauri");
-            team2.project(projectRepository.findById(1).get());
-            team2.name("LesAutres");
-            if (userRepository.count() != 0){
-                team.leader(userRepository.findById(1).get());
-                team2.leader(userRepository.findById(2).get());
-            }
-            teamRepository.save(team);
-            teamRepository.save(team2);
-        }
-
-        if(studentRepository.count() == 0){
-            Student student = new Student();
-            Student student2 = new Student();
-            student.name("Bonamy Maxence");
-            student2.name("Marques Theo");
-            student.teamRole("SM");
-            student2.teamRole("PO");
-            student.gender(Gender.MAN);
-            student2.gender(Gender.WOMAN);
-            student.team(teamRepository.findById(1).get());
-            student2.team(teamRepository.findById(1).get());
-            Student student3 = new Student();
-            Student student4 = new Student();
-            student3.name("titi");
-            student4.name("tete");
-            student3.teamRole("SM");
-            student4.teamRole("PO");
-            student3.gender(Gender.MAN);
-            student4.gender(Gender.WOMAN);
-            student3.team(teamRepository.findById(2).get());
-            student4.team(teamRepository.findById(2).get());
-            studentRepository.save(student);
-            studentRepository.save(student2);
-            studentRepository.save(student3);
-            studentRepository.save(student4);
-        }
-
-
-        /*if(gradeRepository.count() == 0){
-            Grade grade = new Grade();
-            //grade.team(teamRepository.findById(1).get());
-            gradeRepository.save(grade);
-        }
-
-        if (teamRepository.count() != 0) {
-            this.deleteTeam(1);
-        }
-
-        if(userRepository.count() != 0){
-            //UserService.deleteUser(1);
-        }*/
-
     }
 
     /**
@@ -174,7 +102,7 @@ public class TeamService {
      */
     @Async
     public void createTeams(Integer nbTeams, Integer ratioGender) {
-        var project = projectRepository.findAll().get(0);
+        var project = projectService.getCurrentProject();
 
         var teams = new ArrayList<Team>();
         for (int i = 0; i < nbTeams; i++) {
@@ -208,7 +136,7 @@ public class TeamService {
      * @return the list of all teams
      */
     public List<Team> getAllTeams() {
-        var project = projectRepository.findAll().get(0);
+        var project = projectService.getCurrentProject();
         return teamRepository.findAllByProjectId(project.id());
     }
 

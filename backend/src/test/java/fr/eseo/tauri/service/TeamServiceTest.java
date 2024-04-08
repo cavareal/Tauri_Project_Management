@@ -1,5 +1,6 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
@@ -26,6 +27,9 @@ public class TeamServiceTest {
     @Mock
     private StudentRepository studentRepository;
 
+    @Mock
+    private ProjectService projectService;
+
     @InjectMocks
     private TeamService teamService;
 
@@ -34,14 +38,18 @@ public class TeamServiceTest {
         // Arrange
         Team team1 = new Team();
         Team team2 = new Team();
-        when(teamRepository.findAll()).thenReturn(Arrays.asList(team1, team2));
+        Project project = new Project();
+        when(teamRepository.findAllByProjectId(project.id())).thenReturn(Arrays.asList(team1, team2));
+        when(projectService.getCurrentProject()).thenReturn(project);
 
         // Act
         List<Team> teams = teamService.getAllTeams();
 
         // Assert
         assertThat(teams).hasSize(2);
-        verify(teamRepository, times(1)).findAll();
+        verify(teamRepository, times(1)).findAllByProjectId(project.id());
+        verify(projectService, times(1)).getCurrentProject();
+
     }
 
     @Test
@@ -49,14 +57,17 @@ public class TeamServiceTest {
         // Arrange
         Team team1 = new Team();
         Team team2 = new Team();
-        when(teamRepository.findAll()).thenReturn(Arrays.asList());
+        Project project = new Project();
+        when(projectService.getCurrentProject()).thenReturn(project);
+        when(teamRepository.findAllByProjectId(project.id())).thenReturn(Arrays.asList());
 
         // Act
         List<Team> teams = teamService.getAllTeams();
 
         // Assert
         assertThat(teams).hasSize(0);
-        verify(teamRepository, times(1)).findAll();
+        verify(teamRepository, times(1)).findAllByProjectId(project.id());
+        verify(projectService, times(1)).getCurrentProject();
     }
 
     @Test

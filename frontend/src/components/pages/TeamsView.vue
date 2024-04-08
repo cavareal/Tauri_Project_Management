@@ -18,7 +18,7 @@ import { getCurrentPhase } from "@/services/project-service"
 
 const token = getCookie("token")
 const role = getCookie("role")
-const currentPhase = ref<ProjectPhase>("PREPUBLISHED")
+const currentPhase = ref<ProjectPhase>("COMPOSING")
 const nbStudents = ref(1)
 const teams = ref<Team[]>([])
 
@@ -57,7 +57,7 @@ watch(() => { }, async() => {
 		<StudentsNotImported v-else-if="role === 'PL' && currentPhase === 'COMPOSING' && nbStudents === 0" />
 		<GenerateTeams v-else-if="role === 'PL' && currentPhase === 'COMPOSING' && nbStudents > 0 && teams.length === 0" />
 		<!-- eslint-disable-next-line max-len -->
-		<TeamsCreated v-else-if="(role === 'PL' || role === 'SS' || role === 'OL' || (role === 'OS' && currentPhase !== 'COMPOSING')) && teams.length > 0" :phase="currentPhase" />
+		<TeamsCreated v-else-if="(role === 'PL' || (role === 'SS' && currentPhase !=='COMPOSING') || role === 'OL' || (role === 'OS' && currentPhase !== 'COMPOSING')) && teams.length > 0" :phase="currentPhase" />
 		<TeamsNotsCreated v-else-if="(role === 'SS' || role === 'OL') && currentPhase === 'COMPOSING'" />
 		<NotAuthorized v-else />
 	</PageTemplate>
