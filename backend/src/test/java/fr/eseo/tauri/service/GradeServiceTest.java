@@ -2,7 +2,6 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.repository.GradeRepository;
-import fr.eseo.tauri.repository.GradeTeamsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,9 +18,6 @@ class GradeServiceTest {
     @Mock
     private GradeRepository gradeRepository;
 
-    @Mock
-    private GradeTeamsRepository gradeTeamRepository;
-
     @InjectMocks
     private GradeService gradeService;
 
@@ -31,23 +27,12 @@ class GradeServiceTest {
     }
 
     @Test
-    void attributeGradeToTeam_savesGradeTeam() {
-        Team team = new Team();
-        Grade grade = new Grade();
-
-        gradeService.attributeGradeToTeam(team, grade);
-
-        verify(gradeTeamRepository, times(1)).save(any(GradeTeams.class));
-    }
-
-    @Test
     void createGrade_savesGrade() {
         User author = new User();
         GradeType gradeType = new GradeType();
         Student student = new Student();
 
-        gradeService.createGrade(author, gradeType, student, 10.0, "Good job!");
-
+        gradeService.createGrade(author, gradeType, student, 10.0F, "Good job!");
         verify(gradeRepository, times(1)).save(any(Grade.class));
     }
 
