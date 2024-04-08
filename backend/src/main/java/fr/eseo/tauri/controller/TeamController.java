@@ -1,6 +1,7 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Criteria;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.AuthService;
@@ -104,13 +105,19 @@ public class TeamController {
     public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
 
         Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
-        Integer ratioGender = Integer.valueOf(request.get("ratioGender"));
+        Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
         String permission = "teamCreate";
 
         if (authService.checkAuth(token, permission)) {  // Check if role is authorised to do this request, in fonction of the permissions
             try {
-                teamService.createTeams(nbTeams, ratioGender);
-                return ResponseEntity.ok("La creation a bien été prise en compte");
+                List<Team> teams = teamService.createTeams(nbTeams, womenPerTeam);
+
+                if (teams != null) {
+                    System.out.println("Teams have been created");
+                    return ResponseEntity.ok("La creation a bien été prise en compte");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : les équipes n'ont pas pu être créées");
+                }
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
             }
@@ -199,6 +206,20 @@ public class TeamController {
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+        }
+    }
+    @GetMapping("/get-team-avg-grade/{idTeam}")
+    public ResponseEntity<String> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam) {
+        String permission = "readTeamAvgGrade";
+        if (authService.checkAuth(token, permission)) {
+            try {
+                double avgGrade = this.teamRepository.findAvgGradeByTeamId(this.teamRepository.findById(idTeam).get());
+                return ResponseEntity.ok(String.valueOf(avgGrade));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
         }
     }
 }

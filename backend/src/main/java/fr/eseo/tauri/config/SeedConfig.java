@@ -2,6 +2,7 @@ package fr.eseo.tauri.config;
 
 import fr.eseo.tauri.seeder.*;
 import net.datafaker.Faker;
+
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
