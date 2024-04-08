@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
 
+import java.util.List;
+
 /**
  * Service class for managing projects.
  */
@@ -174,16 +176,24 @@ public class ProjectService {
         }
     }
 
+    public List<Project> getAllProjects() {
+        return projectRepository.findAll();
+    }
+
 
     public Integer getRatioGender() {
-        if (projectRepository.findAll() == null || projectRepository.findAll().isEmpty()) {
-            return 0;
-        }
-        Project currentProject = projectRepository.findAll().get(0);
+        Project currentProject = getCurrentProject();
         if (currentProject != null ) {
             return currentProject.ratioGender();
         } else {
             return 0;
         }
+    }
+
+    public Project getCurrentProject() {
+        if (projectRepository.findAll().isEmpty()) {
+            return null;
+        }
+        return projectRepository.findAll().get(0);
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -30,11 +31,6 @@ public class ProjectServiceTest {
 
     @InjectMocks
     private ProjectService projectService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     @Order(1)
@@ -192,21 +188,23 @@ public class ProjectServiceTest {
     }
 
     @Test
-    public void testGetRatioGender() {
+    @DisplayName("getRatioGender returns ratio when project exists")
+    void getRatioGender_returnsRatio_whenProjectExists() {
         // Arrange
         Project project = new Project();
         project.ratioGender(10);
-        when(projectRepository.findAll()).thenReturn(Arrays.asList(project));
+        when(projectRepository.findAll()).thenReturn(Collections.singletonList(project));
 
         // Act
         Integer ratioGender = projectService.getRatioGender();
 
         // Assert
-        assertThat(ratioGender).isEqualTo(10);
+        assertEquals(10, ratioGender);
     }
 
     @Test
-    public void testGetRatioGenderZero() {
+    @DisplayName("getRatioGender returns zero when no project exists")
+    void getRatioGender_returnsZero_whenNoProjectExists() {
         // Arrange
         when(projectRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -214,6 +212,33 @@ public class ProjectServiceTest {
         Integer ratioGender = projectService.getRatioGender();
 
         // Assert
-        assertThat(ratioGender).isEqualTo(0);
+        assertEquals(0, ratioGender);
+    }
+
+    @Test
+    @DisplayName("getCurrentProject returns project when project exists")
+    void getCurrentProject_returnsProject_whenProjectExists() {
+        // Arrange
+        Project project = new Project();
+        when(projectRepository.findAll()).thenReturn(Collections.singletonList(project));
+
+        // Act
+        Project result = projectService.getCurrentProject();
+
+        // Assert
+        assertEquals(project, result);
+    }
+
+    @Test
+    @DisplayName("getCurrentProject returns null when no project exists")
+    void getCurrentProject_returnsNull_whenNoProjectExists() {
+        // Arrange
+        when(projectRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act
+        Project result = projectService.getCurrentProject();
+
+        // Assert
+        assertEquals(null, result);
     }
 }
