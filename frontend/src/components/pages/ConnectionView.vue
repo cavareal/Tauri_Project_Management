@@ -6,12 +6,34 @@ import { Button } from "@/components/ui/button"
 import { ref } from "vue"
 import { Logo } from "@/components/atoms/logo"
 
+import { UserSchema, type User } from "@/types/user"
+import { apiQuery } from "@/utils/api"
+import { z } from "zod"
+
+import getCookie from "@/utils/cookiesUtils"
+
 const selectedRole = ref("OL")
 
-function formSubmit() {
+async function formSubmit() {
 	document.cookie = `role=${selectedRole.value}; path=/;`
 	document.cookie = "token=bonamyRule34; path=/;"
 	document.cookie = "user=112; path=/;"
+
+	const response = await apiQuery({
+		route: "/roles/{roleType}",
+		responseSchema: z.array(UserSchema),
+		method: "GET"
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	console.log(response.data)
+
+	document.cookie = "test=prout; path=/;"
+
+	document.cookie = "user={response.data}; path=/;"
 }
 </script>
 
@@ -21,14 +43,16 @@ function formSubmit() {
 		style="background-image: url('/eseo.jpg')"
 	>
 		<div class="flex flex-col items-center gap-4">
-			<Logo class="h-36 fill-dark-blue" />
+			<Logo class="h-36 fill-dark-blue"/>
 			<h1 class="text-4xl font-title-medium text-dark-blue">Bienvenue sur Tauri !</h1>
 		</div>
 		<Card class="border-none drop-shadow-login-card">
 			<form @submit="formSubmit" action="./">
 				<CardHeader>
 					<CardTitle>Connexion</CardTitle>
-					<CardDescription>Sélectionnez vôtre rôle pour vous connecter. Cette page de connexion est temporaire.</CardDescription>
+					<CardDescription>Sélectionnez vôtre rôle pour vous connecter. Cette page de connexion est
+						temporaire.
+					</CardDescription>
 				</CardHeader>
 
 				<CardContent>
@@ -36,23 +60,23 @@ function formSubmit() {
 						<div class="flex flex-col gap-2 w-1/2">
 							<h4 class="mb-1 font-medium">Rôles professeurs</h4>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="OL" value="OL" />
+								<RadioGroupItem name="role" id="OL" value="OL"/>
 								<Label for="OL">[OL] Option Leader</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="PL" value="PL" />
+								<RadioGroupItem name="role" id="PL" value="PL"/>
 								<Label for="PL">[PL] Project Leader</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="SA" value="SA" />
+								<RadioGroupItem name="role" id="SA" value="SA"/>
 								<Label for="SA">[SA] System Administrator</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="SS" value="SS" />
+								<RadioGroupItem name="role" id="SS" value="SS"/>
 								<Label for="SS">[SS] Supervising Staff</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="TC" value="TC" />
+								<RadioGroupItem name="role" id="TC" value="TC"/>
 								<Label for="TC">[TC] Technical Coaches</Label>
 							</div>
 						</div>
@@ -60,11 +84,11 @@ function formSubmit() {
 						<div class="flex flex-col gap-2 w-1/2">
 							<h4 class="mb-1 font-medium">Rôles étudiants</h4>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="OS" value="OS" />
+								<RadioGroupItem name="role" id="OS" value="OS"/>
 								<Label for="OS">[OS] Option Student</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="TM" value="TM" />
+								<RadioGroupItem name="role" id="TM" value="TM"/>
 								<Label for="TM">[TM] Team Member</Label>
 							</div>
 						</div>
