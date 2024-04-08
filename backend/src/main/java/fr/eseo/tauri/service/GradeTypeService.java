@@ -51,10 +51,10 @@ public class GradeTypeService {
      * @param imported    the imported value for the GradeType object
      * @return the saved GradeType object
      */
-    public GradeType createGradeType(double coefficient, GradeTypeName rating, Boolean forGroup, Boolean imported) {
+    public GradeType createGradeType(double coefficient, String rating, Boolean forGroup, Boolean imported) {
         GradeType gradeType = new GradeType();
         gradeType.factor(coefficient);
-        gradeType.name(rating.toString());
+        gradeType.name(rating);
         gradeType.forGroup(forGroup);
         gradeType.imported(imported);
         return createGradeType(gradeType);
@@ -75,9 +75,9 @@ public class GradeTypeService {
             return new ArrayList<>();
         }
         List<GradeType> gradeTypes = new ArrayList<>();
-        gradeTypes.add(createGradeType(0, GradeTypeName.fromDisplayName("average"), forGroup, imported));
+        gradeTypes.add(createGradeType(0, "AVERAGE", forGroup, imported));
         for (int i = 0; i < coefficients.size(); i++) {
-            gradeTypes.add(createGradeType(Double.parseDouble(coefficients.get(i)),GradeTypeName.fromDisplayName(ratings.get(i)), forGroup, imported));
+            gradeTypes.add(createGradeType(Double.parseDouble(coefficients.get(i)), ratings.get(i), forGroup, imported));
         }
         return gradeTypes;
     }
