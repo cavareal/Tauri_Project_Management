@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dialog"
 import { ref } from "vue"
 
-const dropContainer = document.getElementById("dropcontainer")
 const fileName = ref("")
 let file: File | null = null
 function changeFile(event: Event) { // Type annotation for event parameter
@@ -33,7 +32,7 @@ async function formSubmit() {
       if (fileInput.files && fileInput.files[0]) {
       formData.append("file-upload", fileInput.files[0])*/
 		formData.append("file-upload", file)
-		const response = await fetch("http://localhost:8882/api/students/uploadTest", {
+		const response = await fetch("http://localhost:8882/api/students/uploadCSV", {
 			method: "POST",
 			body: formData
 		})

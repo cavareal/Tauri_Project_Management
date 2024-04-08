@@ -51,7 +51,7 @@ public class StudentController {
      * If an error occurs during the processing of the file, it returns an internal server error response with a message indicating the error.
      */
     @PostMapping("/uploadCSV")
-    public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> handleFileUpload(@RequestParam("file-upload") MultipartFile file) {
         if (file.isEmpty()) {
             return ResponseEntity.badRequest().body("Uploaded file is empty");
         }
