@@ -9,7 +9,6 @@ import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,23 +26,19 @@ public class TeamService {
     private final ProjectRepository projectRepository;
     private final StudentRepository studentRepository;
 
-    private final GradeRepository gradeRepository;
-
     /**
      * Constructor for TeamService.
      * @param teamRepository the team repository
      * @param userRepository the user repository
      * @param projectRepository the project repository
      * @param studentRepository the student repository
-     * @param gradeRepository the grade repository
      */
     @Autowired
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository, StudentRepository studentRepository, GradeRepository gradeRepository) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository, StudentRepository studentRepository) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.studentRepository = studentRepository;
-        this.gradeRepository = gradeRepository;
     }
 
     /**
