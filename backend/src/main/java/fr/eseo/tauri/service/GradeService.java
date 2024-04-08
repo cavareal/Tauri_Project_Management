@@ -82,6 +82,7 @@ public class GradeService {
                         grades.add(createGrade(null, gradeTypes.get(i), student, gradeAsDouble, comment));
                     } catch (NumberFormatException ignored) {
                         // Do nothing
+                        // If the grade is not a number, it is ignored
                     }
                 }
             }

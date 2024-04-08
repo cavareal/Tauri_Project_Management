@@ -54,7 +54,7 @@ public class GradeTypeService {
     public GradeType createGradeType(double coefficient, GradeTypeName rating, Boolean forGroup, Boolean imported) {
         GradeType gradeType = new GradeType();
         gradeType.factor(coefficient);
-        gradeType.name(rating);
+        gradeType.name(rating.toString());
         gradeType.forGroup(forGroup);
         gradeType.imported(imported);
         return createGradeType(gradeType);

@@ -17,10 +17,8 @@ public class GradeType {
     @JsonProperty
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="name")
     @JsonProperty
-    private GradeTypeName name;
+    private String name;
 
     @JsonProperty
     private Double factor;

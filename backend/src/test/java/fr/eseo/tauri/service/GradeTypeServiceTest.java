@@ -33,7 +33,7 @@ class GradeTypeServiceTest {
     @Test
     void createGradeType_withValidInput_savesGradeType() {
         GradeType gradeType = new GradeType();
-        gradeType.name( GradeTypeName.DEFAULT);
+        gradeType.name( GradeTypeName.DEFAULT.toString());
         gradeTypeService.createGradeType(gradeType);
         verify(gradeTypeRepository, times(1)).save(gradeType);
     }
