@@ -12,28 +12,25 @@ import { z } from "zod"
 
 import getCookie from "@/utils/cookiesUtils"
 
-const selectedRole = ref("OL")
+const selectedRole = ref("OPTION_LEADER")
 
 async function formSubmit() {
 	document.cookie = `role=${selectedRole.value}; path=/;`
 	document.cookie = "token=bonamyRule34; path=/;"
-	document.cookie = "user=112; path=/;"
-
-	//document.cookie = "test=prout; path=/;"
 
 	const response = await apiQuery({
-		route: `users/roles/${selectedRole.value}`,
-		responseSchema: z.array(UserSchema),
+		route: `roles/user/${selectedRole.value}`,
+		responseSchema: UserSchema,
 		method: "GET"
 	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
+	} else {
+		console.log(response.data)
+		document.cookie = `current_user=${JSON.stringify(response.data)}; path=/;`
+		window.location.href = "/"
 	}
-
-	//console.log(response.data)
-	//Le cookie n'estt pas stocké, à vérifier si ce n'est pas le bout de code au dessus qui bloque l'exécution de la ligne ci dessous
-	document.cookie = `current_user=${JSON.stringify(response.data)}; path=/;`
 }
 </script>
 
@@ -47,7 +44,7 @@ async function formSubmit() {
 			<h1 class="text-4xl font-title-medium text-dark-blue">Bienvenue sur Tauri !</h1>
 		</div>
 		<Card class="border-none drop-shadow-login-card">
-			<form @submit="formSubmit" action="./">
+			<form @submit.prevent="formSubmit">
 				<CardHeader>
 					<CardTitle>Connexion</CardTitle>
 					<CardDescription>Sélectionnez vôtre rôle pour vous connecter. Cette page de connexion est
@@ -60,23 +57,23 @@ async function formSubmit() {
 						<div class="flex flex-col gap-2 w-1/2">
 							<h4 class="mb-1 font-medium">Rôles professeurs</h4>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="OL" value="OL"/>
+								<RadioGroupItem name="role" id="OL" value="OPTION_LEADER"/>
 								<Label for="OL">[OL] Option Leader</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="PL" value="PL"/>
+								<RadioGroupItem name="role" id="PL" value="PROJECT_LEADER"/>
 								<Label for="PL">[PL] Project Leader</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="SA" value="SA"/>
+								<RadioGroupItem name="role" id="SA" value="SYSTEM_ADMINISTRATOR"/>
 								<Label for="SA">[SA] System Administrator</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="SS" value="SS"/>
+								<RadioGroupItem name="role" id="SS" value="SUPERVISING_STAFF"/>
 								<Label for="SS">[SS] Supervising Staff</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="TC" value="TC"/>
+								<RadioGroupItem name="role" id="TC" value="TECHNICAL_COACH"/>
 								<Label for="TC">[TC] Technical Coaches</Label>
 							</div>
 						</div>
@@ -84,11 +81,11 @@ async function formSubmit() {
 						<div class="flex flex-col gap-2 w-1/2">
 							<h4 class="mb-1 font-medium">Rôles étudiants</h4>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="OS" value="OS"/>
+								<RadioGroupItem name="role" id="OS" value="OPTION_STUDENT"/>
 								<Label for="OS">[OS] Option Student</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="TM" value="TM"/>
+								<RadioGroupItem name="role" id="TM" value="TEAM_MEMBER"/>
 								<Label for="TM">[TM] Team Member</Label>
 							</div>
 						</div>
