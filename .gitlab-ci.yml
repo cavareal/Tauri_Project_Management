@@ -117,7 +117,7 @@ java-deploy-dev:
     - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -Pdev -x test
-  dependencies:
+  dependencies:     # Set accessible data in vuejs-deploy-dev, to copy data from frontend folder 
     - vuejs-deploy-dev
   cache:
     paths:
@@ -159,7 +159,7 @@ java-deploy-prod:
     - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -Pprod -x test
-  dependencies:     # Set accessible data in vuejs-build, to copy data from frontend folder 
+  dependencies:     # Set accessible data in vuejs-deploy-prod, to copy data from frontend folder 
     - vuejs-deploy-prod
   cache:
     paths:
