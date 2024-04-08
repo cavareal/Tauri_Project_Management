@@ -55,7 +55,7 @@ quality-dev:
   stage: sonar
   image: gradle:8.4-jdk11
   script:
-    - cd back
+    - cd backend
     - gradle --no-daemon test
     - gradle --no-daemon sonarqube -Dsonar.projectName=Team4_DevBranch -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c
   artifacts:
@@ -74,7 +74,7 @@ quality-prod:
   stage: sonar
   image: gradle:8.4-jdk11
   script:
-    - cd back
+    - cd backend
     - gradle --no-daemon clean test
     - gradle --no-daemon sonarqube -Dsonar.projectName=Team4_MasterBranch -Dsonar.projectKey=Team4_2024_MasterBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=1cec587f7d0c27e7e6e05a138e8a1929a300e105
   artifacts:
@@ -122,7 +122,7 @@ java-deploy-dev:
       - $CI_PROJECT_DIR/.gradle/caches
   artifacts:
     paths:
-      - back/build/libs/*.war
+      - backend/build/libs/*.war
     expire_in: 5 days
     when: always
   only:
@@ -154,8 +154,8 @@ java-deploy-prod:
   stage: deploy-java
   image: gradle:8.4-jdk11
   script:
-    - cp -r frontend/dist/frontend/* back/src/main/resources/static/
-    - cd back
+    - cp -r frontend/dist/frontend/* backend/src/main/resources/static/
+    - cd backend
     - gradle --no-daemon clean build -Pprod -x test
   dependencies:
     - vuejs-deploy-prod
@@ -164,7 +164,7 @@ java-deploy-prod:
       - $CI_PROJECT_DIR/.gradle/caches
   artifacts:
     paths:
-      - back/build/libs/*.war
+      - backend/build/libs/*.war
     expire_in: 5 days
     when: always
   only:
