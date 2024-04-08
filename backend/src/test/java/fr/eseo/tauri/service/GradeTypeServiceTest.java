@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -22,11 +23,12 @@ class GradeTypeServiceTest {
     private GradeTypeRepository gradeTypeRepository;
 
     private GradeTypeService gradeTypeService;
+    private GradeService gradeService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        gradeTypeService = new GradeTypeService(gradeTypeRepository, null);
+        gradeTypeService = new GradeTypeService(gradeTypeRepository, gradeService);
     }
 
     @Test
@@ -45,7 +47,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void createGradeTypesFromCSV_withValidInput_createsGradeTypes() {
+    void createGradeTypesFromCSV_withValidInput_createsGradeTypes() throws IOException {
         String csvContent = "\"\",\"\",\"\",\"\",\"\",\"2\",\"3\",\"3\",\"2\",\"2\",\"1\",\"1\"\n" +
                 "\"\",\"\",\"sexe\n" +
                 "M / F\",\"\",\"\",\"PADL\",\"PDLO\",\"PWND\",\"IRS\",\"STAGE S7\",\"S5\",\"S6\"\n" +
@@ -60,7 +62,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void createGradeTypesFromCSV_withInvalidInput_logsError() {
+    void createGradeTypesFromCSV_withInvalidInput_logsError() throws IOException {
         String csvContent = "Invalid content";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
@@ -71,7 +73,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void createGradeTypesFromCSV_withEmptyInput_returnsEmptyList() {
+    void createGradeTypesFromCSV_withEmptyInput_returnsEmptyList() throws IOException {
         String csvContent = "";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
@@ -82,7 +84,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void createGradeTypesFromCSV_withSummaryData_ignoresSummaryData() {
+    void createGradeTypesFromCSV_withSummaryData_ignoresSummaryData() throws IOException {
         String csvContent = "\"\",\"\",\"\",\"\",\"\",\"2\",\"3\",\"3\",\"2\",\"2\",\"1\",\"1\"\n" +
                 "\"\",\"\",\"sexe\n" +
                 "M / F\",\"\",\"\",\"PADL\",\"PDLO\",\"PWND\",\"IRS\",\"STAGE S7\",\"S5\",\"S6\"\n" +

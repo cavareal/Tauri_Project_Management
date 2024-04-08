@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/api/students")
 public class StudentController {
 
-    private final StudentService studentService;
     private final StudentRepository studentRepository;
+    private final StudentService studentService;
 
     private final AuthService authService;
 
