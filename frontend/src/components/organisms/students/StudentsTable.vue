@@ -38,7 +38,7 @@ watch(() => { }, async() => {
 				<TableHead :class="rowClass" class="min-w-28">Genre</TableHead>
 				<TableHead :class="rowClass" class="min-w-28">Bachelor</TableHead>
 				<TableHead v-for="(gradeType, i) in gradeTypes" :key="i" :class="rowClass" class="min-w-28">
-					<span v-if="gradeType.name === 'mean'">Moyenne</span>
+					<span v-if="['mean', 'average'].includes(gradeType.name.toLowerCase())">Moyenne</span>
 					<span v-else>{{ gradeType.name }} ({{ gradeType.factor }})</span>
 				</TableHead>
 			</TableRow>
@@ -53,7 +53,7 @@ watch(() => { }, async() => {
 				<TableCell v-for="(gradeType, i) in gradeTypes" :key="i" :class="rowClass">
 					<Skeleton v-if="!grades" class="w-5/6 h-5" />
 					<span v-else>
-						{{ grades?.find(grade => grade.student.id === student.id && grade.gradeType.id === gradeType.id)?.value ?? "" }}
+						{{ grades?.find(grade => grade.student?.id === student.id && grade.gradeType.id === gradeType.id)?.value ?? "" }}
 					</span>
 				</TableCell>
 			</TableRow>

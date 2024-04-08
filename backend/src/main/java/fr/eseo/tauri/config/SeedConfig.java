@@ -43,12 +43,12 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	@Override
 	public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
 		userSeeder.seed(faker);
-		teamSeeder.seed(faker);
-		studentSeeder.seed(faker);
-		gradeTypeSeeder.seed(faker);
-		gradeSeeder.seed(faker);
+		// teamSeeder.seed(faker);
+		// studentSeeder.seed(faker);
+		// gradeTypeSeeder.seed(faker);
+		// gradeSeeder.seed(faker);
 		permissionSeeder.seed();
-		gradeTypeSeeder.seedTeamGradeType();
+		// gradeTypeSeeder.seedTeamGradeType();
 		roleSeeder.seed(faker);
 	}
 

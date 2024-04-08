@@ -3,6 +3,7 @@ import type { ApiQueryRequest, ApiQueryResponse } from "."
 import getCookie from "@/utils/cookiesUtils"
 
 
+// eslint-disable-next-line max-len
 export const apiQuery = async <T>({ route, responseSchema, method, body, delay = 0, textResponse = false }: ApiQueryRequest<T>): Promise<ApiQueryResponse<T>> => {
 	let url = import.meta.env.VITE_TAURI_API_URL
 	if (!url) {

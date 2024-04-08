@@ -32,7 +32,8 @@ class GradeServiceTest {
         GradeType gradeType = new GradeType();
         Student student = new Student();
 
-        gradeService.createGrade(author, gradeType, student, 10.0F, "Good job!");
+        gradeService.createGrade(author, gradeType, student, 10, "Good job!");
+
         verify(gradeRepository, times(1)).save(any(Grade.class));
     }
 

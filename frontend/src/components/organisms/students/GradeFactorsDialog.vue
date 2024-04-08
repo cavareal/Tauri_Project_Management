@@ -30,7 +30,7 @@ const fetchGradeTypes = async() => {
 		delay: 5000
 	})
 	if (data.status === "success") {
-		gradeTypes.value = data.data.filter(gradeType => gradeType.imported && gradeType.name !== "mean")
+		gradeTypes.value = data.data.filter(gradeType => gradeType.imported && !["mean", "average"].includes(gradeType.name.toLowerCase()))
 	}
 }
 

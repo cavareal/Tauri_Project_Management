@@ -14,6 +14,7 @@ import {
 	DialogClose
 } from "@/components/ui/dialog"
 import { ref } from "vue"
+import { importStudentFile } from "@/services/student-service"
 
 const fileName = ref("")
 let file: File | null = null
@@ -26,12 +27,17 @@ function changeFile(event: Event) { // Type annotation for event parameter
 }
 
 async function formSubmit() {
+	// await importStudentFile(file).then(() => {
+	// 	console.log("file uploaded successfully")
+	// 	location.reload()
+	// }).catch((error) => {
+	// 	console.error("Erreur lors de l'envoi du formulaire :", error)
+	// 	// Gérer l'erreur ici
+	// })
+
 	try {
 		if (!file) return
 		const formData = new FormData()
-		/*const fileInput = document.getElementById("file-upload") as HTMLInputElement
-	  if (fileInput.files && fileInput.files[0]) {
-	  formData.append("file-upload", fileInput.files[0])*/
 		formData.append("file-upload", file)
 		const response = await fetch("http://localhost:8882/api/students/uploadCSV", {
 			method: "POST",
@@ -39,6 +45,7 @@ async function formSubmit() {
 		})
 		if (response.ok) {
 			console.log("file uploaded successfully")
+			location.reload()
 		} else {
 			throw new Error("Erreur lors de la requête.")
 		}

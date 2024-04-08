@@ -13,11 +13,18 @@ export const getAllImportedGradeTypes = async() => {
 		throw new Error(response.error)
 	}
 
-	const meanIndex = response.data.findIndex(gradeType => gradeType.name === "mean")
+	const meanIndex = response.data.findIndex(gradeType => gradeType.name.toLowerCase() === "mean")
 	if (meanIndex !== -1) {
 		const mean = response.data[meanIndex]
 		response.data.splice(meanIndex, 1)
 		response.data.unshift(mean)
+	}
+
+	const averageIndex = response.data.findIndex(gradeType => gradeType.name.toLowerCase() === "average")
+	if (averageIndex !== -1) {
+		const average = response.data[averageIndex]
+		response.data.splice(averageIndex, 1)
+		response.data.unshift(average)
 	}
 
 	return response.data.filter(gradeType => gradeType.imported)

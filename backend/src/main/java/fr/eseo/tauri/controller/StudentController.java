@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/api/students")
 public class StudentController {
 
-    private final StudentService studentService;
     private final StudentRepository studentRepository;
+    private final StudentService studentService;
 
     private final AuthService authService;
 
@@ -89,5 +89,11 @@ public class StudentController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
         }
+    }
+
+    @DeleteMapping()
+    public ResponseEntity<String> deleteStudents(){
+        studentRepository.deleteAll();
+        return  ResponseEntity.ok("students have been deleted successfully");
     }
 }

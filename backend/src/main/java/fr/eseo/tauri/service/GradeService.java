@@ -19,9 +19,10 @@ public class GradeService {
 
     /**
      * Constructor for TeamService.
-     * @param teamRepository the team repository
-     * @param gradeRepository the grade repository
-     * @param studentRepository the student repository
+     *
+     * @param teamRepository      the team repository
+     * @param gradeRepository     the grade repository
+     * @param studentRepository   the student repository
      * @param gradeTypeRepository the gradeTypeRepository
      */
     @Autowired
@@ -32,6 +33,9 @@ public class GradeService {
         this.gradeTypeRepository = gradeTypeRepository;
     }
 
+    /**
+     * This method is used to update the mean of imported grades for each student.
+     */
     public void updateImportedMean() {
         var students = studentRepository.findAll();
         var grades = gradeRepository.findAll().stream().filter(grade -> grade.student() != null).toList();
@@ -40,7 +44,7 @@ public class GradeService {
             if (Boolean.TRUE.equals(student.bachelor())) continue;
 
             var studentGrades = grades.stream()
-                    .filter(grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && !grade.gradeType().name().equals("mean"))
+                    .filter(grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && !grade.gradeType().name().equalsIgnoreCase("mean") && !grade.gradeType().name().equalsIgnoreCase("average"))
                     .toList();
 
             var mean = mean(studentGrades);
@@ -62,6 +66,13 @@ public class GradeService {
         return total / factors;
     }
 
+    /**
+     * This method is used to assign a grade to a team.
+     *
+     * @param teamName  the name of the team to whom the grade is assigned
+     * @param value     the value of the grade to be assigned
+     * @param gradeName the name of the grade type to be assigned
+     */
     public void assignGradeToTeam(String teamName, Integer value, String gradeName/*,User author, String comment*/) {
         Team team = teamRepository.findByName(teamName);
         GradeType gradeType = gradeTypeRepository.findByName(gradeName);
@@ -70,10 +81,6 @@ public class GradeService {
             grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.team(team);
-//            grade.author(author);
-//            if (comment != ""){
-//                grade.comment(comment);
-//            }
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
         } else {
@@ -81,7 +88,14 @@ public class GradeService {
         }
     }
 
-    public void assignGradeToStudent(String studentName, Integer value, String gradeName/*,User author, String comment*/) {
+    /**
+     * This method is used to assign a grade to a student.
+     *
+     * @param studentName the name of the student to whom the grade is assigned
+     * @param value       the value of the grade to be assigned
+     * @param gradeName   the name of the grade type to be assigned
+     */
+    public void assignGradeToStudent(String studentName, Integer value, String gradeName) {
         Student student = studentRepository.findByName(studentName);
         GradeType gradeType = gradeTypeRepository.findByName(gradeName);
         if (student != null) {
@@ -89,11 +103,8 @@ public class GradeService {
             grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.student(student);
-            //grade.author(author);
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
-        } else {
-            // Gérer le cas où pas d'étudiant
         }
     }
 
@@ -101,11 +112,11 @@ public class GradeService {
     /**
      * This method is used to create a new Grade object and save it to the database.
      *
-     * @param author the author of the grade
+     * @param author    the author of the grade
      * @param gradeType the type of the grade
-     * @param student the student who received the grade
-     * @param value the value of the grade
-     * @param comment the comment for the grade
+     * @param student   the student who received the grade
+     * @param value     the value of the grade
+     * @param comment   the comment for the grade
      * @return the created Grade object that has been saved to the database
      */
     public Grade createGrade(User author, GradeType gradeType, Student student, float value, String comment) {
@@ -122,10 +133,10 @@ public class GradeService {
     /**
      * This method is used to create grades for a student from the provided grade types and values.
      *
-     * @param student the student for whom the grades are created
+     * @param student      the student for whom the grades are created
      * @param valuesString the list of grade values as strings
-     * @param gradeTypes the list of grade types
-     * @param comment the comment for the grades
+     * @param gradeTypes   the list of grade types
+     * @param comment      the comment for the grades
      */
     public void createGradesFromGradeTypesAndValues(Student student, List<String> valuesString, List<GradeType> gradeTypes, String comment) {
         List<Grade> grades = gradeRepository.findAll();
@@ -147,6 +158,5 @@ public class GradeService {
             }
         }
     }
-
 
 }
