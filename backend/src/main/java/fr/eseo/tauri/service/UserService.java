@@ -1,13 +1,22 @@
 package fr.eseo.tauri.service;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.Role;
-import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.PermissionRepository;
 import fr.eseo.tauri.repository.RoleRepository;
+import fr.eseo.tauri.repository.ProjectRepository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +40,6 @@ public class UserService {
      * @param roleRepository the role repository
      * @param permissionRepository the permission repository
      */
-
     @Autowired
     public UserService(UserRepository userRepository, TeamRepository teamRepository, RoleRepository roleRepository, PermissionRepository permissionRepository) {
         this.userRepository = userRepository;
@@ -40,11 +48,15 @@ public class UserService {
         this.permissionRepository = permissionRepository;
     }
 
+    public int createUser(User user) {
+        User savedUser = userRepository.save(user);
+        return savedUser.id(); //TODO replace by getId() when it will work again
+    }
+
     /**
      * Change team's leader to null when their leader is deleted.
      * @param id the user's id
      */
-
     public void deleteUser(Integer id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
@@ -76,21 +88,13 @@ public class UserService {
         Optional<User> user = userRepository.findById(id);
         List <PermissionType> permissions = this.getPermissions(id);
         if (user.isPresent()) {
-                for(PermissionType permission : permissions) {
-                    if(permission == permissionRequired) {
-                        return true;
-                    }
+            for(PermissionType permission : permissions) {
+                if(permission == permissionRequired) {
+                    return true;
                 }
             }
+        }
         return false;
     }
 
-    /*@PostConstruct //Test function for the deleteUser function
-    public void initDataIfTableIsEmpty() {
-
-        if (userRepository.count() != 0) {
-            this.deleteUser(1);
-        }
-
-    }*/
 }
