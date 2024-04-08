@@ -37,7 +37,7 @@ public class StudentsWithAverageGradeSeeder {
 
         // Create and save a gradeType
         var gradeType = new GradeType();
-        gradeType.name("average");
+        gradeType.name("AVERAGE");
         gradeType.factor(1);
         gradeType.forGroup(false);
         gradeType.imported(true);
