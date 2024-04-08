@@ -19,8 +19,10 @@ async function formSubmit() {
 	document.cookie = "token=bonamyRule34; path=/;"
 	document.cookie = "user=112; path=/;"
 
+	//document.cookie = "test=prout; path=/;"
+
 	const response = await apiQuery({
-		route: "/roles/{roleType}",
+		route: `users/roles/${selectedRole.value}`,
 		responseSchema: z.array(UserSchema),
 		method: "GET"
 	})
@@ -29,11 +31,9 @@ async function formSubmit() {
 		throw new Error(response.error)
 	}
 
-	console.log(response.data)
-
-	document.cookie = "test=prout; path=/;"
-
-	document.cookie = "user={response.data}; path=/;"
+	//console.log(response.data)
+	//Le cookie n'estt pas stocké, à vérifier si ce n'est pas le bout de code au dessus qui bloque l'exécution de la ligne ci dessous
+	document.cookie = `current_user=${JSON.stringify(response.data)}; path=/;`
 }
 </script>
 
