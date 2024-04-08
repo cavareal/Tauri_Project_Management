@@ -201,19 +201,19 @@ public class TeamService {
                 }
             }
 
-            // TODO : re-order the teams by average grade
+            // re-order the teams by average grade
+            teams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();
 
             index = nbTeams * womenPerTeam - nbWomen;
 
             // Assign the remaining students evenly to the teams
-            // TODO : assign students regarding their average grade
             for (int i = index; i < nbStudent; i++) {
                 Student student;
                 if (i < nbWomen) {
                     student = women.get(i);
                     student.team(teams.get(i % nbTeams));
                 }else{
-                    student = men.get(i);
+                    student = men.get(i - nbWomen);
                     student.team(teams.get(i % nbTeams));
                 }
                 this.studentRepository.save(student);
@@ -222,6 +222,4 @@ public class TeamService {
             return teams;
         }
     }
-
-
 }
