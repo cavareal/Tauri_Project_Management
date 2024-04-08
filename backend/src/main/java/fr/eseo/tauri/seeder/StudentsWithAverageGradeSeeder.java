@@ -38,7 +38,6 @@ public class StudentsWithAverageGradeSeeder {
         // Create and save a gradeType
         var gradeType = new GradeType();
         gradeType.name("AVERAGE");
-        gradeType.factor(1);
         gradeType.forGroup(false);
         gradeType.imported(true);
         this.gradeTypeRepository.save(gradeType);
@@ -58,7 +57,7 @@ public class StudentsWithAverageGradeSeeder {
             // Create and save a grade for the student
             var grade = new Grade();
             grade.student(student);
-            grade.value(faker.number().numberBetween(0, 20));
+            grade.value((float) faker.number().randomDouble(2,0, 20));
             grade.comment(faker.lorem().sentence());
             grade.gradeType(gradeType);
             this.gradeRepository.save(grade);

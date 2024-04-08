@@ -1,7 +1,6 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Criteria;
-import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.AuthService;

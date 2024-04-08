@@ -4,7 +4,6 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.Gender;
-import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
@@ -16,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.ArrayUtils.isEquals;
+
 /**
  * Service class for managing teams.
  */
@@ -24,7 +25,7 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
-    private final ProjectRepository projectRepository;
+    private final ProjectService projectService;
     private final StudentRepository studentRepository;
 
     /**
@@ -35,10 +36,10 @@ public class TeamService {
      * @param studentRepository the student repository
      */
     @Autowired
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectRepository projectRepository, StudentRepository studentRepository) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectService projectService, StudentRepository studentRepository) {
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
-        this.projectRepository = projectRepository;
+        this.projectService = projectService;
         this.studentRepository = studentRepository;
     }
 
@@ -110,7 +111,7 @@ public class TeamService {
         int nbStudent = nbMen + nbWomen;
 
         // TODO : get the ACTUAL project (not the first one)
-        Project project = this.projectRepository.getReferenceById(1);
+        Project project = this.projectService.getCurrentProject();
 
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams * womenPerTeam - 1) {
@@ -166,5 +167,54 @@ public class TeamService {
 
             return teams;
         }
+    }
+
+    public List<String> getAllTeamNames() {
+        return teamRepository.findAllTeamNames();
+    }
+
+    /**
+     * Get all teams.
+     * @return the list of all teams
+     */
+    public List<Team> getAllTeams() {
+        var project = projectService.getCurrentProject();
+        return teamRepository.findAllByProjectId(project.id());
+    }
+
+    /**
+     * Get a team by its ID.
+     * @param id the ID of the team
+     * @return the team if it exists, otherwise null
+     */
+    public Team getTeamById(Integer id) {
+        return teamRepository.findById(id).orElse(null);
+    }
+
+    public Integer getNbWomanByTeamId(Integer id){
+        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
+        Integer nbWoman = 0;
+        for (Student student : students) {
+            if (isEquals(student.gender(), Gender.WOMAN)) {
+                nbWoman++;
+            }
+        }
+        return nbWoman;
+    }
+
+    public Integer getNbBachelorByTeamId(Integer id){
+        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
+        Integer nbBachelor = 0;
+        for (Student student : students) {
+            if (student.bachelor() != null && student.bachelor()) {
+                nbBachelor++;
+            }
+        }
+        return nbBachelor;
+    }
+
+    public Integer getNbStudentsByTeamId(Integer id){
+        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
+        return students.size();
     }
 }
