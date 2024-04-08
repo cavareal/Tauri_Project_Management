@@ -32,7 +32,7 @@ java-build:
   stage: build
   image: gradle:8.4-jdk17
   script:
-    - cp -r ./frontend/dist ./backend/src/main/resources/static
+    # - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -x test
   artifacts:
