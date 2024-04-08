@@ -71,7 +71,7 @@ public class UserService {
 
     public List<PermissionType> getPermissions(Integer id) {
         Optional<User> user = userRepository.findById(id);
-        List<PermissionType> permissions = null;
+        List<PermissionType> permissions = new ArrayList<>();
         if (user.isPresent()) {
             List<Role> roles = roleRepository.findByUser(user.get());
             for(Role role : roles) {
