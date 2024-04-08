@@ -51,7 +51,7 @@ function getPrenom(nomPrenom: string) {
 </script>
 
 <template>
-	<AccordionContent class="w-full flex mb-4">
+	<AccordionContent class="w-full flex mb-4 items-start">
 		<div id="accordionStudents" class="pr-10 flex-grow flex-1 w-full">
 			<div>
 				<div class="flex font-thin">
@@ -69,7 +69,7 @@ function getPrenom(nomPrenom: string) {
 						<div class="w-[25%]">{{ getNom(student.name) }}</div>
 						<div class="w-[25%]">{{ getPrenom(student.name) }}</div>
 						<div v-if="phase != 'PREPUBLISHED'" class="w-[25%]">{{ student.teamRole }}</div>
-						<div class="w-[25%]">{{ student.gender }}</div>
+						<div class="w-[25%]">{{ student.gender === "MAN" ? "Homme" : "Femme" }}</div>
 						<div class="w-[25%]">
 							<p v-if="student.bachelor">Oui</p>
 							<p v-else>Non</p>
@@ -79,7 +79,7 @@ function getPrenom(nomPrenom: string) {
 				</div>
 			</div>
 		</div>
-		<div v-if="criteria" id="accordionCriteria" class="w-auto border rounded">
+		<div v-if="criteria" id="accordionCriteria" class="w-auto border rounded pb-2">
 			<div class="flex flex-col p-3 pb-0">
 				<div>
 					Critères de génération

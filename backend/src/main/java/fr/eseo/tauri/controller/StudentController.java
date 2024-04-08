@@ -1,5 +1,7 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,18 +10,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
 
     private final StudentService studentService;
+    private final StudentRepository studentRepository;
 
     private final AuthService authService;
 
     @Autowired
-    public StudentController(StudentService studentService, AuthService authService) {
+    public StudentController(StudentService studentService, AuthService authService, StudentRepository studentRepository) {
         this.studentService = studentService;
         this.authService = authService;
+        this.studentRepository = studentRepository;
     }
 
     @GetMapping
