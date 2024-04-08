@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum FlagType {
-    REPORTING("Reporting");
+    REPORTING("Reporting"),
+    VALIDATION("Validation");
 
     private final String type;
 
