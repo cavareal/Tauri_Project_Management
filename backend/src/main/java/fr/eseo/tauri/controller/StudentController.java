@@ -90,4 +90,10 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
         }
     }
+
+    @DeleteMapping()
+    public ResponseEntity<String> deleteStudents(){
+        studentRepository.deleteAll();
+        return  ResponseEntity.ok("students have been deleted successfully");
+    }
 }
