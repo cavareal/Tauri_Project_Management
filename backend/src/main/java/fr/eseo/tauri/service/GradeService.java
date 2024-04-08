@@ -81,10 +81,6 @@ public class GradeService {
             grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.team(team);
-//            grade.author(author);
-//            if (comment != ""){
-//                grade.comment(comment);
-//            }
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
         } else {
@@ -99,7 +95,7 @@ public class GradeService {
      * @param value       the value of the grade to be assigned
      * @param gradeName   the name of the grade type to be assigned
      */
-    public void assignGradeToStudent(String studentName, Integer value, String gradeName/*,User author, String comment*/) {
+    public void assignGradeToStudent(String studentName, Integer value, String gradeName) {
         Student student = studentRepository.findByName(studentName);
         GradeType gradeType = gradeTypeRepository.findByName(gradeName);
         if (student != null) {
@@ -107,13 +103,9 @@ public class GradeService {
             grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.student(student);
-//            grade.author(author);
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
         }
-//     else {
-//          // Gérer le cas où pas d'étudiant
-//      }
     }
 
 
