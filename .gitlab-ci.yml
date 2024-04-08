@@ -4,11 +4,11 @@
 stages:
   - build
   - sonar
-  - deploy-vuejs
-  - deploy-java
+  - deploy-server-dev
+  - deploy-server-prod
 
 variables:
-  GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  G  RADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
   DEV_SERVER_IP: "172.24.1.22"
   PROD_SERVER_IP: "172.24.1.8"
@@ -30,20 +30,21 @@ vuejs-build:
 
 java-build:
   stage: build
-  image: gradle:8.4-jdk11
+  image: gradle:8.4-jdk17
   script:
+    - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -x test
   artifacts:
     name: "Gradle artifacts from $CI_PROJECT_NAME on $CI_COMMIT_REF_SLUG"
     paths:
-      - $CI_PROJECT_DIR/build/libs/*.jar
+      - $CI_PROJECT_DIR/build/libs/*.war
     expire_in: 1 day
     when: always
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
-  dependencies:
+  dependencies:     # Set accessible data in vuejs-build, to copy data from frontend folder 
     - vuejs-build
 
 # Tests d'intégrations
@@ -53,14 +54,14 @@ java-build:
 
 quality-dev:
   stage: sonar
-  image: gradle:8.4-jdk11
+  image: gradle:8.4-jdk17
   script:
     - cd backend
     - gradle --no-daemon test
     - gradle --no-daemon sonarqube -Dsonar.projectName=Team4_DevBranch -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/build/libs/*.jar
+      - $CI_PROJECT_DIR/build/libs/*.war
     expire_in: 1 day
     when: always
   cache:
@@ -72,14 +73,14 @@ quality-dev:
 
 quality-prod:
   stage: sonar
-  image: gradle:8.4-jdk11
+  image: gradle:8.4-jdk17
   script:
     - cd backend
     - gradle --no-daemon clean test
     - gradle --no-daemon sonarqube -Dsonar.projectName=Team4_MasterBranch -Dsonar.projectKey=Team4_2024_MasterBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=1cec587f7d0c27e7e6e05a138e8a1929a300e105
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/build/libs/*.jar
+      - $CI_PROJECT_DIR/build/libs/*.war
     expire_in: 1 day
     when: always
   cache:
@@ -91,7 +92,7 @@ quality-prod:
 
 # Déploiement sur le serveur de dev
 vuejs-deploy-dev:
-  stage: deploy-vuejs
+  stage: deploy-server-dev
   image: node:16.19.1-alpine3.17
   script:
     - cd frontend
@@ -110,9 +111,10 @@ vuejs-deploy-dev:
     - gitlab-ci
 
 java-deploy-dev:
-  stage: deploy-java
-  image: gradle:8.4-jdk11
+  stage: deploy-server-dev
+  image: gradle:8.4-jdk17
   script:
+    - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -Pdev -x test
   dependencies:
@@ -132,7 +134,7 @@ java-deploy-dev:
 
 # Déploiement sur le serveur de prod
 vuejs-deploy-prod:
-  stage: deploy-vuejs
+  stage: deploy-server-prod
   image: node:16.19.1-alpine3.17
   script:
     - cd frontend
@@ -151,13 +153,13 @@ vuejs-deploy-prod:
     - gitlab-ci
 
 java-deploy-prod:
-  stage: deploy-java
-  image: gradle:8.4-jdk11
+  stage: deploy-server-prod
+  image: gradle:8.4-jdk17
   script:
-    - cp -r frontend/dist/frontend/* backend/src/main/resources/static/
+    - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -Pprod -x test
-  dependencies:
+  dependencies:     # Set accessible data in vuejs-build, to copy data from frontend folder 
     - vuejs-deploy-prod
   cache:
     paths:

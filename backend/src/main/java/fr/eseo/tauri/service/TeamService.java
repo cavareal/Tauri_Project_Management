@@ -248,5 +248,3 @@ public class TeamService {
         return students.size();
     }
 }
-
-
