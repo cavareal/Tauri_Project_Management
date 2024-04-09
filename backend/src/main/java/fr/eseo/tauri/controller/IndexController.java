@@ -1,5 +1,6 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -23,7 +24,7 @@ public class IndexController {
             Resource resource = new ClassPathResource("static/index.html");
             return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();
+            CustomLogger.logError("An error occurred in get indexController", e);
             return "Error loading index.html";
         }
     }
@@ -46,7 +47,7 @@ public class IndexController {
                     .contentType(mediaType)
                     .body(data);
         } catch (IOException e) {
-            e.printStackTrace();
+            CustomLogger.logError("An error occurred in get asset", e);
             return ResponseEntity.notFound().build();
         }
     }

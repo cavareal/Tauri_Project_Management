@@ -42,10 +42,10 @@ public class StudentController {
                 Integer quantity = studentService.getStudentQuantity();
                 return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(quantity));
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage()); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé"); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
         }
     }
 
@@ -84,10 +84,10 @@ public class StudentController {
                 List<Student> students = studentService.getStudentsByTeamId(id);
                 return ResponseEntity.ok(students);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 

@@ -36,7 +36,7 @@ public class RoleController {
         Role role = roleRepository.findById(id).orElse(null);
         if (role != null) {
             role.type(roleDetails.type());
-            // Si vous avez un champ Set<User>, vous pouvez également mettre à jour ici
+            // If you have a User field, you can also update it here
             return roleRepository.save(role);
         }
         return null;

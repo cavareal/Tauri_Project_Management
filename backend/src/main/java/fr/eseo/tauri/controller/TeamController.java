@@ -21,6 +21,10 @@ import java.util.Map;
 @RequestMapping("/api/teams")
 public class TeamController {
 
+    private static final String READ_STUDENT_BY_TEAM = "readStudentByTeam";
+    private static final String READ_CRITERIA = "readCriteria";
+    private static final String TEAM_CREATION = "teamCreation";
+
     private final TeamRepository teamRepository;
     private final AuthService authService;
     private final TeamService teamService;
@@ -30,6 +34,7 @@ public class TeamController {
      * @param teamRepository the team repository
      * @param authService    the authentication service
      * @param teamService    the team service
+     * @param projectService the projectService
      */
     @Autowired
     public TeamController(TeamRepository teamRepository, AuthService authService, TeamService teamService, ProjectService projectService) {
@@ -49,8 +54,7 @@ public class TeamController {
      */
     @PutMapping("/update-leader-team/{idTeam}")
     public ResponseEntity<String> updateLeaderTeam(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam, @RequestParam Integer idLeader) {
-        String permission = "teamCreation";
-        if (authService.checkAuth(token, permission)) {
+        if (authService.checkAuth(token, TEAM_CREATION)) {
             try {
                 Team team = teamService.updateLeaderTeam(idTeam, idLeader);
                 if (team != null) {
@@ -107,9 +111,10 @@ public class TeamController {
         Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
         String permission = "teamCreate";
 
-        if (authService.checkAuth(token, permission)) {  // Check if role is authorised to do this request, in fonction of the permissions
-            try {
-                List<Team> teams = teamService.createTeams(nbTeams, womenPerTeam);
+        if (authService.checkAuth(token, TEAM_CREATION)) {
+
+                try {
+                    List<Team> teams = teamService.createTeams(nbTeams, womenPerTeam);
 
                 if (teams != null) {
                     System.out.println("Teams have been created");
@@ -138,10 +143,10 @@ public class TeamController {
                 List<Team> teams = teamService.getAllTeams();
                 return ResponseEntity.ok(teams);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -156,10 +161,10 @@ public class TeamController {
                 }
                 return ResponseEntity.ok(team);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -174,10 +179,10 @@ public class TeamController {
                 }
                 return ResponseEntity.ok(teams);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -201,12 +206,13 @@ public class TeamController {
                 Criteria criteria = new Criteria(nbWoman, nbBachelor, nbStudents, validateWoman, validateBachelor);
                 return ResponseEntity.ok(criteria);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
+
     @GetMapping("/get-team-avg-grade/{idTeam}")
     public ResponseEntity<String> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam) {
         String permission = "readTeamAvgGrade";
