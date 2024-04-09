@@ -32,7 +32,6 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 	implementation 'com.opencsv:opencsv:5.8'
 	implementation 'net.datafaker:datafaker:2.1.0'
-	runtimeOnly 'com.h2database:h2'			// Use to fake DB for test during pipeline gitlab
 }
 
 tasks.named("test") {
