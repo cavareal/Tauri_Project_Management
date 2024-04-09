@@ -79,7 +79,7 @@ quality-dev:
     - gitlab-ci
 
 quality-prod:
- stage: sonar
+  stage: sonar
   image: gradle:8.4-jdk17
   script:
     - cd backend
