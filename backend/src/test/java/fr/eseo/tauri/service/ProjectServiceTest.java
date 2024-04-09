@@ -3,11 +3,13 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -26,6 +28,11 @@ class ProjectServiceTest {
 
     @InjectMocks
     private ProjectService projectService;
+
+    @BeforeEach
+    void init_mocks() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     @Order(1)
