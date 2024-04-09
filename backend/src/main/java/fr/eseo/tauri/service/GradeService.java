@@ -1,6 +1,7 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.*;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
@@ -79,47 +80,7 @@ public class GradeService {
 		return total / factors;
 	}
 
-	/**
-	 * This method is used to assign a grade to a team.
-	 *
-	 * @param teamName  the name of the team to whom the grade is assigned
-	 * @param value     the value of the grade to be assigned
-	 * @param gradeName the name of the grade type to be assigned
-	 */
-	public void assignGradeToTeam(String teamName, Integer value, String gradeName/*,User author, String comment*/) {
-		Team team = teamRepository.findByName(teamName);
-		GradeType gradeType = gradeTypeRepository.findByName(gradeName);
-		if (team != null) {
-			Grade grade = new Grade();
-			grade.value(Float.valueOf(value));
-			grade.gradeType(gradeType);
-			grade.team(team);
-			gradeTypeRepository.save(gradeType);
-			gradeRepository.save(grade);
-		} else {
-			throw new IllegalArgumentException("L'équipe avec le nom fourni n'a pas été trouvée.");
-		}
-	}
 
-	/**
-	 * This method is used to assign a grade to a student.
-	 *
-	 * @param studentName the name of the student to whom the grade is assigned
-	 * @param value       the value of the grade to be assigned
-	 * @param gradeName   the name of the grade type to be assigned
-	 */
-	public void assignGradeToStudent(String studentName, Integer value, String gradeName) {
-		Student student = studentRepository.findByName(studentName);
-		GradeType gradeType = gradeTypeRepository.findByName(gradeName);
-		if (student != null) {
-			Grade grade = new Grade();
-			grade.value(Float.valueOf(value));
-			grade.gradeType(gradeType);
-			grade.student(student);
-			gradeTypeRepository.save(gradeType);
-			gradeRepository.save(grade);
-		}
-	}
 
 
 	/**
@@ -141,6 +102,14 @@ public class GradeService {
 		grade.student(student);
 		return gradeRepository.save(grade);
 	}
+
+	/**
+	 * This method is used to assign a grade to a team.
+	 *
+	 * @param teamName  the name of the team to whom the grade is assigned
+	 * @param value     the value of the grade to be assigned
+	 * @param gradeName the name of the grade type to be assigned
+	 */
     public void assignGradeToTeam(String teamName, Integer value, String gradeName) {
         Team team = teamRepository.findByName(teamName);
         GradeType gradeType = gradeTypeRepository.findByName(gradeName);
@@ -156,6 +125,14 @@ public class GradeService {
         }
     }
 
+
+	/**
+	 * This method is used to assign a grade to a student.
+	 *
+	 * @param studentName the name of the student to whom the grade is assigned
+	 * @param value       the value of the grade to be assigned
+	 * @param gradeName   the name of the grade type to be assigned
+	 */
     public void assignGradeToStudent(String studentName, Integer value, String gradeName) {
         Student student = studentRepository.findByName(studentName);
         GradeType gradeType = gradeTypeRepository.findByName(gradeName);

@@ -6,7 +6,7 @@ import { ref } from "vue"
 import { getAverageGrades } from "@/services/grade-service"
 
 const rowClass = cn("py-2 h-auto")
-const user = getCookie("user")
+const user = getCookie("current_user")
 const grades = ref()
 
 if (user != null) {

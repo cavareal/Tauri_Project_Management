@@ -79,7 +79,7 @@ defineComponent({
 						<Tab :title="`Sprint ${index + 1}`">
 							<NotAutorized v-if="!token || !role"/>
 							<TMRateView v-else-if="role === 'TEAM_MEMBER'" :listTeam="parsedTeams"/>
-							<SSRateView v-else-if="role === 'SUPERVISING_STAFF'" :listTeam="parsedTeams"/>
+							<SSTCRateView v-else-if="role === 'SUPERVISING_STAFF'" :listTeam="parsedTeams"/>
 							<NotAutorized v-else/>
 						</Tab>
 					</template>

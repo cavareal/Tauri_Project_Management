@@ -33,7 +33,6 @@ const evaluations = ref<Record<string, Evaluation[]>>({})
 const props = defineProps({
 	listTeam: Array as () => Team[]
 })
-console.log(props.listTeam)
 
 const buttonsState = ref({
 	validate: true,
@@ -41,7 +40,8 @@ const buttonsState = ref({
 })
 
 function redirect(): void {
-	window.location.href = "/tauri/rating"
+	// eslint-disable-next-line no-self-assign
+	window.location.href = window.location.href
 }
 
 function addEvaluation() {

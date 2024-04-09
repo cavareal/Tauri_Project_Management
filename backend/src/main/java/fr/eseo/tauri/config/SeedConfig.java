@@ -25,8 +25,6 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private final PermissionSeeder permissionSeeder;
 	private final RoleSeeder roleSeeder;
 
-	private final RoleSeeder roleSeeder;
-
 	@Autowired
 	public SeedConfig(
 			UserSeeder userSeeder, TeamSeeder teamSeeder, StudentSeeder studentSeeder,
@@ -52,7 +50,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		// gradeTypeSeeder.seed(faker);
 		// gradeSeeder.seed(faker);
 		permissionSeeder.seed();
-		// gradeTypeSeeder.seedTeamGradeType();
+		gradeTypeSeeder.seedTeamGradeType();
 		roleSeeder.seed(faker);
 	}
 
