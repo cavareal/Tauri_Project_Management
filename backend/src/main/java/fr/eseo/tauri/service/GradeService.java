@@ -108,8 +108,8 @@ public class GradeService {
     }
 
     public List<Object[]> getAverageGradesByGradeTypeByRoleType(int userId) {
-        int teamId = teamRepository.findTeamByStudentId(userId).id();
-        return gradeRepository.findAverageGradesByGradeType(teamId);
+        Team team = teamRepository.findTeamByStudentId(userId);
+        return gradeRepository.findAverageGradesByGradeType(team.id());
     }
 
 }

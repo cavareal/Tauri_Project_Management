@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 @Service
@@ -27,14 +28,18 @@ public class RoleSeeder {
         var users = userRepository.findAll();
         Random random = new Random();
 
-        for (var user : users) {
-            int randomIndex = random.nextInt(RoleType.values().length);
-            RoleType randomRoleType = RoleType.values()[randomIndex];
+        RoleType[] roles = {RoleType.SUPERVISING_STAFF, RoleType.TECHNICAL_COACH};
 
-            var role = new Role();
-            role.type(randomRoleType);
-            role.user(user);
-            roleRepository.save(role);
+        for (var user : users) {
+            if (user.id() < 41) {
+                int randomIndex = random.nextInt(roles.length);
+                RoleType randomRoleType = roles[randomIndex];
+
+                var role = new Role();
+                role.type(randomRoleType);
+                role.user(user);
+                roleRepository.save(role);
+            }
         }
     }
 

@@ -3,6 +3,9 @@ import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@
 import { cn } from "@/utils/utils"
 import getCookie from "@/utils/cookiesUtils"
 import { ref } from "vue"
+import { apiQuery } from "@/utils/api"
+import { GradeSchema } from "@/types/grade"
+import { z } from "zod"
 
 const rowClass = cn("py-2 h-auto")
 const token = getCookie("token")
@@ -31,6 +34,12 @@ const fetchGrades = async() => {
 }
 
 void fetchGrades()
+
+const response = await apiQuery({
+	route: "grades/averageGradesByGradeTypeByRole",
+	responseSchema: z.record()
+
+})
 
 </script>
 

@@ -101,15 +101,15 @@ public class GradeController {
     @GetMapping("/averageGradesByGradeTypeByRole")
     public ResponseEntity<Map<String, String>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token) {
         try{
-            String userId = "3";
+            String userId = "82";
             List<Object[]> grades = gradeService.getAverageGradesByGradeTypeByRoleType(Integer.parseInt(userId));
             System.out.println(grades);
             if (grades.isEmpty()) {
-                return ResponseEntity.ok(Map.of("message", "Grades added successfully."));
+                return ResponseEntity.ok(Map.of("message", "There are no grades to display."));
             }
             return ResponseEntity.ok(Map.of("message", grades.toString()));
         } catch (Exception e) {
-            return null;
+            return ResponseEntity.badRequest().body(Map.of("error", "Error occurred while fetching grades: " + e.getMessage()));
         }
 
     }

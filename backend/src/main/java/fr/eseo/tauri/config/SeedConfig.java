@@ -1,5 +1,6 @@
 package fr.eseo.tauri.config;
 
+import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.seeder.*;
 import net.datafaker.Faker;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +23,13 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private final GradeSeeder gradeSeeder;
 	private final PermissionSeeder permissionSeeder;
 
+	private final RoleSeeder roleSeeder;
+
 	@Autowired
 	public SeedConfig(
 			UserSeeder userSeeder, TeamSeeder teamSeeder, StudentSeeder studentSeeder,
-			GradeTypeSeeder gradeTypeSeeder, GradeSeeder gradeSeeder, PermissionSeeder permissionSeeder
+			GradeTypeSeeder gradeTypeSeeder, GradeSeeder gradeSeeder, PermissionSeeder permissionSeeder,
+			RoleSeeder roleSeeder
 	) {
 		this.faker = new Faker(new Locale("fr-FR"));
 
@@ -35,6 +39,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		this.gradeTypeSeeder = gradeTypeSeeder;
 		this.gradeSeeder = gradeSeeder;
 		this.permissionSeeder = permissionSeeder;
+		this.roleSeeder = roleSeeder;
 	}
 
 	@Override
@@ -46,6 +51,8 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		gradeSeeder.seed(faker);
 		permissionSeeder.seed();
 		gradeTypeSeeder.seedTeamGradeType();
+		roleSeeder.seed();
+		gradeSeeder.seedTeamGrades(faker);
 	}
 
 }

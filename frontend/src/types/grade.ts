@@ -13,4 +13,9 @@ export const GradeSchema = z.object({
 	team: z.number().nullable()
 })
 
+export const NamedGradeListSchema = z.object({
+	name: z.string(),
+	grades: GradeSchema
+})
+
 export type Grade = z.infer<typeof GradeSchema>

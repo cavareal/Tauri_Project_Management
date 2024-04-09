@@ -34,7 +34,7 @@ public class GradeSeeder {
 
 		for (var student : students) {
 			for (var gradeType : gradeTypes) {
-				if (Boolean.TRUE.equals(student.bachelor()) && !gradeType.name().equals("mean")) continue;
+				if (Boolean.TRUE.equals(student.bachelor()) && !gradeType.name().equals("AVERAGE")) continue;
 
 				var grade = new Grade();
 				grade.student(student);
