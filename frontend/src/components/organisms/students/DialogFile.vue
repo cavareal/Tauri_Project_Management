@@ -2,7 +2,7 @@
 
 import Button from "../../ui/button/Button.vue"
 import Input from "../../ui/input/Input.vue"
-import { CloudUpload } from "lucide-vue-next"
+import { CloudUpload, Loader2 } from "lucide-vue-next"
 import {
 	Dialog,
 	DialogContent,
@@ -13,8 +13,7 @@ import {
 	DialogTrigger,
 	DialogClose
 } from "@/components/ui/dialog"
-import { ref } from "vue"
-import { importStudentFile } from "@/services/student-service"
+import { reactive, ref } from "vue"
 
 const fileName = ref("")
 let file: File | null = null
@@ -26,33 +25,26 @@ function changeFile(event: Event) { // Type annotation for event parameter
 	}
 }
 
+const state = reactive({
+	loading: false
+})
+
 async function formSubmit() {
 	if (!file) return
-	// await importStudentFile(file).then(() => {
-	// 	console.log("file uploaded successfully")
-	// 	location.reload()
-	// }).catch((error) => {
-	// 	console.error("Erreur lors de l'envoi du formulaire :", error)
-	// 	// Gérer l'erreur ici
-	// })
 
-	try {
-		const formData = new FormData()
-		formData.append("file-upload", file)
-		const response = await fetch("http://localhost:8882/api/students/uploadCSV", {
-			method: "POST",
-			body: formData
-		})
-		if (response.ok) {
-			console.log("file uploaded successfully")
-			location.reload()
-		} else {
-			throw new Error("Erreur lors de la requête.")
-		}
-	} catch (error) {
-		console.error("Erreur lors de l'envoi du formulaire :", error)
-		// Gérer l'erreur ici
-	}
+	let url = import.meta.env.VITE_TAURI_API_URL
+	if (!url) return
+
+	state.loading = true
+
+	const formData = new FormData()
+	formData.append("file-upload", file)
+	await fetch(`${url}students/uploadCSV`, {
+		method: "POST",
+		body: formData
+	})
+		.then(() => location.reload())
+		.catch((error) => console.error(error))
 }
 </script>
 
@@ -92,11 +84,13 @@ async function formSubmit() {
 						Annuler
 					</Button>
 				</DialogClose>
-				<DialogClose>
-					<Button type="submit" @click="formSubmit">
-						Continuer
-					</Button>
-				</DialogClose>
+				<Button type="submit" disabled class="flex items-center" v-if="state.loading">
+					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
+					Chargement
+				</Button>
+				<Button type="submit" @click="formSubmit" v-else>
+					Continuer
+				</Button>
 			</DialogFooter>
 		</DialogContent>
 	</Dialog>

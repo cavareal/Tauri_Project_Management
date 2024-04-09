@@ -53,36 +53,36 @@ async function formSubmit() {
 						<div class="flex flex-col gap-2 w-1/2">
 							<h4 class="mb-1 font-medium">Rôles professeurs</h4>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="OL" value="OPTION_LEADER"/>
-								<Label for="OL">[OL] Option Leader</Label>
+								<RadioGroupItem name="role" id="OPTION_LEADER" value="OPTION_LEADER"/>
+								<Label for="OPTION_LEADER">[OL] Option Leader</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="PL" value="PROJECT_LEADER"/>
-								<Label for="PL">[PL] Project Leader</Label>
+								<RadioGroupItem name="role" id="PROJECT_LEADER" value="PROJECT_LEADER"/>
+								<Label for="PROJECT_LEADER">[PL] Project Leader</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="SA" value="SYSTEM_ADMINISTRATOR"/>
-								<Label for="SA">[SA] System Administrator</Label>
+								<RadioGroupItem name="role" id="SYSTEM_ADMINISTRATOR" value="SYSTEM_ADMINISTRATOR"/>
+								<Label for="SYSTEM_ADMINISTRATOR">[SA] System Administrator</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="SS" value="SUPERVISING_STAFF"/>
-								<Label for="SS">[SS] Supervising Staff</Label>
+								<RadioGroupItem name="role" id="SUPERVISING_STAFF" value="SUPERVISING_STAFF"/>
+								<Label for="SUPERVISING_STAFF">[SS] Supervising Staff</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="TC" value="TECHNICAL_COACH"/>
-								<Label for="TC">[TC] Technical Coaches</Label>
+								<RadioGroupItem name="role" id="TECHNICAL_COACH" value="TECHNICAL_COACH"/>
+								<Label for="TECHNICAL_COACH">[TC] Technical Coaches</Label>
 							</div>
 						</div>
 
 						<div class="flex flex-col gap-2 w-1/2">
 							<h4 class="mb-1 font-medium">Rôles étudiants</h4>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="OS" value="OPTION_STUDENT"/>
-								<Label for="OS">[OS] Option Student</Label>
+								<RadioGroupItem name="role" id="OPTION_STUDENT" value="OPTION_STUDENT"/>
+								<Label for="OPTION_STUDENT">[OS] Option Student</Label>
 							</div>
 							<div class="flex items-center space-x-2">
-								<RadioGroupItem name="role" id="TM" value="TEAM_MEMBER"/>
-								<Label for="TM">[TM] Team Member</Label>
+								<RadioGroupItem name="role" id="TEAM_MEMBER" value="TEAM_MEMBER"/>
+								<Label for="TEAM_MEMBER">[TM] Team Member</Label>
 							</div>
 						</div>
 					</RadioGroup>

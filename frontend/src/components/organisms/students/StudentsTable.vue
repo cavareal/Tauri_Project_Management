@@ -9,6 +9,7 @@ import type { Grade } from "@/types/grade"
 import { getAllStudents } from "@/services/student-service"
 import { getAllGrades } from "@/services/grade-service"
 import { getAllImportedGradeTypes } from "@/services/grade-type-service"
+import { Check, X } from "lucide-vue-next"
 
 const rowClass = cn("py-2 h-auto")
 
@@ -48,8 +49,11 @@ watch(() => { }, async() => {
 				<TableCell class="font-medium" :class="rowClass">
 					{{ student.name }}
 				</TableCell>
-				<TableCell :class="rowClass">{{ student.gender === "MAN" ? "Homme" : "Femme" }}</TableCell>
-				<TableCell :class="rowClass">{{ student.bachelor ? "Oui" : "Non" }}</TableCell>
+				<TableCell :class="rowClass">{{ student.gender === "MAN" ? "H" : "F" }}</TableCell>
+				<TableCell :class="rowClass">
+					<Check v-if="student.bachelor" class="w-4"/>
+					<X v-else class="w-4"/>
+				</TableCell>
 				<TableCell v-for="(gradeType, i) in gradeTypes" :key="i" :class="rowClass">
 					<Skeleton v-if="!grades" class="w-5/6 h-5" />
 					<span v-else>

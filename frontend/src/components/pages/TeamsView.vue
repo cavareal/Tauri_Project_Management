@@ -41,7 +41,7 @@ watch(() => { }, async() => {
 		<Row class="items-center justify-between">
 			<h1 class="text-3xl font-title-bold">Équipes</h1>
 
-			<Row class="gap-4" v-if="role === 'PL' && nbStudents > 0 && teams.length > 0 && currentPhase === 'COMPOSING'">
+			<Row class="gap-4" v-if="role === 'PROJECT_LEADER' && nbStudents > 0 && teams.length > 0 && currentPhase === 'COMPOSING'">
 				<DeleteTeamsDialog>
 					<Button variant="outline">Supprimer les équipes</Button>
 				</DeleteTeamsDialog>
@@ -54,11 +54,11 @@ watch(() => { }, async() => {
 		<Separator />
 
 		<NotAuthorized v-if="!token || !role" />
-		<StudentsNotImported v-else-if="role === 'PL' && currentPhase === 'COMPOSING' && nbStudents === 0" />
-		<GenerateTeams v-else-if="role === 'PL' && currentPhase === 'COMPOSING' && nbStudents > 0 && teams.length === 0" />
+		<StudentsNotImported v-else-if="role === 'PROJECT_LEADER' && currentPhase === 'COMPOSING' && nbStudents === 0" />
+		<GenerateTeams v-else-if="role === 'PROJECT_LEADER' && currentPhase === 'COMPOSING' && nbStudents > 0 && teams.length === 0" />
 		<!-- eslint-disable-next-line max-len -->
-		<TeamsCreated v-else-if="(role === 'PL' || (role === 'SS' && currentPhase !=='COMPOSING') || role === 'OL' || (role === 'OS' && currentPhase !== 'COMPOSING')) && teams.length > 0" :phase="currentPhase" />
-		<TeamsNotsCreated v-else-if="(role === 'SS' || role === 'OL') && currentPhase === 'COMPOSING'" />
+		<TeamsCreated v-else-if="(role === 'PROJECT_LEADER' || (role === 'SUPERVISING_STAFF' && currentPhase !=='COMPOSING') || role === 'OPTION_LEADER' || (role === 'OS' && currentPhase !== 'COMPOSING')) && teams.length > 0" :phase="currentPhase" />
+		<TeamsNotsCreated v-else-if="(role === 'SUPERVISING_STAFF' || role === 'OPTION_LEADER') && currentPhase === 'COMPOSING'" />
 		<NotAuthorized v-else />
 	</PageTemplate>
 </template>

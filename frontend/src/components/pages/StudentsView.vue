@@ -13,7 +13,7 @@ import type { Student } from "@/types/student"
 import { getAllStudents } from "@/services/student-service"
 
 const role = getCookie("role")
-const hasPermission = role === "PL" || role === "OL"
+const hasPermission = role === "PROJECT_LEADER" || role === "OPTION_LEADER"
 const students = ref<Student[] | null>(null)
 
 watch(() => { }, async() => {
@@ -28,7 +28,7 @@ watch(() => { }, async() => {
 			<h1 class="text-3xl font-title-bold">Étudiants</h1>
 
 			<Row class="gap-4" v-if="hasPermission">
-				<DeleteStudentsDialog>
+				<DeleteStudentsDialog v-if="students && students?.length > 0">
 					<Button variant="outline">Supprimer les étudiants</Button>
 				</DeleteStudentsDialog>
 				<GradeFactorsDialog>
