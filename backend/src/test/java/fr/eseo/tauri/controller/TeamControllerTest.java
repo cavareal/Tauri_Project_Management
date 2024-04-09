@@ -2,7 +2,6 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Criteria;
 import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
@@ -21,13 +20,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class TeamControllerTest {
+class TeamControllerTest {
 
     @Mock
     private TeamService teamService;
-
-    @Mock
-    private TeamRepository teamRepository;
 
     @Mock
     private AuthService authService;
@@ -39,7 +35,7 @@ public class TeamControllerTest {
     private TeamController teamController;
 
     @Test
-    public void testGetAllTeamsReturnsTeams() {
+    void testGetAllTeamsReturnsTeams() {
         // Arrange
         Team team1 = new Team();
         Team team2 = new Team();
@@ -56,10 +52,10 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void testGetAllTeamsReturnsNotFound() {
+    void testGetAllTeamsReturnsNotFound() {
         // Arrange
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-        when(teamService.getAllTeams()).thenReturn(Arrays.asList());
+        when(teamService.getAllTeams()).thenReturn(List.of());
 
         // Act
         ResponseEntity<List<Team>> response = teamController.getAllTeams("mockToken");
@@ -71,7 +67,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void testGetAllTeamsReturnsInternalServerError() {
+    void testGetAllTeamsReturnsInternalServerError() {
         // Arrange
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(teamService.getAllTeams()).thenThrow(new RuntimeException("Unexpected error"));
@@ -86,7 +82,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void testGetAllTeamsReturnsUnauthorized() {
+    void testGetAllTeamsReturnsUnauthorized() {
         // Arrange
         when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
@@ -100,9 +96,8 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void testGetCriteriaByTeamId() {
+    void testGetCriteriaByTeamId() {
         // Arrange
-        Team team = new Team();
         Criteria criteria = new Criteria(5, 3, 10, true, true);
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(teamService.getNbWomanByTeamId(1)).thenReturn(5);
@@ -114,7 +109,7 @@ public class TeamControllerTest {
         ResponseEntity<Criteria> result = teamController.getCriteriaByTeamId("token", 1);
 
         // Assert
-        assertThat(result.getBody()).isEqualToComparingFieldByField(criteria);
+        assertThat(result.getBody()).usingRecursiveComparison().isEqualTo(criteria);
         verify(authService, times(1)).checkAuth(anyString(), anyString());
         verify(teamService, times(1)).getNbWomanByTeamId(1);
         verify(teamService, times(1)).getNbBachelorByTeamId(1);
@@ -124,7 +119,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void testGetCriteriaByTeamIdTeamNotFound() {
+    void testGetCriteriaByTeamIdTeamNotFound() {
         // Arrange
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
 
@@ -137,7 +132,7 @@ public class TeamControllerTest {
     }
 
     @Test
-    public void testGetCriteriaByTeamIdUnauthorized() {
+    void testGetCriteriaByTeamIdUnauthorized() {
         // Arrange
         when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
