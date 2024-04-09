@@ -63,11 +63,17 @@ quality-dev:
       alias: mariadb
   variables:
     MYSQL_DATABASE: tauri
-    MYSQL_ROOT_PASSWORD: root
-    MYSQL_USER: admin_tauri
-    MYSQL_PASSWORD: tauri
+    MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+    MYSQL_USER: $DB_USER
+    MYSQL_PASSWORD: $DB_PASSWORD
   script:
     - cd backend
+    - |
+      for i in {1..10}; do
+        mysqladmin ping -h mariadb -u $DB_USER -p$DB_PASSWORD && echo "MariaDB is ready" && break
+        echo "Waiting for MariaDB to be ready..."
+        sleep 5
+      done
     - chmod +x ./gradlew
     - ./gradlew --no-daemon test  # Problème car pas accès DB
     - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
