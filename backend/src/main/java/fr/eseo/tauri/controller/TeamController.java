@@ -137,10 +137,10 @@ public class TeamController {
                 }
                 return ResponseEntity.ok(teams);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -155,10 +155,10 @@ public class TeamController {
                 }
                 return ResponseEntity.ok(teams);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 }

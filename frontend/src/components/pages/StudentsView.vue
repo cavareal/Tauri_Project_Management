@@ -16,7 +16,6 @@ const hasPermission = role === "PL" || role === "OL"
 	<PageTemplate>
 		<Row class="items-center justify-between">
 			<h1 class="text-3xl font-title-bold">Étudiants</h1>
-
 			<Row class="gap-4" v-if="hasPermission">
 				<GradeFactorsDialog>
 					<Button variant="outline">Modifier les coefficients</Button>

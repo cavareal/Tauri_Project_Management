@@ -59,6 +59,12 @@ public class GradeController {
         return "Grade deleted";
     }
 
+    /**
+     * This method is a POST endpoint that accepts a JSON string representing a map of evaluations.
+     *
+     * @param evaluations A JSON string representing a map of evaluations.
+     * @return A ResponseEntity with either a success message or an error message.
+     */
     @PostMapping("/addGradeToTeam")
     public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations){
         try {
@@ -90,6 +96,22 @@ public class GradeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error occurred while adding grades: " + e.getMessage()));
         }
+    }
+
+    @GetMapping("/averageGradesByGradeTypeByRole")
+    public ResponseEntity<Map<String, String>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token) {
+        try{
+            String userId = "3";
+            List<Object[]> grades = gradeService.getAverageGradesByGradeTypeByRoleType(Integer.parseInt(userId));
+            System.out.println(grades);
+            if (grades.isEmpty()) {
+                return ResponseEntity.ok(Map.of("message", "Grades added successfully."));
+            }
+            return ResponseEntity.ok(Map.of("message", grades.toString()));
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
 }

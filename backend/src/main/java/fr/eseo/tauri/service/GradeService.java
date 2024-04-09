@@ -79,7 +79,7 @@ public class GradeService {
         return total / factors;
     }
 
-    public void assignGradeToTeam(String teamName, Integer value, String gradeName/*,User author, String comment*/) {
+    public void assignGradeToTeam(String teamName, Integer value, String gradeName) {
         Team team = teamRepository.findByName(teamName);
         GradeType gradeType = gradeTypeRepository.findByName(gradeName);
         if (team != null) {
@@ -87,10 +87,6 @@ public class GradeService {
             grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.team(team);
-//            grade.author(author);
-//            if (comment != ""){
-//                grade.comment(comment);
-//            }
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
         } else {
@@ -98,7 +94,7 @@ public class GradeService {
         }
     }
 
-    public void assignGradeToStudent(String studentName, Integer value, String gradeName/*,User author, String comment*/) {
+    public void assignGradeToStudent(String studentName, Integer value, String gradeName) {
         Student student = studentRepository.findByName(studentName);
         GradeType gradeType = gradeTypeRepository.findByName(gradeName);
         if (student != null) {
@@ -106,12 +102,14 @@ public class GradeService {
             grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.student(student);
-            //grade.author(author);
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
-        } else {
-            // Gérer le cas où pas d'étudiant
         }
+    }
+
+    public List<Object[]> getAverageGradesByGradeTypeByRoleType(int userId) {
+        int teamId = teamRepository.findTeamByStudentId(userId).id();
+        return gradeRepository.findAverageGradesByGradeType(teamId);
     }
 
 }
