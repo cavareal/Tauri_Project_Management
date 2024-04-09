@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
@@ -40,6 +41,7 @@ class TeamServiceTest {
     @BeforeEach
     void init_mocks() {
         MockitoAnnotations.openMocks(this);
+        teamService = spy(teamService);
     }
 
     @Test
@@ -205,5 +207,40 @@ class TeamServiceTest {
 
         // Assert
         assertThat(nbStudents).isZero();
+    }
+
+    @Test
+    void testGetTeamBySSId_ExistingId() {
+        // Arrange
+        User leader = new User();
+        leader.id(1);
+        Team team1 = new Team();
+        team1.leader(leader);
+        Team team2 = new Team();
+        doReturn(Arrays.asList(team1, team2)).when(teamService).getAllTeams();
+
+        // Act
+        Team result = teamService.getTeamBySSId(1);
+
+        // Assert
+        assertThat(result).isEqualTo(team1);
+        verify(teamService, times(1)).getAllTeams();
+    }
+
+    @Test
+    void testGetTeamBySSId_NonExistingId() {
+        // Arrange
+        User leader = new User();
+        leader.id(1);
+        Team team1 = new Team();;
+        Team team2 = new Team();
+        doReturn(Arrays.asList(team1, team2)).when(teamService).getAllTeams();
+
+        // Act
+        Team result = teamService.getTeamBySSId(1);
+
+        // Assert
+        assertThat(result).isNull();
+        verify(teamService, times(1)).getAllTeams();
     }
 }

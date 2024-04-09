@@ -251,4 +251,18 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
         }
     }
+
+    @GetMapping("/ss/{ssId}")
+    public ResponseEntity<Team> getTeamBySupervisor(@RequestHeader("Authorization") String token, @PathVariable Integer ssId) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))){
+            try {
+                Team team = teamService.getTeamBySSId(ssId);
+                return ResponseEntity.ok(team);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
 }
