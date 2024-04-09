@@ -59,14 +59,16 @@ quality-dev:
   stage: sonar
   image: gradle:8.4-jdk17
   services:
-    - name: mariadb:latest
-      alias: mariadb
+    - name: mysql:latest
+      alias: mysql
   variables:
     MYSQL_DATABASE: tauri
     MYSQL_ROOT_PASSWORD: $DB_PASSWORD
     MYSQL_USER: $DB_USER
     MYSQL_PASSWORD: $DB_PASSWORD
   script:
+   - echo "DB_USER: $DB_USER"
+   - echo "DB_PASSWORD: $DB_PASSWORD"
     - cd backend
     - apt-get update && apt-get install -y netcat
     - |
