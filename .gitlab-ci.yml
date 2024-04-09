@@ -70,7 +70,7 @@ quality-dev:
     - cd backend
     - |
       for i in {1..10}; do
-        mysqladmin ping -h mariadb -u $DB_USER -p$DB_PASSWORD && echo "MariaDB is ready" && break
+        mysql -h mariadb -u $DB_USER -p$DB_PASSWORD -e "SELECT 1" && echo "MariaDB is ready" && break
         echo "Waiting for MariaDB to be ready..."
         sleep 5
       done
