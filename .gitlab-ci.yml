@@ -27,7 +27,7 @@ vuejs-build:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:dev
-  retry: 3
+  retry: 2
   cache:
     paths:
       - frontend/node_modules
