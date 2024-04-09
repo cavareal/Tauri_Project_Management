@@ -9,6 +9,7 @@ import fr.eseo.tauri.repository.TeamRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -19,7 +20,7 @@ import java.util.Optional;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class TeamServiceTest {
+class TeamServiceTest {
 
     @Mock
     private TeamRepository teamRepository;
@@ -34,7 +35,7 @@ public class TeamServiceTest {
     private TeamService teamService;
 
     @Test
-    public void testGetAllTeams() {
+    void testGetAllTeams() {
         // Arrange
         Team team1 = new Team();
         Team team2 = new Team();
@@ -53,25 +54,25 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void testGetAllTeamsEmptyList() {
+    void testGetAllTeamsEmptyList() {
         // Arrange
         Team team1 = new Team();
         Team team2 = new Team();
         Project project = new Project();
         when(projectService.getCurrentProject()).thenReturn(project);
-        when(teamRepository.findAllByProjectId(project.id())).thenReturn(Arrays.asList());
+        when(teamRepository.findAllByProjectId(project.id())).thenReturn(List.of());
 
         // Act
         List<Team> teams = teamService.getAllTeams();
 
         // Assert
-        assertThat(teams).hasSize(0);
+        assertThat(teams).isEmpty();
         verify(teamRepository, times(1)).findAllByProjectId(project.id());
         verify(projectService, times(1)).getCurrentProject();
     }
 
     @Test
-    public void testGetTeamById() {
+    void testGetTeamById() {
         // Arrange
         Team team = new Team();
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
@@ -85,7 +86,7 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void testGetTeamByIdNull() {
+    void testGetTeamByIdNull() {
         // Arrange
         when(teamRepository.findById(1)).thenReturn(Optional.empty());
 
@@ -98,7 +99,7 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void testGetNbWomanByTeamId() {
+    void testGetNbWomanByTeamId() {
         // Arrange
         Team team = new Team();
         Student student1 = new Student();
@@ -116,7 +117,7 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void testGetNbWomanByTeamIdZero() {
+    void testGetNbWomanByTeamIdZero() {
         // Arrange
         Team team = new Team();
         Student student1 = new Student();
@@ -130,11 +131,11 @@ public class TeamServiceTest {
         Integer nbWoman = teamService.getNbWomanByTeamId(1);
 
         // Assert
-        assertThat(nbWoman).isEqualTo(0);
+        assertThat(nbWoman).isZero();
     }
 
     @Test
-    public void testGetNbBachelorsByTeamId() {
+    void testGetNbBachelorsByTeamId() {
         // Arrange
         Team team = new Team();
         Student student1 = new Student();
@@ -152,7 +153,7 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void testGetNbBachelorsByTeamIdZero() {
+    void testGetNbBachelorsByTeamIdZero() {
         // Arrange
         Team team = new Team();
         Student student1 = new Student();
@@ -166,11 +167,11 @@ public class TeamServiceTest {
         Integer nbBachelors = teamService.getNbBachelorByTeamId(1);
 
         // Assert
-        assertThat(nbBachelors).isEqualTo(0);
+        assertThat(nbBachelors).isZero();
     }
 
     @Test
-    public void testGetNbStudentsByTeamId() {
+    void testGetNbStudentsByTeamId() {
         // Arrange
         Team team = new Team();
         Student student1 = new Student();
@@ -186,16 +187,16 @@ public class TeamServiceTest {
     }
 
     @Test
-    public void testGetNbStudentsByTeamIdZero() {
+    void testGetNbStudentsByTeamIdZero() {
         // Arrange
         Team team = new Team();
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList());
+        when(studentRepository.findByTeam(team)).thenReturn(List.of());
 
         // Act
         Integer nbStudents = teamService.getNbStudentsByTeamId(1);
 
         // Assert
-        assertThat(nbStudents).isEqualTo(0);
+        assertThat(nbStudents).isZero();
     }
 }

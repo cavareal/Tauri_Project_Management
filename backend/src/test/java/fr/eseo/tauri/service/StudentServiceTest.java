@@ -208,7 +208,7 @@ class StudentServiceTest {
     @Test
     @DisplayName("extractNamesGenderBachelorAndGrades extracts valid data from input stream")
     @SuppressWarnings("unchecked")
-    void extractNamesGenderBachelorAndGrades_extractsValidDataFromInputStream(){
+    void extractNamesGenderBachelorAndGrades_extractsValidDataFromInputStream() {
         String csvContent = "1,John Doe,M,B,15,14,13\n2,Jane Doe,F,B,12,13,14";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
@@ -247,7 +247,7 @@ class StudentServiceTest {
     @Test
     @DisplayName("extractNamesGenderBachelorAndGrades handles input stream with missing data")
     @SuppressWarnings("unchecked")
-    void extractNamesGenderBachelorAndGrades_handlesInputStreamWithMissingData(){
+    void extractNamesGenderBachelorAndGrades_handlesInputStreamWithMissingData() {
         String csvContent = "1,John Doe,M,,15,14,13\n2,Jane Doe,,B,12,13,14";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
@@ -305,7 +305,7 @@ class StudentServiceTest {
     }
 
     @Test
-    public void testGetStudentsByTeamId() {
+    void testGetStudentsByTeamId() {
         // Arrange
         Team team = new Team();
         Student student1 = new Student();
@@ -323,7 +323,7 @@ class StudentServiceTest {
     }
 
     @Test
-    public void testGetStudentsByTeamIdReturnsEmptyList() {
+    void testGetStudentsByTeamIdReturnsEmptyList() {
         // Arrange
         Team team = new Team();
         when(teamService.getTeamById(1)).thenReturn(team);
