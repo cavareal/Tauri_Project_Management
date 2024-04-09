@@ -1,16 +1,14 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.model.GradeType;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
