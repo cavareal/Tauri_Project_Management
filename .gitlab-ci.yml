@@ -58,6 +58,14 @@ java-build:
 quality-dev:
   stage: sonar
   image: gradle:8.4-jdk17
+  services:
+    - name: mariadb:latest
+      alias: mariadb
+  variables:
+    MYSQL_DATABASE: tauri
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_USER: admin_tauri
+    MYSQL_PASSWORD: tauri
   script:
     - cd backend
     - chmod +x ./gradlew
