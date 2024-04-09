@@ -70,7 +70,7 @@ class TeamServiceTest {
         when(projectService.getCurrentProject()).thenReturn(project);
         when(teamRepository.findAllByProjectId(project.id())).thenReturn(List.of());
 
-        // Act
+        // Action
         List<Team> teams = teamService.getAllTeams();
 
         // Assert
