@@ -139,4 +139,44 @@ class TeamControllerTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         verify(authService, times(1)).checkAuth(anyString(), anyString());
     }
+
+    @Test
+    void testGetTeamBySupervisor_ExistingId() {
+        // Arrange
+        Team team = new Team();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamService.getTeamBySSId(1)).thenReturn(team);
+
+        // Act
+        ResponseEntity<Team> result = teamController.getTeamBySupervisor("mockToken", 1);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(team, result.getBody());
+    }
+
+    @Test
+    void testGetTeamBySupervisor_InternalServerError() {
+        // Arrange
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamService.getTeamBySSId(1)).thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act
+        ResponseEntity<Team> result = teamController.getTeamBySupervisor("mockToken", 1);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+    }
+
+    @Test
+    void testGetTeamBySupervisor_Unauthorized() {
+        // Arrange
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        // Act
+        ResponseEntity<Team> result = teamController.getTeamBySupervisor("mockToken", 1);
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
+    }
 }

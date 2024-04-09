@@ -253,7 +253,7 @@ public class TeamController {
     }
 
     @GetMapping("/ss/{ssId}")
-    public ResponseEntity<Team> getTeamsBySupervisor(@RequestHeader("Authorization") String token, @PathVariable Integer ssId) {
+    public ResponseEntity<Team> getTeamBySupervisor(@RequestHeader("Authorization") String token, @PathVariable Integer ssId) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))){
             try {
                 Team team = teamService.getTeamBySSId(ssId);

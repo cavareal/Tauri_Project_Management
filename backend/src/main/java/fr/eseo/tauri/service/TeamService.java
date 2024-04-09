@@ -290,7 +290,7 @@ public class TeamService {
     public Team getTeamBySSId(Integer id){
         var teams = getAllTeams();
         for (var team : teams) {
-            if (team.leader().id().equals(id)) {
+            if (team.leader() != null && team.leader().id().equals(id)) {
                 return team;
             }
         }
