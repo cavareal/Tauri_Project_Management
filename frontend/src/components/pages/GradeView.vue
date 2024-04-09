@@ -3,7 +3,7 @@ import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
 import getCookie from "@/utils/cookiesUtils"
-import NotAutorized from "@/components/organisms/Teams/NotAuthorized.vue"
+import NotAutorized from "@/components/organisms/errors/NotAuthorized.vue"
 import TMOwnGradeView from "@/components/organisms/Grade/TMOwnGradeView.vue"
 
 
