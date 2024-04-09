@@ -58,25 +58,10 @@ java-build:
 quality-dev:
   stage: sonar
   image: gradle:8.4-jdk17
-  services:
-    - name: mysql:latest
-      alias: mysql
-  variables:
-    MYSQL_DATABASE: tauri
-    MYSQL_ROOT_PASSWORD: $DB_PASSWORD
-    MYSQL_USER: $DB_USER
-    MYSQL_PASSWORD: $DB_PASSWORD
   script:
     - cd backend
-    - apt-get update && apt-get install -y netcat
-    - |
-        for i in {1..10}; do
-          nc -zv mysql 3306 && echo "mysql is ready" && break
-          echo "Waiting for mysql to be ready..."
-          sleep 5
-        done
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon test  # Problème car pas accès DB
+#    - ./gradlew --no-daemon test  # Problème car pas accès DB
     - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
