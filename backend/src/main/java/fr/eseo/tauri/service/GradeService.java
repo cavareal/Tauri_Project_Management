@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.*;
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,7 @@ public class GradeService {
 
             gradeRepository.updateImportedMeanByStudentId(mean, student.id());
         }
+        CustomLogger.logInfo("Updated imported mean for all students.");
     }
 
     private float mean(List<Grade> grades) {
@@ -157,6 +159,7 @@ public class GradeService {
                 }
             }
         }
+        CustomLogger.logInfo("Successfully created grades for student " + student.name() + " from grade types and values contained in the provided CSV file.");
     }
 
 }
