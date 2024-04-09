@@ -4,16 +4,13 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.Gender;
-import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
-import jakarta.annotation.PostConstruct;
+import fr.eseo.tauri.model.Project;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -96,34 +93,79 @@ public class TeamService {
 
 
     /**
-     * Create teams.
-     *
-     * @return .. if teams are created, otherwise null
+     * Create teams with the given number of teams and the given ratio
+     * TODO : create teams with the same average grade
+     * TODO : add a parameter to choose the project ?
+     * @param nbTeams the number of teams to create
+     * @param womenPerTeam the ratio of women in the teams
+     * @return a List<Teams> if teams are created, otherwise null
      */
-    @Async
-    public void createTeams(Integer nbTeams, Integer ratioGender) {
-        var project = projectService.getCurrentProject();
+    public List<Team> createTeams(Integer nbTeams, Integer womenPerTeam) {
+        System.out.println("INFO : TeamService.createTeams : Creating Teams");
 
-        var teams = new ArrayList<Team>();
-        for (int i = 0; i < nbTeams; i++) {
-            Team team = new Team();
-            team.project(project);
-            team.name("Équipe " + (i + 1));
-            teams.add(team);
-            teamRepository.save(team);
-        }
+        List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
+        List<Student> men = this.studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN);
 
-        var students = studentRepository.findAll();
-        for (int i = 0; i < students.size(); i++) {
-            var student = students.get(i);
-            student.team(teams.get(i % nbTeams));
-            studentRepository.save(student);
-        }
+        int nbWomen = women.size();
+        int nbMen = men.size();
+        int nbStudent = nbMen + nbWomen;
 
-        var teamsToDelete = teamRepository.findAllByProjectId(project.id());
-        for (var team : teamsToDelete) {
-            if (teams.contains(team)) continue;
-            teamRepository.deleteById(team.id());
+        // TODO : get the ACTUAL project (not the first one)
+        Project project = this.projectService.getCurrentProject();
+
+        // Check if the number of students is enough to create the teams
+        if (nbStudent < nbTeams * womenPerTeam - 1) {
+            System.out.println("ERROR : TeamService.createTeams : Not enough students to create the teams");
+            return null;
+        }else {
+            List<Team> teams = new ArrayList<>();
+
+            // Create the teams
+            for (int i = 0; i < nbTeams; i++) {
+                Team team = new Team();
+                team.name("Team " + (i + 1));
+                team.project(project);
+                this.teamRepository.save(team);
+                teams.add(team);
+            }
+
+            int index = 0;
+
+            // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
+            for (int i = 0; i < nbTeams; i++) {
+                for (int j = 0; j < womenPerTeam; j++) {
+                    Student student = new Student();
+                    index = i * womenPerTeam + j;
+                    if (index < nbWomen) {
+                        student = women.get(index);
+                        student.team(teams.get(i));
+                    } else if (index < nbStudent) {
+                        student = men.get(index - nbWomen);
+                        student.team(teams.get(i));
+                    }
+                    this.studentRepository.save(student);
+                }
+            }
+
+            // re-order the teams by average grade
+            teams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();
+
+            index = nbTeams * womenPerTeam;
+
+            // Assign the remaining students evenly to the teams
+            for (int i = index; i < nbStudent; i++) {
+                Student student;
+                if (i < nbWomen) {
+                    student = women.get(i);
+                    student.team(teams.get((i - index)% nbTeams));
+                }else{
+                    student = men.get(i - nbWomen);
+                    student.team(teams.get((i - index)% nbTeams));
+                }
+                this.studentRepository.save(student);
+            }
+
+            return teams;
         }
     }
 

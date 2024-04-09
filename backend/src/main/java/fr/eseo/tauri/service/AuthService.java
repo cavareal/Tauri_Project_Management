@@ -1,7 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.model.Project;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service

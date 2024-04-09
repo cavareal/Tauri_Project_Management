@@ -25,20 +25,20 @@ public class RoleSeeder {
 		var users = userRepository.findAll();
 		RoleType[] roleTypes = RoleType.values();
 
-		/*for (var user : users) {
+		for(int i = 0; i < 10; i++) {
+			var role = new Role();
+			role.user(users.get(i));
+			role.type(roleTypes[i]);
+			roleRepository.save(role);
+		}
+
+		for (var user : users) {
 			if (faker.number().numberBetween(0, 8) != 0) continue;
 
 			var role = new Role();
 			role.user(user);
 			role.type(RoleType.SUPERVISING_STAFF);
 
-			roleRepository.save(role);
-		}*/
-
-		for(int i = 0; i < 10; i++) {
-			var role = new Role();
-			role.user(users.get(i));
-			role.type(roleTypes[i]);
 			roleRepository.save(role);
 		}
 

@@ -21,6 +21,10 @@ import java.util.Map;
 @RequestMapping("/api/teams")
 public class TeamController {
 
+    private static final String READ_STUDENT_BY_TEAM = "readStudentByTeam";
+    private static final String READ_CRITERIA = "readCriteria";
+    private static final String TEAM_CREATION = "teamCreation";
+
     private final TeamRepository teamRepository;
     private final AuthService authService;
     private final TeamService teamService;
@@ -30,6 +34,7 @@ public class TeamController {
      * @param teamRepository the team repository
      * @param authService    the authentication service
      * @param teamService    the team service
+     * @param projectService the projectService
      */
     @Autowired
     public TeamController(TeamRepository teamRepository, AuthService authService, TeamService teamService, ProjectService projectService) {
@@ -49,8 +54,7 @@ public class TeamController {
      */
     @PutMapping("/update-leader-team/{idTeam}")
     public ResponseEntity<String> updateLeaderTeam(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam, @RequestParam Integer idLeader) {
-        String permission = "teamCreation";
-        if (authService.checkAuth(token, permission)) {
+        if (authService.checkAuth(token, TEAM_CREATION)) {
             try {
                 Team team = teamService.updateLeaderTeam(idTeam, idLeader);
                 if (team != null) {
@@ -104,13 +108,20 @@ public class TeamController {
     public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
 
         Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
-        Integer ratioGender = Integer.valueOf(request.get("ratioGender"));
+        Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
         String permission = "teamCreate";
 
-        if (authService.checkAuth(token, permission)) {  // Check if role is authorised to do this request, in fonction of the permissions
-            try {
-                teamService.createTeams(nbTeams, ratioGender);
-                return ResponseEntity.ok("La creation a bien été prise en compte");
+        if (authService.checkAuth(token, TEAM_CREATION)) {
+
+                try {
+                    List<Team> teams = teamService.createTeams(nbTeams, womenPerTeam);
+
+                if (teams != null) {
+                    System.out.println("Teams have been created");
+                    return ResponseEntity.ok("La creation a bien été prise en compte");
+                } else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : les équipes n'ont pas pu être créées");
+                }
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
             }
@@ -132,10 +143,10 @@ public class TeamController {
                 List<Team> teams = teamService.getAllTeams();
                 return ResponseEntity.ok(teams);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -150,10 +161,10 @@ public class TeamController {
                 }
                 return ResponseEntity.ok(team);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -168,10 +179,10 @@ public class TeamController {
                 }
                 return ResponseEntity.ok(teams);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
@@ -183,10 +194,10 @@ public class TeamController {
                 Integer nbWoman = teamService.getNbWomanByTeamId(teamId);
                 Integer nbBachelor = teamService.getNbBachelorByTeamId(teamId);
                 Integer nbStudents = teamService.getNbStudentsByTeamId(teamId);
-                Integer ratioGender = projectService.getRatioGender();
+                Integer womenPerTeam = projectService.getRatioGender();
                 Boolean validateWoman = false;
                 Boolean validateBachelor =false;
-                if(nbStudents > 0 && (nbWoman*100)/nbStudents >= ratioGender){
+                if(nbStudents > 0 && (nbWoman*100)/nbStudents >= womenPerTeam){
                     validateWoman = true;
                 }
                 if (nbBachelor>=1){
@@ -195,10 +206,25 @@ public class TeamController {
                 Criteria criteria = new Criteria(nbWoman, nbBachelor, nbStudents, validateWoman, validateBachelor);
                 return ResponseEntity.ok(criteria);
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Erreur 500
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); // Code 401
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+    @GetMapping("/get-team-avg-grade/{idTeam}")
+    public ResponseEntity<String> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam) {
+        String permission = "readTeamAvgGrade";
+        if (authService.checkAuth(token, permission)) {
+            try {
+                double avgGrade = this.teamRepository.findAvgGradeByTeamId(this.teamRepository.findById(idTeam).get());
+                return ResponseEntity.ok(String.valueOf(avgGrade));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
         }
     }
 }

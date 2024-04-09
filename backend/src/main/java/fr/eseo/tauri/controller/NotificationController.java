@@ -2,7 +2,6 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.repository.NotificationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -1,6 +1,8 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.Role;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +38,7 @@ public class RoleController {
         Role role = roleRepository.findById(id).orElse(null);
         if (role != null) {
             role.type(roleDetails.type());
-            // Si vous avez un champ Set<User>, vous pouvez également mettre à jour ici
+            // If you have a User field, you can also update it here
             return roleRepository.save(role);
         }
         return null;
@@ -46,5 +48,10 @@ public class RoleController {
     public String deleteRole(@PathVariable Integer id) {
         roleRepository.deleteById(id);
         return "Role deleted";
+    }
+
+    @GetMapping("/user/{type}")
+    public User getFirstUserByRoleType(@PathVariable RoleType type) {
+        return roleRepository.findFirstByType(type).user();
     }
 }

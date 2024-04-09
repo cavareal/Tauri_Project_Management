@@ -1,11 +1,10 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.model.GradeType;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +17,29 @@ import java.util.List;
 @Service
 public class GradeTypeService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GradeTypeService.class);
     private final GradeService gradeService;
     private final GradeTypeRepository gradeTypeRepository;
 
+    /**
+     * Constructor for the GradeTypeService class.
+     *
+     * @param gradeTypeRepository the repository that provides CRUD operations for GradeType objects
+     * @param gradeService the service that provides business logic for Grade objects
+     */
     @Autowired
     public GradeTypeService(GradeTypeRepository gradeTypeRepository, GradeService gradeService) {
         this.gradeTypeRepository = gradeTypeRepository;
         this.gradeService = gradeService;
     }
 
+    /**
+     * This method is used to update the factor of a GradeType object and save it to the database.
+     *
+     * @param id the ID of the GradeType object to be updated
+     * @param factor the new factor for the GradeType object
+     *
+     * @return the updated GradeType object, or null if no GradeType object with the provided ID exists
+     */
     public GradeType updateFactor(int id, float factor) {
         var gradeType = gradeTypeRepository.findById(id).orElse(null);
         if (gradeType == null) return null;
@@ -36,6 +48,7 @@ public class GradeTypeService {
         gradeTypeRepository.save(gradeType);
 
         gradeService.updateImportedMean();
+        CustomLogger.logInfo("Successfully updated factor for GradeType object with ID " + id);
 
         return gradeType;
     }
@@ -84,7 +97,7 @@ public class GradeTypeService {
      */
     public List<GradeType> createGradeTypes(List<String> coefficients, List<String> ratings, Boolean forGroup, Boolean imported) {
         if (coefficients == null || ratings == null || coefficients.isEmpty() || ratings.isEmpty()) {
-            LOGGER.error("Coefficients or ratings are null or empty");
+            CustomLogger.logWarn("Coefficients or ratings are null or empty");
             return new ArrayList<>();
         }
         List<GradeType> gradeTypes = new ArrayList<>();
@@ -92,6 +105,7 @@ public class GradeTypeService {
         for (int i = 0; i < coefficients.size(); i++) {
             gradeTypes.add(createGradeType(Float.parseFloat(coefficients.get(i)), ratings.get(i), forGroup, imported));
         }
+        CustomLogger.logInfo("Successfully created GradeType objects from the provided coefficients and ratings.");
         return gradeTypes;
     }
 
@@ -120,7 +134,7 @@ public class GradeTypeService {
                 }
             }
         } catch (IOException | CsvValidationException e) {
-            LOGGER.error("Error occurred while extracting coefficient rating and value", e);
+           CustomLogger.logError("Error occurred while extracting coefficient rating and value", e);
         }
 
         return createGradeTypes(coefficients, ratings, false, true);
@@ -165,6 +179,14 @@ public class GradeTypeService {
                 ratings.add(trimmedPart);
             }
         }
+    }
+
+    /**
+     * This method is used to delete all imported GradeType objects from the database.
+     */
+    public void deleteAllImportedGradeTypes() {
+        gradeTypeRepository.deleteAllImported();
+        CustomLogger.logInfo("Successfully deleted all imported GradeType objects.");
     }
 }
 

@@ -2,7 +2,6 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.repository.SprintRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

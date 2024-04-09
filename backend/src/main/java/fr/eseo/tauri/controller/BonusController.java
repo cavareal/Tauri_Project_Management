@@ -38,7 +38,6 @@ public class BonusController {
             bonus.value(bonusDetails.value());
             bonus.comment(bonusDetails.comment());
             bonus.limited(bonusDetails.limited());
-            //bonus.confirmed(bonusDetails.confirmed());
             return bonusRepository.save(bonus);
         }
         return null;

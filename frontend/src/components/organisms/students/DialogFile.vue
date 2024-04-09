@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
-import Button from "../ui/button/Button.vue"
-import Input from "../ui/input/Input.vue"
+import Button from "../../ui/button/Button.vue"
+import Input from "../../ui/input/Input.vue"
 import { CloudUpload } from "lucide-vue-next"
 import {
 	Dialog,
@@ -27,6 +27,7 @@ function changeFile(event: Event) { // Type annotation for event parameter
 }
 
 async function formSubmit() {
+	if (!file) return
 	// await importStudentFile(file).then(() => {
 	// 	console.log("file uploaded successfully")
 	// 	location.reload()
@@ -36,7 +37,6 @@ async function formSubmit() {
 	// })
 
 	try {
-		if (!file) return
 		const formData = new FormData()
 		formData.append("file-upload", file)
 		const response = await fetch("http://localhost:8882/api/students/uploadCSV", {
@@ -86,8 +86,7 @@ async function formSubmit() {
 			<div class="mt-2 leading-[143%] text-slate-400 max-md:max-w-full">
 				Format accepté : .csv
 			</div>
-			<DialogFooter
-				class="flex gap-6 pl-20 mt-8 font-medium leading-6 whitespace-nowrap max-md:flex-wrap max-md:pl-5">
+			<DialogFooter class="space-x-2">
 				<DialogClose>
 					<Button variant="outline">
 						Annuler

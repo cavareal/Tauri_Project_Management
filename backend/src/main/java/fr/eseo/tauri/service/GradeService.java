@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.*;
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,8 +52,16 @@ public class GradeService {
 
             gradeRepository.updateImportedMeanByStudentId(mean, student.id());
         }
+        CustomLogger.logInfo("Updated imported mean for all students.");
     }
 
+    /**
+     * This method calculates the mean of a list of grades.
+     *
+     * @param grades the list of Grade objects for which the mean is to be calculated
+     *
+     * @return the mean of the grades, or 0 if there are no grades or all grades have a factor of 0
+     */
     private float mean(List<Grade> grades) {
         var total = 0f;
         var factors = 0f;
@@ -157,6 +166,7 @@ public class GradeService {
                 }
             }
         }
+        CustomLogger.logInfo("Successfully created grades for student " + student.name() + " from grade types and values contained in the provided CSV file.");
     }
 
 }

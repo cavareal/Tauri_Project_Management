@@ -51,6 +51,12 @@ public class StudentService {
         this.gradeService = gradeService;
     }
 
+    /**
+     * This method is used to create a new student and save it to the repository.
+     *
+     * @param student the Student object to be saved
+     * @throws IllegalArgumentException if the student's name is null or empty
+     */
     public void createStudent(Student student) {
         if (student.name() == null || student.name().trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
@@ -210,6 +216,11 @@ public class StudentService {
         } catch (Exception e) {
             CustomLogger.logError("An error occurred while handling the uploaded file", e);
         }
+    }
+
+    public void deleteAllImportedStudents() {
+        studentRepository.deleteAll();
+        gradeTypeService.deleteAllImportedGradeTypes();
     }
 
 }

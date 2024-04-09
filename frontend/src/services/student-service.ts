@@ -54,7 +54,8 @@ export const importStudentFile = async(file: File): Promise<void> => {
 		route: "students/uploadCSV",
 		body: formData,
 		responseSchema: z.string(),
-		textResponse: true
+		textResponse: true,
+		contentType: ""
 	})
 
 	if (response.status === "error") {

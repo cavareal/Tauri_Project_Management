@@ -20,8 +20,8 @@ export const apiQuery = async <T>({ route, responseSchema, method, body, delay =
 	const token = getCookie("token")
 
 	const headers = {
-		"Content-Type": "application/json",
-		"Authorization": token || "null"
+		"Authorization": token || "null",
+		"Content-Type": "application/json"
 	}
 
 	const response = await fetch(`${url}${route}`, { method, body: body ? JSON.stringify(body) : undefined, headers })

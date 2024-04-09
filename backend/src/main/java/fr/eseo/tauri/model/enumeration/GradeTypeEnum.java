@@ -1,16 +1,11 @@
 package fr.eseo.tauri.model.enumeration;
 
-import lombok.Getter;
-
-@Getter
 public enum GradeTypeEnum {
+    AVERAGE("average");
 
-    Overall_Performance_1("Performance global sprint 1");
+    private final String name;
 
-    private final String gradeType;
-
-    GradeTypeEnum(String gradeType) {
-        this.gradeType = gradeType;
+    GradeTypeEnum(String displayName) {
+        this.name = displayName;
     }
-
 }

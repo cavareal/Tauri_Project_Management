@@ -27,7 +27,7 @@ vuejs-build:
   cache:
     paths:
       - frontend/node_modules
-
+ 
 java-build:
   stage: build
   image: gradle:8.4-jdk17

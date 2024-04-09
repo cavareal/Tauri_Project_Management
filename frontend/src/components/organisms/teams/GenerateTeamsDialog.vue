@@ -17,7 +17,7 @@ import { generateTeams } from "@/services/team-service"
 
 // Définir les références pour les valeurs des inputs
 const nbTeams = ref("6")
-const ratioGender = ref("20")
+const womenPerTeam = ref("1")
 
 // État pour contrôler l'affichage des boutons
 const buttonsState = reactive({
@@ -35,7 +35,7 @@ const onClick = async() => {
 	buttonsState.showGeneratedTeams = false
 
 	try {
-		await generateTeams(nbTeams.value, ratioGender.value)
+		await generateTeams(nbTeams.value, womenPerTeam.value)
 		buttonsState.loading = false
 		buttonsState.showGeneratedTeams = true
 		buttonsState.generateTeams = true
@@ -67,31 +67,29 @@ const showGeneratedTeams = () => {
 				</DialogDescription>
 			</DialogHeader>
 			<div class="grid gap-4 py-4">
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="nbTeams" class="text-right">
+				<div class="grid grid-cols-5 items-center gap-4">
+					<Label for="nbTeams" class="text-right col-span-2">
 						Nombre d'équipes
 					</Label>
 					<Input id="nbTeams" type="number" v-model="nbTeams" class="col-span-3" />
 				</div>
-				<div class="grid grid-cols-4 items-center gap-4">
-					<Label for="ratioGender" class="text-right">
-						Ratio H/F (%)
+				<div class="grid grid-cols-5 items-center gap-4">
+					<Label for="womenPerTeam" class="text-right col-span-2">
+						Nombre de femmes par équipe
 					</Label>
-					<Input id="ratioGender" type="number" v-model="ratioGender" class="col-span-3" />
+					<Input id="womenPerTeam" type="number" v-model="womenPerTeam" class="col-span-3" />
 				</div>
 			</div>
 			<DialogFooter>
-				<Button type="submit" variant="destructive" v-if="buttonsState.generateTeams" @click="onClick"
-					class="text-white bg-primary hover:bg-primary/90">
-					Regénérer les équipes
+				<Button type="submit" v-if="buttonsState.generateTeams" @click="onClick">
+					Générer les équipes
 				</Button>
-				<Button type="submit" variant="destructive" v-if="buttonsState.loading" disabled
-					class="flex items-center text-white bg-primary hover:bg-primary/90">
+				<Button type="submit" v-if="buttonsState.loading" disabled
+					class="flex items-center">
 					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
 					Veuillez patienter
 				</Button>
-				<Button type="submit" variant="destructive" v-if="buttonsState.showGeneratedTeams"
-					@click="showGeneratedTeams" class="text-white bg-primary hover:bg-primary/90">
+				<Button type="submit" v-if="buttonsState.showGeneratedTeams" @click="showGeneratedTeams">
 					Voir les équipes générées
 				</Button>
 			</DialogFooter>
