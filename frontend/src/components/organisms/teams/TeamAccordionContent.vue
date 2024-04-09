@@ -19,11 +19,9 @@ const props = defineProps({
 		required: true
 	},
 
-	//TO-DO: Delete default when the BDD is ready to handle null values
 	leader: {
 		type: String,
-		required: false,
-		default: "Leader"
+		required: false
 	},
 
 	phase: {

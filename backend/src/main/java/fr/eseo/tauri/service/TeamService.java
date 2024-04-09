@@ -286,4 +286,14 @@ public class TeamService {
             return 0; // for example
         }
     }
+
+    public Team getTeamBySSId(Integer id){
+        var teams = getAllTeams();
+        for (var team : teams) {
+            if (team.leader().id().equals(id)) {
+                return team;
+            }
+        }
+        return null;
+    }
 }

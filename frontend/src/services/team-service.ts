@@ -98,3 +98,17 @@ export const deleteAllTeams = async(): Promise<void> => {
 		throw new Error(response.error)
 	}
 }
+
+export const getTeamBySSId = async(ssId: string | null): Promise<Team> => {
+	const response = await apiQuery({
+		route: `teams/ss/${ssId}`,
+		responseSchema: TeamSchema,
+		method: "GET"
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
