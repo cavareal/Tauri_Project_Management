@@ -11,7 +11,6 @@ import SSTCRateView from "@/components/organisms/Rate/SSTCRateView.vue"
 const token = getCookie("token")
 const role = getCookie("role")
 let nbSprints = ref("3")
-const sprintList = ref([1, 2, 3])
 const teamsName = ref<string[]>([])
 
 
@@ -69,7 +68,6 @@ defineComponent({
 	components: { PageTemplate, Tabs, Tab }
 })
 
-console.log(parsedTeams)
 </script>
 
 <template>
