@@ -14,6 +14,7 @@ const selectedRole = ref("OPTION_LEADER")
 async function formSubmit() {
 	document.cookie = `role=${selectedRole.value}; path=/;`
 	document.cookie = "token=bonamyRule34; path=/;"
+	document.cookie = "user=52; path=/;"
 
 	const response = await apiQuery({
 		route: `roles/user/${selectedRole.value}`,

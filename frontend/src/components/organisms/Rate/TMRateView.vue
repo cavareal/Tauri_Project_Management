@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const token = getCookie("token")
+const userId = getCookie("current_user")
 const selectedTeam = ref("")
 let note = ref("")
 interface Evaluation {
@@ -78,7 +79,7 @@ const grades = async() => {
 	try {
 		buttonsState.validate = false
 		buttonsState.loading = true
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addGradeToTeam", {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addGradeToTeam/" + userId, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

@@ -20,6 +20,7 @@ public class GradeService {
 	private final GradeRepository gradeRepository;
 	private final TeamRepository teamRepository;
 	private final GradeTypeRepository gradeTypeRepository;
+	private final UserRepository userRepository;
 
 
 	/**
@@ -31,11 +32,12 @@ public class GradeService {
 	 * @param gradeTypeRepository the gradeTypeRepository
 	 */
 	@Autowired
-	public GradeService(TeamRepository teamRepository, GradeRepository gradeRepository, StudentRepository studentRepository, GradeTypeRepository gradeTypeRepository) {
+	public GradeService(TeamRepository teamRepository, GradeRepository gradeRepository, StudentRepository studentRepository, GradeTypeRepository gradeTypeRepository, UserRepository userRepository) {
 		this.teamRepository = teamRepository;
 		this.gradeRepository = gradeRepository;
 		this.studentRepository = studentRepository;
 		this.gradeTypeRepository = gradeTypeRepository;
+		this.userRepository = userRepository;
 	}
 
 	/**
@@ -110,14 +112,16 @@ public class GradeService {
 	 * @param value     the value of the grade to be assigned
 	 * @param gradeName the name of the grade type to be assigned
 	 */
-    public void assignGradeToTeam(String teamName, Integer value, String gradeName) {
+    public void assignGradeToTeam(String teamName, Integer value, String gradeName, int userId) {
         Team team = teamRepository.findByName(teamName);
         GradeType gradeType = gradeTypeRepository.findByName(gradeName);
+		User author = userRepository.findById(userId).orElse(null);
         if (team != null) {
             Grade grade = new Grade();
             grade.value(Float.valueOf(value));
             grade.gradeType(gradeType);
             grade.team(team);
+			grade.author(author);
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
         } else {

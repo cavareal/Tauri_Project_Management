@@ -74,8 +74,8 @@ public class GradeController {
      * @param evaluations A JSON string representing a map of evaluations.
      * @return A ResponseEntity with either a success message or an error message.
      */
-    @PostMapping("/addGradeToTeam")
-    public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations){
+    @PostMapping("/addGradeToTeam/{userId}")
+    public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId){
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {};
@@ -88,13 +88,13 @@ public class GradeController {
                 for (Map<String, Object> evaluation : evaluationsList) {
                     if (evaluation.containsKey("gradeOverallPerformance")) {
                         Integer value = (Integer) evaluation.get("gradeOverallPerformance");
-                        gradeService.assignGradeToTeam(teamName, value, "Performance Globale");
+                        gradeService.assignGradeToTeam(teamName, value, "Performance Globale", userId);
                     } if (evaluation.containsKey("gradeMaterialSupport")) {
                         Integer value = (Integer) evaluation.get("gradeMaterialSupport");
-                        gradeService.assignGradeToTeam(teamName, value, "Support Matériel");
+                        gradeService.assignGradeToTeam(teamName, value, "Support Matériel", userId);
                     } if (evaluation.containsKey("gradeContentPresentation")) {
                         Integer value = (Integer) evaluation.get("gradeContentPresentation");
-                        gradeService.assignGradeToTeam(teamName, value, "Contenu de la présentation");
+                        gradeService.assignGradeToTeam(teamName, value, "Contenu de la présentation", userId);
                     }
                 }
             }
