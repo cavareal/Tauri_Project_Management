@@ -20,6 +20,7 @@ watch(() => { }, async() => {
 	students.value = await getAllStudents()
 }, { immediate: true })
 
+
 </script>
 
 <template>
@@ -27,7 +28,7 @@ watch(() => { }, async() => {
 		<Row class="items-center justify-between">
 			<h1 class="text-3xl font-title-bold">Étudiants</h1>
 
-			<Row class="gap-4" v-if="hasPermission">
+			<Row class="gap-4">
 				<DeleteStudentsDialog>
 					<Button variant="outline">Supprimer les étudiants</Button>
 				</DeleteStudentsDialog>
