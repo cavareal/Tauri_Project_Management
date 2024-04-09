@@ -1,61 +1,62 @@
 import { createRouter, createWebHistory } from "vue-router"
+const base = process.env.NODE_ENV === 'production' ? '/tauri/' : '/';
 
 const router = createRouter({
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
-			path: "/login",
+			path: base + "login",
 			name: "login",
 			component: () => import("@/components/pages/ConnectionView.vue")
 		},
 		{
-			path: "/",
+			path: base,
 			name: "dashboard",
 			component: () => import("@/components/pages/DashboardView.vue")
 		},
 		{
-			path: "/teams",
+			path: base + "teams",
 			name: "teams",
 			component: () => import("@/components/pages/TeamsView.vue")
 		},
 		{
-			path: "/students",
+			path: base + "students",
 			name: "students",
 			component: () => import("@/components/pages/StudentsView.vue")
 		},
 		{
-			path: "/sprints",
+			path: base + "sprints",
 			name: "sprints",
 			component: () => import("@/components/pages/SprintsView.vue")
 		},
 		{
-			path: "/grades",
+			path: base + "grades",
 			name: "grades",
 			component: () => import("@/components/pages/GradeView.vue")
 		},
 		{
-			path: "/settings",
+			path: base + "settings",
 			name: "settings",
 			component: () => import("@/components/pages/SettingsPage.vue")
 		},
 		{
-			path: "/rating",
+			path: base + "rating",
 			name: "rating",
 			component: () => import("@/components/pages/EvaluationView.vue")
 		},
 		{
-			path: "/test",
+			path: base + "test",
 			name: "test",
 			component: () => import("@/components/pages/TestPage.vue")
 		},
 		{
-			path: "/:pathMatch(.*)*",
+			path: base + ":pathMatch(.*)*",
 			name: "not-found",
 			component: () => import("@/components/pages/NotFoundView.vue")
 		},
 		{
-			path: "/test2",
+			path: base + "test2",
 			name: "test2",
 			component: () => import("@/components/pages/Test2Page.vue")
 
