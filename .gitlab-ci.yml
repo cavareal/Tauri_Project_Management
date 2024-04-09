@@ -68,12 +68,13 @@ quality-dev:
     MYSQL_PASSWORD: $DB_PASSWORD
   script:
     - cd backend
+    - apt-get update && apt-get install -y netcat
     - |
-      for i in {1..10}; do
-        mysql -h mariadb -u $DB_USER -p$DB_PASSWORD -e "SELECT 1" && echo "MariaDB is ready" && break
-        echo "Waiting for MariaDB to be ready..."
-        sleep 5
-      done
+        for i in {1..10}; do
+          nc -zv mariadb 3306 && echo "MariaDB is ready" && break
+          echo "Waiting for MariaDB to be ready..."
+          sleep 5
+        done
     - chmod +x ./gradlew
     - ./gradlew --no-daemon test  # Problème car pas accès DB
     - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
