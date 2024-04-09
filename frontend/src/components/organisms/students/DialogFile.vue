@@ -2,7 +2,7 @@
 
 import Button from "../../ui/button/Button.vue"
 import Input from "../../ui/input/Input.vue"
-import { CloudUpload, Loader2 } from "lucide-vue-next"
+import { CloudUpload, Loader2, X, Sheet } from "lucide-vue-next"
 import {
 	Dialog,
 	DialogContent,
@@ -14,14 +14,18 @@ import {
 	DialogClose
 } from "@/components/ui/dialog"
 import { reactive, ref } from "vue"
+import { importStudentFile } from "@/services/student-service"
 
 const fileName = ref("")
-let file: File | null = null
+const file = ref<File | null>(null)
+const isFileSelected = ref(false)
+
 function changeFile(event: Event) { // Type annotation for event parameter
 	const inputElement = event.target as HTMLInputElement // Cast event.target to HTMLInputElement
 	if (inputElement.files && inputElement.files[0]) {
-		file = inputElement.files[0]
-		fileName.value = file.name
+		file.value = inputElement.files[0]
+		fileName.value = file.value.name
+		isFileSelected.value = true
 	}
 }
 
@@ -30,7 +34,8 @@ const state = reactive({
 })
 
 async function formSubmit() {
-	if (!file) return
+	if (!file.value) return
+	if (!isFileSelected.value) return
 
 	let url = import.meta.env.VITE_TAURI_API_URL
 	if (!url) return
@@ -45,6 +50,10 @@ async function formSubmit() {
 	})
 		.then(() => location.reload())
 		.catch((error) => console.error(error))
+}
+
+function fileSelectedDelete() {
+	isFileSelected.value = false
 }
 </script>
 
@@ -72,9 +81,14 @@ async function formSubmit() {
 						Déposez un fichier ici ou cliquez ici pour sélectionnez un fichier
 					</div>
 				</label>
-				<Input id="file-upload" type="file" @change="changeFile" />
+				<Input id="file-upload" type="file" @change="changeFile" style="display: none;" accept=".csv"/>
 			</label>
-
+      <div v-if="isFileSelected"
+           class="flex gap-2 items-center px-2 py-1.5 mt-8 whitespace-nowrap rounded-md bg-slate-100 leading-[143%] text-slate-900 max-md:flex-wrap">
+        <Sheet class="shrink-0 self-stretch my-auto w-4 aspect-square"/>
+        <div class="flex-1 self-stretch">{{fileName}}</div>
+        <X class="shrink-0 self-stretch my-auto w-4 aspect-square" @click = "fileSelectedDelete"/>
+      </div>
 			<div class="mt-2 leading-[143%] text-slate-400 max-md:max-w-full">
 				Format accepté : .csv
 			</div>

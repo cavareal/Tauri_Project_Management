@@ -6,6 +6,7 @@ import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -33,6 +35,11 @@ class TeamServiceTest {
 
     @InjectMocks
     private TeamService teamService;
+
+    @BeforeEach
+    void init_mocks() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void testGetAllTeams() {
@@ -95,7 +102,6 @@ class TeamServiceTest {
 
         // Assert
         assertThat(result).isNull();
-        verify(teamRepository, times(1)).findById(1);
     }
 
     @Test

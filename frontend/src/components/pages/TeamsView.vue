@@ -57,7 +57,7 @@ watch(() => { }, async() => {
 		<StudentsNotImported v-else-if="role === 'PROJECT_LEADER' && currentPhase === 'COMPOSING' && nbStudents === 0" />
 		<GenerateTeams v-else-if="role === 'PROJECT_LEADER' && currentPhase === 'COMPOSING' && nbStudents > 0 && teams.length === 0" />
 		<!-- eslint-disable-next-line max-len -->
-		<TeamsCreated v-else-if="(role === 'PROJECT_LEADER' || (role === 'SUPERVISING_STAFF' && currentPhase !=='COMPOSING') || role === 'OPTION_LEADER' || (role === 'OS' && currentPhase !== 'COMPOSING')) && teams.length > 0" :phase="currentPhase" />
+		<TeamsCreated v-else-if="(role === 'PROJECT_LEADER' || (role === 'SUPERVISING_STAFF' && currentPhase !=='COMPOSING') || role === 'OPTION_LEADER' || (role === 'OPTION_STUDENT' && currentPhase !== 'COMPOSING')) && teams.length > 0" :phase="currentPhase" />
 		<TeamsNotsCreated v-else-if="(role === 'SUPERVISING_STAFF' || role === 'OPTION_LEADER') && currentPhase === 'COMPOSING'" />
 		<NotAuthorized v-else />
 	</PageTemplate>

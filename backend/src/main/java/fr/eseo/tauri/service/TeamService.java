@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.ArrayUtils.isEquals;
-
 /**
  * Service class for managing teams.
  */
@@ -101,80 +99,109 @@ public class TeamService {
         return null;
     }
 
-
     /**
-     * Create teams with the given number of teams and the given ratio
-     * TODO : create teams with the same average grade
-     * TODO : add a parameter to choose the project ?
+     * Auto generate teams with students according to the given number of teams and the number of women per team.
+     * FUTURE :  create teams with the same average grade
      * @param nbTeams the number of teams to create
      * @param womenPerTeam the ratio of women in the teams
      * @return a List<Teams> if teams are created, otherwise null
      */
-    public List<Team> createTeams(Integer nbTeams, Integer womenPerTeam) {
+    public List<Team> generateTeams(Integer nbTeams, Integer womenPerTeam) {
         CustomLogger.logInfo("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
         List<Student> men = this.studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN);
 
-        int nbWomen = women.size();
-        int nbMen = men.size();
-        int nbStudent = nbMen + nbWomen;
-
-        Project project = this.projectService.getCurrentProject();
+        int nbStudent = men.size() + women.size();
 
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams * womenPerTeam - 1) {
             CustomLogger.logError("TeamService.createTeams : Not enough students to create the teams");
             return null;
         }else {
-            List<Team> teams = new ArrayList<>();
+            List<Team> teams = this.createTeams(nbTeams);
+            this.fillTeams(teams, women, men, womenPerTeam);
+            return teams;
+        }
+    }
 
-            // Create the teams
-            for (int i = 0; i < nbTeams; i++) {
-                Team team = new Team();
-                team.name("Team " + (i + 1));
-                team.project(project);
-                this.teamRepository.save(team);
-                teams.add(team);
-            }
+    /**
+     * Delete already existing teams in te project and then create teams with the given number of teams.
+     * @param nbTeams the number of teams to create
+     * @return a List<Teams> if teams are created, otherwise null
+     */
+    private List<Team> createTeams(Integer nbTeams) {
 
-            int index = 0;
+        Project project = this.projectService.getCurrentProject();
 
-            // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
-            for (int i = 0; i < nbTeams; i++) {
-                for (int j = 0; j < womenPerTeam; j++) {
-                    Student student = new Student();
-                    index = i * womenPerTeam + j;
-                    if (index < nbWomen) {
-                        student = women.get(index);
-                        student.team(teams.get(i));
-                    } else if (index < nbStudent) {
-                        student = men.get(index - nbWomen);
-                        student.team(teams.get(i));
-                    }
+        // Delete all previous teams
+        List<Team> teamsToDelete = this.teamRepository.findAllByProjectId(project.id());
+        for (Team team : teamsToDelete) {
+            this.deleteTeam(team.id());
+        }
+
+        ArrayList<Team> teams = new ArrayList<>();
+
+        // Create the teams
+        for (int i = 0; i < nbTeams; i++) {
+            Team team = new Team();
+            team.name("Team " + (i + 1));
+            team.project(project);
+            this.teamRepository.save(team);
+            teams.add(team);
+        }
+
+        return teams;
+    }
+
+    /**
+     * Assign teams to the students.
+     * @param teams the list of empty teams to fill
+     * @param women the list of women students
+     * @param men the list of men students
+     * @param womenPerTeam the number of women per team
+     */
+    private void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam) {
+        int nbTeams = teams.size();
+        int nbWomen = women.size();
+        int nbMen = men.size();
+        int nbStudent = nbMen + nbWomen;
+
+        int index = 0;
+
+        // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
+        for (int i = 0; i < nbTeams; i++) {
+            for (int j = 0; j < womenPerTeam; j++) {
+                Student student = null;
+                index = i * womenPerTeam + j;
+                if (index < nbWomen) {
+                    student = women.get(index);
+                    student.team(teams.get(i));
+                    this.studentRepository.save(student);
+                } else if (index < nbStudent) {
+                    student = men.get(index - nbWomen);
+                    student.team(teams.get(i));
                     this.studentRepository.save(student);
                 }
             }
+        }
 
-            // re-order the teams by average grade
-            teams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();
+        // re-order the teams by average grade
+        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();
 
-            index = nbTeams * womenPerTeam;
+        index = nbTeams * womenPerTeam;
 
-            // Assign the remaining students evenly to the teams
-            for (int i = index; i < nbStudent; i++) {
-                Student student;
-                if (i < nbWomen) {
-                    student = women.get(i);
-                    student.team(teams.get((i - index)% nbTeams));
-                }else{
-                    student = men.get(i - nbWomen);
-                    student.team(teams.get((i - index)% nbTeams));
-                }
-                this.studentRepository.save(student);
+        // Assign the remaining students evenly to the teams
+        for (int i = index; i < nbStudent; i++) {
+            Student student;
+            if (i < nbWomen) {
+                student = women.get(i);
+                student.team(sortedTeams.get((i - index)% nbTeams));
+            }else{
+                student = men.get(i - nbWomen);
+                student.team(sortedTeams.get((i - index)% nbTeams));
             }
-
-            return teams;
+            this.studentRepository.save(student);
         }
     }
 
@@ -200,30 +227,63 @@ public class TeamService {
         return teamRepository.findById(id).orElse(null);
     }
 
+    /**
+     * This method retrieves the number of women in a team by the team's ID.
+     *
+     * @param id The ID of the team.
+     * @return The number of women in the team if the team exists, otherwise 0.
+     */
     public Integer getNbWomanByTeamId(Integer id){
-        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
-        Integer nbWoman = 0;
-        for (Student student : students) {
-            if (isEquals(student.gender(), Gender.WOMAN)) {
-                nbWoman++;
+        Optional<Team> teamOptional = teamRepository.findById(id);
+        if (teamOptional.isPresent()) {
+            List<Student> students = studentRepository.findByTeam(teamOptional.get());
+            Integer nbWoman = 0;
+            for (Student student : students) {
+                if (student.gender() == Gender.WOMAN) {
+                    nbWoman++;
+                }
             }
+            return nbWoman;
+        } else {
+            return 0; // for example
         }
-        return nbWoman;
     }
 
+    /**
+     * This method retrieves the number of bachelor students in a team by the team's ID.
+     *
+     * @param id The ID of the team.
+     * @return The number of bachelor students in the team if the team exists, otherwise 0.
+     */
     public Integer getNbBachelorByTeamId(Integer id){
-        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
-        Integer nbBachelor = 0;
-        for (Student student : students) {
-            if (student.bachelor() != null && student.bachelor()) {
-                nbBachelor++;
+        Optional<Team> teamOptional = teamRepository.findById(id);
+        if (teamOptional.isPresent()) {
+            List<Student> students = studentRepository.findByTeam(teamOptional.get());
+            Integer nbBachelor = 0;
+            for (Student student : students) {
+                if (student.bachelor() != null && student.bachelor()) {
+                    nbBachelor++;
+                }
             }
+            return nbBachelor;
+        } else {
+            return 0; // for example
         }
-        return nbBachelor;
     }
 
+    /**
+     * This method retrieves the number of students in a team by the team's ID.
+     *
+     * @param id The ID of the team.
+     * @return The number of students in the team if the team exists, otherwise 0.
+     */
     public Integer getNbStudentsByTeamId(Integer id){
-        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
-        return students.size();
+        Optional<Team> teamOptional = teamRepository.findById(id);
+        if (teamOptional.isPresent()) {
+            List<Student> students = studentRepository.findByTeam(teamOptional.get());
+            return students.size();
+        } else {
+            return 0; // for example
+        }
     }
 }
