@@ -10,8 +10,10 @@ const user = getCookie("user")
 const grades = ref()
 
 if (user != null) {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
 	grades.value = await getAverageGrades(parseInt(user))
 }
+console.log(grades)
 </script>
 
 <template>

@@ -116,7 +116,7 @@ public class GradeController {
                 gradeByRoles = new ArrayList<>();
                 for (RoleType roleType : RoleType.values()) {
                     try {
-                        double grade = gradeService.getAverageGradesByGradeTypeByRoleType(Integer.parseInt(userId), roleType, gradeType.name());
+                        double grade = gradeService.getAverageGradesByGradeTypeByRoleType(userId, roleType, gradeType.name());
                         gradeByRoles.add(grade);
                     } catch (NullPointerException e) {
                         gradeByRoles.add(-1.0);
