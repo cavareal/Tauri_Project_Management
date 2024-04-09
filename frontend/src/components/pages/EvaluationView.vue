@@ -55,8 +55,7 @@ const fetchNumberSprints = async() => {
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}
-		const data = await response.text()
-		nbSprints.value = data
+		nbSprints.value = await response.text()
 	} catch (error) {
 		console.error(error)
 	}
