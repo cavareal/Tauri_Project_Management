@@ -86,11 +86,11 @@ function getPrenom(nomPrenom: string) {
 				</div>
 				<div class="flex flex-row">
 					<isCheck :isCheck="criteria.validCriteriaWoman" class="pr-1" />
-					<div>Nombre de femme : {{ criteria.nbWomans }}</div>
+					<div>Nombre de femmes : {{ criteria.nbWomans }}</div>
 				</div>
 				<div class="flex flex-row">
 					<isCheck :isCheck="criteria.validCriteriaBachelor" class="pr-1" />
-					<div>Nombre de bachelor : {{ criteria.nbBachelors }}</div>
+					<div>Nombre de bachelors : {{ criteria.nbBachelors }}</div>
 				</div>
 			</div>
 		</div>

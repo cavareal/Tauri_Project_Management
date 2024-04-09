@@ -70,7 +70,7 @@ async function formSubmit() {
 							</div>
 							<div class="flex items-center space-x-2">
 								<RadioGroupItem name="role" id="TECHNICAL_COACH" value="TECHNICAL_COACH"/>
-								<Label for="TECHNICAL_COACH">[TC] Technical Coaches</Label>
+								<Label for="TECHNICAL_COACH">[TC] Technical Coach</Label>
 							</div>
 						</div>
 
