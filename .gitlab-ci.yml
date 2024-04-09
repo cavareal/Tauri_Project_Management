@@ -27,6 +27,7 @@ vuejs-build:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:dev
+  retry: 3
   cache:
     paths:
       - frontend/node_modules
@@ -59,6 +60,7 @@ quality-dev:
   script:
     - cd backend
     - chmod +x ./gradlew
+    # - ./gradlew --no-daemon test  # Problème car pas accès DB
     - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
@@ -86,6 +88,8 @@ quality-prod:
       - $CI_PROJECT_DIR/build/libs/*.war
     expire_in: 1 day
     when: always
+  dependencies:
+    - java-build
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
@@ -103,7 +107,7 @@ vuejs-deploy-dev:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:dev
-  dependencies: []
+  retry: 3
   artifacts:
     paths:
       - frontend/dist
@@ -115,11 +119,12 @@ vuejs-deploy-dev:
     - dev
     - gitlab-ci
 
+
 java-deploy-dev:
   stage: deploy-server-dev
   image: gradle:8.4-jdk17
   script:
-    - cp -r ./frontend/dist ./backend/src/main/resources/static
+    # - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -Pdev -x test
   dependencies:     # Set accessible data in vuejs-deploy-dev, to copy data from frontend folder 
@@ -138,6 +143,7 @@ java-deploy-dev:
 
 
 
+
 #################
 ## Deploy prod ##
 #################
@@ -148,7 +154,7 @@ vuejs-deploy-prod:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:prod
-  dependencies: []
+  retry: 3
   artifacts:
     paths:
       - frontend/dist
@@ -159,11 +165,12 @@ vuejs-deploy-prod:
   only:
     - master
 
+
 java-deploy-prod:
   stage: deploy-server-prod
   image: gradle:8.4-jdk17
   script:
-    - cp -r ./frontend/dist ./backend/src/main/resources/static
+    # - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -Pprod -x test
   dependencies:     # Set accessible data in vuejs-deploy-prod, to copy data from frontend folder 
