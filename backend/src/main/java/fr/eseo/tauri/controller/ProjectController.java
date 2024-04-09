@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +66,7 @@ public class ProjectController {
             try {
                 Project project = projectService.newProject(teamsNumber, genderRatio, sprintsNumber, phase);
                 if (project != null) {
+                    CustomLogger.logInfo("New project created");
                     return ResponseEntity.ok("L'ajout a bien été enregistré");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
@@ -94,6 +96,7 @@ public class ProjectController {
             try {
                 Project project = projectService.updateProjectSprintsNumber(idProject, newSprintsNumber);
                 if (project != null) {
+                    CustomLogger.logInfo("Sprints number updated");
                     return ResponseEntity.ok("L'edit à bien été enregistré");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
@@ -143,6 +146,7 @@ public class ProjectController {
             try {
                 Project project = projectService.updateProjectTeamsNumber(idProject, newTeamsNumber);
                 if (project != null) {
+                    CustomLogger.logInfo("Teams number updated");
                     return ResponseEntity.ok("L'edit à bien été enregistré");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
@@ -170,6 +174,7 @@ public class ProjectController {
             try {
                 Project project = projectService.updateProjectRatioGender(idProject, newRatioGender);
                 if (project != null) {
+                    CustomLogger.logInfo("The gender ratio has been updated");
                     return ResponseEntity.ok("L'edit à bien été enregistré");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
@@ -197,6 +202,7 @@ public class ProjectController {
             try {
                 Project project = projectService.updateProjectPhase(idProject, newPhase);
                 if (project != null) {
+                    CustomLogger.logInfo("The project phase has been updated");
                     return ResponseEntity.ok("L'edit à bien été enregistré");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");

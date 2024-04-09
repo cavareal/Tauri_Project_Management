@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,7 +18,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UserServiceTest {
+@Nested
+class UserServiceTest {
 
     @InjectMocks
     UserService userService;
@@ -40,13 +42,13 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testDeleteUser() {
+     void testDeleteUser() {
         // Arrange
         User user = new User();
         Team team = new Team();
         team.leader(user);
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
-        when(teamRepository.findByLeader(user)).thenReturn(Arrays.asList(team));
+        when(teamRepository.findByLeader(user)).thenReturn(List.of(team));
 
         // Act
         userService.deleteUser(1);
@@ -60,7 +62,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetPermissions() {
+    void testGetPermissions() {
         // Arrange
         User user = new User();
         //userRepository.save(user);
@@ -74,10 +76,8 @@ public class UserServiceTest {
         Permission permission2 = new Permission();
         permission2.type(PermissionType.VIEW_COMMENT);
         permission2.role(RoleType.SUPERVISING_STAFF);
-        //permissionRepository.save(permission1);
-        //permissionRepository.save(permission2);
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
-        when(roleRepository.findByUser(user)).thenReturn(Arrays.asList(role));
+        when(roleRepository.findByUser(user)).thenReturn(List.of(role));
         when(permissionRepository.findByRole(RoleType.SUPERVISING_STAFF)).thenReturn(Arrays.asList(permission1, permission2));
 
         // Act
@@ -92,7 +92,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testHasPermission() {
+     void testHasPermission() {
         // Arrange
         User user = new User();
         Role role = new Role();
@@ -102,8 +102,8 @@ public class UserServiceTest {
         permission.type(PermissionType.IMPORT);
         permission.role(RoleType.SUPERVISING_STAFF);
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
-        when(roleRepository.findByUser(user)).thenReturn(Arrays.asList(role));
-        when(permissionRepository.findByRole(RoleType.SUPERVISING_STAFF)).thenReturn(Arrays.asList(permission));
+        when(roleRepository.findByUser(user)).thenReturn(List.of(role));
+        when(permissionRepository.findByRole(RoleType.SUPERVISING_STAFF)).thenReturn(List.of(permission));
 
         // Act
         Boolean hasPermission1 = userService.hasPermission(1, PermissionType.IMPORT);

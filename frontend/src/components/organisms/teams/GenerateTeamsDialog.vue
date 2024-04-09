@@ -38,7 +38,7 @@ const onClick = async() => {
 		await generateTeams(nbTeams.value, womenPerTeam.value)
 		buttonsState.loading = false
 		buttonsState.showGeneratedTeams = true
-		buttonsState.generateTeams = true
+		buttonsState.generateTeams = false
 	} catch (error) {
 		console.error(error)
 		errorMessage.value = "Erreur lors de la communication avec le serveur"

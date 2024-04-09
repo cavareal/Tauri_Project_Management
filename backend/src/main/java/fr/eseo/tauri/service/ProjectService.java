@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,12 +31,12 @@ public class ProjectService {
     @PostConstruct
     public void initDataIfTableIsEmpty() {
         if (projectRepository.count() == 0) {
-            // Ajouter une ligne dans la table projects si elle est vide
+            // Add a default project if the table is empty
             Project project = new Project();
             project.nbTeams(6);
             project.ratioGender(10);
             project.nbSprint(3);
-            project.phase(ProjectPhase.COMPOSING); // Par exemple
+            project.phase(ProjectPhase.COMPOSING); // Default phase
             projectRepository.save(project);
         }
     }
@@ -57,7 +58,7 @@ public class ProjectService {
         try {
             return projectRepository.save(project);
         } catch (DataAccessException e) {
-            e.printStackTrace();
+            CustomLogger.logError("Error while creating a new project", e);
             return null;
         }
     }
@@ -145,6 +146,7 @@ public class ProjectService {
         try {
             Project project = projectRepository.findById(id).orElseThrow(() -> new Exception("Project not found"));
             projectRepository.delete(project);
+            CustomLogger.logInfo("Deleted project with ID " + id);
             return project;
         } catch (Exception e) {
             return null;
@@ -170,6 +172,7 @@ public class ProjectService {
         if (currentProject != null) {
             currentProject.phase(newPhase);
             projectRepository.save(currentProject);
+            CustomLogger.logInfo("Updated phase of current project to " + newPhase.name());
             return currentProject;
         } else {
             return null;

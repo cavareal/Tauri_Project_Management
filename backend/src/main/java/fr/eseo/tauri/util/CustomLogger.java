@@ -25,6 +25,10 @@ public class CustomLogger {
         logger.warn(message);
     }
 
+    public static void logError(String message) {
+        logger.error(message);
+    }
+
     public static void logError(String message, Throwable throwable) {
         logger.error(message, throwable);
     }

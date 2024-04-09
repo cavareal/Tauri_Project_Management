@@ -40,7 +40,7 @@ onMounted(async() => {
 				<TeamAccordionContent :teamId="team.id" :leader="team.leader?.name" :phase="props.phase" />
 			</AccordionItem>
 
-			<EditTeamDialog v-if="role === 'PL'" :teamId="team.id">
+			<EditTeamDialog v-if="role === 'PROJECT_LEADER'" :teamId="team.id">
 				<Button variant="outline" size="icon" class="mt-2">
 					<Pencil class="w-4" />
 				</Button>

@@ -73,7 +73,7 @@ export const generateTeams = async(nbTeams: string, womenPerTeam: string): Promi
 	}
 }
 
-export async function getCriteria(teamId: number): Promise<Criteria> {
+export const getCriteria = async(teamId: number): Promise<Criteria> => {
 	const response = await apiQuery({
 		route: `teams/${teamId}/criteria`,
 		responseSchema: CriteriaSchema,
@@ -84,4 +84,17 @@ export async function getCriteria(teamId: number): Promise<Criteria> {
 		throw new Error(response.error)
 	}
 	return response.data
+}
+
+export const deleteAllTeams = async(): Promise<void> => {
+	const response = await apiQuery({
+		route: "teams",
+		responseSchema: z.string(),
+		method: "DELETE",
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }

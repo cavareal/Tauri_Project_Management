@@ -12,7 +12,7 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 
 	@Modifying
 	@Transactional
-	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported = true AND g.gradeType.name = 'mean'")
+	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported = true AND (lower(g.gradeType.name) = 'mean' OR lower(g.gradeType.name) = 'average')")
 	void updateImportedMeanByStudentId(@Param("value") float value, @Param("studentId") int studentId);
 
 }

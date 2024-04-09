@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -17,6 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Nested
 class GradeTypeServiceTest {
 
     @Mock
@@ -47,7 +49,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void createGradeTypesFromCSV_withValidInput_createsGradeTypes() throws IOException {
+    void createGradeTypesFromCSV_withValidInput_createsGradeTypes() {
         String csvContent = "\"\",\"\",\"\",\"\",\"\",\"2\",\"3\",\"3\",\"2\",\"2\",\"1\",\"1\"\n" +
                 "\"\",\"\",\"sexe\n" +
                 "M / F\",\"\",\"\",\"PADL\",\"PDLO\",\"PWND\",\"IRS\",\"STAGE S7\",\"S5\",\"S6\"\n" +
@@ -62,7 +64,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void createGradeTypesFromCSV_withInvalidInput_logsError() throws IOException {
+    void createGradeTypesFromCSV_withInvalidInput_logsError() {
         String csvContent = "Invalid content";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
@@ -73,7 +75,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void createGradeTypesFromCSV_withEmptyInput_returnsEmptyList() throws IOException {
+    void createGradeTypesFromCSV_withEmptyInput_returnsEmptyList() {
         String csvContent = "";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
@@ -84,7 +86,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void createGradeTypesFromCSV_withSummaryData_ignoresSummaryData() throws IOException {
+    void createGradeTypesFromCSV_withSummaryData_ignoresSummaryData() {
         String csvContent = "\"\",\"\",\"\",\"\",\"\",\"2\",\"3\",\"3\",\"2\",\"2\",\"1\",\"1\"\n" +
                 "\"\",\"\",\"sexe\n" +
                 "M / F\",\"\",\"\",\"PADL\",\"PDLO\",\"PWND\",\"IRS\",\"STAGE S7\",\"S5\",\"S6\"\n" +

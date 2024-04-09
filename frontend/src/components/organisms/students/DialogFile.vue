@@ -2,7 +2,7 @@
 
 import Button from "../../ui/button/Button.vue"
 import Input from "../../ui/input/Input.vue"
-import { CloudUpload } from "lucide-vue-next"
+import { CloudUpload, Loader2, X, Sheet } from "lucide-vue-next"
 import {
 	Dialog,
 	DialogContent,
@@ -13,46 +13,47 @@ import {
 	DialogTrigger,
 	DialogClose
 } from "@/components/ui/dialog"
-import { ref } from "vue"
+import { reactive, ref } from "vue"
 import { importStudentFile } from "@/services/student-service"
 
 const fileName = ref("")
-let file: File | null = null
+const file = ref<File | null>(null)
+const isFileSelected = ref(false)
+
 function changeFile(event: Event) { // Type annotation for event parameter
 	const inputElement = event.target as HTMLInputElement // Cast event.target to HTMLInputElement
 	if (inputElement.files && inputElement.files[0]) {
-		file = inputElement.files[0]
-		fileName.value = file.name
+		file.value = inputElement.files[0]
+		fileName.value = file.value.name
+		isFileSelected.value = true
 	}
 }
 
-async function formSubmit() {
-	if (!file) return
-	// await importStudentFile(file).then(() => {
-	// 	console.log("file uploaded successfully")
-	// 	location.reload()
-	// }).catch((error) => {
-	// 	console.error("Erreur lors de l'envoi du formulaire :", error)
-	// 	// Gérer l'erreur ici
-	// })
+const state = reactive({
+	loading: false
+})
 
-	try {
-		const formData = new FormData()
-		formData.append("file-upload", file)
-		const response = await fetch("http://localhost:8882/api/students/uploadCSV", {
-			method: "POST",
-			body: formData
-		})
-		if (response.ok) {
-			console.log("file uploaded successfully")
-			location.reload()
-		} else {
-			throw new Error("Erreur lors de la requête.")
-		}
-	} catch (error) {
-		console.error("Erreur lors de l'envoi du formulaire :", error)
-		// Gérer l'erreur ici
-	}
+async function formSubmit() {
+	if (!file.value) return
+	if (!isFileSelected.value) return
+
+	let url = import.meta.env.VITE_TAURI_API_URL
+	if (!url) return
+
+	state.loading = true
+
+	const formData = new FormData()
+	formData.append("file-upload", file.value)
+	await fetch(`${url}students/uploadCSV`, {
+		method: "POST",
+		body: formData
+	})
+		.then(() => location.reload())
+		.catch((error) => console.error(error))
+}
+
+function fileSelectedDelete() {
+	isFileSelected.value = false
 }
 </script>
 
@@ -80,9 +81,14 @@ async function formSubmit() {
 						Déposez un fichier ici ou cliquez ici pour sélectionnez un fichier
 					</div>
 				</label>
-				<Input id="file-upload" type="file" @change="changeFile" />
+				<Input id="file-upload" type="file" @change="changeFile" style="display: none;" accept=".csv" />
 			</label>
-
+			<!-- eslint-disable-next-line max-len -->
+			<div v-if="isFileSelected" class="flex gap-2 items-center px-2 py-1.5 mt-8 whitespace-nowrap rounded-md bg-slate-100 leading-[143%] text-slate-900 max-md:flex-wrap">
+				<Sheet class="shrink-0 self-stretch my-auto w-4 aspect-square" />
+				<div class="flex-1 self-stretch">{{ fileName }}</div>
+				<X class="shrink-0 self-stretch my-auto w-4 aspect-square cursor-pointer" @click="fileSelectedDelete" />
+			</div>
 			<div class="mt-2 leading-[143%] text-slate-400 max-md:max-w-full">
 				Format accepté : .csv
 			</div>
@@ -92,11 +98,13 @@ async function formSubmit() {
 						Annuler
 					</Button>
 				</DialogClose>
-				<DialogClose>
-					<Button type="submit" @click="formSubmit">
-						Continuer
-					</Button>
-				</DialogClose>
+				<Button type="submit" disabled class="flex items-center" v-if="state.loading">
+					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
+					Chargement
+				</Button>
+				<Button type="submit" @click="formSubmit" v-else>
+					Continuer
+				</Button>
 			</DialogFooter>
 		</DialogContent>
 	</Dialog>
