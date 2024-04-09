@@ -6,6 +6,8 @@ import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
+import fr.eseo.tauri.util.CustomLogger;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +31,10 @@ public class TeamController {
     private final AuthService authService;
     private final TeamService teamService;
     private final ProjectService projectService;
+
     /**
      * Constructor for TeamController.
+     *
      * @param teamRepository the team repository
      * @param authService    the authentication service
      * @param teamService    the team service
@@ -60,10 +64,10 @@ public class TeamController {
                 if (team != null) {
                     return ResponseEntity.ok("La modification a bien été prise en compte");
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour du leader de l'équipe");
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour du leader de l'équipe: " + e.getMessage());
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
@@ -88,10 +92,10 @@ public class TeamController {
                 if (team != null) {
                     return ResponseEntity.ok("La modification a bien été prise en compte");
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour du nom de l'équipe");
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour du nom de l'équipe : " + e.getMessage());
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
@@ -101,6 +105,7 @@ public class TeamController {
 
     /**
      * Create teams.
+     *
      * @param token the authorization token
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
@@ -109,7 +114,6 @@ public class TeamController {
 
         Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
         Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
-        String permission = "teamCreate";
 
         if (authService.checkAuth(token, TEAM_CREATION)) {
 
@@ -117,7 +121,7 @@ public class TeamController {
                 List<Team> teams = teamService.generateTeams(nbTeams, womenPerTeam);
 
                 if (teams != null) {
-                    System.out.println("Teams have been created");
+                    CustomLogger.logInfo("Teams have been created");
                     return ResponseEntity.ok("La creation a bien été prise en compte");
                 } else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : les équipes n'ont pas pu être créées");
@@ -137,8 +141,7 @@ public class TeamController {
      */
     @GetMapping()
     public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token) {
-        String permission = "readStudentByTeam";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
             try {
                 List<Team> teams = teamService.getAllTeams();
                 return ResponseEntity.ok(teams);
@@ -152,8 +155,7 @@ public class TeamController {
 
     @GetMapping("/{teamId}")
     public ResponseEntity<Team> getTeamById(@RequestHeader("Authorization") String token, @PathVariable Integer teamId) {
-        String permission = "readStudentByTeam";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
             try {
                 Team team = teamService.getTeamById(teamId);
                 if (team == null) {
@@ -170,8 +172,7 @@ public class TeamController {
 
     @GetMapping("/names")
     public ResponseEntity<List<String>> getAllTeamNames(@RequestHeader("Authorization") String token) {
-        String permission = "readStudentByTeam";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
             try {
                 List<String> teams = teamService.getAllTeamNames();
                 if (teams.isEmpty()) {
@@ -188,22 +189,12 @@ public class TeamController {
 
     @GetMapping("/{teamId}/criteria")
     public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer teamId) {
-        String permission = "readCriteria";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, READ_CRITERIA))) {
             try {
                 Integer nbWoman = teamService.getNbWomanByTeamId(teamId);
                 Integer nbBachelor = teamService.getNbBachelorByTeamId(teamId);
                 Integer nbStudents = teamService.getNbStudentsByTeamId(teamId);
-                Integer womenPerTeam = projectService.getRatioGender();
-                Boolean validateWoman = false;
-                Boolean validateBachelor =false;
-                if(nbStudents > 0 && (nbWoman*100)/nbStudents >= womenPerTeam){
-                    validateWoman = true;
-                }
-                if (nbBachelor>=1){
-                    validateBachelor = true;
-                }
-                Criteria criteria = new Criteria(nbWoman, nbBachelor, nbStudents, validateWoman, validateBachelor);
+                Criteria criteria = getCriteria(nbStudents, nbWoman, nbBachelor);
                 return ResponseEntity.ok(criteria);
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -213,13 +204,31 @@ public class TeamController {
         }
     }
 
+    @NotNull
+    private Criteria getCriteria(Integer nbStudents, Integer nbWoman, Integer nbBachelor) {
+        Integer womenPerTeam = projectService.getRatioGender();
+        boolean validateWoman = false;
+        boolean validateBachelor = false;
+        if (nbStudents > 0 && (nbWoman * 100) / nbStudents >= womenPerTeam) {
+            validateWoman = true;
+        }
+        if (nbBachelor >= 1) {
+            validateBachelor = true;
+        }
+        return new Criteria(nbWoman, nbBachelor, nbStudents, validateWoman, validateBachelor);
+    }
+
     @GetMapping("/get-team-avg-grade/{idTeam}")
     public ResponseEntity<String> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam) {
         String permission = "readTeamAvgGrade";
         if (authService.checkAuth(token, permission)) {
             try {
-                double avgGrade = this.teamRepository.findAvgGradeByTeamId(this.teamRepository.findById(idTeam).get());
-                return ResponseEntity.ok(String.valueOf(avgGrade));
+                if (this.teamRepository.findById(idTeam).isEmpty()) {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("L'équipe n'existe pas");
+                } else {
+                    double avgGrade = this.teamRepository.findAvgGradeByTeamId(this.teamRepository.findById(idTeam).get());
+                    return ResponseEntity.ok(String.valueOf(avgGrade));
+                }
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
             }
