@@ -6,11 +6,11 @@ import Tabs from "@/components/molecules/tab/Tabs.vue"
 import NotAutorized from "@/components/organisms/Teams/NotAuthorized.vue"
 import TMRateView from "@/components/organisms/Rate/TMRateView.vue"
 import getCookie from "@/utils/cookiesUtils"
-import SSRateView from "@/components/organisms/Rate/SSRateView.vue"
-import TCRateView from "@/components/organisms/Rate/TCRateView.vue"
+import SSTCRateView from "@/components/organisms/Rate/SSTCRateView.vue"
 
 const token = getCookie("token")
 const role = getCookie("role")
+let nbSprints = ref("3")
 const sprintList = ref([1, 2, 3])
 const teamsName = ref<string[]>([])
 
@@ -42,12 +42,31 @@ const parsedTeams = computed(() => {
 	return teamsName.value.flat()
 })
 
+/* GET number of sprints of this project */
+const requestOptionsStudents = {
+	method: "GET",
+	headers: {
+		"Content-Type": "application/json",
+		Authorization: token || "null"
+	}
+}
+const fetchNumberSprints = async() => {
+	try {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints-number", requestOptionsStudents)
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`)
+		}
+		const data = await response.text()
+		nbSprints.value = data
+	} catch (error) {
+		console.error(error)
+	}
+}
+void fetchNumberSprints()
+
 defineComponent({
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	components: { PageTemplate, Tabs, Tab },
-	data: () => {
-		return { dynamicTabs: [1, 2, 3] }
-	}
+	components: { PageTemplate, Tabs, Tab }
 })
 
 console.log(parsedTeams)
@@ -59,12 +78,11 @@ console.log(parsedTeams)
 		<div class="tabs-example">
 			<div class="example example-1">
 				<Tabs>
-					<template v-for="(sprint, index) in sprintList" :key="index">
+					<template v-for="(sprint, index) in Array(parseInt(nbSprints))" :key="index">
 						<Tab :title="`Sprint ${index + 1}`">
 							<NotAutorized v-if="!token || !role"/>
 							<TMRateView v-else-if="role === 'TM'" :listTeam="parsedTeams"/>
-							<SSRateView v-else-if="role === 'SS'" :listTeam="parsedTeams"/>
-							<TCRateView v-else-if="role === 'TC'" :listTeam="parsedTeams"/>
+							<SSTCRateView v-else-if="role === 'SS' || role === 'TC'" :listTeam="parsedTeams"/>
 							<NotAutorized v-else/>
 						</Tab>
 					</template>

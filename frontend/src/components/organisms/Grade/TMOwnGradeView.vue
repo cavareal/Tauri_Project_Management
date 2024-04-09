@@ -35,11 +35,11 @@ const fetchGrades = async() => {
 
 void fetchGrades()
 
-const response = await apiQuery({
-	route: "grades/averageGradesByGradeTypeByRole",
-	responseSchema: z.record()
-
-})
+// const response = await apiQuery({
+// 	route: "grades/averageGradesByGradeTypeByRole",
+// 	responseSchema: z.record()
+//
+// })
 
 </script>
 
