@@ -141,7 +141,33 @@ public class GradeService {
 		grade.student(student);
 		return gradeRepository.save(grade);
 	}
+    public void assignGradeToTeam(String teamName, Integer value, String gradeName) {
+        Team team = teamRepository.findByName(teamName);
+        GradeType gradeType = gradeTypeRepository.findByName(gradeName);
+        if (team != null) {
+            Grade grade = new Grade();
+            grade.value(Float.valueOf(value));
+            grade.gradeType(gradeType);
+            grade.team(team);
+            gradeTypeRepository.save(gradeType);
+            gradeRepository.save(grade);
+        } else {
+            throw new IllegalArgumentException("L'équipe avec le nom fourni n'a pas été trouvée.");
+        }
+    }
 
+    public void assignGradeToStudent(String studentName, Integer value, String gradeName) {
+        Student student = studentRepository.findByName(studentName);
+        GradeType gradeType = gradeTypeRepository.findByName(gradeName);
+        if (student != null) {
+            Grade grade = new Grade();
+            grade.value(Float.valueOf(value));
+            grade.gradeType(gradeType);
+            grade.student(student);
+            gradeTypeRepository.save(gradeType);
+            gradeRepository.save(grade);
+        }
+    }
 
 	/**
 	 * This method is used to create grades for a student from the provided grade types and values.
@@ -172,5 +198,10 @@ public class GradeService {
 		}
 		CustomLogger.logInfo("Successfully created grades for student " + student.name() + " from grade types and values contained in the provided CSV file.");
 	}
+
+    public Double getAverageGradesByGradeTypeByRoleType(int userId, RoleType roleType, String gradeTypeName) {
+        Team team = teamRepository.findTeamByStudentId(userId);
+        return gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType);
+    }
 
 }

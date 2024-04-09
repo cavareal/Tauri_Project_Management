@@ -26,7 +26,6 @@ watch(() => { }, async() => {
 	<PageTemplate>
 		<Row class="items-center justify-between">
 			<h1 class="text-3xl font-title-bold">Étudiants</h1>
-
 			<Row class="gap-4" v-if="hasPermission">
 				<DeleteStudentsDialog v-if="students && students?.length > 0">
 					<Button variant="outline">Supprimer les étudiants</Button>

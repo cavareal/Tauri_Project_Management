@@ -1,5 +1,6 @@
 package fr.eseo.tauri.config;
 
+import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.seeder.*;
 import net.datafaker.Faker;
 
@@ -22,6 +23,8 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private final GradeTypeSeeder gradeTypeSeeder;
 	private final GradeSeeder gradeSeeder;
 	private final PermissionSeeder permissionSeeder;
+	private final RoleSeeder roleSeeder;
+
 	private final RoleSeeder roleSeeder;
 
 	@Autowired

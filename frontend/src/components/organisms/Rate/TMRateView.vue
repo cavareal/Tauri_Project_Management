@@ -38,7 +38,7 @@ const selectedTeam = ref("")
 let note = ref("")
 interface Evaluation {
 	team: string;
-	note: number;
+	gradeOverallPerformance: number;
 }
 interface Team {
 	name: string;
@@ -68,9 +68,9 @@ function addEvaluation() {
 	}
 	const teamIndex = evaluations.value[selectedTeam.value].findIndex(e => e.team === selectedTeam.value)
 	if (teamIndex !== -1) {
-		evaluations.value[selectedTeam.value][teamIndex].note = Number(note.value)
+		evaluations.value[selectedTeam.value][teamIndex].gradeOverallPerformance = Number(note.value)
 	} else {
-		evaluations.value[selectedTeam.value].push({ team: selectedTeam.value, note: Number(note.value) })
+		evaluations.value[selectedTeam.value].push({ team: selectedTeam.value, gradeOverallPerformance: Number(note.value) })
 	}
 }
 
@@ -78,7 +78,7 @@ const grades = async() => {
 	try {
 		buttonsState.validate = false
 		buttonsState.loading = true
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addOverallPerformance", {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addGradeToTeam", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -178,7 +178,7 @@ function sendGrades() {
 							{{ teamName }}
 						</TableCell>
 						<TableCell v-for="(evaluation, index) in teamEvaluations" :key="index">
-							{{ evaluation.note }}
+							{{ evaluation.gradeOverallPerformance }}
 						</TableCell>
 						<TableCell class="text-right">
 							<DropdownMenu>

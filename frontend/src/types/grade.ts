@@ -14,4 +14,6 @@ export const GradeSchema = z.object({
 	team: TeamSchema.nullable()
 })
 
+export const GradeDoubleArraySchema = z.array(z.array(z.number()))
+
 export type Grade = z.infer<typeof GradeSchema>
