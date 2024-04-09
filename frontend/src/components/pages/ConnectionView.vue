@@ -6,11 +6,8 @@ import { Button } from "@/components/ui/button"
 import { ref } from "vue"
 import { Logo } from "@/components/atoms/logo"
 
-import { UserSchema, type User } from "@/types/user"
+import { UserSchema } from "@/types/user"
 import { apiQuery } from "@/utils/api"
-import { z } from "zod"
-
-import getCookie from "@/utils/cookiesUtils"
 
 const selectedRole = ref("OPTION_LEADER")
 
@@ -27,8 +24,7 @@ async function formSubmit() {
 	if (response.status === "error") {
 		throw new Error(response.error)
 	} else {
-		console.log(response.data)
-		document.cookie = `current_user=${JSON.stringify(response.data)}; path=/;`
+		document.cookie = `current_user=${response.data.id}; path=/;`
 		window.location.href = "/"
 	}
 }
