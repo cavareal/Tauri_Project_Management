@@ -4,10 +4,13 @@ import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static fr.eseo.tauri.util.ListUtil.filter;
 
 @Service
 public class GradeService {
@@ -39,17 +42,16 @@ public class GradeService {
 	 */
 	public void updateImportedMean() {
 		var students = studentRepository.findAll();
-		var grades = gradeRepository.findAll().stream().filter(grade -> grade.student() != null).toList();
+		var grades = filter(gradeRepository.findAll(), grade -> grade.student() != null);
 
 		for (var student : students) {
 			if (Boolean.TRUE.equals(student.bachelor())) continue;
 
-			var studentGrades = grades.stream().filter(
-					grade -> grade.student().id().equals(student.id())
-							&& grade.gradeType().imported()
-							&& !grade.gradeType().name().equalsIgnoreCase("mean")
-							&& !grade.gradeType().name().equalsIgnoreCase("average")
-			).toList();
+			var studentGrades = filter(grades, grade -> grade.student().id().equals(student.id())
+					&& grade.gradeType().imported()
+					&& !grade.gradeType().name().equalsIgnoreCase("mean")
+					&& !grade.gradeType().name().equalsIgnoreCase("average")
+			);
 
 			var mean = mean(studentGrades);
 
