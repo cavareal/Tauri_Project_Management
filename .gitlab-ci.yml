@@ -61,7 +61,7 @@ quality-dev:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon test --info  # Problème car pas accès DB
+    - ./gradlew --no-daemon test  # Use temp DB in backend in application-test.properties (h2)
     - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
