@@ -193,6 +193,10 @@ public class TeamService {
 
         // Assign the remaining students evenly to the teams
         for (int i = index; i < nbStudent; i++) {
+            if ((i - index) % nbTeams == 0) {
+                sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();
+            }
+
             Student student;
             if (i < nbWomen) {
                 student = women.get(i);
