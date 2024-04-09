@@ -3,10 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -20,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@Nested
 class ProjectServiceTest {
 
     @Mock

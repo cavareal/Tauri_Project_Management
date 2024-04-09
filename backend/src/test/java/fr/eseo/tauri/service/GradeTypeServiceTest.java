@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -17,6 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Nested
 class GradeTypeServiceTest {
 
     @Mock

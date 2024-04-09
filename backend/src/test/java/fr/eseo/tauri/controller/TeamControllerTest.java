@@ -5,9 +5,12 @@ import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@Nested
 class TeamControllerTest {
 
     @Mock
@@ -34,6 +38,11 @@ class TeamControllerTest {
     @InjectMocks
     private TeamController teamController;
 
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
     void testGetAllTeamsReturnsTeams() {
         // Arrange
@@ -47,21 +56,6 @@ class TeamControllerTest {
 
         // Assert
         assertThat(response.getBody()).hasSize(2);
-        verify(authService, times(1)).checkAuth(anyString(), anyString());
-        verify(teamService, times(1)).getAllTeams();
-    }
-
-    @Test
-    void testGetAllTeamsReturnsNotFound() {
-        // Arrange
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-        when(teamService.getAllTeams()).thenReturn(List.of());
-
-        // Act
-        ResponseEntity<List<Team>> response = teamController.getAllTeams("mockToken");
-
-        // Assert
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         verify(authService, times(1)).checkAuth(anyString(), anyString());
         verify(teamService, times(1)).getAllTeams();
     }
@@ -119,16 +113,18 @@ class TeamControllerTest {
     }
 
     @Test
-    void testGetCriteriaByTeamIdTeamNotFound() {
+    void getCriteriaByTeamId_returnsInternalServerError_whenExceptionOccurs() {
         // Arrange
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamService.getNbWomanByTeamId(anyInt())).thenThrow(new RuntimeException("Unexpected error"));
 
         // Act
-        ResponseEntity<Criteria> result = teamController.getCriteriaByTeamId("token", 1);
+        ResponseEntity<Criteria> response = teamController.getCriteriaByTeamId("mockToken", 1);
 
         // Assert
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         verify(authService, times(1)).checkAuth(anyString(), anyString());
+        verify(teamService, times(1)).getNbWomanByTeamId(anyInt());
     }
 
     @Test

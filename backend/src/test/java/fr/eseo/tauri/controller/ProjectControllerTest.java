@@ -5,10 +5,7 @@ import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -22,6 +19,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@Nested
 class ProjectControllerTest {
 
     @Mock

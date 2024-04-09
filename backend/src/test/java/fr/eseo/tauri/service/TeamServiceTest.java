@@ -7,6 +7,7 @@ import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,7 +22,7 @@ import java.util.Optional;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@Nested
 class TeamServiceTest {
 
     @Mock
