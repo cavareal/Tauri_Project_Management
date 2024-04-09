@@ -93,7 +93,7 @@ public class StudentController {
 
     @DeleteMapping()
     public ResponseEntity<String> deleteStudents(){
-        studentRepository.deleteAll();
+        studentService.deleteAllImportedStudents();
         return  ResponseEntity.ok("students have been deleted successfully");
     }
 }

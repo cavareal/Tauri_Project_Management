@@ -212,4 +212,9 @@ public class StudentService {
         }
     }
 
+    public void deleteAllImportedStudents() {
+        studentRepository.deleteAll();
+        gradeTypeService.deleteAllImportedGradeTypes();
+    }
+
 }

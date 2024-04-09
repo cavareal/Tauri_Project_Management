@@ -44,17 +44,11 @@ watch(() => { }, async() => {
 }, { immediate: true })
 
 const updateTeam = async() => {
-	if (!team.value) return
-	await Promise.all([
-		async() => {
-			team.value && await setTeamName(team.value.id, team.value.name)
-		},
-		async() => {
-			team.value && teamLeaderId.value && await setTeamLeader(team.value.id, teamLeaderId.value)
-		}
-	]).then(() => {
-		location.reload()
-	})
+	await (async() => {
+		if (!team.value) return
+		await setTeamName(team.value.id, team.value.name)
+		teamLeaderId.value && await setTeamLeader(team.value.id, teamLeaderId.value)
+	})().then(() => location.reload())
 }
 </script>
 
