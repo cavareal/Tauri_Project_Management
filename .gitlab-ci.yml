@@ -68,6 +68,7 @@ quality-dev:
       - $CI_PROJECT_DIR/build/libs/*.war
     expire_in: 1 day
     when: always
+  retry: 2
   dependencies:
     - java-build
   cache:
@@ -89,6 +90,7 @@ quality-prod:
       - $CI_PROJECT_DIR/build/libs/*.war
     expire_in: 1 day
     when: always
+  retry: 2
   dependencies:
     - java-build
   cache:
