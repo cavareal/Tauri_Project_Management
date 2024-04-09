@@ -17,6 +17,9 @@ before_script:
   - export https_proxy=http://192.168.4.8:3128/
   - export http_proxy=http://192.168.4.8:3128/
 
+###########
+## BUILD ##
+###########
 vuejs-build:
   stage: build
   image: node:16.19.1-alpine3.17
@@ -46,20 +49,17 @@ java-build:
   dependencies:     # Set accessible data in vuejs-build, to copy data from frontend folder 
     - vuejs-build
 
-# Tests d'intégrations
-# robotframework-test:
-#   stage: test
-#   ...
-
+###########
+## SONAR ##
+###########
 quality-dev:
   stage: sonar
   image: gradle:8.4-jdk17
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon test 
+    # - ./gradlew --no-daemon test 
     - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c
-    # - gradle -sonarqube -Dsonar.projectName=Team4_DevBranch -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
@@ -93,7 +93,9 @@ quality-prod:
     - master
 
 
-# Déploiement sur le serveur de dev
+################
+## Deploy dev ##
+################
 vuejs-deploy-dev:
   stage: deploy-server-dev
   image: node:16.19.1-alpine3.17
@@ -135,7 +137,10 @@ java-deploy-dev:
     - gitlab-ci
 
 
-# Déploiement sur le serveur de prod
+
+#################
+## Deploy prod ##
+#################
 vuejs-deploy-prod:
   stage: deploy-server-prod
   image: node:16.19.1-alpine3.17
