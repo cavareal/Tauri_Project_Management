@@ -9,7 +9,5 @@ const props = defineProps({
 </script>
 
 <template>
-	<div class="p-10">
-      <TeamAccordion :phase="props.phase"/>
-  </div>
+	<TeamAccordion :phase="props.phase" />
 </template>

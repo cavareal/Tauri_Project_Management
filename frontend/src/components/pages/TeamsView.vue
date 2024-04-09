@@ -3,7 +3,7 @@ import { ref, watch } from "vue"
 import PageTemplate from "@/components/organisms/template/PageTemplate.vue"
 import TeamsCreated from "@/components/organisms/teams/TeamsCreated.vue"
 import TeamsNotsCreated from "@/components/organisms/teams/TeamsNotsCreated.vue"
-import { GenerateTeamsDialog, StudentsNotImported, PrepublishDialog } from "@/components/organisms/teams"
+import { GenerateTeamsDialog, StudentsNotImported, PrepublishDialog, DeleteTeamsDialog } from "@/components/organisms/teams"
 import GenerateTeams from "@/components/organisms/teams/GenerateTeams.vue"
 import getCookie from "@/utils/cookiesUtils"
 import { Separator } from "@/components/ui/separator"
@@ -41,10 +41,10 @@ watch(() => { }, async() => {
 		<Row class="items-center justify-between">
 			<h1 class="text-3xl font-title-bold">Équipes</h1>
 
-			<Row class="gap-4" v-if="role === 'PL' && teams.length > 0 && currentPhase === 'COMPOSING'">
-				<GenerateTeamsDialog>
-					<Button variant="outline">Regénérer les équipes</Button>
-				</GenerateTeamsDialog>
+			<Row class="gap-4" v-if="role === 'PL' && nbStudents > 0 && teams.length > 0 && currentPhase === 'COMPOSING'">
+				<DeleteTeamsDialog>
+					<Button variant="outline">Supprimer les équipes</Button>
+				</DeleteTeamsDialog>
 				<PrepublishDialog>
 					<Button variant="default">Prépublier</Button>
 				</PrepublishDialog>

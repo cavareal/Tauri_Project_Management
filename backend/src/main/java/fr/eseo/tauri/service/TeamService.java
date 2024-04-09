@@ -44,6 +44,13 @@ public class TeamService {
         this.studentRepository = studentRepository;
     }
 
+    public void deleteAllTeams() {
+        var teams = teamRepository.findAll();
+        for (var team : teams) {
+            deleteTeam(team.id());
+        }
+    }
+
     /**
      * Change students team to null when their team is deleted.
      * @param id the team's id
@@ -51,7 +58,7 @@ public class TeamService {
     public void deleteTeam(Integer id) {
         Optional<Team> team = teamRepository.findById(id);
         if (team.isPresent()) {
-            List<Student> students = studentRepository.findByTeamId(team.get());
+            List<Student> students = studentRepository.findByTeam(team.get());
             for (Student student : students) {
                 student.team(null);
                 studentRepository.save(student);
@@ -114,12 +121,6 @@ public class TeamService {
         int nbStudent = nbMen + nbWomen;
 
         Project project = this.projectService.getCurrentProject();
-
-        // Delete all previous teams
-        List<Team> teamsToDelete = this.teamRepository.findAllByProjectId(project.id());
-        for (Team team : teamsToDelete) {
-            this.deleteTeam(team.id());
-        }
 
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams * womenPerTeam - 1) {

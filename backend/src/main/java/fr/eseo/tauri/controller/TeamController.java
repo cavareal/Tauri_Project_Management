@@ -227,4 +227,19 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
         }
     }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllTeams(@RequestHeader("Authorization") String token) {
+        String permission = "teamDelete";
+        if (authService.checkAuth(token, permission)) {
+            try {
+                teamService.deleteAllTeams();
+                return ResponseEntity.ok("Les équipes ont bien été supprimées");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+        }
+    }
 }
