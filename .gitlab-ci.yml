@@ -56,8 +56,8 @@ quality-dev:
   image: gradle:8.4-jdk17
   script:
     - cd backend
-    - gradle --no-daemon test
     - chmod +x ./gradlew
+    - ./gradlew --no-daemon test 
     - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c
     # - gradle -sonarqube -Dsonar.projectName=Team4_DevBranch -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c
   artifacts:
