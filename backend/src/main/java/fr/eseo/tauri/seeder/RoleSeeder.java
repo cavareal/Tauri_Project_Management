@@ -4,7 +4,6 @@ import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
-import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +25,7 @@ public class RoleSeeder {
 
     public void seed() {
         var users = userRepository.findAll();
+
         Random random = new Random();
 
         RoleType[] roles = {RoleType.SUPERVISING_STAFF, RoleType.TECHNICAL_COACH};

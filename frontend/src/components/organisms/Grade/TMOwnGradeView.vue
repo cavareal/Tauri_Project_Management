@@ -3,44 +3,15 @@ import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@
 import { cn } from "@/utils/utils"
 import getCookie from "@/utils/cookiesUtils"
 import { ref } from "vue"
-import { apiQuery } from "@/utils/api"
-import { GradeSchema } from "@/types/grade"
-import { z } from "zod"
+import { getAverageGrades } from "@/services/grade-service"
 
 const rowClass = cn("py-2 h-auto")
-const token = getCookie("token")
 const user = getCookie("user")
-const grades = ref([])
+const grades = ref()
 
-const fetchGrades = async() => {
-	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/averageGradesByGradeTypeByRole", {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: token || "null",
-				User: user || "null"
-			}
-		})
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`)
-		}
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-assignment
-		grades.value = await response.json()
-	} catch (error) {
-		console.error(error)
-	}
+if (user != null) {
+	grades.value = await getAverageGrades(parseInt(user))
 }
-
-void fetchGrades()
-
-// const response = await apiQuery({
-// 	route: "grades/averageGradesByGradeTypeByRole",
-// 	responseSchema: z.record()
-//
-// })
-
 </script>
 
 <template>

@@ -51,6 +51,8 @@ public class GradeSeeder {
 		var gradeTypes = gradeTypeRepository.findAllNotImportedTeamGrades();
 		var teams = teamRepository.findAll();
 		var users = userRepository.findAll();
+		var students = studentRepository.findAll();
+
 		for (var team : teams) {
 			for (var gradeType : gradeTypes) {
 				for (var user : users) {
@@ -61,6 +63,17 @@ public class GradeSeeder {
 					grade.value((float) faker.number().randomDouble(2, 0, 20));
 					gradeRepository.save(grade);
 				}
+			}
+
+			for (var student : students) {
+				var gradeType = gradeTypeRepository.findByName("Performance Globale");
+				var grade = new Grade();
+				grade.team(team);
+				grade.gradeType(gradeType);
+				grade.student(student);
+				grade.value((float) faker.number().randomDouble(2, 0, 20));
+				gradeRepository.save(grade);
+
 			}
 		}
 	}

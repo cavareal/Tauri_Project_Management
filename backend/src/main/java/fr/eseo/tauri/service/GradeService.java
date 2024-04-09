@@ -4,6 +4,8 @@ import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.enumeration.GradeTypeEnum;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,9 +109,9 @@ public class GradeService {
         }
     }
 
-    public List<Object[]> getAverageGradesByGradeTypeByRoleType(int userId) {
+    public Double getAverageGradesByGradeTypeByRoleType(int userId, RoleType roleType, String gradeTypeName) {
         Team team = teamRepository.findTeamByStudentId(userId);
-        return gradeRepository.findAverageGradesByGradeType(team.id());
+        return gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType);
     }
 
 }

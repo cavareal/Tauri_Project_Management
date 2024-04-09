@@ -1,6 +1,10 @@
 package fr.eseo.tauri.repository;
 
 import fr.eseo.tauri.model.Grade;
+import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.Role;
+import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,14 +32,12 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 //			"GROUP BY gt.name")
 //	public List<Object[]> findAverageGrades();
 
-	@Query("SELECT g.gradeType.name AS gradeType, r.type AS roleType, AVG(g.value) AS averageValue " +
-			"FROM Grade g " +
-			"JOIN g.gradeType gt " +
-			"JOIN g.author a " +
-			"JOIN Role r ON a.id = r.user.id " +
-			"WHERE g.team.id = :teamId AND gt.imported IS false " +
-			"GROUP BY g.gradeType.name, r.type")
-	public List<Object[]> findAverageGradesByGradeType(@Param("teamId") int teamId);
+	@Query("SELECT AVG(gr.value) FROM Grade gr, GradeType gt, User u, Role r " +
+			"WHERE gr.gradeType.id = gt.id AND u.id = gr.author.id AND r.user.id = u.id " +
+			"AND gt.name = :gradeTypeName " +
+			"AND gr.team = :team " +
+			"AND r.type = :roleType")
+	public Double findAverageGradesByGradeType(@Param("team") Team team, @Param("gradeTypeName") String gradeTypeName, @Param("roleType") RoleType roleType);
 
 //	@Query("SELECT gt.name AS gradeType, r.type AS roleType, AVG(g.value) AS averageValue " +
 //			"FROM Grade g " +

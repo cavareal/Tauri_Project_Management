@@ -4,8 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
+
+import java.util.ArrayList;
 import java.util.Map;
+
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.GradeRepository;
+import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.service.GradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,10 +26,13 @@ public class GradeController {
     private final GradeRepository gradeRepository;
     private final GradeService gradeService;
 
+    private final GradeTypeRepository  gradeTypeRepository;
+
     @Autowired
-    public GradeController(GradeRepository gradeRepository, GradeService gradeService) {
+    public GradeController(GradeRepository gradeRepository, GradeService gradeService, GradeTypeRepository gradeTypeRepository) {
         this.gradeRepository = gradeRepository;
         this.gradeService = gradeService;
+        this.gradeTypeRepository = gradeTypeRepository;
     }
 
     @GetMapping
@@ -98,20 +106,33 @@ public class GradeController {
         }
     }
 
-    @GetMapping("/averageGradesByGradeTypeByRole")
-    public ResponseEntity<Map<String, String>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token) {
+    @GetMapping("/averageGradesByGradeTypeByRole/{userId}")
+    public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
         try{
-            String userId = "82";
-            List<Object[]> grades = gradeService.getAverageGradesByGradeTypeByRoleType(Integer.parseInt(userId));
-            System.out.println(grades);
-            if (grades.isEmpty()) {
-                return ResponseEntity.ok(Map.of("message", "There are no grades to display."));
-            }
-            return ResponseEntity.ok(Map.of("message", grades.toString()));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Error occurred while fetching grades: " + e.getMessage()));
-        }
+            ArrayList<List<Double>> gradeByTypes = new ArrayList<>();
+            ArrayList<Double> gradeByRoles;
 
+            for (GradeType gradeType : gradeTypeRepository.findByForGroupIsTrue()) {
+                gradeByRoles = new ArrayList<>();
+                for (RoleType roleType : RoleType.values()) {
+                    try {
+                        double grade = gradeService.getAverageGradesByGradeTypeByRoleType(Integer.parseInt(userId), roleType, gradeType.name());
+                        gradeByRoles.add(grade);
+                    } catch (NullPointerException e) {
+                        gradeByRoles.add(-1.0);
+                    }
+                }
+                gradeByTypes.add(gradeByRoles);
+            }
+
+            if (gradeByTypes.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(gradeByTypes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
 }
