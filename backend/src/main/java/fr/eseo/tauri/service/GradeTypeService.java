@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.GradeType;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.repository.GradeTypeRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,7 @@ public class GradeTypeService {
         for (int i = 0; i < coefficients.size(); i++) {
             gradeTypes.add(createGradeType(Float.parseFloat(coefficients.get(i)), ratings.get(i), forGroup, imported));
         }
+        CustomLogger.logInfo("Successfully created GradeType objects from the provided coefficients and ratings.");
         return gradeTypes;
     }
 
