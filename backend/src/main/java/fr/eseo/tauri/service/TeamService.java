@@ -1,5 +1,6 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
@@ -7,7 +8,7 @@ import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
-import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,6 +57,8 @@ public class TeamService {
                 studentRepository.save(student);
             }
             teamRepository.deleteById(id);
+        } else {
+            CustomLogger.logWarn("TeamService.deleteTeam : Team with id " + id + " not found");
         }
     }
 
@@ -101,7 +104,7 @@ public class TeamService {
      * @return a List<Teams> if teams are created, otherwise null
      */
     public List<Team> createTeams(Integer nbTeams, Integer womenPerTeam) {
-        System.out.println("INFO : TeamService.createTeams : Creating Teams");
+        CustomLogger.logInfo("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
         List<Student> men = this.studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN);
@@ -120,7 +123,7 @@ public class TeamService {
 
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams * womenPerTeam - 1) {
-            System.out.println("ERROR : TeamService.createTeams : Not enough students to create the teams");
+            CustomLogger.logError("TeamService.createTeams : Not enough students to create the teams");
             return null;
         }else {
             List<Team> teams = new ArrayList<>();
