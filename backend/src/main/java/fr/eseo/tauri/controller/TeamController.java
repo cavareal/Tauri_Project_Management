@@ -114,7 +114,7 @@ public class TeamController {
         if (authService.checkAuth(token, TEAM_CREATION)) {
 
             try {
-                List<Team> teams = teamService.createTeams(nbTeams, womenPerTeam);
+                List<Team> teams = teamService.generateTeams(nbTeams, womenPerTeam);
 
                 if (teams != null) {
                     System.out.println("Teams have been created");
