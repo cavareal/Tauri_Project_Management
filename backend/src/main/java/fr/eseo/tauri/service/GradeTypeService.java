@@ -171,6 +171,7 @@ public class GradeTypeService {
 
     public void deleteAllImportedGradeTypes() {
         gradeTypeRepository.deleteAllImported();
+        CustomLogger.logInfo("Successfully deleted all imported GradeType objects.");
     }
 }
 
