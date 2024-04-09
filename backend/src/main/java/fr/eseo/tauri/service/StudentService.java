@@ -10,7 +10,6 @@ import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -122,6 +121,8 @@ public class StudentService {
             CustomLogger.logError("An error occurred in extractNamesGenderAndBachelor", e);
         }
 
+        CustomLogger.logInfo("Successfully extracted student data (names, genders, bachelors and grades ) from the CSV file.");
+
         result.put(MAP_KEY_NAMES, names);
         result.put(MAP_KEY_GENDERS, genders);
         result.put(MAP_KEY_BACHELORS, bachelors);
@@ -199,6 +200,7 @@ public class StudentService {
 
         try {
             List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
+            CustomLogger.logInfo("Successfully created GradeType objects from the CSV file.");
             Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
 
             List<String> names = (List<String>) extractedData.get(MAP_KEY_NAMES);
@@ -218,9 +220,18 @@ public class StudentService {
         }
     }
 
-    public void deleteAllImportedStudents() {
-        studentRepository.deleteAll();
+    /**
+     * This method is used to delete all students that have been imported into the database.
+     */
+    public void deleteAllImportedStudentsAndGradeTypes() {
+        try {
+            studentRepository.deleteAll();
+            CustomLogger.logInfo("Successfully deleted all imported students from the database.");
+        } catch (Exception e) {
+            CustomLogger.logError("An error occurred while deleting imported students", e);
+        }
         gradeTypeService.deleteAllImportedGradeTypes();
+        CustomLogger.logInfo("Successfully deleted all imported grade types from the database.");
     }
 
 }

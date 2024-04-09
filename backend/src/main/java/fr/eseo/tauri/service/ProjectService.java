@@ -31,12 +31,12 @@ public class ProjectService {
     @PostConstruct
     public void initDataIfTableIsEmpty() {
         if (projectRepository.count() == 0) {
-            // Ajouter une ligne dans la table projects si elle est vide
+            // Add a default project if the table is empty
             Project project = new Project();
             project.nbTeams(6);
             project.ratioGender(10);
             project.nbSprint(3);
-            project.phase(ProjectPhase.COMPOSING); // Par exemple
+            project.phase(ProjectPhase.COMPOSING); // Default phase
             projectRepository.save(project);
         }
     }

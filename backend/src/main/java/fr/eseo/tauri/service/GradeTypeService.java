@@ -185,8 +185,11 @@ public class GradeTypeService {
      * This method is used to delete all imported GradeType objects from the database.
      */
     public void deleteAllImportedGradeTypes() {
-        gradeTypeRepository.deleteAllImported();
-        CustomLogger.logInfo("Successfully deleted all imported GradeType objects.");
+        try {
+            gradeTypeRepository.deleteAllImported();
+        } catch (Exception e) {
+            CustomLogger.logError("Error occurred while deleting all imported GradeType objects", e);
+        }
     }
 }
 
