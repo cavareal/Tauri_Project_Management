@@ -107,7 +107,7 @@ vuejs-deploy-dev:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:dev
-  retry: 3
+  retry: 2
   artifacts:
     paths:
       - frontend/dist
@@ -154,7 +154,7 @@ vuejs-deploy-prod:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:prod
-  retry: 3
+  retry: 2
   artifacts:
     paths:
       - frontend/dist
