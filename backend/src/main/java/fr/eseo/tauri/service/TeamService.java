@@ -110,8 +110,13 @@ public class TeamService {
         int nbMen = men.size();
         int nbStudent = nbMen + nbWomen;
 
-        // TODO : get the ACTUAL project (not the first one)
         Project project = this.projectService.getCurrentProject();
+
+        // Delete all previous teams
+        List<Team> teamsToDelete = this.teamRepository.findAllByProjectId(project.id());
+        for (Team team : teamsToDelete) {
+            this.deleteTeam(team.id());
+        }
 
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams * womenPerTeam - 1) {
