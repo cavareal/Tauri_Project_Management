@@ -45,6 +45,7 @@ java-build:
       - backend/build/classes/
     expire_in: 1 day
     when: always
+  retry: 2
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
@@ -60,8 +61,8 @@ quality-dev:
   script:
     - cd backend
     - chmod +x ./gradlew
-    # - ./gradlew --no-daemon test  # Problème car pas accès DB
-    - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main --debug
+    - ./gradlew --no-daemon test  # Problème car pas accès DB
+    - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
