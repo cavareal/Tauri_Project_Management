@@ -3,10 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.controller.StudentController;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -16,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+@Nested
 class StudentControllerTest {
 
     @Mock

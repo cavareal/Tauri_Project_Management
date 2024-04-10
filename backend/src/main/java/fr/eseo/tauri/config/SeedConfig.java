@@ -1,5 +1,6 @@
 package fr.eseo.tauri.config;
 
+import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.seeder.*;
 import net.datafaker.Faker;
 
@@ -49,7 +50,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		// gradeTypeSeeder.seed(faker);
 		// gradeSeeder.seed(faker);
 		permissionSeeder.seed();
-		// gradeTypeSeeder.seedTeamGradeType();
+		gradeTypeSeeder.seedTeamGradeType();
 		roleSeeder.seed(faker);
 	}
 

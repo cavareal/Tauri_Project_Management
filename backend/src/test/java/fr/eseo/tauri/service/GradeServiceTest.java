@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.repository.GradeRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
+@Nested
 class GradeServiceTest {
 
     @Mock

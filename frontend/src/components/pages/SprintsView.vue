@@ -12,7 +12,7 @@ const role = getCookie("role")
 <template>
 	<PageTemplate>
 		<h1 class="text-3xl font-title-bold">Sprints</h1>
-		<EditNbSprints v-if="token && role === 'PROJECT_LEADER'" />
+		<EditNbSprints v-if="token && (role === 'PROJECT_LEADER' || role === 'OPTION_LEADER')" />
 		<NotAuthorized v-else />
 	</PageTemplate>
 </template>

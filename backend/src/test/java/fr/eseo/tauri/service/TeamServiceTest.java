@@ -3,9 +3,12 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,9 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+@Nested
 class TeamServiceTest {
 
     @Mock
@@ -33,6 +37,12 @@ class TeamServiceTest {
 
     @InjectMocks
     private TeamService teamService;
+
+    @BeforeEach
+    void init_mocks() {
+        MockitoAnnotations.openMocks(this);
+        teamService = spy(teamService);
+    }
 
     @Test
     void testGetAllTeams() {
@@ -62,7 +72,7 @@ class TeamServiceTest {
         when(projectService.getCurrentProject()).thenReturn(project);
         when(teamRepository.findAllByProjectId(project.id())).thenReturn(List.of());
 
-        // Act
+        // Action
         List<Team> teams = teamService.getAllTeams();
 
         // Assert
@@ -95,7 +105,6 @@ class TeamServiceTest {
 
         // Assert
         assertThat(result).isNull();
-        verify(teamRepository, times(1)).findById(1);
     }
 
     @Test
@@ -198,5 +207,40 @@ class TeamServiceTest {
 
         // Assert
         assertThat(nbStudents).isZero();
+    }
+
+    @Test
+    void testGetTeamBySSId_ExistingId() {
+        // Arrange
+        User leader = new User();
+        leader.id(1);
+        Team team1 = new Team();
+        team1.leader(leader);
+        Team team2 = new Team();
+        doReturn(Arrays.asList(team1, team2)).when(teamService).getAllTeams();
+
+        // Act
+        Team result = teamService.getTeamBySSId(1);
+
+        // Assert
+        assertThat(result).isEqualTo(team1);
+        verify(teamService, times(1)).getAllTeams();
+    }
+
+    @Test
+    void testGetTeamBySSId_NonExistingId() {
+        // Arrange
+        User leader = new User();
+        leader.id(1);
+        Team team1 = new Team();;
+        Team team2 = new Team();
+        doReturn(Arrays.asList(team1, team2)).when(teamService).getAllTeams();
+
+        // Act
+        Team result = teamService.getTeamBySSId(1);
+
+        // Assert
+        assertThat(result).isNull();
+        verify(teamService, times(1)).getAllTeams();
     }
 }

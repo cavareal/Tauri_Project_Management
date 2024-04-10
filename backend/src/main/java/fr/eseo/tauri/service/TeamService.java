@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.ArrayUtils.isEquals;
-
 /**
  * Service class for managing teams.
  */
@@ -103,7 +101,7 @@ public class TeamService {
 
     /**
      * Auto generate teams with students according to the given number of teams and the number of women per team.
-     * TODO : create teams with the same average grade
+     * FUTURE :  create teams with the same average grade
      * @param nbTeams the number of teams to create
      * @param womenPerTeam the ratio of women in the teams
      * @return a List<Teams> if teams are created, otherwise null
@@ -195,6 +193,10 @@ public class TeamService {
 
         // Assign the remaining students evenly to the teams
         for (int i = index; i < nbStudent; i++) {
+            if ((i - index) % nbTeams == 0) {
+                sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();
+            }
+
             Student student;
             if (i < nbWomen) {
                 student = women.get(i);
@@ -229,30 +231,73 @@ public class TeamService {
         return teamRepository.findById(id).orElse(null);
     }
 
+    /**
+     * This method retrieves the number of women in a team by the team's ID.
+     *
+     * @param id The ID of the team.
+     * @return The number of women in the team if the team exists, otherwise 0.
+     */
     public Integer getNbWomanByTeamId(Integer id){
-        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
-        Integer nbWoman = 0;
-        for (Student student : students) {
-            if (isEquals(student.gender(), Gender.WOMAN)) {
-                nbWoman++;
+        Optional<Team> teamOptional = teamRepository.findById(id);
+        if (teamOptional.isPresent()) {
+            List<Student> students = studentRepository.findByTeam(teamOptional.get());
+            Integer nbWoman = 0;
+            for (Student student : students) {
+                if (student.gender() == Gender.WOMAN) {
+                    nbWoman++;
+                }
             }
+            return nbWoman;
+        } else {
+            return 0; // for example
         }
-        return nbWoman;
     }
 
+    /**
+     * This method retrieves the number of bachelor students in a team by the team's ID.
+     *
+     * @param id The ID of the team.
+     * @return The number of bachelor students in the team if the team exists, otherwise 0.
+     */
     public Integer getNbBachelorByTeamId(Integer id){
-        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
-        Integer nbBachelor = 0;
-        for (Student student : students) {
-            if (student.bachelor() != null && student.bachelor()) {
-                nbBachelor++;
+        Optional<Team> teamOptional = teamRepository.findById(id);
+        if (teamOptional.isPresent()) {
+            List<Student> students = studentRepository.findByTeam(teamOptional.get());
+            Integer nbBachelor = 0;
+            for (Student student : students) {
+                if (student.bachelor() != null && student.bachelor()) {
+                    nbBachelor++;
+                }
             }
+            return nbBachelor;
+        } else {
+            return 0; // for example
         }
-        return nbBachelor;
     }
 
+    /**
+     * This method retrieves the number of students in a team by the team's ID.
+     *
+     * @param id The ID of the team.
+     * @return The number of students in the team if the team exists, otherwise 0.
+     */
     public Integer getNbStudentsByTeamId(Integer id){
-        List<Student> students = studentRepository.findByTeam(teamRepository.findById(id).get());
-        return students.size();
+        Optional<Team> teamOptional = teamRepository.findById(id);
+        if (teamOptional.isPresent()) {
+            List<Student> students = studentRepository.findByTeam(teamOptional.get());
+            return students.size();
+        } else {
+            return 0; // for example
+        }
+    }
+
+    public Team getTeamBySSId(Integer id){
+        var teams = getAllTeams();
+        for (var team : teams) {
+            if (team.leader() != null && team.leader().id().equals(id)) {
+                return team;
+            }
+        }
+        return null;
     }
 }

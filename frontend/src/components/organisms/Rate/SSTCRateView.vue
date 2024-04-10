@@ -20,11 +20,12 @@ interface Team {
 
 interface Evaluation {
 	team: string;
-	contentPresentationNote: number;
-	materialSupportNote: number;
+	gradeContentPresentation: number;
+	gradeMaterialSupport: number;
 }
 
 const token = getCookie("token")
+const userId = getCookie("current_user")
 const selectedTeam = ref("")
 const contentPresentationNote = ref("")
 const materialSupportNote = ref("")
@@ -33,7 +34,6 @@ const evaluations = ref<Record<string, Evaluation[]>>({})
 const props = defineProps({
 	listTeam: Array as () => Team[]
 })
-console.log(props.listTeam)
 
 const buttonsState = ref({
 	validate: true,
@@ -41,7 +41,8 @@ const buttonsState = ref({
 })
 
 function redirect(): void {
-	window.location.href = "/tauri/rating"
+	// eslint-disable-next-line no-self-assign
+	window.location.href = window.location.href
 }
 
 function addEvaluation() {
@@ -51,8 +52,8 @@ function addEvaluation() {
 
 	evaluations.value[selectedTeam.value].push({
 		team: selectedTeam.value,
-		contentPresentationNote: Number(contentPresentationNote.value),
-		materialSupportNote: Number(materialSupportNote.value)
+		gradeContentPresentation: Number(contentPresentationNote.value),
+		gradeMaterialSupport: Number(materialSupportNote.value)
 	})
 }
 
@@ -61,7 +62,7 @@ async function grades() {
 		buttonsState.value.validate = false
 		buttonsState.value.loading = true
 
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addMaterialSupportContentPresentation", {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addGradeToTeam/" + userId, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -176,10 +177,10 @@ function sendGrades() {
 							{{ teamName }}
 						</TableCell>
 						<TableCell v-for="(evaluation, index) in teamEvaluations" :key="index">
-							{{ evaluation.contentPresentationNote }}
+							{{ evaluation.gradeContentPresentation }}
 						</TableCell>
 						<TableCell v-for="(evaluation, index) in teamEvaluations" :key="index">
-							{{ evaluation.materialSupportNote }}
+							{{ evaluation.gradeMaterialSupport }}
 						</TableCell>
 						<TableCell class="text-right">
 							<DropdownMenu>

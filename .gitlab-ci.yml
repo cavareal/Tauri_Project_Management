@@ -17,6 +17,9 @@ before_script:
   - export https_proxy=http://192.168.4.8:3128/
   - export http_proxy=http://192.168.4.8:3128/
 
+###########
+## BUILD ##
+###########
 vuejs-build:
   stage: build
   image: node:16.19.1-alpine3.17
@@ -24,6 +27,7 @@ vuejs-build:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:dev
+  retry: 2
   cache:
     paths:
       - frontend/node_modules
@@ -32,38 +36,41 @@ java-build:
   stage: build
   image: gradle:8.4-jdk17
   script:
-    # - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -x test
   artifacts:
     name: "Gradle artifacts from $CI_PROJECT_NAME on $CI_COMMIT_REF_SLUG"
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
+      - backend/build/classes/
     expire_in: 1 day
     when: always
+  retry: 2
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
   dependencies:     # Set accessible data in vuejs-build, to copy data from frontend folder 
     - vuejs-build
 
-# Tests d'intégrations
-# robotframework-test:
-#   stage: test
-#   ...
-
+###########
+## SONAR ##
+###########
 quality-dev:
   stage: sonar
   image: gradle:8.4-jdk17
   script:
     - cd backend
-    - gradle --no-daemon test
-    - gradle --no-daemon sonarqube -Dsonar.projectName=Team4_DevBranch -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c
+    - chmod +x ./gradlew
+    - ./gradlew --no-daemon test  # Use temp DB in backend in application-test.properties (h2)
+    - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
     expire_in: 1 day
     when: always
+  retry: 2
+  dependencies:
+    - java-build
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
@@ -76,13 +83,17 @@ quality-prod:
   image: gradle:8.4-jdk17
   script:
     - cd backend
-    - gradle --no-daemon clean test
-    - gradle --no-daemon sonarqube -Dsonar.projectName=Team4_MasterBranch -Dsonar.projectKey=Team4_2024_MasterBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=1cec587f7d0c27e7e6e05a138e8a1929a300e105
+    - chmod +x ./gradlew
+    - ./gradlew --no-daemon test  # Use temp DB in backend in application-test.properties (h2)
+    - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_MasterBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=50173e34bc59d1e7554c1d9a3cdf0e511a87b457 -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
     expire_in: 1 day
     when: always
+  retry: 2
+  dependencies:
+    - java-build
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
@@ -90,7 +101,9 @@ quality-prod:
     - master
 
 
-# Déploiement sur le serveur de dev
+################
+## Deploy dev ##
+################
 vuejs-deploy-dev:
   stage: deploy-server-dev
   image: node:16.19.1-alpine3.17
@@ -98,7 +111,7 @@ vuejs-deploy-dev:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:dev
-  dependencies: []
+  retry: 2
   artifacts:
     paths:
       - frontend/dist
@@ -110,11 +123,12 @@ vuejs-deploy-dev:
     - dev
     - gitlab-ci
 
+
 java-deploy-dev:
   stage: deploy-server-dev
   image: gradle:8.4-jdk17
   script:
-    - cp -r ./frontend/dist ./backend/src/main/resources/static
+    # - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -Pdev -x test
   dependencies:     # Set accessible data in vuejs-deploy-dev, to copy data from frontend folder 
@@ -132,7 +146,11 @@ java-deploy-dev:
     - gitlab-ci
 
 
-# Déploiement sur le serveur de prod
+
+
+#################
+## Deploy prod ##
+#################
 vuejs-deploy-prod:
   stage: deploy-server-prod
   image: node:16.19.1-alpine3.17
@@ -140,7 +158,7 @@ vuejs-deploy-prod:
     - cd frontend
     - npm install --legacy-peer-deps
     - npm run build-only:prod
-  dependencies: []
+  retry: 2
   artifacts:
     paths:
       - frontend/dist
@@ -149,14 +167,14 @@ vuejs-deploy-prod:
     paths:
       - frontend/node_modules
   only:
-    - dev
-    - gitlab-ci
+    - master
+
 
 java-deploy-prod:
   stage: deploy-server-prod
   image: gradle:8.4-jdk17
   script:
-    - cp -r ./frontend/dist ./backend/src/main/resources/static
+    # - cp -r ./frontend/dist ./backend/src/main/resources/static
     - cd backend
     - gradle --no-daemon clean build -Pprod -x test
   dependencies:     # Set accessible data in vuejs-deploy-prod, to copy data from frontend folder 
