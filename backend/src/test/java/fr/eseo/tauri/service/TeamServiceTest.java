@@ -311,8 +311,6 @@ class TeamServiceTest {
         }
 
         when(teamRepository.findAllOrderByAvgGradeOrderByAsc()).thenReturn(teams);
-        when(studentRepository.findByTeam()).thenReturn();
-
 
         // Act
         Method method = TeamService.class.getDeclaredMethod("fillTeams", List.class, List.class, List.class, Integer.class);
