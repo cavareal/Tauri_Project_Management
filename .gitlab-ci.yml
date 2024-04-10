@@ -27,7 +27,7 @@ before_script:
 ########################
 ## BUILD frontend DEV ##
 ########################
-build-vuejs:
+vuejs-build-dev:
   stage: build-frontend
   image: node:16.19.1-alpine3.17
   script:
@@ -47,11 +47,10 @@ build-vuejs:
     - gitlab-ci
 
 
-
 #########################
 ## BUILD frontend PROD ##
 #########################
-build-vuejs:
+vuejs-build-prod:
   stage: build-frontend
   image: node:16.19.1-alpine3.17
   script:
@@ -83,7 +82,8 @@ java-build:
     - gradle --no-daemon clean build -Pdev -x test
   retry: 2
   dependencies:    
-    - build-vuejs
+    - vuejs-build-dev
+    - vuejs-build-prod
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
