@@ -48,11 +48,6 @@ public class UserService {
         this.permissionRepository = permissionRepository;
     }
 
-    public int createUser(User user) {
-        User savedUser = userRepository.save(user);
-        return savedUser.id(); //TODO replace by getId() when it will work again
-    }
-
     /**
      * Change team's leader to null when their leader is deleted.
      * @param id the user's id
