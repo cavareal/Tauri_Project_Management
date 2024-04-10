@@ -5,10 +5,7 @@ stages:
   - build-frontend
   - build-backend
   - sonar
-  - front-server-dev
-  - back-server-dev
-  - deploy-server-dev
-  - deploy-server-prod
+
 
 variables:
   GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
@@ -71,8 +68,6 @@ build-vuejs:
       - frontend/node_modules
   only:
     - main
-
-
 
 
 ###############################
