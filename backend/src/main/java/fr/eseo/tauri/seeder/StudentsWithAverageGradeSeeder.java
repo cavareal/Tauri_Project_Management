@@ -1,16 +1,16 @@
 package fr.eseo.tauri.seeder;
 
+import fr.eseo.tauri.model.Grade;
+import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.model.GradeType;
-import fr.eseo.tauri.model.Grade;
-import org.springframework.stereotype.Service;
 import net.datafaker.Faker;
+import org.springframework.stereotype.Service;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 @Service
 public class StudentsWithAverageGradeSeeder {
@@ -19,7 +19,7 @@ public class StudentsWithAverageGradeSeeder {
     private final GradeRepository gradeRepository;
     private final GradeTypeRepository gradeTypeRepository;
 
-    private final Random random = new Random();
+    private final SecureRandom secureRandom = new SecureRandom();
 
 
     public StudentsWithAverageGradeSeeder(StudentRepository studentRepository, GradeRepository gradeRepository, GradeTypeRepository gradeTypeRepository) {
@@ -46,14 +46,14 @@ public class StudentsWithAverageGradeSeeder {
 
         for (int i = 0; i < nbStudents; i++) {
             // Create and save a student
-            int genderIndex = random.nextInt(100) < ratioWomen ? 1 : 0;
+            int genderIndex = secureRandom.nextInt(100) < ratioWomen ? 1 : 0;
             var student = new Student();
             student.name(faker.name().fullName());
             student.email(faker.internet().emailAddress());
             student.password(faker.internet().password());
             student.privateKey(faker.number().digits(20));
             student.gender(genders[genderIndex]);
-            student.bachelor(random.nextInt(100) < ratioBachelor);
+            student.bachelor(secureRandom.nextInt(100) < ratioBachelor);
             this.studentRepository.save(student);
 
             // Create and save a grade for the student
