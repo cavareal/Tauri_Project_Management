@@ -219,7 +219,7 @@ public class TeamController {
         return new Criteria(nbWoman, nbBachelor, nbStudents, validateWoman, validateBachelor);
     }
 
-    @GetMapping("/get-team-avg-grade/{idTeam}")
+    @GetMapping("/{idTeam}/average")
     public ResponseEntity<String> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam) {
         String permission = "readTeamAvgGrade";
         if (authService.checkAuth(token, permission)) {
