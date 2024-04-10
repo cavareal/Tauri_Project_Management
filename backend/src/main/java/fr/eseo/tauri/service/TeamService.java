@@ -141,6 +141,7 @@ public class TeamService {
         Project project = this.projectService.getCurrentProject();
 
         // Delete all previous teams
+        // TODO FUTURE : delete teams only when nbTeams is different from the number of teams in the project
         List<Team> teamsToDelete = this.teamRepository.findAllByProjectId(project.id());
         for (Team team : teamsToDelete) {
             this.deleteTeam(team.id());
