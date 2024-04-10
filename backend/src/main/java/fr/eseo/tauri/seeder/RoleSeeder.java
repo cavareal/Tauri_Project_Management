@@ -3,7 +3,6 @@ package fr.eseo.tauri.seeder;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
-import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;

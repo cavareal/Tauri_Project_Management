@@ -1,12 +1,10 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "projects")

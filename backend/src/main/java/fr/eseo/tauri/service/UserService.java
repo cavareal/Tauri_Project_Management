@@ -1,29 +1,20 @@
 package fr.eseo.tauri.service;
 
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
-import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.Role;
+import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
-import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.PermissionRepository;
 import fr.eseo.tauri.repository.RoleRepository;
-import fr.eseo.tauri.repository.ProjectRepository;
-import jakarta.annotation.PostConstruct;
+import fr.eseo.tauri.repository.TeamRepository;
+import fr.eseo.tauri.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.Optional;
-import fr.eseo.tauri.repository.TeamRepository;
-import fr.eseo.tauri.model.User;
-import fr.eseo.tauri.repository.UserRepository;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {

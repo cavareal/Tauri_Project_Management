@@ -1,9 +1,8 @@
 package fr.eseo.tauri.repository;
 
-import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import fr.eseo.tauri.model.Team;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

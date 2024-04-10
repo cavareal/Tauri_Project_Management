@@ -2,10 +2,8 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
-import fr.eseo.tauri.util.ListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -148,6 +146,9 @@ public class GradeService {
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
         }
+		else{
+			CustomLogger.logInfo("Student with name " + studentName + " not found.");
+		}
     }
 
 	/**

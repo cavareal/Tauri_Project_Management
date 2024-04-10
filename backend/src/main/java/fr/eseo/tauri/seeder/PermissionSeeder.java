@@ -4,7 +4,6 @@ import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.PermissionRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
