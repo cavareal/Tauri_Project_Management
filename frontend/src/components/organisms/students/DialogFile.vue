@@ -14,7 +14,6 @@ import {
 	DialogClose
 } from "@/components/ui/dialog"
 import { reactive, ref } from "vue"
-import { importStudentFile } from "@/services/student-service"
 
 const fileName = ref("")
 const file = ref<File | null>(null)

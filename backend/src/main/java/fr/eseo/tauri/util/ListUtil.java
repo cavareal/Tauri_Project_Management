@@ -2,6 +2,7 @@ package fr.eseo.tauri.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class ListUtil {
@@ -14,6 +15,14 @@ public class ListUtil {
 			}
 		}
 		return filteredList;
+	}
+
+	public static <T, R> List<R> map(List<T> list, Function<T, R> function) {
+		var mappedList = new ArrayList<R>();
+		for (var element : list) {
+			mappedList.add(function.apply(element));
+		}
+		return mappedList;
 	}
 
 }

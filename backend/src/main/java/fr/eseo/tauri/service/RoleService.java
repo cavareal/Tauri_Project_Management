@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.util.ListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class RoleService {
 
 	public Iterable<User> getUsersByRoleType(RoleType roleType) {
 		var roles = roleRepository.findByType(roleType);
-		return roles.stream().map(Role::user).toList();
+		return ListUtil.map(roles, Role::user);
 	}
 
 }

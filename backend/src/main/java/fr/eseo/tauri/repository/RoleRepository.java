@@ -13,4 +13,6 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
     List<Role> findByType(RoleType roleType);
 
     Role findFirstByType(RoleType roleType);
+
+    boolean existsByUserAndType(User user, RoleType roleType);
 }

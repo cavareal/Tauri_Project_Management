@@ -34,6 +34,7 @@ public class RoleSeeder {
 
 		for (var user : users) {
 			if (faker.number().numberBetween(0, 8) != 0) continue;
+			if (roleRepository.existsByUserAndType(user, RoleType.SUPERVISING_STAFF)) continue;
 
 			var role = new Role();
 			role.user(user);
