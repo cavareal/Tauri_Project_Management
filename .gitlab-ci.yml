@@ -103,7 +103,7 @@ quality-prod:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
   only:
-    - master
+    - main
 
 
 ################
@@ -150,11 +150,11 @@ java-deploy-dev:
 
 push-deploy-dev:
   stage: deploy-server-dev
-  image: alpine:3.18
+  image: alpine:3.17
   dependencies:
     - java-deploy-dev   # Start after vuejs-deploy-dev is ready
   before_script:
-    - apk add --no-cache openssh-client
+    - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )' 
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY_DEV" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
@@ -162,7 +162,7 @@ push-deploy-dev:
     - ssh-keyscan $DEV_SERVER_IP >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - mv backend/build/libs/*.war backend/build/libs/tauri.war
+    - mv backend/build/libs/*plain.war backend/build/libs/tauri.war
     - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$DEV_SERVER_IP:/srv/tomcat/webapps 
 
 #################
@@ -184,7 +184,7 @@ vuejs-deploy-prod:
     paths:
       - frontend/node_modules
   only:
-    - master
+    - main
 
 
 java-deploy-prod:
@@ -205,4 +205,4 @@ java-deploy-prod:
     expire_in: 5 days
     when: always
   only:
-    - master
+    - main
