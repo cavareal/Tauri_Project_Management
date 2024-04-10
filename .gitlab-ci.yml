@@ -155,7 +155,7 @@ java-deploy-dev:
 
 push-deploy-dev:
   stage: deploy-server-dev
-  image: docker push charlo56/pgl-ssh-image:latest
+  image: charlo56/pgl-ssh-image:latest
   dependencies:
     - java-deploy-dev   # Start after vuejs-deploy-dev is ready
   before_script:

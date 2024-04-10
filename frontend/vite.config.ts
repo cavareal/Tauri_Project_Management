@@ -7,7 +7,8 @@ import autoprefixer from "autoprefixer"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	base: process.env.NODE_ENV === 'production' ? '/tauri/' : '/', // Base path for build files, for deploiement
+//	base: process.env.NODE_ENV === 'production' ? '/tauri/' : '/', // Base path for build files, for deploiement
+	base: process.env.NODE_ENV === 'production' ? '/' : '/', // Base path for build files, for deploiement
 	css: {
 		postcss: {
 			plugins: [tailwind(), autoprefixer()],
