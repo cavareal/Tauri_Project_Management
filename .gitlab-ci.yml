@@ -33,7 +33,7 @@ vuejs-build-dev:
   script:
     - cd frontend
     - npm install --legacy-peer-deps
-    - npm run build-only:devserver
+    - npm run build-only:dev
   retry: 2
   artifacts:
     paths:
