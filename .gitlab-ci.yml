@@ -5,6 +5,7 @@ stages:
   - build-frontend
   - build-backend
   - sonar
+  - deploy-server-dev
 
 
 variables:
@@ -46,7 +47,6 @@ vuejs-build-dev:
     - dev
     - gitlab-ci
 
-
 #########################
 ## BUILD frontend PROD ##
 #########################
@@ -67,6 +67,7 @@ vuejs-build-prod:
       - frontend/node_modules
   only:
     - main
+
 
 
 ###############################
@@ -94,9 +95,10 @@ java-build:
     when: always
 
 
-###########
-## SONAR ##
-###########
+
+###############
+## SONAR DEV ##
+###############
 quality-dev:
   stage: sonar
   image: gradle:8.4-jdk17
@@ -120,6 +122,9 @@ quality-dev:
     - dev
     - gitlab-ci
 
+################
+## SONAR PROD ##
+################
 quality-prod:
   stage: sonar
   image: gradle:8.4-jdk17
@@ -144,7 +149,55 @@ quality-prod:
 
 
 
+################
+## DEPLOY DEV ##
+################
+push-dev:
+  stage: deploy-server-dev
+  image: charlo56/pgl-ssh-image:latest
+  dependencies:
+    - vuejs-build-dev
+    - java-build
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY_DEV" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $DEV_SERVER_IP >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
+    - ssh $SSH_USER@$DEV_SERVER_IP "rm -f /srv/tomcat10/webapps/tauri.war"
+    - ssh $SSH_USER@$DEV_SERVER_IP "rm -f -r /srv/tomcat10/webapps/tauri/"
+    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$DEV_SERVER_IP:/srv/tomcat10/webapps
+  retry: 2
+  only:
+    - dev
+    - gitlab-ci
 
+    
 
-
-
+################
+## DEPLOY DEV ##
+################
+push-dev:
+  stage: deploy-server-dev
+  image: charlo56/pgl-ssh-image:latest
+  dependencies:
+    - vuejs-build-prod
+    - java-build
+  before_script:
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY_DEV" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $DEV_SERVER_IP >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
+    - ssh $SSH_USER@$DEV_SERVER_IP "rm -f /srv/tomcat10/webapps/tauri.war"
+    - ssh $SSH_USER@$DEV_SERVER_IP "rm -f -r /srv/tomcat10/webapps/tauri/"
+    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$DEV_prod_IP:/srv/tomcat10/webapps
+  retry: 2
+  only:
+    - main
