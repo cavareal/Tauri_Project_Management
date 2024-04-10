@@ -28,7 +28,7 @@ watch(() => { }, async() => {
 		<Row class="items-center justify-between">
 			<h1 class="text-3xl font-title-bold">Étudiants</h1>
 
-			<Row class="gap-4">
+			<Row class="gap-4" v-if="hasPermission">
 				<DeleteStudentsDialog>
 					<Button variant="outline">Supprimer les étudiants</Button>
 				</DeleteStudentsDialog>
@@ -40,7 +40,7 @@ watch(() => { }, async() => {
 		</Row>
 
 		<Separator />
-		<Row v-if="students?.length === 0" class="items-center border border-gray-300 rounded-lg p-6">
+		<Row v-if="students?.length === 0 && hasPermission" class="items-center border border-gray-300 rounded-lg p-6">
 			<Column class="items-start justify-center flex-1 gap-1">
 				<h1 class="font-bold text-base">Vous n'avez pas encore importé les étudiants</h1>
 				<p class="text-gray-400 text-sm">Pour importer les étudiants, il suffit de cliquer sur le bouton.</p>
