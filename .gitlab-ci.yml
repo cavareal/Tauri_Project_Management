@@ -19,27 +19,6 @@ before_script:
   - export https_proxy=http://192.168.4.8:3128/
   - export http_proxy=http://192.168.4.8:3128/
 
-quality-prod:
-  stage: sonar
-  image: gradle:8.4-jdk17
-  script:
-    - cd backend
-    - chmod +x ./gradlew
-    - ./gradlew --no-daemon test  # Use temp DB in backend in application-test.properties (h2)
-    - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_MasterBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=50173e34bc59d1e7554c1d9a3cdf0e511a87b457 -Dsonar.java.binaries=build/classes/java/main
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/build/libs/*.war
-    expire_in: 1 day
-    when: always
-  retry: 2
-  dependencies:
-    - java-build
-  cache:
-    paths:
-      - $CI_PROJECT_DIR/.gradle/caches
-  only:
-    - master
 
 
 ################
