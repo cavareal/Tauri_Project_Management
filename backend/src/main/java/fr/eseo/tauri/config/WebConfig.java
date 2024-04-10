@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@EnableWebMvc
+//@EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
 
     @Value("${cors.allowed.origins}")
@@ -22,10 +22,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*");
     }
 
-
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/**").setViewName("forward:/");
+        registry.addViewController("/{x:[\\w\\-]+}").setViewName("forward:/");
+        registry.addViewController("/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}").setViewName("forward:/");
     }
 
 }
