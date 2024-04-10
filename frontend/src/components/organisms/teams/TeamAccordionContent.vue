@@ -6,12 +6,13 @@ import { AccordionContent } from "@/components/ui/accordion"
 import type { Criteria } from "@/types/criteria"
 import { Separator } from "@/components/ui/separator"
 import { separateStringOnFirstSpace } from "@/utils/utils"
-import { getCriteria } from "@/services/team-service"
+import { getCriteria, getTeamAverage } from "@/services/team-service"
 import IsCheck from "@/components/atoms/isCheck.vue"
 
 const students = ref<Student[]>([])
 
 const criteria = ref<Criteria>()
+const average = ref<number | null>(null)
 
 const props = defineProps({
 	teamId: {
@@ -35,6 +36,7 @@ onMounted(async() => {
 	students.value = data
 	const criteriaData = await getCriteria(props.teamId)
 	criteria.value = criteriaData
+	average.value = await getTeamAverage(props.teamId)
 })
 
 function getNom(nomPrenom: string) {
@@ -89,6 +91,10 @@ function getPrenom(nomPrenom: string) {
 				<div class="flex flex-row">
 					<isCheck :isCheck="criteria.validCriteriaBachelor" class="pr-1" />
 					<div>Nombre de bachelors : {{ criteria.nbBachelors }}</div>
+				</div>
+				<div class="flex flex-row" v-if="average">
+					<isCheck :isCheck="true" class="pr-1" />
+					<div>Moyenne : {{ average.toPrecision(4) }}</div>
 				</div>
 			</div>
 		</div>

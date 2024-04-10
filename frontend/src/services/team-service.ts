@@ -86,6 +86,20 @@ export const getCriteria = async(teamId: number): Promise<Criteria> => {
 	return response.data
 }
 
+export const getTeamAverage = async(teamId: number): Promise<number> => {
+	const response = await apiQuery({
+		route: `teams/${teamId}/average`,
+		responseSchema: z.number(),
+		method: "GET"
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
 export const deleteAllTeams = async(): Promise<void> => {
 	const response = await apiQuery({
 		route: "teams",

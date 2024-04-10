@@ -128,7 +128,8 @@ function sendGrades() {
 					<DialogHeader>
 						<DialogTitle>Evaluer la performance</DialogTitle>
 						<DialogDescription>
-							Sélectionnez l'équipe à évaluer et indiquez les notes pour les critères de "Contenu de la présentation" et "Support matériel".
+							Sélectionnez l'équipe à évaluer et indiquez les notes pour les critères de "Contenu de la
+							présentation" et "Support matériel".
 						</DialogDescription>
 					</DialogHeader>
 					<div class="grid gap-4 py-4">
@@ -143,16 +144,19 @@ function sendGrades() {
 						</div>
 						<div class="grid grid-cols-3 items-center gap-4">
 							<Label for="contenu-presentation">Contenu de la présentation :</Label>
-							<Input id="contenu-presentation" type="number" min="0" max="20" v-model="contentPresentationNote" @input="handleContentPresentationNoteInput"/>
+							<Input id="contenu-presentation" type="number" min="0" max="20"
+								v-model="contentPresentationNote" @input="handleContentPresentationNoteInput" />
 						</div>
 						<div class="grid grid-cols-3 items-center gap-4">
 							<Label for="support-materiel">Support matériel :</Label>
-							<Input id="support-materiel" type="number" min="0" max="20" v-model="materialSupportNote" @input="handleMaterialSupportNoteInput"/>
+							<Input id="support-materiel" type="number" min="0" max="20" v-model="materialSupportNote"
+								@input="handleMaterialSupportNoteInput" />
 						</div>
 					</div>
 					<DialogFooter>
 						<DialogClose>
-							<Button type="submit" variant="destructive" class="text-white bg-primary hover:bg-primary/90" @click="addEvaluation">
+							<Button type="submit" variant="destructive"
+								class="text-white bg-primary hover:bg-primary/90" @click="addEvaluation">
 								Evaluer
 							</Button>
 						</DialogClose>
@@ -185,15 +189,15 @@ function sendGrades() {
 						<TableCell class="text-right">
 							<DropdownMenu>
 								<DropdownMenuTrigger>
-									<Ellipsis/>
+									<Ellipsis />
 								</DropdownMenuTrigger>
 								<DropdownMenuContent>
 									<DropdownMenuItem>
-										<Pencil/>
+										<Pencil />
 										Modifier
 									</DropdownMenuItem>
 									<DropdownMenuItem>
-										<Trash2/>
+										<Trash2 />
 										Supprimer
 									</DropdownMenuItem>
 								</DropdownMenuContent>
@@ -204,10 +208,12 @@ function sendGrades() {
 			</Table>
 		</div>
 		<div class="flex justify-center">
-			<Button type="submit" variant="destructive" class="mx-auto text-black bg-secondary hover:bg-secondary/90" v-if="evaluations && buttonsState.validate" @click="sendGrades">
+			<Button type="submit" variant="destructive" class="mx-auto text-black bg-secondary hover:bg-secondary/90"
+				v-if="evaluations && buttonsState.validate" @click="sendGrades">
 				Valider
 			</Button>
-			<Button type="submit" variant="destructive" v-if="buttonsState.loading" class="mx-auto text-black bg-secondary hover:bg-secondary/90">
+			<Button type="submit" variant="destructive" v-if="buttonsState.loading"
+				class="mx-auto text-black bg-secondary hover:bg-secondary/90">
 				<Loader2 class="w-4 h-4 mr-2 animate-spin" />
 				Veuillez patienter
 			</Button>
@@ -216,6 +222,4 @@ function sendGrades() {
 </template>
 
 
-<style scoped>
-
-</style>
+<style scoped></style>
