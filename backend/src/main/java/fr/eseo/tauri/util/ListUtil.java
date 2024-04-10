@@ -7,6 +7,10 @@ import java.util.function.Predicate;
 
 public class ListUtil {
 
+	private ListUtil() {
+		throw new IllegalStateException("Utility class");
+	}
+
 	public static <T> List<T> filter(List<T> list, Predicate<T> predicate) {
 		var filteredList = new ArrayList<T>();
 		for (var element : list) {

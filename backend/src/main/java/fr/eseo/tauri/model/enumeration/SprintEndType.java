@@ -7,9 +7,9 @@ public enum SprintEndType {
         NORMAL_SPRINT("Sprint Normal"),
         FINAL_SPRINT("Sprint Final");
 
-        private final String sprintEndType;
+        private final String endType;
 
         SprintEndType(String sprintEndType) {
-            this.sprintEndType = sprintEndType;
+            this.endType = sprintEndType;
         }
 }
