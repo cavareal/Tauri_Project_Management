@@ -25,6 +25,10 @@ public class ProjectController {
     private final ProjectService projectService;
     private final AuthService authService;
 
+    private static final String UPDATE_ERROR_MESSAGE = "Erreur lors de la mise à jour";
+    private static final String UNAUTHORIZED_MESSAGE = "Non autorisé";
+    private static final String GOOD_EDIT_MESSAGE = "L'edit à bien été enregistré";
+
     /**
      * Constructor for ProjectController.
      * @param projectRepository the project repository
@@ -69,13 +73,13 @@ public class ProjectController {
                     CustomLogger.logInfo("New project created");
                     return ResponseEntity.ok("L'ajout a bien été enregistré");
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
 
@@ -97,15 +101,15 @@ public class ProjectController {
                 Project project = projectService.updateProjectSprintsNumber(idProject, newSprintsNumber);
                 if (project != null) {
                     CustomLogger.logInfo("Sprints number updated");
-                    return ResponseEntity.ok("L'edit à bien été enregistré");
+                    return ResponseEntity.ok(GOOD_EDIT_MESSAGE);
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
     /**
@@ -125,7 +129,7 @@ public class ProjectController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération de la phase actuelle du projet : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
 
@@ -147,15 +151,15 @@ public class ProjectController {
                 Project project = projectService.updateProjectTeamsNumber(idProject, newTeamsNumber);
                 if (project != null) {
                     CustomLogger.logInfo("Teams number updated");
-                    return ResponseEntity.ok("L'edit à bien été enregistré");
+                    return ResponseEntity.ok(GOOD_EDIT_MESSAGE);
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
 
@@ -175,15 +179,15 @@ public class ProjectController {
                 Project project = projectService.updateProjectRatioGender(idProject, newRatioGender);
                 if (project != null) {
                     CustomLogger.logInfo("The gender ratio has been updated");
-                    return ResponseEntity.ok("L'edit à bien été enregistré");
+                    return ResponseEntity.ok(GOOD_EDIT_MESSAGE);
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
 
@@ -203,15 +207,15 @@ public class ProjectController {
                 Project project = projectService.updateProjectPhase(idProject, newPhase);
                 if (project != null) {
                     CustomLogger.logInfo("The project phase has been updated");
-                    return ResponseEntity.ok("L'edit à bien été enregistré");
+                    return ResponseEntity.ok(GOOD_EDIT_MESSAGE);
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
 
@@ -231,13 +235,13 @@ public class ProjectController {
                 if (project != null) {
                     return ResponseEntity.ok("La suppression a bien été prise en compte");
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
 
@@ -259,7 +263,7 @@ public class ProjectController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération de la phase actuelle du projet : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
 
@@ -273,13 +277,13 @@ public class ProjectController {
                 if (project != null) {
                     return ResponseEntity.ok("La modification a bien été prise en compte");
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
                 }
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
     }
 

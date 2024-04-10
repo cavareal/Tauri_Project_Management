@@ -4,10 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
-
-import java.util.ArrayList;
-import java.util.Map;
-
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.GradeTypeRepository;
@@ -17,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +24,7 @@ public class GradeController {
     private final GradeRepository gradeRepository;
     private final GradeService gradeService;
 
-    private final GradeTypeRepository  gradeTypeRepository;
+    private final GradeTypeRepository gradeTypeRepository;
 
     @Autowired
     public GradeController(GradeRepository gradeRepository, GradeService gradeService, GradeTypeRepository gradeTypeRepository) {
@@ -75,10 +72,11 @@ public class GradeController {
      * @return A ResponseEntity with either a success message or an error message.
      */
     @PostMapping("/addGradeToTeam/{userId}")
-    public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId){
+    public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {};
+            TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {
+            };
             Map<String, List<Map<String, Object>>> evaluationsMap = objectMapper.readValue(evaluations, typeReference);
 
             for (Map.Entry<String, List<Map<String, Object>>> entry : evaluationsMap.entrySet()) {
@@ -89,10 +87,12 @@ public class GradeController {
                     if (evaluation.containsKey("gradeOverallPerformance")) {
                         Integer value = (Integer) evaluation.get("gradeOverallPerformance");
                         gradeService.assignGradeToTeam(teamName, value, "Performance Globale", userId);
-                    } if (evaluation.containsKey("gradeMaterialSupport")) {
+                    }
+                    if (evaluation.containsKey("gradeMaterialSupport")) {
                         Integer value = (Integer) evaluation.get("gradeMaterialSupport");
                         gradeService.assignGradeToTeam(teamName, value, "Support Matériel", userId);
-                    } if (evaluation.containsKey("gradeContentPresentation")) {
+                    }
+                    if (evaluation.containsKey("gradeContentPresentation")) {
                         Integer value = (Integer) evaluation.get("gradeContentPresentation");
                         gradeService.assignGradeToTeam(teamName, value, "Contenu de la présentation", userId);
                     }
@@ -109,7 +109,7 @@ public class GradeController {
 
     @GetMapping("/averageGradesByGradeTypeByRole/{userId}")
     public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
-        try{
+        try {
             ArrayList<List<Double>> gradeByTypes = new ArrayList<>();
             ArrayList<Double> gradeByRoles;
 
