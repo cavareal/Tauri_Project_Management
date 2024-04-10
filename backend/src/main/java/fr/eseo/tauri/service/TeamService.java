@@ -4,10 +4,13 @@ import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +30,8 @@ public class TeamService {
     private final ProjectService projectService;
     private final StudentRepository studentRepository;
 
+    private final RoleRepository roleRepository;
+
     /**
      * Constructor for TeamService.
      * @param teamRepository the team repository
@@ -35,11 +40,12 @@ public class TeamService {
      * @param studentRepository the student repository
      */
     @Autowired
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectService projectService, StudentRepository studentRepository) {
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectService projectService, StudentRepository studentRepository, RoleRepository roleRepository){
         this.teamRepository = teamRepository;
         this.userRepository = userRepository;
         this.projectService = projectService;
         this.studentRepository = studentRepository;
+        this.roleRepository = roleRepository;
     }
 
     public void deleteAllTeams() {
@@ -169,18 +175,26 @@ public class TeamService {
 
         int index = 0;
 
+        Role role = new Role();
+        role.type(RoleType.TEAM_MEMBER);
+
         // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
         for (int i = 0; i < nbTeams; i++) {
             for (int j = 0; j < womenPerTeam; j++) {
                 Student student = null;
                 index = i * womenPerTeam + j;
+
                 if (index < nbWomen) {
                     student = women.get(index);
                     student.team(teams.get(i));
+                    role.user(student);
+                    this.roleRepository.save(role);
                     this.studentRepository.save(student);
                 } else if (index < nbStudent) {
                     student = men.get(index - nbWomen);
                     student.team(teams.get(i));
+                    role.user(student);
+                    this.roleRepository.save(role);
                     this.studentRepository.save(student);
                 }
             }
@@ -205,6 +219,9 @@ public class TeamService {
                 student = men.get(i - nbWomen);
                 student.team(sortedTeams.get((i - index)% nbTeams));
             }
+            
+            role.user(student);
+            this.roleRepository.save(role);
             this.studentRepository.save(student);
         }
     }
