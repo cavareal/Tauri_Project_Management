@@ -29,7 +29,6 @@ public class TeamService {
     private final UserRepository userRepository;
     private final ProjectService projectService;
     private final StudentRepository studentRepository;
-
     private final RoleRepository roleRepository;
 
     /**
@@ -267,7 +266,7 @@ public class TeamService {
             }
             return nbWoman;
         } else {
-            return 0; // for example
+            return null; // for example
         }
     }
 
@@ -289,7 +288,7 @@ public class TeamService {
             }
             return nbBachelor;
         } else {
-            return 0; // for example
+            return null; // for example
         }
     }
 
@@ -305,7 +304,7 @@ public class TeamService {
             List<Student> students = studentRepository.findByTeam(teamOptional.get());
             return students.size();
         } else {
-            return 0; // for example
+            return null; // for example
         }
     }
 

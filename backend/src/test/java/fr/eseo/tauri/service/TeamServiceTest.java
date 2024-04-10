@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +35,9 @@ class TeamServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
+
+    @Mock
+    private RoleRepository roleRepository;
 
     @Mock
     private ProjectService projectService;
@@ -119,10 +126,12 @@ class TeamServiceTest {
         when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
 
         // Act
-        Integer nbWoman = teamService.getNbWomanByTeamId(1);
+        Integer nbWomanTeam1 = teamService.getNbWomanByTeamId(1);
+        Integer nbWomanTeam2 = teamService.getNbWomanByTeamId(2);
 
         // Assert
-        assertThat(nbWoman).isEqualTo(1);
+        assertThat(nbWomanTeam1).isEqualTo(1);
+        assertThat(nbWomanTeam2).isNull();
     }
 
     @Test
@@ -155,10 +164,12 @@ class TeamServiceTest {
         when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
 
         // Act
-        Integer nbBachelors = teamService.getNbBachelorByTeamId(1);
+        Integer nbBachelorsTeam1 = teamService.getNbBachelorByTeamId(1);
+        Integer nbBachelorsTeam2 = teamService.getNbBachelorByTeamId(2);
 
         // Assert
-        assertThat(nbBachelors).isEqualTo(1);
+        assertThat(nbBachelorsTeam1).isEqualTo(1);
+        assertThat(nbBachelorsTeam2).isNull();
     }
 
     @Test
@@ -189,10 +200,13 @@ class TeamServiceTest {
         when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
 
         // Act
-        Integer nbStudents = teamService.getNbStudentsByTeamId(1);
+        Integer nbStudentsTeam1 = teamService.getNbStudentsByTeamId(1);
+        Integer nbStudentsTeam2 = teamService.getNbStudentsByTeamId(2);
+
 
         // Assert
-        assertThat(nbStudents).isEqualTo(2);
+        assertThat(nbStudentsTeam1).isEqualTo(2);
+        assertThat(nbStudentsTeam2).isNull();
     }
 
     @Test
@@ -243,4 +257,88 @@ class TeamServiceTest {
         assertThat(result).isNull();
         verify(teamService, times(1)).getAllTeams();
     }
+
+    /*@Test
+    void testGenerateTeams() {
+        // Arrange
+        Integer nbTeams = 3;
+        Integer womenPerTeam = 2;
+        List<Team> expectedTeams = new ArrayList<>();
+        for (int i = 0; i < nbTeams; i++) {
+            Team team = new Team();
+            expectedTeams.add(team);
+        }
+
+        // Mock the dependencies
+        when(studentRepository.findByGender(Gender.WOMAN)).thenReturn(new ArrayList<>());
+        when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN)).thenReturn(new ArrayList<>());
+        doReturn(expectedTeams).when(teamService).createTeams(nbTeams);
+        doNothing().when(teamService).fillTeams(anyList(), anyList(), anyList(), anyInt());
+
+        // Act
+        List<Team> result = teamService.generateTeams(nbTeams, womenPerTeam);
+
+        // Assert
+        assertEquals(expectedTeams, result);
+        verify(studentRepository, times(1)).findByGender(Gender.WOMAN);
+        verify(studentRepository, times(1)).findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN);
+        verify(teamService, times(1)).createTeams(nbTeams);
+        verify(teamService, times(1)).fillTeams(anyList(), anyList(), anyList(), anyInt());
+    }*/
+
+    @Test
+    void testFillTeams() throws Exception {
+        // Arrange
+        List<Team> teams = new ArrayList<>();
+        List<Student> women = new ArrayList<>();
+        List<Student> men = new ArrayList<>();
+        int nbTeams = 3;
+        int womenPerTeam = 2;
+
+        for (int i = 0; i < nbTeams; i++) {
+            Team team = new Team();
+            teams.add(team);
+        }
+
+        for (int i = 0; i < nbTeams * womenPerTeam; i++) {
+            Student woman = new Student();
+            woman.gender(Gender.WOMAN);
+            women.add(woman);
+
+            Student man = new Student();
+            man.gender(Gender.MAN);
+            men.add(man);
+        }
+
+        when(teamRepository.findAllOrderByAvgGradeOrderByAsc()).thenReturn(teams);
+        when(studentRepository.findByTeam()).thenReturn();
+
+
+        // Act
+        Method method = TeamService.class.getDeclaredMethod("fillTeams", List.class, List.class, List.class, Integer.class);
+        method.setAccessible(true);
+        method.invoke(teamService, teams, women, men, womenPerTeam);
+
+        // Assert
+        for (Team team : teams) {
+            /*int womenCount = (int) studentRepository.findByTeam(team).stream()
+                    .filter(student -> student.gender() == Gender.WOMAN)
+                    .count();*/
+            int womenCount = 0;
+            List<Student> studentsInTeam = studentRepository.findByTeam(team);
+            assertEquals(4, studentsInTeam.size());
+            for (Student student : studentsInTeam) {
+                if (student.gender() == Gender.WOMAN) {
+                    womenCount++;
+                }
+            }
+            assertEquals(womenPerTeam, womenCount);
+        }
+    }
+
 }
+
+
+
+
+
