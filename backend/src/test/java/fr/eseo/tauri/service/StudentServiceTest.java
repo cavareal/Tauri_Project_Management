@@ -327,7 +327,7 @@ class StudentServiceTest {
         // Arrange
         Team team = new Team();
         when(teamService.getTeamById(1)).thenReturn(team);
-        when(studentRepository.findStudentsByTeam(team)).thenReturn(Arrays.asList());
+        when(studentRepository.findStudentsByTeam(team)).thenReturn(List.of());
 
         // Act
         List<Student> students = studentService.getStudentsByTeamId(1);

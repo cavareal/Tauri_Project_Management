@@ -5,7 +5,6 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.Gender;
-import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,19 +12,14 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.assertj.core.api.Assertions.*;
-
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @Nested
 class TeamServiceTest {
@@ -35,9 +29,6 @@ class TeamServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
-
-    @Mock
-    private RoleRepository roleRepository;
 
     @Mock
     private ProjectService projectService;
@@ -73,8 +64,6 @@ class TeamServiceTest {
     @Test
     void testGetAllTeamsEmptyList() {
         // Arrange
-        Team team1 = new Team();
-        Team team2 = new Team();
         Project project = new Project();
         when(projectService.getCurrentProject()).thenReturn(project);
         when(teamRepository.findAllByProjectId(project.id())).thenReturn(List.of());
@@ -262,7 +251,7 @@ class TeamServiceTest {
         // Arrange
         User leader = new User();
         leader.id(1);
-        Team team1 = new Team();;
+        Team team1 = new Team();
         Team team2 = new Team();
         doReturn(Arrays.asList(team1, team2)).when(teamService).getAllTeams();
 

@@ -1,6 +1,5 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.controller.StudentController;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
 import org.junit.jupiter.api.*;

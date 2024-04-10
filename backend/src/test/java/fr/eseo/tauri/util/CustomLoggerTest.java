@@ -34,4 +34,10 @@ class CustomLoggerTest {
         CustomLogger.logError("Error message", throwable);
         verify(logger, times(1)).error("Error message", throwable);
     }
+
+    @Test
+    void logError_logsErrorMessage() {
+        CustomLogger.logError("Error message");
+        verify(logger, times(1)).error("Error message");
+    }
 }
