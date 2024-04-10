@@ -52,14 +52,19 @@ public class IndexController {
         }
     }
 
-    @GetMapping(value = "/{fileName:.+}", produces = "image/svg+xml")
+    @GetMapping(value = "/{fileName:.+}")
     public ResponseEntity<byte[]> getImage(@PathVariable String fileName) throws IOException {
+        MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
         if (fileName.endsWith(".svg")) {
-            Resource resource = new ClassPathResource("static/" + fileName);
-            byte[] data = StreamUtils.copyToByteArray(resource.getInputStream());
-            return ResponseEntity.ok().contentType(MediaType.valueOf("image/svg+xml")).body(data);
+            mediaType = MediaType.valueOf("image/svg+xml");
+        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+            mediaType = MediaType.IMAGE_JPEG;
         } else {
             return ResponseEntity.badRequest().build();
         }
+
+        Resource resource = new ClassPathResource("static/" + fileName);
+        byte[] data = StreamUtils.copyToByteArray(resource.getInputStream());
+        return ResponseEntity.ok().contentType(mediaType).body(data);
     }
 }
