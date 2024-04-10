@@ -59,7 +59,7 @@ java-build:
       - $CI_PROJECT_DIR/.gradle/caches
   dependencies:     # Set accessible data in vuejs-build, to copy data from frontend folder 
     - vuejs-build
-
+  
 
 
 ###########
