@@ -37,7 +37,7 @@ public class StudentController {
     public ResponseEntity<String> getStudentQuantity(@RequestHeader("Authorization") String token) {
         // Check token, if user is GOOD
         String permission = "readStudentQuantity";
-        if (authService.checkAuth(token, permission)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 Integer quantity = studentService.getStudentQuantity();
                 return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(quantity));

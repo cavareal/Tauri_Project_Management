@@ -66,7 +66,7 @@ public class ProjectController {
     public ResponseEntity<String> newProject(@RequestHeader("Authorization") String token, @RequestParam Integer teamsNumber, @RequestParam Integer genderRatio, @RequestParam Integer sprintsNumber, @RequestParam ProjectPhase phase) {
         // Check for token, if user is GOOD, with authService ??
         String permission = "teamCreation";
-        if(authService.checkAuth(token, permission)) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 Project project = projectService.newProject(teamsNumber, genderRatio, sprintsNumber, phase);
                 if (project != null) {
@@ -96,7 +96,7 @@ public class ProjectController {
         Integer newSprintsNumber = Integer.valueOf(request.get("nbSprints"));
 
         String permission = "ManageTeamsNumber";
-        if(authService.checkAuth(token, permission)) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 Project project = projectService.updateProjectSprintsNumber(idProject, newSprintsNumber);
                 if (project != null) {
@@ -121,7 +121,7 @@ public class ProjectController {
     @GetMapping("/sprints-number")
     public ResponseEntity<String> getNumberSprints(@RequestHeader("Authorization") String token) {
         String permission = "readSprintNumber";
-        if (authService.checkAuth(token, permission)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 String currentPhase = projectService.getNumberSprints();
                 return ResponseEntity.status(HttpStatus.OK).body(currentPhase);
@@ -146,7 +146,7 @@ public class ProjectController {
     public ResponseEntity<String> updateProjectTeamsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam Integer newTeamsNumber) {
         // Check token, if user is GOOD
         String permission = "manageSprint";
-        if(authService.checkAuth(token, permission)) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 Project project = projectService.updateProjectTeamsNumber(idProject, newTeamsNumber);
                 if (project != null) {
@@ -174,7 +174,7 @@ public class ProjectController {
     public ResponseEntity<String> updateProjectRatioGender(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam Integer newRatioGender) {
         // Check token, if user is GOOD
         String permission = "manageRatioGender";
-        if(authService.checkAuth(token, permission)) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 Project project = projectService.updateProjectRatioGender(idProject, newRatioGender);
                 if (project != null) {
@@ -202,7 +202,7 @@ public class ProjectController {
     public ResponseEntity<String> updateProjectPhase(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam ProjectPhase newPhase) {
         // Check token, if user is GOOD
         String permission = "manageProjectPhase";
-        if(authService.checkAuth(token, permission)) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 Project project = projectService.updateProjectPhase(idProject, newPhase);
                 if (project != null) {
@@ -229,7 +229,7 @@ public class ProjectController {
     public ResponseEntity<String> deleteProject(@RequestHeader("Authorization") String token, @RequestParam Integer id) {
         // Check token, if user is GOOD
         String permission = "teamDelete";
-        if(authService.checkAuth(token, permission)) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 Project project = projectService.deleteProject(id);
                 if (project != null) {
@@ -255,7 +255,7 @@ public class ProjectController {
     @GetMapping("/current-phase")
     public ResponseEntity<String> getCurrentPhase(@RequestHeader("Authorization") String token) {
         String permission = "readProjectPhase";
-        if (authService.checkAuth(token, permission)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 String currentPhase = projectService.getCurrentPhase();
                 return ResponseEntity.status(HttpStatus.OK).body(currentPhase);
@@ -270,7 +270,7 @@ public class ProjectController {
     @PutMapping("/current-phase")
     public ResponseEntity<String> updateCurrentPhase(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
         String permission = "manageProjectPhase";
-        if (authService.checkAuth(token, permission)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 ProjectPhase newPhase = ProjectPhase.valueOf(request.get("phase"));
                 Project project = projectService.updateCurrentPhase(newPhase);

@@ -60,7 +60,7 @@ public class TeamController {
      */
     @PutMapping("/update-leader-team/{idTeam}")
     public ResponseEntity<String> updateLeaderTeam(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam, @RequestParam Integer idLeader) {
-        if (authService.checkAuth(token, TEAM_CREATION)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
             try {
                 Team team = teamService.updateLeaderTeam(idTeam, idLeader);
                 if (team != null) {
@@ -88,7 +88,7 @@ public class TeamController {
     @PutMapping("/update-name-team/{idTeam}")
     public ResponseEntity<String> updateNameTeam(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam, @RequestParam String newName) {
         String permission = "teamRename";
-        if (authService.checkAuth(token, permission)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 Team team = teamService.updateNameTeam(idTeam, newName);
                 if (team != null) {
@@ -117,7 +117,7 @@ public class TeamController {
         Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
         Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
 
-        if (authService.checkAuth(token, TEAM_CREATION)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
 
             try {
                 List<Team> teams = teamService.generateTeams(nbTeams, womenPerTeam);
@@ -223,7 +223,7 @@ public class TeamController {
     @GetMapping("/{idTeam}/average")
     public ResponseEntity<String> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam) {
         String permission = "readTeamAvgGrade";
-        if (authService.checkAuth(token, permission)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 if (this.teamRepository.findById(idTeam).isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("L'équipe n'existe pas");
@@ -247,7 +247,7 @@ public class TeamController {
     @DeleteMapping
     public ResponseEntity<String> deleteAllTeams(@RequestHeader("Authorization") String token) {
         String permission = "teamDelete";
-        if (authService.checkAuth(token, permission)) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 teamService.deleteAllTeams();
                 return ResponseEntity.ok("Les équipes ont bien été supprimées");
