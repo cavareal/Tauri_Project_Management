@@ -4,6 +4,7 @@
 stages:
   - build
   - sonar
+  - build-server-dev
   - deploy-server-dev
   - deploy-server-prod
 
@@ -114,7 +115,7 @@ quality-prod:
 ## Deploy dev ##
 ################
 vuejs-deploy-dev:
-  stage: deploy-server-dev
+  stage: build-server-dev
   image: node:16.19.1-alpine3.17
   script:
     - cd frontend
@@ -133,7 +134,7 @@ vuejs-deploy-dev:
     - gitlab-ci
 
 java-deploy-dev:
-  stage: deploy-server-dev
+  stage: build-server-dev
   image: gradle:8.4-jdk17
   script:
     - cd backend
@@ -157,7 +158,8 @@ push-deploy-dev:
   stage: deploy-server-dev
   image: charlo56/pgl-ssh-image:latest
   dependencies:
-    - java-deploy-dev   # Start after vuejs-deploy-dev is ready
+    - vuejs-deploy-dev
+    - java-deploy-dev
   before_script:
     - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
     - eval $(ssh-agent -s)
