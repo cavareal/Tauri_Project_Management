@@ -19,6 +19,8 @@ public class StudentsWithAverageGradeSeeder {
     private final GradeRepository gradeRepository;
     private final GradeTypeRepository gradeTypeRepository;
 
+    private final Random random = new Random();
+
 
     public StudentsWithAverageGradeSeeder(StudentRepository studentRepository, GradeRepository gradeRepository, GradeTypeRepository gradeTypeRepository) {
         this.studentRepository = studentRepository;
@@ -32,7 +34,7 @@ public class StudentsWithAverageGradeSeeder {
         int ratioBachelor = 20; // in percent
         int nbStudents = 48;
 
-        Random random = new Random();
+
         Gender[] genders = {Gender.MAN, Gender.WOMAN};
 
         // Create and save a gradeType
