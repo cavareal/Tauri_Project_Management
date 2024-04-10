@@ -67,7 +67,7 @@ java-deploy-dev:
 
 push-deploy-dev:
   stage: deploy-server-dev
-  image: jrottenberg/ffmpeg:4.1-alpine38
+  image: alpine:3.18
   dependencies:
     - java-deploy-dev   # Start after vuejs-deploy-dev is ready
   before_script:
