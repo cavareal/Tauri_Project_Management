@@ -2,7 +2,8 @@
 # name of the targetted branch of the MR : CI_MERGE_REQUEST_TARGET_BRANCH_NAME
 
 stages:
-  - build-server-dev
+  - front-server-dev
+  - back-server-dev
   - deploy-server-dev
   - deploy-server-prod
 
@@ -29,7 +30,7 @@ before_script:
 ## Deploy dev ##
 ################
 vuejs-deploy-dev:
-  stage: build-server-dev
+  stage: front-server-dev
   image: node:16.19.1-alpine3.17
   script:
     - cd frontend
@@ -48,7 +49,7 @@ vuejs-deploy-dev:
     - gitlab-ci
 
 java-deploy-dev:
-  stage: build-server-dev
+  stage: back-server-dev
   image: gradle:8.4-jdk17
   script:
     - cd backend
