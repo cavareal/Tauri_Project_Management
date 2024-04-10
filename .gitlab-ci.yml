@@ -150,11 +150,10 @@ java-deploy-dev:
 
 push-deploy-dev:
   stage: deploy-server-dev
-  image: alpine:3.17
+  image: jrottenberg/ffmpeg:4.1-alpine313
   dependencies:
     - java-deploy-dev   # Start after vuejs-deploy-dev is ready
   before_script:
-    - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )' 
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY_DEV" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
