@@ -49,6 +49,7 @@ java-deploy-dev:
   script:
     - cd backend
     - gradle --no-daemon clean build -Pdev -x test
+  retry: 2
   dependencies:     # Set accessible data in vuejs-deploy-dev, to copy data from frontend folder 
     - vuejs-deploy-dev
   cache:
@@ -65,10 +66,11 @@ java-deploy-dev:
 
 push-deploy-dev:
   stage: deploy-server-dev
-  image: jrottenberg/ffmpeg:4.1-alpine313
+  image: node:16.19.1-alpine3.17
   dependencies:
     - java-deploy-dev   # Start after vuejs-deploy-dev is ready
   before_script:
+    - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY_DEV" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
@@ -78,6 +80,8 @@ push-deploy-dev:
   script:
     - mv backend/build/libs/*plain.war backend/build/libs/tauri.war
     - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$DEV_SERVER_IP:/srv/tomcat/webapps 
+  retry: 2
+
 
 #################
 ## Deploy prod ##
