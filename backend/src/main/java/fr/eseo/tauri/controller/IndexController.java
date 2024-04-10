@@ -20,6 +20,7 @@ public class IndexController {
 
     @GetMapping("")
     public String index() {
+        System.out.println("get indexController");
         try {
             Resource resource = new ClassPathResource("static/index.html");
             return StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
@@ -54,6 +55,7 @@ public class IndexController {
 
     @GetMapping(value = "/{fileName:.+}")
     public ResponseEntity<byte[]> getImage(@PathVariable String fileName) throws IOException {
+        System.out.println("filename");
         MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
         if (fileName.endsWith(".svg")) {
             mediaType = MediaType.valueOf("image/svg+xml");
