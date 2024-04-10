@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller class for managing teams.
@@ -226,8 +227,13 @@ public class TeamController {
                 if (this.teamRepository.findById(idTeam).isEmpty()) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("L'équipe n'existe pas");
                 } else {
-                    double avgGrade = this.teamRepository.findAvgGradeByTeamId(this.teamRepository.findById(idTeam).get());
-                    return ResponseEntity.ok(String.valueOf(avgGrade));
+                    Optional<Team> optionalTeam = this.teamRepository.findById(idTeam);
+                    if (optionalTeam.isPresent()) {
+                        double avgGrade = this.teamRepository.findAvgGradeByTeamId(optionalTeam.get());
+                        return ResponseEntity.ok(String.valueOf(avgGrade));
+                    } else {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("L'équipe n'existe pas");
+                    }
                 }
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());

@@ -3,7 +3,6 @@ package fr.eseo.tauri.seeder;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
-import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
@@ -22,6 +21,8 @@ public class StudentSeeder {
 
 	private final TeamRepository teamRepository;
 
+	private final Random random = new Random();
+
 	@Autowired
 	public StudentSeeder(StudentRepository studentRepository, ProjectRepository projectRepository, TeamRepository teamRepository) {
 		this.studentRepository = studentRepository;
@@ -32,7 +33,6 @@ public class StudentSeeder {
 	public void seed(Faker faker) {
 		var project = projectRepository.findAll().get(0);
 		List<Team> teams = teamRepository.findAll();
-		Random random = new Random();
 
 		for (Team team : teams) {
 			team.project(project);
