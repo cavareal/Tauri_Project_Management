@@ -82,9 +82,10 @@ push-deploy-dev:
     - chmod 644 ~/.ssh/known_hosts
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
-#    - echo "$SSH_PASSWORD" | sshpass -p ssh $SSH_USER@$DEV_SERVER_IP "chmod -R 777 /srv/tomcat10/webapps"
-    - echo "$SSH_PASSWORD" | sshpass -p scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$DEV_SERVER_IP:/srv/tomcat10/webapps
+  # - ssh $SSH_USER@$DEV_SERVER_IP "chmod -R 777 /srv/tomcat10/webapps"
+    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$DEV_SERVER_IP:/srv/tomcat10/webapps
   retry: 2
+
 
 
 
