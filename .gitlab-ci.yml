@@ -2,8 +2,6 @@
 # name of the targetted branch of the MR : CI_MERGE_REQUEST_TARGET_BRANCH_NAME
 
 stages:
-  #- build
-  #- sonar
   - deploy-server-dev
   - deploy-server-prod
 
@@ -20,67 +18,6 @@ variables:
 before_script:
   - export https_proxy=http://192.168.4.8:3128/
   - export http_proxy=http://192.168.4.8:3128/
-
-###########
-## BUILD ##
-###########       
-vuejs-build:
-  stage: build
-  image: node:16.19.1-alpine3.17
-  script:
-    - cd frontend
-    - npm install --legacy-peer-deps
-    - npm run build-only:dev
-  retry: 2
-  cache:
-    paths:
-      - frontend/node_modules
- 
-java-build:
-  stage: build
-  image: gradle:8.4-jdk17
-  script:
-    - cd backend
-    - gradle --no-daemon clean build -x test
-  artifacts:
-    name: "Gradle artifacts from $CI_PROJECT_NAME on $CI_COMMIT_REF_SLUG"
-    paths:
-      - $CI_PROJECT_DIR/build/libs/*.war
-      - backend/build/classes/
-    expire_in: 1 day
-    when: always
-  retry: 2
-  cache:
-    paths:
-      - $CI_PROJECT_DIR/.gradle/caches
-  dependencies:     # Set accessible data in vuejs-build, to copy data from frontend folder 
-    - vuejs-build
-
-###########
-## SONAR ##
-###########
-quality-dev:
-  stage: sonar
-  image: gradle:8.4-jdk17
-  script:
-    - cd backend
-    - chmod +x ./gradlew
-    - ./gradlew --no-daemon test  # Use temp DB in backend in application-test.properties (h2)
-    - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/build/libs/*.war
-    expire_in: 1 day
-    when: always
-  retry: 2
-  dependencies:
-    - java-build
-  cache:
-    paths:
-      - $CI_PROJECT_DIR/.gradle/caches
-  only:
-    - dev
-    - gitlab-ci
 
 quality-prod:
   stage: sonar
