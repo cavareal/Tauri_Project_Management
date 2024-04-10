@@ -189,7 +189,7 @@ push-prod:
     - java-build
   before_script:
     - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY_DEV" | tr -d '\r' | ssh-add -
+    - echo "$SSH_PRIVATE_KEY_PROD" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan $PROD_SERVER_IP >> ~/.ssh/known_hosts
