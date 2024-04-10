@@ -103,6 +103,22 @@ class TeamServiceTest {
     }
 
     @Test
+    void testGetTeamByName() {
+        // Arrange
+        Team team = new Team();
+        String teamName = "Team 1";
+        team.name(teamName);
+        when(teamRepository.findByName(teamName)).thenReturn(team);
+
+        // Act
+        Team result = teamRepository.findByName(teamName);
+
+        // Assert
+        assertThat(result).isEqualTo(team);
+        verify(teamRepository, times(1)).findByName(teamName);
+    }
+
+    @Test
     void testGetTeamByIdNull() {
         // Arrange
         when(teamRepository.findById(1)).thenReturn(Optional.empty());
