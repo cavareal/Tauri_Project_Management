@@ -10,8 +10,8 @@ import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class StudentSeeder {
@@ -21,7 +21,7 @@ public class StudentSeeder {
 
 	private final TeamRepository teamRepository;
 
-	private final Random random = new Random();
+	private final SecureRandom secureRandom = new SecureRandom();
 
 	@Autowired
 	public StudentSeeder(StudentRepository studentRepository, ProjectRepository projectRepository, TeamRepository teamRepository) {
@@ -41,7 +41,7 @@ public class StudentSeeder {
 
 		for (int i = 0; i < 60; i++) {
 			var student = new Student();
-			int teamId = random.nextInt(teams.size());
+			int teamId = secureRandom.nextInt(teams.size());
 
 			student.name(faker.name().fullName());
 			student.email(faker.internet().emailAddress());
