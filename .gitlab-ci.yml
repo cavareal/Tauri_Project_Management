@@ -52,7 +52,7 @@ java-deploy-dev:
   image: gradle:8.4-jdk17
   script:
     - cd backend
-    - ls /src/main/resources/static/
+    - ls ../frontend/dist/
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
     - gradle --no-daemon clean build -Pdev -x test
