@@ -7,7 +7,7 @@
 		"dev": "vite",
 		"build": "run-p type-check \"build-only {@}\" --",
 		"preview": "vite preview",
-		"build-only:dev": "vite build --mode development",
+		"build-only:dev": "vite build --mode devserver",
 		"build-only:prod": "vite build --mode production",
 		"type-check": "vue-tsc --build --force",
 		"lint": "eslint .",
