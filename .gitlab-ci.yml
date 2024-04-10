@@ -80,7 +80,7 @@ push-deploy-dev:
     - chmod 700 ~/.ssh
     - ssh-keyscan $DEV_SERVER_IP >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
-    - chmod -R 777 /opt/tomcat10/webapps
+    - chmod -R 777 /srv/tomcat10/webapps
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
     - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$DEV_SERVER_IP:/srv/tomcat10/webapps 
