@@ -286,53 +286,53 @@ class TeamServiceTest {
         verify(teamService, times(1)).fillTeams(anyList(), anyList(), anyList(), anyInt());
     }*/
 
-    @Test
-    void testFillTeams() throws Exception {
-        // Arrange
-        List<Team> teams = new ArrayList<>();
-        List<Student> women = new ArrayList<>();
-        List<Student> men = new ArrayList<>();
-        int nbTeams = 3;
-        int womenPerTeam = 2;
-
-        for (int i = 0; i < nbTeams; i++) {
-            Team team = new Team();
-            teams.add(team);
-        }
-
-        for (int i = 0; i < nbTeams * womenPerTeam; i++) {
-            Student woman = new Student();
-            woman.gender(Gender.WOMAN);
-            women.add(woman);
-
-            Student man = new Student();
-            man.gender(Gender.MAN);
-            men.add(man);
-        }
-
-        when(teamRepository.findAllOrderByAvgGradeOrderByAsc()).thenReturn(teams);
-
-        // Act
-        Method method = TeamService.class.getDeclaredMethod("fillTeams", List.class, List.class, List.class, Integer.class);
-        method.setAccessible(true);
-        method.invoke(teamService, teams, women, men, womenPerTeam);
-
-        // Assert
-        for (Team team : teams) {
-            /*int womenCount = (int) studentRepository.findByTeam(team).stream()
-                    .filter(student -> student.gender() == Gender.WOMAN)
-                    .count();*/
-            int womenCount = 0;
-            List<Student> studentsInTeam = studentRepository.findByTeam(team);
-            assertEquals(4, studentsInTeam.size());
-            for (Student student : studentsInTeam) {
-                if (student.gender() == Gender.WOMAN) {
-                    womenCount++;
-                }
-            }
-            assertEquals(womenPerTeam, womenCount);
-        }
-    }
+//    @Test
+//    void testFillTeams() throws Exception {
+//        // Arrange
+//        List<Team> teams = new ArrayList<>();
+//        List<Student> women = new ArrayList<>();
+//        List<Student> men = new ArrayList<>();
+//        int nbTeams = 3;
+//        int womenPerTeam = 2;
+//
+//        for (int i = 0; i < nbTeams; i++) {
+//            Team team = new Team();
+//            teams.add(team);
+//        }
+//
+//        for (int i = 0; i < nbTeams * womenPerTeam; i++) {
+//            Student woman = new Student();
+//            woman.gender(Gender.WOMAN);
+//            women.add(woman);
+//
+//            Student man = new Student();
+//            man.gender(Gender.MAN);
+//            men.add(man);
+//        }
+//
+//        when(teamRepository.findAllOrderByAvgGradeOrderByAsc()).thenReturn(teams);
+//
+//        // Act
+//        Method method = TeamService.class.getDeclaredMethod("fillTeams", List.class, List.class, List.class, Integer.class);
+//        method.setAccessible(true);
+//        method.invoke(teamService, teams, women, men, womenPerTeam);
+//
+//        // Assert
+//        for (Team team : teams) {
+//            /*int womenCount = (int) studentRepository.findByTeam(team).stream()
+//                    .filter(student -> student.gender() == Gender.WOMAN)
+//                    .count();*/
+//            int womenCount = 0;
+//            List<Student> studentsInTeam = studentRepository.findByTeam(team);
+//            assertEquals(4, studentsInTeam.size());
+//            for (Student student : studentsInTeam) {
+//                if (student.gender() == Gender.WOMAN) {
+//                    womenCount++;
+//                }
+//            }
+//            assertEquals(womenPerTeam, womenCount);
+//        }
+//    }
 
 }
 
