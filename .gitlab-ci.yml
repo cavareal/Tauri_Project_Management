@@ -10,14 +10,20 @@ stages:
 
 
 variables:
-  GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-  ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
+  ## Check if variables are used 
+  # GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  # ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
+
   ## Value of variables in gitlab>ci_cd>variables
-  # DEV_SERVER_IP: ""     
-  # PROD_SERVER_IP: ""    
+  # $SONAR_PROJET_KEY_DEV
+  # $SONAR_LOGIN_DEV
+  # $SONAR_PROJETKEY_PROD
+  # $SONAR_LOGIN_PROD
+  # $SERVER_IP_DEV: ""     
+  # $SERVER_IP_PROD: ""    
   # $SSH_USER
-  # SSH_PRIVATE_KEY_DEV
-  # SSH_PRIVATE_KEY_PROD
+  # $SSH_PRIVATE_KEY_DEV
+  # $SSH_PRIVATE_KEY_PROD
 
 before_script:
   - export https_proxy=http://192.168.4.8:3128/
@@ -40,7 +46,7 @@ vuejs-build-dev:
   artifacts:
     paths:
       - frontend/dist
-    expire_in: 1 hrs
+    expire_in: 15 mins
   cache:
     paths:
       - frontend/node_modules
@@ -62,7 +68,7 @@ vuejs-build-prod:
   artifacts:
     paths:
       - frontend/dist
-    expire_in: 1 hrs
+    expire_in: 15 mins
   cache:
     paths:
       - frontend/node_modules
@@ -92,7 +98,7 @@ java-build:
   artifacts:
     paths:
       - backend/build/libs/*.war
-    expire_in: 5 days
+    expire_in: 15 mins
     when: always
 
 
@@ -107,11 +113,11 @@ quality-dev:
     - cd backend
     - chmod +x ./gradlew
     - ./gradlew --no-daemon test 
-    - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_DevBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=c5b2dd816af047dc15120ef5b683457c0a5a128c -Dsonar.java.binaries=build/classes/java/main
+    - ./gradlew --no-daemon sonar -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
-    expire_in: 1 day
+    expire_in: 15 mins
     when: always
   retry: 2
   dependencies:
@@ -133,11 +139,11 @@ quality-prod:
     - cd backend
     - chmod +x ./gradlew
     - ./gradlew --no-daemon test
-    - ./gradlew --no-daemon sonar -Dsonar.projectKey=Team4_2024_MasterBranch_Project -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=50173e34bc59d1e7554c1d9a3cdf0e511a87b457 -Dsonar.java.binaries=build/classes/java/main
+    - ./gradlew --no-daemon sonar -Dsonar.projectKey=$SONAR_PROJETKEY_PROD -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_PROD -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
-    expire_in: 1 day
+    expire_in: 15 mins
     when: always
   retry: 2
   dependencies:
@@ -155,7 +161,7 @@ quality-prod:
 ################
 push-dev:
   stage: deploy-server-dev
-  image: charlo56/pgl-ssh-image:latest
+  image: charlo56/pgl-ssh-image:latest    # ESEO Firewall block curl or fetech command to install openssh in an image. So i use docker image with openssh installed
   dependencies:
     - vuejs-build-dev
     - java-build
@@ -183,7 +189,7 @@ push-dev:
 #################
 push-prod:
   stage: deploy-server-prod
-  image: charlo56/pgl-ssh-image:latest
+  image: charlo56/pgl-ssh-image:latest    # ESEO Firewall block curl or fetech command to install openssh in an image. So i use docker image with openssh installed
   dependencies:
     - vuejs-build-prod
     - java-build
