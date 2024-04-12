@@ -14,11 +14,13 @@ variables:
   # GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   # ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
 
-  ## Value of variables in gitlab>ci_cd>variables
+  #### Value of variables in gitlab>ci_cd>variables
+  #---SONAR
   # $SONAR_PROJET_KEY_DEV
   # $SONAR_LOGIN_DEV
   # $SONAR_PROJETKEY_PROD
   # $SONAR_LOGIN_PROD
+  #---SSH
   # $SERVER_IP_DEV: ""     
   # $SERVER_IP_PROD: ""    
   # $SSH_USER
