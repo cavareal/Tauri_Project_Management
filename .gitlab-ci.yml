@@ -10,10 +10,6 @@ stages:
 
 
 variables:
-  ## Check if variables are used 
-  # GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-  # ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
-
   #### Value of variables in gitlab>ci_cd>variables
   #---SONAR
   # $SONAR_PROJET_KEY_DEV
@@ -191,7 +187,7 @@ push-dev:
 #################
 push-prod:
   stage: deploy-server-prod
-  image: charlo56/pgl-ssh-image:latest    # ESEO Firewall block curl or fetech command to install openssh in an image. So i use docker image with openssh installed
+  image: charlo56/pgl-ssh-image:latest    # ESEO Firewall block curl or fetch command to install openssh in an image. So i use docker image with openssh pre-installed
   dependencies:
     - vuejs-build-prod
     - java-build
