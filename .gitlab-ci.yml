@@ -80,7 +80,7 @@ vuejs-build-prod:
 ###############################
 java-build:
   stage: build-backend
-  image: gradle:8.4-jdk17
+  image: charlo56/gradle8.4-jdk17:latest
   script:
     - cd backend
     - mkdir -p src/main/resources/static
@@ -106,7 +106,7 @@ java-build:
 ###############
 quality-dev:
   stage: sonar
-  image: gradle:8.4-jdk17
+  image: charlo56/gradle8.4-jdk17:latest
   script:
     - cd backend
     - chmod +x ./gradlew
@@ -132,7 +132,7 @@ quality-dev:
 ################
 quality-prod:
   stage: sonar
-  image: gradle:8.4-jdk17
+  image: charlo56/gradle8.4-jdk17:latest
   script:
     - cd backend
     - chmod +x ./gradlew
