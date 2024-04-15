@@ -10,6 +10,9 @@ stages:
 
 
 variables:
+  GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
+
   #### Value of variables in gitlab>ci_cd>variables
   #---SONAR
   # $SONAR_PROJET_KEY_DEV
@@ -80,7 +83,7 @@ vuejs-build-prod:
 ###############################
 java-build:
   stage: build-backend
-  image: charlo56/gradle8.4-jdk17:latest
+  image: gradle:8.4-jdk17
   script:
     - cd backend
     - mkdir -p src/main/resources/static
@@ -106,7 +109,7 @@ java-build:
 ###############
 quality-dev:
   stage: sonar
-  image: charlo56/gradle8.4-jdk17:latest
+  image: gradle:8.4-jdk17
   script:
     - cd backend
     - chmod +x ./gradlew
@@ -132,7 +135,7 @@ quality-dev:
 ################
 quality-prod:
   stage: sonar
-  image: charlo56/gradle8.4-jdk17:latest
+  image: gradle:8.4-jdk17
   script:
     - cd backend
     - chmod +x ./gradlew
