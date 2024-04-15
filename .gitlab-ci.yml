@@ -171,13 +171,13 @@ push-dev:
     - echo "$SSH_PRIVATE_KEY_DEV" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - ssh-keyscan $DEV_SERVER_IP >> ~/.ssh/known_hosts
+    - ssh-keyscan $SERVER_IP_DEV >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
-    - ssh $SSH_USER@$DEV_SERVER_IP "rm -f /srv/tomcat10/webapps/tauri.war"
-    - ssh $SSH_USER@$DEV_SERVER_IP "rm -f -r /srv/tomcat10/webapps/tauri/"
-    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$DEV_SERVER_IP:/srv/tomcat10/webapps
+    - ssh $SSH_USER@$SERVER_IP_DEV "rm -f /srv/tomcat10/webapps/tauri.war"
+    - ssh $SSH_USER@$SERVER_IP_DEV "rm -f -r /srv/tomcat10/webapps/tauri/"
+    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_DEV:/srv/tomcat10/webapps
   retry: 2
   only:
     - dev
@@ -199,13 +199,13 @@ push-prod:
     - echo "$SSH_PRIVATE_KEY_PROD" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - ssh-keyscan $PROD_SERVER_IP >> ~/.ssh/known_hosts
+    - ssh-keyscan $SERVER_IP_PROD >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
-    - ssh $SSH_USER@$PROD_SERVER_IP "rm -f /srv/tomcat10/webapps/tauri.war"
-    - ssh $SSH_USER@$PROD_SERVER_IP "rm -f -r /srv/tomcat10/webapps/tauri/"
-    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$PROD_SERVER_IP:/srv/tomcat10/webapps
+    - ssh $SSH_USER@$SERVER_IP_PROD "rm -f /srv/tomcat10/webapps/tauri.war"
+    - ssh $SSH_USER@$SERVER_IP_PROD "rm -f -r /srv/tomcat10/webapps/tauri/"
+    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_PROD:/srv/tomcat10/webapps
   retry: 2
   only:
     - main
