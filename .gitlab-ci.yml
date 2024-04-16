@@ -101,7 +101,10 @@ java-build:
       - backend/build/libs/*.war
     expire_in: 15 mins
     when: always
-
+  only:
+    - main
+    - dev
+    - gitlab-ci
 
 
 ###############
