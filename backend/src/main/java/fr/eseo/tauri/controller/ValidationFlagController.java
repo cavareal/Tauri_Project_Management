@@ -2,11 +2,13 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.ValidationFlag;
 import fr.eseo.tauri.repository.ValidationFlagRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/validation_flags")
+@Tag(name = "validation-flags")
 public class ValidationFlagController {
 
     private final ValidationFlagRepository validationFlagRepository;

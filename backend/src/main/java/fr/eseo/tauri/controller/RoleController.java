@@ -4,11 +4,13 @@ import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/roles")
+@Tag(name = "roles")
 public class RoleController {
 
     private final RoleRepository roleRepository;

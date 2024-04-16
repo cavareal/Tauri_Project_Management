@@ -2,10 +2,12 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.repository.PresentationOrderRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/presentation_orders")
+@Tag(name = "presentation-orders")
 public class PresentationOrderController {
 
     //@Autowired

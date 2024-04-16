@@ -7,6 +7,7 @@ import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
 import fr.eseo.tauri.util.CustomLogger;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/teams")
+@Tag(name = "teams")
 public class TeamController {
 
     private static final String READ_STUDENT_BY_TEAM = "readStudentByTeam";

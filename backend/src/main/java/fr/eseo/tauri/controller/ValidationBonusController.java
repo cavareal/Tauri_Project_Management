@@ -2,11 +2,13 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.ValidationBonusRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/validation_bonuses")
+@Tag(name = "validation-bonuses")
 public class ValidationBonusController {
 
     private final ValidationBonusRepository validationBonusRepository;

@@ -8,6 +8,7 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.service.GradeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/grades")
+@Tag(name = "grades")
 public class GradeController {
 
     private final GradeRepository gradeRepository;

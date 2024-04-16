@@ -2,10 +2,12 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.repository.SprintRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/sprints")
+@Tag(name = "sprints")
 public class SprintController {
 
     private final SprintRepository sprintRepository;

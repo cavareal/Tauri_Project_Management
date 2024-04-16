@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/students")
+@Tag(name = "students")
 public class StudentController {
 
     private final StudentRepository studentRepository;

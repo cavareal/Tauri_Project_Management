@@ -6,6 +6,7 @@ import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.util.CustomLogger;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/projects")
+@Tag(name = "projects")
 public class ProjectController {
 
     private final ProjectRepository projectRepository;

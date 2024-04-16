@@ -2,11 +2,13 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.GradeScale;
 import fr.eseo.tauri.repository.GradeScaleRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/grade_scales")
+@Tag(name = "grade-scales")
 public class GradeScaleController {
 
     private final GradeScaleRepository gradeScaleRepository;

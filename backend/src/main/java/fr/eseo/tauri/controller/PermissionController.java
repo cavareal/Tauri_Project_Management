@@ -2,11 +2,13 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.repository.PermissionRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/permissions")
+@Tag(name = "permissions")
 public class PermissionController {
 
     private final PermissionRepository permissionRepository;
