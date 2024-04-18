@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/presentation_orders")
+@RequestMapping("/api/presentation-orders")
 @Tag(name = "presentation-orders")
 public class PresentationOrderController {
 
@@ -18,12 +18,12 @@ public class PresentationOrderController {
         this.presentationOrderRepository = presentationOrderRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public PresentationOrder addPresentationOrder(@RequestBody PresentationOrder presentationOrder) {
         return presentationOrderRepository.save(presentationOrder);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<PresentationOrder> getAllPresentationOrders() {
         return presentationOrderRepository.findAll();
     }
@@ -33,7 +33,7 @@ public class PresentationOrderController {
         return presentationOrderRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public PresentationOrder updatePresentationOrder(@PathVariable Integer id, @RequestBody PresentationOrder presentationOrderDetails) {
         PresentationOrder presentationOrder = presentationOrderRepository.findById(id).orElse(null);
         if (presentationOrder != null) {
@@ -43,7 +43,7 @@ public class PresentationOrderController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deletePresentationOrder(@PathVariable Integer id) {
         presentationOrderRepository.deleteById(id);
         return "PresentationOrder deleted";

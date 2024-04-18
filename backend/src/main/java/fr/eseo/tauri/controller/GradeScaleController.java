@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/grade_scales")
+@RequestMapping("/api/grade-scales")
 @Tag(name = "grade-scales")
 public class GradeScaleController {
 
@@ -18,12 +18,12 @@ public class GradeScaleController {
         this.gradeScaleRepository = gradeScaleRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public GradeScale addGradeScale(@RequestBody GradeScale gradeScale) {
         return gradeScaleRepository.save(gradeScale);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<GradeScale> getAllGradeScales() {
         return gradeScaleRepository.findAll();
     }
@@ -33,7 +33,7 @@ public class GradeScaleController {
         return gradeScaleRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public GradeScale updateGradeScale(@PathVariable Integer id, @RequestBody GradeScale gradeScaleDetails) {
         GradeScale gradeScale = gradeScaleRepository.findById(id).orElse(null);
         if (gradeScale != null) {
@@ -44,7 +44,7 @@ public class GradeScaleController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteGradeScale(@PathVariable Integer id) {
         gradeScaleRepository.deleteById(id);
         return "GradeScale deleted";

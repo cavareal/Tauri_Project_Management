@@ -26,7 +26,7 @@ const fetchGradeTypes = async() => {
 	const data = await apiQuery({
 		responseSchema: z.array(GradeTypeSchema),
 		method: "GET",
-		route: "grade_types",
+		route: "grade-types",
 		delay: 5000
 	})
 	if (data.status === "success") {
@@ -52,7 +52,7 @@ const updateGradeFactors = async() => {
 	await Promise.all(gradeTypes.value?.map((gradeType) => apiQuery({
 		method: "PATCH",
 		responseSchema: GradeTypeSchema,
-		route: `grade_types/${gradeType.id}`,
+		route: `grade-types/${gradeType.id}`,
 		body: { factor: gradeType.factor }
 	}))).then(() => location.reload())
 

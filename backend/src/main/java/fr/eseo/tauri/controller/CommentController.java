@@ -18,12 +18,12 @@ public class CommentController {
         this.commentRepository = commentRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public Comment addComment(@RequestBody Comment comment) {
         return commentRepository.save(comment);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<Comment> getAllComments() {
         return commentRepository.findAll();
     }
@@ -33,7 +33,7 @@ public class CommentController {
         return commentRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public Comment updateComment(@PathVariable Integer id, @RequestBody Comment commentDetails) {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment != null) {
@@ -44,7 +44,7 @@ public class CommentController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteComment(@PathVariable Integer id) {
         commentRepository.deleteById(id);
         return "Comment deleted";

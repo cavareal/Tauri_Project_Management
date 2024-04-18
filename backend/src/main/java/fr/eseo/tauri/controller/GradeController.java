@@ -40,7 +40,7 @@ public class GradeController {
         return ResponseEntity.ok(gradeRepository.findAll());
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public Grade addGrade(@RequestBody Grade grade) {
         return gradeRepository.save(grade);
     }
@@ -50,7 +50,7 @@ public class GradeController {
         return gradeRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public Grade updateGrade(@PathVariable Integer id, @RequestBody Grade gradeDetails) {
         Grade grade = gradeRepository.findById(id).orElse(null);
         if (grade != null) {
@@ -61,7 +61,7 @@ public class GradeController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteGrade(@PathVariable Integer id) {
         gradeRepository.deleteById(id);
         return "Grade deleted";
@@ -73,7 +73,7 @@ public class GradeController {
      * @param evaluations A JSON string representing a map of evaluations.
      * @return A ResponseEntity with either a success message or an error message.
      */
-    @PostMapping("/addGradeToTeam/{userId}")
+    @PostMapping("/add-grade-to-team/{userId}")
     public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -110,7 +110,7 @@ public class GradeController {
     }
 
     //TODO : Handle the token
-    @GetMapping("/averageGradesByGradeTypeByRole/{userId}")
+    @GetMapping("/average-grades-by-grade-type-by-role/{userId}")
     public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
         try {
             ArrayList<List<Double>> gradeByTypes = new ArrayList<>();

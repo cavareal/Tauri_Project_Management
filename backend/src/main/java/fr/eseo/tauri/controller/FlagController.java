@@ -18,12 +18,12 @@ public class FlagController {
         this.flagRepository = flagRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public Flag addFlag(@RequestBody Flag flag) {
         return flagRepository.save(flag);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<Flag> getAllFlags() {
         return flagRepository.findAll();
     }
@@ -33,7 +33,7 @@ public class FlagController {
         return flagRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public Flag updateFlag(@PathVariable Integer id, @RequestBody Flag flagDetails) {
         Flag flag = flagRepository.findById(id).orElse(null);
         if (flag != null) {
@@ -44,7 +44,7 @@ public class FlagController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteFlag(@PathVariable Integer id) {
         flagRepository.deleteById(id);
         return "Flag deleted";

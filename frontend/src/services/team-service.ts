@@ -61,7 +61,7 @@ export const setTeamLeader = async(id: number, value: string): Promise<void> => 
 
 export const generateTeams = async(nbTeams: string, womenPerTeam: string): Promise<void> => {
 	const response = await apiQuery({
-		route: "teams/create-teams",
+		route: "teams/",
 		responseSchema: z.string(),
 		method: "POST",
 		body: { nbTeams, womenPerTeam },

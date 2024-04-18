@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/grade_types")
+@RequestMapping("/api/grade-types")
 @Tag(name = "grade-types")
 public class GradeTypeController {
 
@@ -36,12 +36,12 @@ public class GradeTypeController {
         return ResponseEntity.ok(gradeTypeService.updateFactor(id, gradeType.factor()));
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public GradeType addGradeType(@RequestBody GradeType gradeType) {
         return gradeTypeRepository.save(gradeType);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<GradeType> getAllGradeTypes() {
         return gradeTypeRepository.findAll();
     }
@@ -51,7 +51,7 @@ public class GradeTypeController {
         return gradeTypeRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public GradeType updateGradeType(@PathVariable Integer id, @RequestBody GradeType gradeTypeDetails) {
         GradeType gradeType = gradeTypeRepository.findById(id).orElse(null);
         if (gradeType != null) {
@@ -64,7 +64,7 @@ public class GradeTypeController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteGradeType(@PathVariable Integer id) {
         gradeTypeRepository.deleteById(id);
         return "GradeType deleted";

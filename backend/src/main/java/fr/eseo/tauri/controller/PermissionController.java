@@ -18,12 +18,12 @@ public class PermissionController {
         this.permissionRepository = permissionRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public Permission addPermission(@RequestBody Permission permission) {
         return permissionRepository.save(permission);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<Permission> getAllPermissions() {
         return permissionRepository.findAll();
     }
@@ -33,7 +33,7 @@ public class PermissionController {
         return permissionRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public Permission updatePermission(@PathVariable Integer id, @RequestBody Permission permissionDetails) {
         Permission permission = permissionRepository.findById(id).orElse(null);
         if (permission != null) {
@@ -44,7 +44,7 @@ public class PermissionController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deletePermission(@PathVariable Integer id) {
         permissionRepository.deleteById(id);
         return "Permission deleted";

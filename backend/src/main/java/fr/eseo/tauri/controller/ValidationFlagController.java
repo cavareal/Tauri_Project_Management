@@ -18,12 +18,12 @@ public class ValidationFlagController {
         this.validationFlagRepository = validationFlagRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public ValidationFlag addValidationFlag(@RequestBody ValidationFlag validationFlag) {
         return validationFlagRepository.save(validationFlag);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<ValidationFlag> getAllValidationFlags() {
         return validationFlagRepository.findAll();
     }
@@ -33,7 +33,7 @@ public class ValidationFlagController {
         return validationFlagRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ValidationFlag updateValidationFlag(@PathVariable Integer id, @RequestBody ValidationFlag validationFlagDetails) {
         ValidationFlag validationFlag = validationFlagRepository.findById(id).orElse(null);
         if (validationFlag != null) {
@@ -43,7 +43,7 @@ public class ValidationFlagController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteValidationFlag(@PathVariable Integer id) {
         validationFlagRepository.deleteById(id);
         return "ValidationFlag deleted";

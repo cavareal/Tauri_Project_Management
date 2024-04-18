@@ -18,12 +18,12 @@ public class BonusController {
         this.bonusRepository = bonusRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public Bonus addBonus(@RequestBody Bonus bonus) {
         return bonusRepository.save(bonus);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<Bonus> getAllBonuses() {
         return bonusRepository.findAll();
     }
@@ -33,7 +33,7 @@ public class BonusController {
         return bonusRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public Bonus updateBonus(@PathVariable Integer id, @RequestBody Bonus bonusDetails) {
         Bonus bonus = bonusRepository.findById(id).orElse(null);
         if (bonus != null) {
@@ -45,7 +45,7 @@ public class BonusController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteBonus(@PathVariable Integer id) {
         bonusRepository.deleteById(id);
         return "Bonus deleted";

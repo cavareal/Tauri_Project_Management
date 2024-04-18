@@ -113,7 +113,7 @@ public class TeamController {
      * @param token the authorization token
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
-    @PostMapping("/create-teams")
+    @PostMapping("/")
     public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
 
         Integer nbTeams = Integer.valueOf(request.get("nbTeams"));

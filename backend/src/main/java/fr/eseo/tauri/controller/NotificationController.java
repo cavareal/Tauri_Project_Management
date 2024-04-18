@@ -16,12 +16,12 @@ public class NotificationController {
         this.notificationRepository = notificationRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public Notification addNotification(@RequestBody Notification notification) {
         return notificationRepository.save(notification);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<Notification> getAllNotifications() {
         return notificationRepository.findAll();
     }
@@ -31,7 +31,7 @@ public class NotificationController {
         return notificationRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public Notification updateNotification(@PathVariable Integer id, @RequestBody Notification notificationDetails) {
         Notification notification = notificationRepository.findById(id).orElse(null);
         if (notification != null) {
@@ -44,7 +44,7 @@ public class NotificationController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteNotification(@PathVariable Integer id) {
         notificationRepository.deleteById(id);
         return "Notification deleted";

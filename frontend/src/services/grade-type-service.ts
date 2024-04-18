@@ -6,7 +6,7 @@ export const getAllImportedGradeTypes = async() => {
 	const response = await apiQuery({
 		responseSchema: z.array(GradeTypeSchema),
 		method: "GET",
-		route: "grade_types"
+		route: "grade-types"
 	})
 
 	if (response.status === "error") {

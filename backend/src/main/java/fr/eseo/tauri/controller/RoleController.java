@@ -20,12 +20,12 @@ public class RoleController {
         this.roleRepository = roleRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public Role addRole(@RequestBody Role role) {
         return roleRepository.save(role);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<Role> getAllRoles() {
         return roleRepository.findAll();
     }
@@ -35,7 +35,7 @@ public class RoleController {
         return roleRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public Role updateRole(@PathVariable Integer id, @RequestBody Role roleDetails) {
         Role role = roleRepository.findById(id).orElse(null);
         if (role != null) {
@@ -46,13 +46,13 @@ public class RoleController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteRole(@PathVariable Integer id) {
         roleRepository.deleteById(id);
         return "Role deleted";
     }
 
-    @GetMapping("/user/{type}")
+    @GetMapping("/{type}")
     public User getFirstUserByRoleType(@PathVariable RoleType type) {
         return roleRepository.findFirstByType(type).user();
     }

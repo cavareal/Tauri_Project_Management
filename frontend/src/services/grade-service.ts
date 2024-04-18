@@ -18,7 +18,7 @@ export const getAllGrades = async(): Promise<Grade[]> => {
 
 export const getAverageGrades = async(userId: number): Promise<z.infer<typeof GradeDoubleArraySchema>> => {
 	const response = await apiQuery({
-		route: `grades/averageGradesByGradeTypeByRole/${userId}`,
+		route: `grades/average-grades-by-grade-type-by-role/${userId}`,
 		responseSchema: GradeDoubleArraySchema,
 		method: "GET"
 	})

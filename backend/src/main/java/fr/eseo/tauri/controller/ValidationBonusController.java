@@ -17,12 +17,12 @@ public class ValidationBonusController {
     public ValidationBonusController(ValidationBonusRepository validationBonusRepository) {
         this.validationBonusRepository = validationBonusRepository;
     }
-    @PostMapping("/add")
+    @PostMapping("/")
     public ValidationBonus addValidationBonus(@RequestBody ValidationBonus validationBonus) {
         return validationBonusRepository.save(validationBonus);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<ValidationBonus> getAllValidationBonuses() {
         return validationBonusRepository.findAll();
     }
@@ -32,7 +32,7 @@ public class ValidationBonusController {
         return validationBonusRepository.findById(id).orElse(null);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     public ValidationBonus updateValidationBonus(@PathVariable Integer id, @RequestBody ValidationBonus validationBonusDetails) {
         ValidationBonus validationBonus = validationBonusRepository.findById(id).orElse(null);
         if (validationBonus != null) {
@@ -42,7 +42,7 @@ public class ValidationBonusController {
         return null;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteValidationBonus(@PathVariable Integer id) {
         validationBonusRepository.deleteById(id);
         return "ValidationBonus deleted";
