@@ -8,11 +8,13 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "flags")
 @Getter
 @Setter
-public class Flag {
+public class Flag implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

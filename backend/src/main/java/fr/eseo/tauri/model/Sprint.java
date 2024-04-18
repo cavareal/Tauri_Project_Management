@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class Sprint {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty

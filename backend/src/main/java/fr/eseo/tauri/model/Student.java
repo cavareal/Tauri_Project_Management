@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.io.Serializable;
+
 
 @Entity
 @Table(name = "students")
@@ -15,7 +17,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @PrimaryKeyJoinColumn(name="user_id")
 @Getter
 @Setter
-public class Student extends User {
+public class Student extends User implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name="gender")
