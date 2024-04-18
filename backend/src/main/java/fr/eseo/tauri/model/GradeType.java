@@ -27,12 +27,4 @@ public class GradeType {
     @JsonProperty
     private Boolean imported;
 
-    public GradeType(String name) {
-        this.name = name;
-    }
-
-    public GradeType() {
-
-    }
-
 }
