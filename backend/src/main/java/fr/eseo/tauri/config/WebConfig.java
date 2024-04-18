@@ -23,16 +23,16 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         // Map "/"
-        String FORWARD_INDEX_HTML = "forward:/index.html";
+        String forwardIndexString = "forward:/index.html";
         registry.addViewController("/")
-                .setViewName(FORWARD_INDEX_HTML);
+                .setViewName(forwardIndexString);
 
         // Single directory level - no need to exclude "api"
         registry.addViewController("/{x:[\\w\\-]+}")
-                .setViewName(FORWARD_INDEX_HTML);
+                .setViewName(forwardIndexString);
         // Multi-level directory path, need to exclude "api" on the first part of the path
         registry.addViewController("/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}")
-                .setViewName(FORWARD_INDEX_HTML);
+                .setViewName(forwardIndexString);
     }
 
 }
