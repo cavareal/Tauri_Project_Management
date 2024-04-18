@@ -124,7 +124,7 @@ public class TeamController {
             try {
                 List<Team> teams = teamService.generateTeams(nbTeams, womenPerTeam);
 
-                if (teams != null) {
+                if (!teams.isEmpty()) {
                     CustomLogger.logInfo("Teams have been created");
                     return ResponseEntity.ok("La creation a bien été prise en compte");
                 } else {

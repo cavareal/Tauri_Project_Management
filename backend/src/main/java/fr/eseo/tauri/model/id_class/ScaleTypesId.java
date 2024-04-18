@@ -1,4 +1,4 @@
-package fr.eseo.tauri.model.idClass;
+package fr.eseo.tauri.model.id_class;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.GradeScale;
