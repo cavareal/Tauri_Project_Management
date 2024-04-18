@@ -4,7 +4,7 @@ import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,6 +12,7 @@ import java.util.List;
 import static fr.eseo.tauri.util.ListUtil.filter;
 
 @Service
+@RequiredArgsConstructor
 public class GradeService {
 
 	private final StudentRepository studentRepository;
@@ -19,24 +20,6 @@ public class GradeService {
 	private final TeamRepository teamRepository;
 	private final GradeTypeRepository gradeTypeRepository;
 	private final UserRepository userRepository;
-
-
-	/**
-	 * Constructor for TeamService.
-	 *
-	 * @param teamRepository      the team repository
-	 * @param gradeRepository     the grade repository
-	 * @param studentRepository   the student repository
-	 * @param gradeTypeRepository the gradeTypeRepository
-	 */
-	@Autowired
-	public GradeService(TeamRepository teamRepository, GradeRepository gradeRepository, StudentRepository studentRepository, GradeTypeRepository gradeTypeRepository, UserRepository userRepository) {
-		this.teamRepository = teamRepository;
-		this.gradeRepository = gradeRepository;
-		this.studentRepository = studentRepository;
-		this.gradeTypeRepository = gradeTypeRepository;
-		this.userRepository = userRepository;
-	}
 
 	/**
 	 * This method is used to update the mean of imported grades for each student.

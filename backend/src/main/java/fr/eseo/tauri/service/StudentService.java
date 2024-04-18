@@ -8,7 +8,7 @@ import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.util.CustomLogger;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +21,7 @@ import java.util.*;
  * Service class for handling student-related operations.
  */
 @Service
+@RequiredArgsConstructor
 public class StudentService {
 
     static final String MAP_KEY_NAMES = "names";
@@ -33,22 +34,6 @@ public class StudentService {
     private final TeamService teamService;
     private final GradeTypeService gradeTypeService;
     private final GradeService gradeService;
-
-    /**
-     * Constructs a new StudentService with the specified StudentRepository.
-     *
-     * @param studentRepository the student repository to be used
-     * @param teamService the team service to be used
-     * @param gradeTypeService  the grade service to be used
-     * @param gradeService      the grade service to be used
-     */
-    @Autowired
-    public StudentService(StudentRepository studentRepository, TeamService teamService, GradeTypeService gradeTypeService, GradeService gradeService) {
-        this.studentRepository = studentRepository;
-        this.teamService = teamService;
-        this.gradeTypeService = gradeTypeService;
-        this.gradeService = gradeService;
-    }
 
     /**
      * This method is used to create a new student and save it to the repository.

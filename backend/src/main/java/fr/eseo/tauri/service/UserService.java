@@ -9,7 +9,7 @@ import fr.eseo.tauri.repository.PermissionRepository;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,27 +17,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final TeamRepository teamRepository;
     private final RoleRepository roleRepository;
     private final PermissionRepository permissionRepository;
-
-    /**
-     * Constructor for UserService.
-     * @param teamRepository the team repository
-     * @param userRepository the user repository
-     * @param roleRepository the role repository
-     * @param permissionRepository the permission repository
-     */
-    @Autowired
-    public UserService(UserRepository userRepository, TeamRepository teamRepository, RoleRepository roleRepository, PermissionRepository permissionRepository) {
-        this.userRepository = userRepository;
-        this.teamRepository = teamRepository;
-        this.roleRepository = roleRepository;
-        this.permissionRepository = permissionRepository;
-    }
 
     /**
      * Change team's leader to null when their leader is deleted.
