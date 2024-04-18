@@ -100,7 +100,7 @@ java-build:
       - $CI_PROJECT_DIR/.gradle/caches
   artifacts:
     paths:
-      - backend/build/libs/*.war
+      - backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war
     expire_in: 15 mins
     when: always
   only:
