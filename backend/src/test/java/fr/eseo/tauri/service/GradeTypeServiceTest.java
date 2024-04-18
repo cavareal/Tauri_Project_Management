@@ -29,7 +29,7 @@ class GradeTypeServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        gradeTypeService = new GradeTypeService(gradeTypeRepository, gradeService);
+        gradeTypeService = new GradeTypeService(gradeService, gradeTypeRepository);
     }
 
     @Test
