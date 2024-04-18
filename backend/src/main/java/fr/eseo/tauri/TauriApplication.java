@@ -1,5 +1,6 @@
 package fr.eseo.tauri;
 
+import fr.eseo.tauri.util.CustomLogger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -17,7 +18,7 @@ public class TauriApplication {
 			System.setProperty("spring.datasource.username", dotenv.get("DATABASE_USERNAME"));
 			System.setProperty("spring.datasource.password", dotenv.get("DATABASE_PASSWORD"));
 		} catch (Exception e){
-			System.out.println("No .env file found, using default values");
+			CustomLogger.logError("No .env file found, using default values", e);
 		}
 		// Run the application
 		SpringApplication.run(TauriApplication.class, args);
