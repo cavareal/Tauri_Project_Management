@@ -9,8 +9,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final static String FORWARD_INDEX_HTML = "forward:/index.html";
-
     @Value("${cors.allowed.origins}")
     private String[] allowedOrigins;
 
@@ -25,6 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         // Map "/"
+        String FORWARD_INDEX_HTML = "forward:/index.html";
         registry.addViewController("/")
                 .setViewName(FORWARD_INDEX_HTML);
 
