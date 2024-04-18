@@ -5,7 +5,8 @@ import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,22 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GradeTypeService {
 
     private final GradeService gradeService;
     private final GradeTypeRepository gradeTypeRepository;
 
-    /**
-     * Constructor for the GradeTypeService class.
-     *
-     * @param gradeTypeRepository the repository that provides CRUD operations for GradeType objects
-     * @param gradeService the service that provides business logic for Grade objects
-     */
-    @Autowired
-    public GradeTypeService(GradeTypeRepository gradeTypeRepository, GradeService gradeService) {
-        this.gradeTypeRepository = gradeTypeRepository;
-        this.gradeService = gradeService;
-    }
 
     /**
      * This method is used to update the factor of a GradeType object and save it to the database.
@@ -61,7 +52,7 @@ public class GradeTypeService {
      * @throws IllegalArgumentException if the name of the GradeType object is null or empty
      */
     public GradeType createGradeType(GradeType gradeType) {
-        if (gradeType.name() == null) {
+        if (StringUtils.isBlank(gradeType.name())) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         gradeTypeRepository.save(gradeType);
