@@ -12,8 +12,7 @@ stages:
 variables:
   GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
-
-  #### Value of variables in gitlab>ci_cd>variables
+  #### Value of variables init in gitlab>settings>ci_cd>variables
   #---SONAR
   # $SONAR_PROJET_KEY_DEV
   # $SONAR_LOGIN_DEV
@@ -101,6 +100,9 @@ java-build:
       - backend/build/libs/*.war
     expire_in: 15 mins
     when: always
+  variables:
+    - DATABASE_USERNAME: $DATABASE_USERNAME
+    - DATABASE_PASSWORD: $DATABASE_PASSWORD  
   only:
     - main
     - dev
