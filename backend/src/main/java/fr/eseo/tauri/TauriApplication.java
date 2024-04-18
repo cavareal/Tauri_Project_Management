@@ -12,9 +12,13 @@ public class TauriApplication {
 
 	public static void main(String[] args) {
 		// Load database logs
-		Dotenv dotenv = Dotenv.load();
-		System.setProperty("spring.datasource.username", dotenv.get("DATABASE_USERNAME"));
-		System.setProperty("spring.datasource.password", dotenv.get("DATABASE_PASSWORD"));
+		try{
+			Dotenv dotenv = Dotenv.load();
+			System.setProperty("spring.datasource.username", dotenv.get("DATABASE_USERNAME"));
+			System.setProperty("spring.datasource.password", dotenv.get("DATABASE_PASSWORD"));
+		} catch (Exception e){
+			System.out.println("No .env file found, using default values");
+		}
 		// Run the application
 		SpringApplication.run(TauriApplication.class, args);
 	}
