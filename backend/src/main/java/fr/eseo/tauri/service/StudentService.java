@@ -217,6 +217,7 @@ public class StudentService {
             CustomLogger.logInfo(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
         } catch (Exception e) {
             CustomLogger.logError("An error occurred while handling the uploaded file", e);
+            throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
     }
 

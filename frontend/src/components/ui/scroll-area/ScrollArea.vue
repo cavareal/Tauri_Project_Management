@@ -7,7 +7,7 @@ import {
   ScrollAreaViewport,
 } from 'radix-vue'
 import ScrollBar from './ScrollBar.vue'
-import { cn } from '@/utils/utils'
+import { cn } from "@/utils/style"
 
 const props = defineProps<ScrollAreaRootProps & { class?: HTMLAttributes['class'] }>()
 

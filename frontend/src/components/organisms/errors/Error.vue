@@ -6,6 +6,6 @@ import { ErrorMessage } from "@/components/molecules/error-message"
     <ErrorMessage
 		title="Erreur"
 		description="Une erreur est survenue..."
-		logoClass="fill-red"
+		logoClass="fill-tauri-red"
 	/>
 </template>

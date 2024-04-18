@@ -1,46 +1,41 @@
 <script setup lang="ts">
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-	DialogClose
-} from "@/components/ui/dialog"
+
+import { DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { deleteAllStudents } from "@/services/student-service"
+import { useMutation } from "@/utils/api/api.util"
+import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
+import { ref } from "vue"
+import { CustomDialog } from "@/components/molecules/dialog"
 
-const deleteStudents = async() => {
-	await deleteAllStudents().then(() => location.reload())
-}
+const DIALOG_TITLE = "Supprimer les étudiants"
+const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir supprimer tous les étudiants de la base de données ?"
+
+const open = ref(false)
+
+const emits = defineEmits(["delete:students"])
+
+const { loading, mutate } = useMutation(async() => {
+	await deleteAllStudents()
+		.then(() => open.value = false)
+		.then(() => emits("delete:students"))
+})
+
 </script>
 
 <template>
-	<Dialog>
-		<DialogTrigger>
+	<CustomDialog :title="DIALOG_TITLE" :description="DIALOG_DESCRIPTION" v-model:open="open">
+		<template #trigger>
 			<slot />
-		</DialogTrigger>
+		</template>
 
-		<DialogContent>
-			<DialogHeader>
-				<DialogTitle>Supprimer les étudiants</DialogTitle>
-				<DialogDescription>Êtes-vous bien sûr de vouloir supprimer tous les étudiants de la base de données ?</DialogDescription>
-			</DialogHeader>
-
-			<DialogFooter class="space-x-2">
-				<DialogClose>
-					<Button variant="outline">
-						Annuler
-					</Button>
-				</DialogClose>
-				<DialogClose>
-					<Button type="submit" @click="deleteStudents">
-						Confirmer
-					</Button>
-				</DialogClose>
-			</DialogFooter>
-		</DialogContent>
-	</Dialog>
+		<template #footer>
+			<DialogClose v-if="!loading">
+				<Button variant="outline">Annuler</Button>
+			</DialogClose>
+			<LoadingButton type="submit" @click="mutate" :loading="loading">
+				Confirmer
+			</LoadingButton>
+		</template>
+	</CustomDialog>
 </template>

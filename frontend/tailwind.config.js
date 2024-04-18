@@ -28,11 +28,14 @@ module.exports = {
 				"title-bold": ["CA Slalom Extended Bold", "sans-serif"],
 				"sans": ["Roboto", "sans-serif"]
 			},
+			backgroundImage: {
+				eseo: "url('/eseo.jpg')",
+			},
 			colors: {
 				"dark-blue": "#1B1336",
 				"light-blue": "#32AEFF",
 				"grey": "#888888",
-				"red": "#EE4836",
+				"tauri-red": "#EE4836",
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
 				ring: "hsl(var(--ring))",

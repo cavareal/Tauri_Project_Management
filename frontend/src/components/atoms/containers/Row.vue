@@ -1,13 +1,5 @@
-<script setup lang="ts">
-
-const props = defineProps<{
-	class?: string
-}>()
-
-</script>
-
 <template>
-	<div class="flex flex-row" :class="props.class">
+	<div class="flex flex-row">
 		<slot />
 	</div>
 </template>

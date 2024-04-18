@@ -5,9 +5,9 @@ import type { Student } from "@/types/student"
 import { AccordionContent } from "@/components/ui/accordion"
 import type { Criteria } from "@/types/criteria"
 import { Separator } from "@/components/ui/separator"
-import { separateStringOnFirstSpace } from "@/utils/utils"
 import { getCriteria, getTeamAverage } from "@/services/team-service"
-import IsCheck from "@/components/atoms/isCheck.vue"
+import { extractNames } from "@/utils/string"
+import { CheckIcon } from "@/components/atoms/icons"
 
 const students = ref<Student[]>([])
 
@@ -39,12 +39,12 @@ onMounted(async() => {
 	average.value = await getTeamAverage(props.teamId)
 })
 
-function getNom(nomPrenom: string) {
-	return separateStringOnFirstSpace(nomPrenom)[0]
+const getNom = (nomPrenom: string) => {
+	return extractNames(nomPrenom).lastName
 }
 
-function getPrenom(nomPrenom: string) {
-	return separateStringOnFirstSpace(nomPrenom)[1]
+const getPrenom = (nomPrenom: string) => {
+	return extractNames(nomPrenom).firstName
 }
 
 
@@ -85,15 +85,15 @@ function getPrenom(nomPrenom: string) {
 					Critères de génération
 				</div>
 				<div class="flex flex-row">
-					<isCheck :isCheck="criteria.validCriteriaWoman" class="pr-1" />
+					<CheckIcon :checked="criteria.validCriteriaWoman" class="mr-1" />
 					<div>Nombre de femmes : {{ criteria.nbWomans }}</div>
 				</div>
 				<div class="flex flex-row">
-					<isCheck :isCheck="criteria.validCriteriaBachelor" class="pr-1" />
+					<CheckIcon :checked="criteria.validCriteriaBachelor" class="mr-1" />
 					<div>Nombre de bachelors : {{ criteria.nbBachelors }}</div>
 				</div>
 				<div class="flex flex-row" v-if="average">
-					<isCheck :isCheck="true" class="pr-1" />
+					<CheckIcon :checked="true" class="mr-1" />
 					<div>Moyenne : {{ average.toPrecision(4) }}</div>
 				</div>
 			</div>
