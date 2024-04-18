@@ -181,7 +181,7 @@ push-dev:
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
     - ssh $SSH_USER@$SERVER_IP_DEV "rm -f /srv/tomcat10/webapps/tauri.war"
-    - ssh $SSH_USER@$SERVER_IP_DEV "rm -f -r /srv/tomcat10/webapps/tauri/"
+    - ssh $SSH_USER@$SERVER_IP_DEV "rm -f -R /srv/tomcat10/webapps/tauri/"
     - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_DEV:/srv/tomcat10/webapps
   retry: 2
   only:
@@ -209,7 +209,7 @@ push-prod:
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
     - ssh $SSH_USER@$SERVER_IP_PROD "rm -f /srv/tomcat10/webapps/tauri.war"
-    - ssh $SSH_USER@$SERVER_IP_PROD "rm -f -r /srv/tomcat10/webapps/tauri/"
+    - ssh $SSH_USER@$SERVER_IP_PROD "rm -f -R /srv/tomcat10/webapps/tauri/"
     - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_PROD:/srv/tomcat10/webapps
   retry: 2
   only:
