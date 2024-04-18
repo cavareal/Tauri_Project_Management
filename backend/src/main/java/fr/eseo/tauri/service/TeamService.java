@@ -122,7 +122,7 @@ public class TeamService {
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams * womenPerTeam - 1) {
             CustomLogger.logError("TeamService.createTeams : Not enough students to create the teams");
-            return null;
+            return List.of();
         }else {
             List<Team> teams = this.createTeams(nbTeams);
             this.fillTeams(teams, women, men, womenPerTeam);

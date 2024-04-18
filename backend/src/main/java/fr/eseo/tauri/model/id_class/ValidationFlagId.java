@@ -1,31 +1,31 @@
-package fr.eseo.tauri.model.idClass;
+package fr.eseo.tauri.model.id_class;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.eseo.tauri.model.Bonus;
+import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.model.User;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-public class ValidationBonusId implements Serializable {
+public class ValidationFlagId implements Serializable {
 
     @JsonProperty
-    private User user;
+    private User author;
 
     @JsonProperty
-    private Bonus bonus;
+    private Flag flag;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ValidationBonusId that = (ValidationBonusId) o;
-        return Objects.equals(user, that.user) &&
-                Objects.equals(bonus, that.bonus);
+        ValidationFlagId that = (ValidationFlagId) o;
+        return Objects.equals(author, that.author) &&
+                Objects.equals(flag, that.flag);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, bonus);
+        return Objects.hash(author, flag);
     }
 }

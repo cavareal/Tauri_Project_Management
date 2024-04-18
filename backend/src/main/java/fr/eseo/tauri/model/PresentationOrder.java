@@ -1,7 +1,7 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.eseo.tauri.model.idClass.PresentationOrderId;
+import fr.eseo.tauri.model.id_class.PresentationOrderId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

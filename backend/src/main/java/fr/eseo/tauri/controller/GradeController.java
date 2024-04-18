@@ -77,7 +77,7 @@ public class GradeController {
     public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {
+            TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<>() {
             };
             Map<String, List<Map<String, Object>>> evaluationsMap = objectMapper.readValue(evaluations, typeReference);
 
@@ -109,6 +109,7 @@ public class GradeController {
         }
     }
 
+    //TODO : Handle the token
     @GetMapping("/averageGradesByGradeTypeByRole/{userId}")
     public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
         try {
@@ -118,12 +119,8 @@ public class GradeController {
             for (GradeType gradeType : gradeTypeRepository.findByForGroupIsTrue()) {
                 gradeByRoles = new ArrayList<>();
                 for (RoleType roleType : RoleType.values()) {
-                    try {
-                        double grade = gradeService.getAverageGradesByGradeTypeByRoleType(userId, roleType, gradeType.name());
-                        gradeByRoles.add(grade);
-                    } catch (NullPointerException e) {
-                        gradeByRoles.add(-1.0);
-                    }
+                    double grade = getAverageGradeByRoleType(userId, roleType, gradeType.name());
+                    gradeByRoles.add(grade);
                 }
                 gradeByTypes.add(gradeByRoles);
             }
@@ -135,6 +132,17 @@ public class GradeController {
             return ResponseEntity.status(HttpStatus.OK).body(gradeByTypes);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    /**
+     * Helper method
+     */
+    private double getAverageGradeByRoleType(Integer userId, RoleType roleType, String gradeType) {
+        try {
+            return gradeService.getAverageGradesByGradeTypeByRoleType(userId, roleType, gradeType);
+        } catch (NullPointerException e) {
+            return -1.0;
         }
     }
 
