@@ -86,7 +86,7 @@ vuejs-build-prod:
 java-build:
   stage: build-backend
   image: gradle:8.4-jdk17
-   before_script:
+  before_script:
     - export DATABASE_USERNAME=$DATABASE_USERNAME
     - export DATABASE_PASSWORD=$DATABASE_PASSWORD
   script:
