@@ -91,7 +91,6 @@ java-build:
     - export DATABASE_PASSWORD=$DATABASE_PASSWORD
   script:
     - cd backend
-    - 
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
     - gradle --no-daemon clean build -Pdev -x test
