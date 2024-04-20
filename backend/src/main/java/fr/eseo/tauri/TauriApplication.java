@@ -17,6 +17,7 @@ public class TauriApplication {
 			Dotenv dotenv = Dotenv.load();
 			System.setProperty("spring.datasource.username", dotenv.get("DATABASE_USERNAME"));
 			System.setProperty("spring.datasource.password", dotenv.get("DATABASE_PASSWORD"));
+			System.out.println(dotenv.get("DATABASE_USERNAME"));
 		} catch (Exception e){
 			CustomLogger.logError("No .env file found, using default values", e);
 		}
