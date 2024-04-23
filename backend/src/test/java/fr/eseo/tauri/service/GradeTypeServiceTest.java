@@ -102,4 +102,22 @@ class GradeTypeServiceTest {
         verify(gradeTypeRepository, times(7+1)).save(any(GradeType.class));
     }
 
+    @Test
+    void deleteAllImportedGradeTypes_deletesAllImportedGradeTypes() {
+        doNothing().when(gradeTypeRepository).deleteAllImported();
+
+        gradeTypeService.deleteAllImportedGradeTypes();
+
+        verify(gradeTypeRepository, times(1)).deleteAllImported();
+    }
+
+    @Test
+    void deleteAllImportedGradeTypes_handlesException() {
+        doThrow(new RuntimeException()).when(gradeTypeRepository).deleteAllImported();
+
+        gradeTypeService.deleteAllImportedGradeTypes();
+
+        verify(gradeTypeRepository, times(1)).deleteAllImported();
+    }
+
 }
