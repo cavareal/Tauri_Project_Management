@@ -1,39 +1,80 @@
-# vue-test
+# Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+## Recette de cuisine pour ajouter une US
 
-## Recommended IDE Setup
+### 1. Créer un service
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Dans le dossier src/services, ajouter une fonction dans le fichier concerné pour faire la requête à l'API.
 
-## Type Support for `.vue` Imports in TS
+Pour cela, il faut utiliser la fonction apiQuery qui permet de faire tout le travail à notre place, on a juste à lui passer plusieurs arguments :
+- le type de requête (GET, POST, PUT, PATCH, DELETE)
+- la route de l'API
+- les données à envoyer dans le body (pour les requêtes POST, PUT et PATCH)
+- le schéma Zod de validation des données reçues
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+Exemple pour récupérer les notes :
+```ts
+export const getAllGrades = async() => {
+	const response = await apiQuery({
+		route: "grades",
+		responseSchema: z.array(GradeSchema),
+		method: "GET"
+	})
 
-## Customize configuration
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-pnpm install
+	return response.data
+}
 ```
 
-### Compile and Hot-Reload for Development
+### 2. Créer un composant
 
-```sh
-pnpm dev
+Dans le dossier src/components, ajouter un composant (la plupart du temps c'est un organisme), et appeler d'autres molécules et atomes pour construire ce composant.
+
+Exemple ici où on utilise Button (atome) et ActionSection (molécule) pour construire lce composant :
+(On utilise aussi une dialog qui est un autre organisme)
+```vue
+<template>
+	<ActionSection :title="ACTION_TITLE" :description="ACTION_DESCRIPTION">
+		<GenerateTeamsDialog @generate:teams="emits('generate:teams')" :nb-students="nbStudents">
+			<Button>Générer les équipes</Button>
+		</GenerateTeamsDialog>
+	</ActionSection>
+</template>
 ```
 
-### Type-Check, Compile and Minify for Production
+### 3. Récupérer les données
 
-```sh
-pnpm build
+Dans le composant concerné, utiliser la fonction useQuery pour appeler le service qu'on a crée à l'étape 1.
+```ts
+const { data: grades } = useQuery({ queryKey: ["grades", props.teamId], queryFn: getAllGrades })
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+On peut même récupérer isFetching et isLoading pour savoir si les données sont en train de se charger et ainsi afficher un loader.
+Par exemple :
+```ts
+const { data: grades, isLoading, isFetching } = useQuery({ queryKey: ["grades", props.teamId], queryFn: getAllGrades })
+```
+Puis dans le template Vue :
+```vue
+<template>
+    <PageSkeleton v-if="isLoading || isFetching" />
+    <Composant v-else />
+<template
+```
 
-```sh
-pnpm lint
+### 4. Faire des modifications
+
+Si on a besoin de modifier des données, on peut utiliser la fonction useMutation qui permet de faire une requête POST, PUT ou PATCH.
+```ts
+const { mutate, isPending, error } = useMutation({ mutationKey: ["generate-teams"], mutationFn: async() => {
+        await generateTeams(nbTeams.value, womenPerTeam.value)
+} })
+```
+
+Puis on appelle la fonction mutate dans le bouton :
+```vue
+<Button @click="mutate">Générer les équipes</Button>
 ```
