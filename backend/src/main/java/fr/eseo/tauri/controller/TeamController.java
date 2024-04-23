@@ -2,7 +2,6 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Criteria;
 import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Controller class for managing teams.
@@ -30,8 +28,6 @@ public class TeamController {
     private static final String READ_CRITERIA = "readCriteria";
     private static final String TEAM_CREATION = "teamCreation";
     private static final String UNAUTHORIZED_MESSAGE = "Non autorisé";
-
-    private final TeamRepository teamRepository;
     private final AuthService authService;
     private final TeamService teamService;
     private final ProjectService projectService;
@@ -39,14 +35,12 @@ public class TeamController {
     /**
      * Constructor for TeamController.
      *
-     * @param teamRepository the team repository
      * @param authService    the authentication service
      * @param teamService    the team service
      * @param projectService the projectService
      */
     @Autowired
-    public TeamController(TeamRepository teamRepository, AuthService authService, TeamService teamService, ProjectService projectService) {
-        this.teamRepository = teamRepository;
+    public TeamController(AuthService authService, TeamService teamService, ProjectService projectService) {
         this.authService = authService;
         this.teamService = teamService;
         this.projectService = projectService;
@@ -227,19 +221,12 @@ public class TeamController {
         String permission = "readTeamAvgGrade";
         if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
-                if (this.teamRepository.findById(idTeam).isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("L'équipe n'existe pas");
-                } else {
-                    Optional<Team> optionalTeam = this.teamRepository.findById(idTeam);
-                    if (optionalTeam.isPresent()) {
-                        double avgGrade = this.teamRepository.findAvgGradeByTeamId(optionalTeam.get());
-                        return ResponseEntity.ok(String.valueOf(avgGrade));
-                    } else {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("L'équipe n'existe pas");
-                    }
-                }
+                double avgGrade = this.teamService.getTeamAvgGrade(idTeam);
+                return ResponseEntity.ok(String.valueOf(avgGrade));
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
             } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération " + e.getMessage());
             }
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
