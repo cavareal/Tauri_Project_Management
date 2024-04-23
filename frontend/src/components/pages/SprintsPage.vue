@@ -1,16 +1,20 @@
 <script setup lang="ts">
+
 import { SidebarTemplate } from "@/components/templates"
 import { getCookie } from "@/utils/cookie"
 import EditNbSprints from "@/components/organisms/sprints/EditNbSprints.vue"
-import NotAuthorized from "../organisms/errors/NotAuthorized.vue"
+import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
+import type { RoleType } from "@/types/role"
+import { Header } from "@/components/molecules/header"
 
 const token = getCookie("token")
-const role = getCookie("role")
+const role = getCookie<RoleType>("role")
+
 </script>
 
 <template>
 	<SidebarTemplate>
-		<h1 class="text-3xl font-title-bold">Sprints</h1>
+		<Header title="Sprints" />
 		<EditNbSprints v-if="token && (role === 'PROJECT_LEADER' || role === 'OPTION_LEADER')" />
 		<NotAuthorized v-else />
 	</SidebarTemplate>

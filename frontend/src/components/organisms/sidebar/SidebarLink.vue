@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { computed } from "vue"
 import { cn } from "@/utils/style"
 import { useRoute } from "vue-router"
@@ -20,6 +21,7 @@ const style = cn(
 	{ "bg-white/20": selected.value },
 	props.class
 )
+
 </script>
 
 <template>

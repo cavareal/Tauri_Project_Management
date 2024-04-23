@@ -1,25 +1,24 @@
 <script setup lang="ts">
 
-import { DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { deleteAllStudents } from "@/services/student-service"
-import { useMutation } from "@/utils/api/api.util"
 import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
 import { ref } from "vue"
-import { CustomDialog } from "@/components/molecules/dialog"
-
-const DIALOG_TITLE = "Supprimer les étudiants"
-const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir supprimer tous les étudiants de la base de données ?"
+import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
+import { useMutation } from "@tanstack/vue-query"
+import { ErrorText } from "@/components/atoms/texts"
 
 const open = ref(false)
-
 const emits = defineEmits(["delete:students"])
 
-const { loading, mutate } = useMutation(async() => {
+const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-students"], mutationFn: async() => {
 	await deleteAllStudents()
 		.then(() => open.value = false)
 		.then(() => emits("delete:students"))
-})
+} })
+
+const DIALOG_TITLE = "Supprimer les étudiants"
+const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir supprimer tous les étudiants de la base de données ?"
 
 </script>
 
@@ -29,11 +28,13 @@ const { loading, mutate } = useMutation(async() => {
 			<slot />
 		</template>
 
+		<ErrorText v-if="error" class="mb-2">Une erreur est survenue.</ErrorText>
+
 		<template #footer>
-			<DialogClose v-if="!loading">
+			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" @click="mutate" :loading="loading">
+			<LoadingButton type="submit" @click="mutate" :loading="isPending">
 				Confirmer
 			</LoadingButton>
 		</template>

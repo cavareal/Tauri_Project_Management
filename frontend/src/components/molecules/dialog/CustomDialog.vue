@@ -23,7 +23,7 @@ defineProps<{
 
 			<slot />
 
-			<DialogFooter class="space-x-2">
+			<DialogFooter class="space-x-2 mt-2">
 				<slot name="footer" />
 			</DialogFooter>
 		</DialogContent>

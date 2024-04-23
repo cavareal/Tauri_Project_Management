@@ -12,7 +12,7 @@ defineProps<{
 
 <template>
 	<Column class="w-full items-start gap-4">
-		<Row class="w-full items-center justify-between">
+		<Row class="w-full items-center justify-between h-10">
 			<Title>{{ title }}</Title>
 			<Row class="gap-4">
 				<slot />

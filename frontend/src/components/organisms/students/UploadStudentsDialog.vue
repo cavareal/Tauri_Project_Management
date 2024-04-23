@@ -1,14 +1,13 @@
 <script setup lang="ts">
 
 import { ref } from "vue"
-import { useMutation } from "@/utils/api"
 import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
 import UploadArea from "@/components/molecules/upload-area/UploadArea.vue"
 import ErrorText from "@/components/atoms/texts/ErrorText.vue"
 import { importStudentFile } from "@/services/student-service"
-import { CustomDialog } from "@/components/molecules/dialog"
+import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
-import { DialogClose } from "@/components/ui/dialog"
+import { useMutation } from "@tanstack/vue-query"
 
 const DIALOG_TITLE = "Importer les étudiants"
 const DIALOG_DESCRIPTION
@@ -20,12 +19,12 @@ const emits = defineEmits(["import:students"])
 
 const file = ref<File | null>(null)
 
-const { error, loading, mutate: upload } = useMutation(async() => {
+const { error, isPending, mutate: upload } = useMutation({ mutationKey: ["import-students"], mutationFn: async() => {
 	if (!file.value) return
 	await importStudentFile(file.value)
 		.then(() => open.value = false)
 		.then(() => emits("import:students"))
-})
+} })
 
 </script>
 
@@ -42,7 +41,7 @@ const { error, loading, mutate: upload } = useMutation(async() => {
 			<DialogClose>
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" class="flex items-center" :loading="loading" @click="upload">
+			<LoadingButton type="submit" class="flex items-center" :loading="isPending" @click="upload">
 				Continuer
 			</LoadingButton>
 		</template>

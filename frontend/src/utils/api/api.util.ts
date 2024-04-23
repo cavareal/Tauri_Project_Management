@@ -1,7 +1,6 @@
-import { ref, watch, type UnwrapRef } from "vue"
 import type { ApiQueryRequest, ApiQueryResponse } from "."
 import { getCookie } from "@/utils/cookie"
-import type { UploadFileRequest, UseMutationResponse, UseQueryResponse } from "./api.type"
+import type { UploadFileRequest } from "./api.type"
 
 
 export const apiQuery = async <T>(
@@ -88,50 +87,4 @@ export const uploadFile = async({ file, route }: UploadFileRequest): Promise<Api
 		status: "success",
 		data: await response.text()
 	}
-}
-
-export const useQuery = <T>(queryFunction: () => Promise<T>): UseQueryResponse<T> => {
-	const data = ref<T | null>(null)
-	const error = ref<string | null>(null)
-	const loading = ref(false)
-
-	const fetchData = async() => {
-		loading.value = true
-		await queryFunction()
-			.then((res: T) => {
-				data.value = res as UnwrapRef<T>
-				error.value = null
-			})
-			.catch((e: Error) => {
-				error.value = e?.message ?? "Unknown error"
-			})
-			.finally(() => {
-				loading.value = false
-			})
-	}
-
-	watch(() => {}, fetchData, { immediate: true })
-
-	return { data, error, loading, refetch: fetchData }
-}
-
-export const useMutation = (mutationFunction: () => Promise<void>): UseMutationResponse => {
-	const error = ref<string | null>(null)
-	const loading = ref(false)
-
-	const mutate = async() => {
-		loading.value = true
-		await mutationFunction()
-			.then(() => {
-				error.value = null
-			})
-			.catch((e: Error) => {
-				error.value = e?.message ?? "Unknown error"
-			})
-			.finally(() => {
-				loading.value = false
-			})
-	}
-
-	return { error, loading, mutate }
 }

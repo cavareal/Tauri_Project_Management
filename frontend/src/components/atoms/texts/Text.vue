@@ -1,5 +1,5 @@
 <template>
-	<p class="text-md">
+	<p class="text-sm">
 		<slot />
 	</p>
 </template>

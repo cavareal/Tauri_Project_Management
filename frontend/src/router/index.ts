@@ -37,27 +37,22 @@ const router = createRouter({
 		{
 			path: "/grades",
 			name: "grades",
-			component: () => import("@/components/pages/GradePage.vue")
+			component: () => import("@/components/pages/GradesPage.vue")
 		},
 		{
 			path: "/rating",
 			name: "rating",
-			component: () => import("@/components/pages/EvaluationPage.vue")
+			component: () => import("@/components/pages/RatingPage.vue")
 		},
 		{
-			path: "/test",
-			name: "test",
-			component: () => import("@/components/pages/TestPage.vue")
+			path: "/grade-scales",
+			name: "grade-scales",
+			component: () => import("@/components/pages/GradeScalesPage.vue")
 		},
 		{
 			path: "/:pathMatch(.*)*",
 			name: "not-found",
 			component: () => import("@/components/pages/NotFoundPage.vue")
-		},
-		{
-			path: "/test2",
-			name: "test2",
-			component: () => import("@/components/pages/Test2Page.vue")
 		}
 	]
 })
