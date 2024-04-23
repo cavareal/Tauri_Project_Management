@@ -34,7 +34,7 @@ export const updateGradeTypeFactor = async(id: number, factor: number): Promise<
 	const response = await apiQuery({
 		method: "PATCH",
 		responseSchema: GradeTypeSchema,
-		route: `grade_types/${id}`,
+		route: `grade-types/${id}`,
 		body: { factor }
 	})
 
