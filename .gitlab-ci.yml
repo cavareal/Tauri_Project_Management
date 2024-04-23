@@ -93,6 +93,7 @@ java-build:
     - cd backend
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
+    - gradle test
     # - gradle --no-daemon clean build -Pdev -x test
     - gradle --no-daemon clean build -Pdev -x test -PdatabaseUsername=$DATABASE_USERNAME -PdatabasePassword=$DATABASE_PASSWORD
   retry: 2
