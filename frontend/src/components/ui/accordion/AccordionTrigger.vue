@@ -6,7 +6,7 @@ import {
   type AccordionTriggerProps,
 } from 'radix-vue'
 import { ChevronDown } from 'lucide-vue-next'
-import { cn } from '@/utils/utils'
+import { cn } from "@/utils/style"
 
 const props = defineProps<AccordionTriggerProps & { class?: HTMLAttributes['class'] }>()
 

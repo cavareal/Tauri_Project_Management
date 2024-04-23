@@ -1,22 +1,24 @@
 <script setup lang="ts">
+
 import { Button } from "@/components/ui/button"
-import { Row, Column } from "@/components/atoms/containers"
-import { GenerateTeamsDialog } from "."
+import { ActionSection } from "@/components/molecules/action-section"
+import GenerateTeamsDialog from "./GenerateTeamsDialog.vue"
+
+const emits = defineEmits(["generate:teams"])
+
+defineProps<{
+	nbStudents: number
+}>()
+
+const ACTION_TITLE = "Vous n'avez pas encore d'équipes"
+const ACTION_DESCRIPTION = "Maintenant que les étudiants sont importés, il vous suffit de générer les équipes automatiquement."
 
 </script>
 
 <template>
-	<Row class="items-center border border-gray-300 rounded-lg p-6">
-		<Column class="items-start justify-center flex-1 gap-1">
-			<h1 class="font-bold text-base">Vous n'avez pas encore d'équipes</h1>
-			<p class="text-gray-400 text-sm">Maintenant que les étudiants sont importés, il vous suffit de générer les
-				équipes automatiquement.</p>
-		</Column>
-
-		<GenerateTeamsDialog>
-			<Button>
-				<span class="mx-5 my-0">Générer les équipes</span>
-			</Button>
+	<ActionSection :title="ACTION_TITLE" :description="ACTION_DESCRIPTION">
+		<GenerateTeamsDialog @generate:teams="emits('generate:teams')" :nb-students="nbStudents">
+			<Button>Générer les équipes</Button>
 		</GenerateTeamsDialog>
-	</Row>
+	</ActionSection>
 </template>

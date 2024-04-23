@@ -1,46 +1,40 @@
 <script setup lang="ts">
+
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import type { Team } from "@/types/team"
 import { getTeams } from "@/services/team-service"
-import { ref, onMounted } from "vue"
 import TeamAccordionContent from "@/components/organisms/teams/TeamAccordionContent.vue"
-import getCookie from "@/utils/cookiesUtils"
+import { getCookie } from "@/utils/cookie"
 import { Button } from "@/components/ui/button"
 import { Pencil } from "lucide-vue-next"
-import Row from "@/components/atoms/containers/Row.vue"
-import { EditTeamDialog } from "."
+import EditTeamDialog from "./EditTeamDialog.vue"
+import { Row } from "@/components/atoms/containers"
+import { useQuery } from "@tanstack/vue-query"
+import { PageSkeleton } from "@/components/atoms/skeletons"
+import type { ProjectPhase } from "@/types/project"
 
 const role = getCookie("role")
 
-const teams = ref<Team[]>([])
+const props = defineProps<{
+	phase: ProjectPhase
+}>()
 
-const props = defineProps({
-	phase: {
-		type: String,
-		required: true
-	}
-})
-
-onMounted(async() => {
-	const data = await getTeams()
-	teams.value = data
-})
+const { data: teams, refetch: refetchTeams, isLoading, isFetching } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 
 </script>
 
 <template>
-	<Accordion type="multiple">
+	<PageSkeleton v-if="isLoading || isFetching" />
+	<Accordion v-else type="multiple">
 		<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
-
-			<AccordionItem :value="team.name" class="flex-1">
+			<AccordionItem :value="team.id.toString()" class="flex-1">
 				<AccordionTrigger>
 					{{ team.name }}
 					{{ team.leader?.name ? `(${team.leader.name})` : "" }}
 				</AccordionTrigger>
-				<TeamAccordionContent :teamId="team.id" :leader="team.leader?.name" :phase="props.phase" />
+				<TeamAccordionContent :team-id="team.id" :phase="props.phase" />
 			</AccordionItem>
 
-			<EditTeamDialog v-if="role === 'PROJECT_LEADER'" :teamId="team.id">
+			<EditTeamDialog v-if="role === 'PROJECT_LEADER'" :team="team" @edit:team="refetchTeams">
 				<Button variant="outline" size="icon" class="mt-2">
 					<Pencil class="w-4" />
 				</Button>
@@ -48,5 +42,3 @@ onMounted(async() => {
 		</Row>
 	</Accordion>
 </template>
-
-<style scoped></style>

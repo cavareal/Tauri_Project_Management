@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref } from "vue"
+import { ref } from "vue"
 import { Ellipsis, Loader2, Pencil, Trash2 } from "lucide-vue-next"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
@@ -12,7 +12,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import getCookie from "@/utils/cookiesUtils"
+import { getCookie } from "@/utils/cookie"
 
 interface Team {
 	name: string;
@@ -25,7 +25,7 @@ interface Evaluation {
 }
 
 const token = getCookie("token")
-const userId = getCookie("current_user")
+const userId = getCookie("user")
 const selectedTeam = ref("")
 const contentPresentationNote = ref("")
 const materialSupportNote = ref("")
@@ -40,12 +40,12 @@ const buttonsState = ref({
 	loading: false
 })
 
-function redirect(): void {
+const redirect = (): void => {
 	// eslint-disable-next-line no-self-assign
 	window.location.href = window.location.href
 }
 
-function addEvaluation() {
+const addEvaluation = () => {
 	if (!evaluations.value[selectedTeam.value]) {
 		evaluations.value[selectedTeam.value] = []
 	}
@@ -62,7 +62,7 @@ function addEvaluation() {
 	}
 }
 
-async function grades() {
+const grades = async() => {
 	try {
 		buttonsState.value.validate = false
 		buttonsState.value.loading = true
@@ -95,7 +95,7 @@ async function grades() {
 	}
 }
 
-function handleContentPresentationNoteInput(event: InputEvent) {
+const handleContentPresentationNoteInput = (event: InputEvent) => {
 	const inputNote = parseInt((event.target as HTMLInputElement).value)
 	if (inputNote > 20) {
 		contentPresentationNote.value = String(20)
@@ -104,7 +104,7 @@ function handleContentPresentationNoteInput(event: InputEvent) {
 	}
 }
 
-function handleMaterialSupportNoteInput(event: InputEvent) {
+const handleMaterialSupportNoteInput = (event: InputEvent) => {
 	const inputNote = parseInt((event.target as HTMLInputElement).value)
 	if (inputNote > 20) {
 		materialSupportNote.value = String(20)
@@ -113,7 +113,7 @@ function handleMaterialSupportNoteInput(event: InputEvent) {
 	}
 }
 
-function sendGrades() {
+const sendGrades = () => {
 	console.log(evaluations.value)
 	void grades()
 }

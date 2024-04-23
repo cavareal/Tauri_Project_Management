@@ -1,7 +1,10 @@
 <script setup lang="ts">
+
 import { Button } from "@/components/ui/button"
 import { RouterLink } from "vue-router"
 import { Logo } from "@/components/atoms/logo"
+import { Text, Title } from "@/components/atoms/texts"
+import { Column } from "@/components/atoms/containers"
 
 const props = defineProps<{
 	title: string
@@ -13,16 +16,16 @@ const props = defineProps<{
 </script>
 
 <template>
-	<div class="w-full h-screen flex flex-col items-center justify-center gap-6" :class="props.class">
+	<Column class="w-full h-screen items-center justify-center gap-6" :class="props.class">
 		<Logo class="h-64" :class="props.logoClass" />
 
-		<div class="flex flex-col items-center justify-center">
-			<h1 class="text-4xl font-title-medium">{{ title }}</h1>
-			<p class="text-md">{{ description }}</p>
-		</div>
+		<Column class="items-center justify-center">
+			<Title>{{ title }}</Title>
+			<Text>{{ description }}</Text>
+		</Column>
 
 		<RouterLink to="/">
 			<Button>Retour à l'accueil</Button>
 		</RouterLink>
-	</div>
+	</Column>
 </template>

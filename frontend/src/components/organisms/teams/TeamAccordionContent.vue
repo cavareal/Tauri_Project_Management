@@ -1,102 +1,74 @@
 <script setup lang="ts">
-import { ref, onMounted, defineProps } from "vue"
+
+import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@/components/ui/table"
 import { getStudentsByTeamId } from "@/services/student-service"
-import type { Student } from "@/types/student"
 import { AccordionContent } from "@/components/ui/accordion"
-import type { Criteria } from "@/types/criteria"
-import { Separator } from "@/components/ui/separator"
-import { separateStringOnFirstSpace } from "@/utils/utils"
 import { getCriteria, getTeamAverage } from "@/services/team-service"
-import IsCheck from "@/components/atoms/isCheck.vue"
+import { extractNames } from "@/utils/string"
+import { CheckIcon, GenderIcon } from "@/components/atoms/icons"
+import type { ProjectPhase } from "@/types/project"
+import { useQuery } from "@tanstack/vue-query"
+import { PageSkeleton } from "@/components/atoms/skeletons"
+import { Column, Row } from "@/components/atoms/containers"
+import { Subtitle, Text } from "@/components/atoms/texts"
+import { cn } from "@/utils/style"
 
-const students = ref<Student[]>([])
+const props = defineProps<{
+	teamId: number
+	phase: ProjectPhase
+}>()
 
-const criteria = ref<Criteria>()
-const average = ref<number | null>(null)
+const { data: students } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: () => getStudentsByTeamId(props.teamId) })
+const { data: criteria } = useQuery({ queryKey: ["criteria", props.teamId], queryFn: () => getCriteria(props.teamId) })
+const { data: average } = useQuery({ queryKey: ["average", props.teamId], queryFn: () => getTeamAverage(props.teamId) })
 
-const props = defineProps({
-	teamId: {
-		type: Number,
-		required: true
-	},
-
-	leader: {
-		type: String,
-		required: false
-	},
-
-	phase: {
-		type: String,
-		required: true
-	}
-})
-
-onMounted(async() => {
-	const data = await getStudentsByTeamId(props.teamId)
-	students.value = data
-	const criteriaData = await getCriteria(props.teamId)
-	criteria.value = criteriaData
-	average.value = await getTeamAverage(props.teamId)
-})
-
-function getNom(nomPrenom: string) {
-	return separateStringOnFirstSpace(nomPrenom)[0]
-}
-
-function getPrenom(nomPrenom: string) {
-	return separateStringOnFirstSpace(nomPrenom)[1]
-}
-
+const rowClass = cn("py-2 h-auto")
 
 </script>
 
 <template>
-	<AccordionContent class="w-full flex mb-4 items-start">
-		<div id="accordionStudents" class="pr-10 flex-grow flex-1 w-full">
-			<div>
-				<div class="flex font-thin">
-					<div class="w-[25%]">Nom</div>
-					<div class="w-[25%]">Prénom</div>
-					<div v-if="phase != 'PREPUBLISHED'" class="w-[25%]">Rôle</div>
-					<div class="w-[25%]">Sexe</div>
-					<div class="w-[25%]">Bachelor</div>
-				</div>
-				<Separator />
-			</div>
-			<div v-for="(student, i) in students" :key="i" :value="student">
-				<div>
-					<div class="flex">
-						<div class="w-[25%]">{{ getNom(student.name) }}</div>
-						<div class="w-[25%]">{{ getPrenom(student.name) }}</div>
-						<div v-if="phase != 'PREPUBLISHED'" class="w-[25%]">{{ student.teamRole }}</div>
-						<div class="w-[25%]">{{ student.gender === "MAN" ? "Homme" : "Femme" }}</div>
-						<div class="w-[25%]">
-							<p v-if="student.bachelor">Oui</p>
-							<p v-else>Non</p>
-						</div>
-					</div>
-					<Separator />
-				</div>
-			</div>
-		</div>
-		<div v-if="criteria" id="accordionCriteria" class="w-auto border rounded pb-2">
-			<div class="flex flex-col p-3 pb-0">
-				<div>
-					Critères de génération
-				</div>
-				<div class="flex flex-row">
-					<isCheck :isCheck="criteria.validCriteriaWoman" class="pr-1" />
-					<div>Nombre de femmes : {{ criteria.nbWomans }}</div>
-				</div>
-				<div class="flex flex-row">
-					<isCheck :isCheck="criteria.validCriteriaBachelor" class="pr-1" />
-					<div>Nombre de bachelors : {{ criteria.nbBachelors }}</div>
-				</div>
-				<div class="flex flex-row" v-if="average">
-					<isCheck :isCheck="true" class="pr-1" />
-					<div>Moyenne : {{ average.toPrecision(4) }}</div>
-				</div>
-			</div>
-		</div>
+	<PageSkeleton v-if="!students || !criteria || average === undefined" />
+	<AccordionContent v-else class="w-full flex mb-4 items-start gap-12">
+		<Table class="flex-1">
+			<TableHeader>
+				<TableRow>
+					<TableHead :class="rowClass" class="min-w-28">Nom</TableHead>
+					<TableHead :class="rowClass" class="min-w-28">Prénom</TableHead>
+					<!-- <TableHead :class="rowClass" class="min-w-28">Rôle</TableHead> -->
+					<TableHead :class="rowClass" class="min-w-16">Genre</TableHead>
+					<TableHead :class="rowClass" class="min-w-16">Bachelor</TableHead>
+				</TableRow>
+			</TableHeader>
+
+			<TableBody v-if="students">
+				<TableRow v-for="(student, i) in students" :key="i">
+					<TableCell :class="rowClass">{{ extractNames(student.name).lastName }}</TableCell>
+					<TableCell :class="rowClass">{{ extractNames(student.name).firstName }}</TableCell>
+					<!-- <TableCell :class="rowClass">{{ student.teamRole }}</TableCell> -->
+					<TableCell :class="rowClass">
+						<GenderIcon :gender="student.gender" />
+					</TableCell>
+					<TableCell :class="rowClass">
+						<CheckIcon :checked="student.bachelor ?? false" />
+					</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
+
+		<Column v-if="criteria" class="w-auto border rounded px-4 py-3 min-w-56">
+			<Subtitle class="mb-1">Critères de génération</Subtitle>
+			<Row class="gap-1">
+				<CheckIcon :checked="criteria.validCriteriaWoman" />
+				<Text>Nombre de femmes : {{ criteria.nbWomans }}</Text>
+			</Row>
+			<Row class="gap-1">
+				<CheckIcon :checked="criteria.validCriteriaBachelor" />
+				<Text>Nombre de bachelors : {{ criteria.nbBachelors }}</Text>
+			</Row>
+			<Row class="gap-1" v-if="average">
+				<CheckIcon :checked="true" />
+				<Text>Moyenne : {{ average.toPrecision(4) }}</Text>
+			</Row>
+		</Column>
 	</AccordionContent>
 </template>

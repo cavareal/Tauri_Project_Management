@@ -1,18 +1,9 @@
-<script setup lang="ts">
-
-const props = defineProps<{
-	class?: string
-}>()
-
-</script>
-
 <template>
 	<svg
 		id="logo"
 		data-name="Logo"
 		xmlns="http://www.w3.org/2000/svg"
 		viewBox="0 0 511.7 600"
-		:class="props.class"
 	>
 		<defs></defs>
 		<!-- eslint-disable-next-line max-len -->

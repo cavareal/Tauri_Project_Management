@@ -7,62 +7,52 @@ const router = createRouter({
 		{
 			path: "/login",
 			name: "login",
-			component: () => import("@/components/pages/ConnectionView.vue")
+			component: () => import("@/components/pages/ConnectionPage.vue")
 		},
 		{
 			path: "/",
 			name: "dashboard",
-			component: () => import("@/components/pages/DashboardView.vue")
+			component: () => import("@/components/pages/DashboardPage.vue")
 		},
 		{
 			path: "/teams",
 			name: "teams",
-			component: () => import("@/components/pages/TeamsView.vue")
+			component: () => import("@/components/pages/TeamsPage.vue")
 		},
 		{
 			path: "/my-team",
 			name: "my-team",
-			component: () => import("@/components/pages/MyTeamView.vue")
+			component: () => import("@/components/pages/MyTeamPage.vue")
 		},
 		{
 			path: "/students",
 			name: "students",
-			component: () => import("@/components/pages/StudentsView.vue")
+			component: () => import("@/components/pages/StudentsPage.vue")
 		},
 		{
 			path: "/sprints",
 			name: "sprints",
-			component: () => import("@/components/pages/SprintsView.vue")
+			component: () => import("@/components/pages/SprintsPage.vue")
 		},
 		{
 			path: "/grades",
 			name: "grades",
-			component: () => import("@/components/pages/GradeView.vue")
-		},
-		{
-			path: "/settings",
-			name: "settings",
-			component: () => import("@/components/pages/SettingsPage.vue")
+			component: () => import("@/components/pages/GradesPage.vue")
 		},
 		{
 			path: "/rating",
 			name: "rating",
-			component: () => import("@/components/pages/EvaluationView.vue")
+			component: () => import("@/components/pages/RatingPage.vue")
 		},
 		{
-			path: "/test",
-			name: "test",
-			component: () => import("@/components/pages/TestPage.vue")
+			path: "/grade-scales",
+			name: "grade-scales",
+			component: () => import("@/components/pages/GradeScalesPage.vue")
 		},
 		{
 			path: "/:pathMatch(.*)*",
 			name: "not-found",
-			component: () => import("@/components/pages/NotFoundView.vue")
-		},
-		{
-			path: "/test2",
-			name: "test2",
-			component: () => import("@/components/pages/Test2Page.vue")
+			component: () => import("@/components/pages/NotFoundPage.vue")
 		}
 	]
 })

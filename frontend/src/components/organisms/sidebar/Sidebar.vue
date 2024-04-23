@@ -1,9 +1,10 @@
 <script setup lang="ts">
+
 import { Bell, GraduationCap, LayoutDashboard, LogOut, Scale, Users, Check, Tag, Play, User } from "lucide-vue-next"
 import SidebarLink from "./SidebarLink.vue"
 import Separator from "@/components/ui/separator/Separator.vue"
 import { Logo } from "@/components/atoms/logo"
-import { cn } from "@/utils/utils"
+import { cn } from "@/utils/style"
 
 const props = defineProps<{
 	class?: string
@@ -15,6 +16,7 @@ const style = cn(
 	"bg-dark-blue drop-shadow-sidebar",
 	props.class
 )
+
 </script>
 
 <template>

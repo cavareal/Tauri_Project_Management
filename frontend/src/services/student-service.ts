@@ -1,6 +1,7 @@
 import type { Student } from "@/types/student"
 import { StudentSchema } from "@/types/student"
 import { apiQuery } from "@/utils/api"
+import { uploadFile } from "@/utils/api/api.util"
 import { z } from "zod"
 
 export const getAllStudents = async(): Promise<Student[]> => {
@@ -46,20 +47,17 @@ export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => 
 }
 
 export const importStudentFile = async(file: File): Promise<void> => {
-	const formData = new FormData()
-	formData.append("file-upload", file)
-
-	const response = await apiQuery({
-		method: "POST",
-		route: "students/uploadCSV",
-		body: formData,
-		responseSchema: z.string(),
-		textResponse: true
+	const response = await uploadFile({
+		file,
+		route: "students/uploadCSV"
 	})
 
 	if (response.status === "error") {
+		console.error(response.error)
 		throw new Error(response.error)
 	}
+
+	return
 }
 
 export const deleteAllStudents = async(): Promise<void> => {

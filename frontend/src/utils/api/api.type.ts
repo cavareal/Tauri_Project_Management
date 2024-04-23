@@ -16,3 +16,8 @@ export type ApiQueryResponse<T> = {
     status: "error"
     error: string
 }
+
+export type UploadFileRequest = {
+	file: File
+	route: string
+}
