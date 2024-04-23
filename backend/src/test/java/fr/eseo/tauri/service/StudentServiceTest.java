@@ -338,4 +338,28 @@ class StudentServiceTest {
         verify(studentRepository, times(1)).findStudentsByTeam(team);
     }
 
+    @Test
+    @DisplayName("deleteAllImportedStudentsAndGradeTypes_deletesAllImportedStudentsAndGradeTypes")
+    void deleteAllImportedStudentsAndGradeTypes_deletesAllImportedStudentsAndGradeTypes() {
+        doNothing().when(studentRepository).deleteAll();
+        doNothing().when(gradeTypeService).deleteAllImportedGradeTypes();
+
+        studentService.deleteAllImportedStudentsAndGradeTypes();
+
+        verify(studentRepository, times(1)).deleteAll();
+        verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes();
+    }
+
+    @Test
+    @DisplayName("deleteAllImportedStudentsAndGradeTypes_handlesExceptionWhenDeletingStudents")
+    void deleteAllImportedStudentsAndGradeTypes_handlesExceptionWhenDeletingStudents() {
+        doThrow(new RuntimeException()).when(studentRepository).deleteAll();
+        doNothing().when(gradeTypeService).deleteAllImportedGradeTypes();
+
+        studentService.deleteAllImportedStudentsAndGradeTypes();
+
+        verify(studentRepository, times(1)).deleteAll();
+        verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes();
+    }
+
 }
