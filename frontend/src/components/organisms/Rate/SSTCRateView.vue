@@ -49,12 +49,17 @@ function addEvaluation() {
 	if (!evaluations.value[selectedTeam.value]) {
 		evaluations.value[selectedTeam.value] = []
 	}
-
-	evaluations.value[selectedTeam.value].push({
-		team: selectedTeam.value,
-		gradeContentPresentation: Number(contentPresentationNote.value),
-		gradeMaterialSupport: Number(materialSupportNote.value)
-	})
+	const teamIndex = evaluations.value[selectedTeam.value].findIndex(e => e.team === selectedTeam.value)
+	if (teamIndex !== -1) {
+		evaluations.value[selectedTeam.value][teamIndex].gradeContentPresentation = Number(contentPresentationNote.value)
+		evaluations.value[selectedTeam.value][teamIndex].gradeMaterialSupport = Number(materialSupportNote.value)
+	} else {
+		evaluations.value[selectedTeam.value].push({
+			team: selectedTeam.value,
+			gradeContentPresentation: Number(contentPresentationNote.value),
+			gradeMaterialSupport: Number(materialSupportNote.value)
+		})
+	}
 }
 
 async function grades() {
@@ -62,7 +67,7 @@ async function grades() {
 		buttonsState.value.validate = false
 		buttonsState.value.loading = true
 
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addGradeToTeam/" + userId, {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/add-grade-to-team/" + userId, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -80,6 +85,7 @@ async function grades() {
 
 		redirect()
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return await response.json()
 	} catch (error) {
 		buttonsState.value.loading = false

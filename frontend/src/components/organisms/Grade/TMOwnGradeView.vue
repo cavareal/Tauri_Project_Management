@@ -20,7 +20,7 @@ const request = {
 
 const fetchgrades = async() => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/averageGradesByGradeTypeByRole/" + userId, request)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/average-grades-by-grade-type-by-role/" + userId, request)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}
