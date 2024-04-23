@@ -56,4 +56,11 @@ jacocoTestReport {
 		xml.required = true
 		html.required = true
 	}
+	afterEvaluate {
+		classDirectories = files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: ['fr.eseo.tauri.seeder/**',])
+		})
+	}
+
 }
+
