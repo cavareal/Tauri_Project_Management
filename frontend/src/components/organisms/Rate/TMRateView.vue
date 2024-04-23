@@ -71,7 +71,10 @@ function addEvaluation() {
 	if (teamIndex !== -1) {
 		evaluations.value[selectedTeam.value][teamIndex].gradeOverallPerformance = Number(note.value)
 	} else {
-		evaluations.value[selectedTeam.value].push({ team: selectedTeam.value, gradeOverallPerformance: Number(note.value) })
+		evaluations.value[selectedTeam.value].push({
+			team: selectedTeam.value,
+			gradeOverallPerformance: Number(note.value)
+		})
 	}
 }
 
@@ -79,7 +82,7 @@ const grades = async() => {
 	try {
 		buttonsState.validate = false
 		buttonsState.loading = true
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addGradeToTeam/" + userId, {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/add-grade-to-team/" + userId, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
