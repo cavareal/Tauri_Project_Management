@@ -90,8 +90,8 @@ java-build:
     - cd backend
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
-    - echo "Database Username: $DATABASE_USERNAME"
-    - echo "Database Password: $DATABASE_PASSWORD"
+    - echo Database Username $DATABASE_USERNAME
+    - echo Database Password $DATABASE_PASSWORD
     - gradle --no-daemon clean build -Pdev -x test -PDATABASE_USERNAME=$DATABASE_USERNAME -PDATABASE_PASSWORD=$DATABASE_PASSWORD
   retry: 2
   dependencies:    
