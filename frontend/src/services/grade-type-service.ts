@@ -29,3 +29,16 @@ export const getAllImportedGradeTypes = async() => {
 
 	return response.data.filter(gradeType => gradeType.imported)
 }
+
+export const updateGradeTypeFactor = async(id: number, factor: number): Promise<void> => {
+	const response = await apiQuery({
+		method: "PATCH",
+		responseSchema: GradeTypeSchema,
+		route: `grade-types/${id}`,
+		body: { factor }
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}

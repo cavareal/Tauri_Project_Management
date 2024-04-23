@@ -5,7 +5,7 @@ import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
 
@@ -15,18 +15,10 @@ import java.util.List;
  * Service class for managing projects.
  */
 @Service
+@RequiredArgsConstructor
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
-
-    /**
-     * Constructor for ProjectService.
-     * @param projectRepository the project repository
-     */
-    @Autowired
-    public ProjectService(ProjectRepository projectRepository) {
-        this.projectRepository = projectRepository;
-    }
 
     @PostConstruct
     public void initDataIfTableIsEmpty() {

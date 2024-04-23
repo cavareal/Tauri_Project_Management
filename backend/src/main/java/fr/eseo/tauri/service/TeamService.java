@@ -12,7 +12,7 @@ import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.util.CustomLogger;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ import java.util.Optional;
  * Service class for managing teams.
  */
 @Service
+@RequiredArgsConstructor
 public class TeamService {
 
     private final TeamRepository teamRepository;
@@ -30,22 +31,6 @@ public class TeamService {
     private final ProjectService projectService;
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
-
-    /**
-     * Constructor for TeamService.
-     * @param teamRepository the team repository
-     * @param userRepository the user repository
-     * @param projectService the project repository
-     * @param studentRepository the student repository
-     */
-    @Autowired
-    public TeamService(TeamRepository teamRepository, UserRepository userRepository, ProjectService projectService, StudentRepository studentRepository, RoleRepository roleRepository){
-        this.teamRepository = teamRepository;
-        this.userRepository = userRepository;
-        this.projectService = projectService;
-        this.studentRepository = studentRepository;
-        this.roleRepository = roleRepository;
-    }
 
     public void deleteAllTeams() {
         var teams = teamRepository.findAll();
@@ -173,7 +158,7 @@ public class TeamService {
         int nbMen = men.size();
         int nbStudent = nbMen + nbWomen;
 
-        int index = 0;
+        int index;
 
         Role role = new Role();
         role.type(RoleType.TEAM_MEMBER);
@@ -181,7 +166,7 @@ public class TeamService {
         // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
         for (int i = 0; i < nbTeams; i++) {
             for (int j = 0; j < womenPerTeam; j++) {
-                Student student = null;
+                Student student;
                 index = i * womenPerTeam + j;
 
                 if (index < nbWomen) {
@@ -316,5 +301,13 @@ public class TeamService {
             }
         }
         return null;
+    }
+
+    public double getTeamAvgGrade(Integer idTeam) throws IllegalArgumentException {
+        Optional<Team> optionalTeam = this.teamRepository.findById(idTeam);
+        if (optionalTeam.isEmpty()) {
+            throw new IllegalArgumentException("Team with id " + idTeam + " not found");
+        }
+        return this.teamRepository.findAvgGradeByTeam(optionalTeam.get());
     }
 }

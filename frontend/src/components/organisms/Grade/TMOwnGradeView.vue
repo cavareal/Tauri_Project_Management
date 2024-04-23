@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@/components/ui/table"
-import { cn } from "@/utils/utils"
-import getCookie from "@/utils/cookiesUtils"
+import { cn } from "@/utils/style"
+import { getCookie } from "@/utils/cookie"
 import { ref } from "vue"
 
 const rowClass = cn("py-2 h-auto")
-//const user = getCookie("current_user")
+//const user = getCookie("user")
 const userId = getCookie("user")
 const token = getCookie("token")
 const grades = ref()
@@ -20,7 +20,7 @@ const request = {
 
 const fetchgrades = async() => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/averageGradesByGradeTypeByRole/" + userId, request)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/average-grades-by-grade-type-by-role/" + userId, request)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}

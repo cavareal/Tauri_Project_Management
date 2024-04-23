@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import getCookie from "@/utils/cookiesUtils"
+import { getCookie } from "@/utils/cookie"
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const token = getCookie("token")
-const userId = getCookie("current_user")
+const userId = getCookie("user")
 const selectedTeam = ref("")
 let note = ref("")
 interface Evaluation {
@@ -59,11 +59,11 @@ const buttonsState = reactive({
 	loading: false
 })
 
-function redirect() : void {
+const redirect = (): void => {
 	window.location.href = "/rating"
 }
 
-function addEvaluation() {
+const addEvaluation = () => {
 	if (!evaluations.value[selectedTeam.value]) {
 		evaluations.value[selectedTeam.value] = []
 	}
@@ -71,7 +71,10 @@ function addEvaluation() {
 	if (teamIndex !== -1) {
 		evaluations.value[selectedTeam.value][teamIndex].gradeOverallPerformance = Number(note.value)
 	} else {
-		evaluations.value[selectedTeam.value].push({ team: selectedTeam.value, gradeOverallPerformance: Number(note.value) })
+		evaluations.value[selectedTeam.value].push({
+			team: selectedTeam.value,
+			gradeOverallPerformance: Number(note.value)
+		})
 	}
 }
 
@@ -79,7 +82,7 @@ const grades = async() => {
 	try {
 		buttonsState.validate = false
 		buttonsState.loading = true
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/addGradeToTeam/" + userId, {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/add-grade-to-team/" + userId, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -103,7 +106,7 @@ const grades = async() => {
 	}
 }
 
-function handleNoteInput(event: InputEvent) {
+const handleNoteInput = (event: InputEvent) => {
 	const inputNote = parseInt((event.target as HTMLInputElement).value)
 	if (inputNote > 20) {
 		note.value = String(20)
@@ -112,7 +115,7 @@ function handleNoteInput(event: InputEvent) {
 	}
 }
 
-function sendGrades() {
+const sendGrades = () => {
 	console.log(evaluations.value)
 	void grades()
 }

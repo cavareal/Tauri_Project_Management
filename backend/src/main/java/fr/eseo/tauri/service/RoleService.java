@@ -5,23 +5,14 @@ import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.util.ListUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RoleService {
 
 	private final RoleRepository roleRepository;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param roleRepository The repository for roles.
-	 */
-	@Autowired
-	public RoleService(RoleRepository roleRepository) {
-		this.roleRepository = roleRepository;
-	}
 
 	/**
 	 * Fetches all users associated with a specific role type.

@@ -239,4 +239,16 @@ class ProjectServiceTest {
         // Assert
         assertNull(result);
     }
+
+    @Test
+    @DisplayName("updateCurrentPhase_updatesPhase_whenProjectExists")
+    void updateCurrentPhase_updatesPhase_whenProjectExists() {
+        Project project = new Project();
+        when(projectRepository.findAll()).thenReturn(Collections.singletonList(project));
+
+        Project result = projectService.updateCurrentPhase(ProjectPhase.COMPOSING);
+
+        assertEquals(ProjectPhase.COMPOSING, result.phase());
+        verify(projectRepository, times(1)).save(project);
+    }
 }

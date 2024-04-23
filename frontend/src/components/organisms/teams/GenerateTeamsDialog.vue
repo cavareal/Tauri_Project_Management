@@ -1,99 +1,63 @@
 <script setup lang="ts">
-import { ref, reactive } from "vue"
+
+import { ref } from "vue"
 import { Button } from "@/components/ui/button"
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger
-} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2 } from "lucide-vue-next"
 import { generateTeams } from "@/services/team-service"
+import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
+import { LoadingButton } from "@/components/molecules/buttons"
+import { useMutation } from "@tanstack/vue-query"
+import { ErrorText } from "@/components/atoms/texts"
+import { Column, Row } from "@/components/atoms/containers"
 
-// Définir les références pour les valeurs des inputs
 const nbTeams = ref("6")
 const womenPerTeam = ref("1")
 
-// État pour contrôler l'affichage des boutons
-const buttonsState = reactive({
-	generateTeams: true,
-	loading: false,
-	showGeneratedTeams: false
-})
+const open = ref(false)
 
-// Message d'erreur
-const errorMessage = ref("")
+const emits = defineEmits(["generate:teams"])
 
-const onClick = async() => {
-	buttonsState.generateTeams = false
-	buttonsState.loading = true
-	buttonsState.showGeneratedTeams = false
+defineProps<{
+	nbStudents: number
+}>()
 
-	try {
-		await generateTeams(nbTeams.value, womenPerTeam.value)
-		buttonsState.loading = false
-		buttonsState.showGeneratedTeams = true
-		buttonsState.generateTeams = false
-	} catch (error) {
-		console.error(error)
-		errorMessage.value = "Erreur lors de la communication avec le serveur"
-		buttonsState.loading = false
-		buttonsState.generateTeams = true
-	}
-}
+const { mutate, isPending, error } = useMutation({ mutationKey: ["generate-teams"], mutationFn: async() => {
+	await generateTeams(nbTeams.value, womenPerTeam.value)
+		.then(() => open.value = false)
+		.then(() => emits("generate:teams"))
+} })
 
-const showGeneratedTeams = () => {
-	location.reload()
-}
+const DIALOG_TITLE = "Générer les équipes"
+const DIALOG_DESCRIPTION = "Modifiez les paramètres de génération, puis cliquez sur le bouton pour générer automatiquement les équipes."
+
 </script>
 
 <template>
-	<Dialog>
-		<DialogTrigger>
+	<CustomDialog :title="DIALOG_TITLE" :description="DIALOG_DESCRIPTION" v-model:open="open">
+		<template #trigger>
 			<slot />
-		</DialogTrigger>
+		</template>
 
-		<DialogContent class="sm:max-w-[600px]">
-			<DialogHeader>
-				<DialogTitle>Générer les équipes</DialogTitle>
-				<DialogDescription>
-					Modifiez les paramètres de génération, puis cliquez sur le bouton pour générer
-					automatiquement les équipes.
-				</DialogDescription>
-			</DialogHeader>
-			<div class="grid gap-4 py-4">
-				<div class="grid grid-cols-5 items-center gap-4">
-					<Label for="nbTeams" class="text-right col-span-2">
-						Nombre d'équipes
-					</Label>
-					<Input id="nbTeams" type="number" v-model="nbTeams" class="col-span-3" />
-				</div>
-				<div class="grid grid-cols-5 items-center gap-4">
-					<Label for="womenPerTeam" class="text-right col-span-2">
-						Nombre de femmes par équipe
-					</Label>
-					<Input id="womenPerTeam" type="number" v-model="womenPerTeam" class="col-span-3" />
-				</div>
-			</div>
-			<DialogFooter>
-				<Button type="submit" v-if="buttonsState.generateTeams" @click="onClick">
-					Générer les équipes
-				</Button>
-				<Button type="submit" v-if="buttonsState.loading" disabled
-					class="flex items-center">
-					<Loader2 class="w-4 h-4 mr-2 animate-spin" />
-					Veuillez patienter
-				</Button>
-				<Button type="submit" v-if="buttonsState.showGeneratedTeams" @click="showGeneratedTeams">
-					Voir les équipes générées
-				</Button>
-			</DialogFooter>
-			<p v-if="errorMessage">{{ errorMessage }}</p>
-		</DialogContent>
-	</Dialog>
+		<Column class="items-stretch gap-2">
+			<Row class="items-center">
+				<Label for="nbTeams" class="w-3/5 text-left">Nombre d'équipes</Label>
+				<Input id="nbTeams" type="number" v-model="nbTeams" class="w-2/5" :min="0" :max="nbStudents" />
+			</Row>
+			<Row class="items-center">
+				<Label for="womenPerTeam" class="w-3/5 text-left">Nombre de femmes par équipe</Label>
+				<Input id="womenPerTeam" type="number" v-model="womenPerTeam" class="w-2/5" :min="0" :max="nbStudents" />
+			</Row>
+		</Column>
+		<ErrorText v-if="error" class="mb-2">Une erreur est survenue.</ErrorText>
+
+		<template #footer>
+			<DialogClose>
+				<Button variant="outline">Annuler</Button>
+			</DialogClose>
+			<LoadingButton type="submit" class="flex items-center" :loading="isPending" @click="mutate">
+				Générer les équipes
+			</LoadingButton>
+		</template>
+	</CustomDialog>
 </template>

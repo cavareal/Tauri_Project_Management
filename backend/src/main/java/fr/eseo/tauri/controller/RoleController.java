@@ -52,7 +52,7 @@ public class RoleController {
         return "Role deleted";
     }
 
-    @GetMapping("/{type}")
+    @GetMapping("/type/{type}")
     public User getFirstUserByRoleType(@PathVariable RoleType type) {
         return roleRepository.findFirstByType(type).user();
     }

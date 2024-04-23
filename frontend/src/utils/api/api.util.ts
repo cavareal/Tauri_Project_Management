@@ -1,10 +1,11 @@
-import { z } from "zod"
 import type { ApiQueryRequest, ApiQueryResponse } from "."
-import getCookie from "@/utils/cookiesUtils"
+import { getCookie } from "@/utils/cookie"
+import type { UploadFileRequest } from "./api.type"
 
 
-// eslint-disable-next-line max-len
-export const apiQuery = async <T>({ route, responseSchema, method, body, delay = 0, textResponse = false }: ApiQueryRequest<T>): Promise<ApiQueryResponse<T>> => {
+export const apiQuery = async <T>(
+	{ route, responseSchema, method, body, delay = 0, textResponse = false }: ApiQueryRequest<T>
+): Promise<ApiQueryResponse<T>> => {
 	let url = import.meta.env.VITE_TAURI_API_URL
 	if (!url) {
 		return {
@@ -52,5 +53,38 @@ export const apiQuery = async <T>({ route, responseSchema, method, body, delay =
 	return {
 		status: "success",
 		data: data.data
+	}
+}
+
+export const uploadFile = async({ file, route }: UploadFileRequest): Promise<ApiQueryResponse<string>> => {
+	let url = import.meta.env.VITE_TAURI_API_URL
+	if (!url) {
+		return {
+			status: "error",
+			error: "API URL is not set"
+		}
+	}
+	if (!url.endsWith("/")) url += "/"
+	if (route.startsWith("/")) route = route.slice(1)
+
+	const token = getCookie("token")
+
+	const headers = {
+		"Authorization": token || "null"
+	}
+
+	const formData = new FormData()
+	formData.append("file-upload", file)
+	const response = await fetch(`${url}${route}`, { method: "POST", body: formData, headers })
+	if (!response.ok) {
+		return {
+			status: "error",
+			error: `Failed to fetch ${url}${route}`
+		}
+	}
+
+	return {
+		status: "success",
+		data: await response.text()
 	}
 }
