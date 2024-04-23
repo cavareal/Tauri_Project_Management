@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class CustomLoggerTest {
@@ -39,5 +40,10 @@ class CustomLoggerTest {
     void logError_logsErrorMessage() {
         CustomLogger.logError("Error message");
         verify(logger, times(1)).error("Error message");
+    }
+
+    @Test
+    void constructor_throwsIllegalStateException() {
+        assertThrows(IllegalStateException.class, CustomLogger::new);
     }
 }
