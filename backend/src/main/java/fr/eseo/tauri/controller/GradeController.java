@@ -35,7 +35,7 @@ public class GradeController {
         this.gradeTypeRepository = gradeTypeRepository;
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<Iterable<Grade>> getAllGrades() {
         return ResponseEntity.ok(gradeRepository.findAll());
     }
