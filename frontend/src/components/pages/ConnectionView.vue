@@ -17,7 +17,7 @@ async function formSubmit() {
 	document.cookie = "user=52; path=/;"
 
 	const response = await apiQuery({
-		route: `roles/user/${selectedRole.value}`,
+		route: `roles/type/${selectedRole.value}`,
 		responseSchema: UserSchema,
 		method: "GET"
 	})
