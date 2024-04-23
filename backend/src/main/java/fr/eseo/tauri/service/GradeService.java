@@ -50,7 +50,7 @@ public class GradeService {
 	 * @param grades the list of Grade objects for which the mean is to be calculated
 	 * @return the mean of the grades, or 0 if there are no grades or all grades have a factor of 0
 	 */
-	private float mean(List<Grade> grades) {
+	float mean(List<Grade> grades) {
 		var total = 0f;
 		var factors = 0f;
 
