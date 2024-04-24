@@ -22,6 +22,10 @@ public class TauriApplication {
 
 	public static void main(String[] args) {
 
+		System.out.println("/////////////////////////////////////////////////////");
+		System.out.println(databaseUsernameProd);
+		System.out.println(databasePasswordProd);
+
 		if(prod){		// If build for production deploiement
 			System.setProperty("spring.datasource.username", databaseUsernameProd);
 			System.setProperty("spring.datasource.password", databasePasswordProd);
