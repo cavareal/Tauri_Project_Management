@@ -14,9 +14,9 @@ public class TauriApplication {
 
 	@Value("${prod}")
 	private static boolean prod;
-	@Value("${DATABASE_USERNAME}")
+	@Value("${databaseUsername}")
 	private static String databaseUsernameProd;
-	@Value("${DATABASE_PASSWORD}")
+	@Value("${databasePassword}")
 	private static String databasePasswordProd;
 
 
@@ -34,9 +34,6 @@ public class TauriApplication {
 				Dotenv dotenv = Dotenv.load();
 				String databaseUsername = "DATABASE_USERNAME";
 				String databasePassword = "DATABASE_PASSWORD";
-
-				CustomLogger.logInfo(dotenv.get(databaseUsername));
-				CustomLogger.logInfo(dotenv.get(databasePassword));
 
 				if(dotenv.get(databaseUsername) != null && !dotenv.get(databaseUsername).isEmpty()) {
 					System.setProperty("spring.datasource.username", dotenv.get(databaseUsername));
