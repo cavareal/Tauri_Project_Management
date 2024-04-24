@@ -36,10 +36,12 @@ public class Team {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JsonProperty
     private User leader;
-
+    
+    /*
     @OneToMany(mappedBy = "team", orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JsonProperty
     private List<Student> students;
+     */
 }
 
