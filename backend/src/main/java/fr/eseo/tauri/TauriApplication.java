@@ -19,37 +19,34 @@ public class TauriApplication {
 	@Value("${databasePassword}")
 	private static String databasePasswordProd;
 
-
 	public static void main(String[] args) {
-
-		System.out.println("/////////////////////////////////////////////////////");
-		System.out.println(databaseUsernameProd);
-		System.out.println(databasePasswordProd);
-
-		if(prod){		// If build for production deploiement
-			System.setProperty("spring.datasource.username", databaseUsernameProd);
-			System.setProperty("spring.datasource.password", databasePasswordProd);
-		} else {
-			try{
-				Dotenv dotenv = Dotenv.load();
-				String databaseUsername = "DATABASE_USERNAME";
-				String databasePassword = "DATABASE_PASSWORD";
-
-				if(dotenv.get(databaseUsername) != null && !dotenv.get(databaseUsername).isEmpty()) {
-					System.setProperty("spring.datasource.username", dotenv.get(databaseUsername));
-				}
-				if(dotenv.get(databasePassword) != null && !dotenv.get(databasePassword).isEmpty()) {
-					System.setProperty("spring.datasource.password", dotenv.get(databasePassword));
-				}
-
-			} catch (Exception e){
-				CustomLogger.logError("No .env file found, using default values", e);
-			}
-		}
-
+//		dbConnection();
 		// Run the application
 		SpringApplication.run(TauriApplication.class, args);
 	}
 
+	
+	private static void dbConnection() {
+		if (prod) { // If build for production deployment
+			System.setProperty("spring.datasource.username", databaseUsernameProd);
+			System.setProperty("spring.datasource.password", databasePasswordProd);
+		} else {
+			try {
+				Dotenv dotenv = Dotenv.load();
+				String databaseUsername = "DATABASE_USERNAME";
+				String databasePassword = "DATABASE_PASSWORD";
+
+				if (dotenv.get(databaseUsername) != null && dotenv.get(databasePassword) != null) {
+					System.setProperty("spring.datasource.username", dotenv.get(databaseUsername));
+					System.setProperty("spring.datasource.password", dotenv.get(databasePassword));
+				} else {
+					throw new Exception("No .env file found");
+				}
+
+			} catch (Exception e) {
+				CustomLogger.logError("No .env file found, using default values", e);
+			}
+		}
+	}
 }
 
