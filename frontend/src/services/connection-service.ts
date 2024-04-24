@@ -8,8 +8,8 @@ export const login = async(role: RoleType) => {
 	setCookie("token", "bonamyRule34")
 
 	const response = await apiQuery({
-		route: `roles/user/${role}`,
-		responseSchema: UserSchema,
+		route: `users/roles/${role}`,
+		responseSchema: UserSchema.array(),
 		method: "GET"
 	})
 
@@ -17,5 +17,5 @@ export const login = async(role: RoleType) => {
 		throw new Error(response.error)
 	}
 
-	setCookie("user", response.data.id.toString())
+	setCookie("user", response.data[0].id.toString())
 }
