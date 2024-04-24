@@ -25,7 +25,7 @@ public class TauriApplication {
 		SpringApplication.run(TauriApplication.class, args);
 	}
 
-	
+
 	private static void dbConnection() {
 		if (prod) { // If build for production deployment
 			System.setProperty("spring.datasource.username", databaseUsernameProd);
