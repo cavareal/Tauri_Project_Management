@@ -12,16 +12,25 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class TauriApplication {
 
 	public static void main(String[] args) {
-			try {
-				Dotenv dotenv = Dotenv.load();
-				if(dotenv.get("DATABASE_USERNAME") != null && dotenv.get("DATABASE_PASSWORD") != null) {
-					System.setProperty("spring.datasource.username", dotenv.get("DATABASE_USERNAME"));
-					System.setProperty("spring.datasource.password", dotenv.get("DATABASE_PASSWORD"));
-				}
-			} catch (Exception e) {
-				CustomLogger.logError("No .env file found, using default values", e);
+		// Load database logs
+		try{
+			Dotenv dotenv = Dotenv.load();
+			String databaseUsername = "DATABASE_USERNAME";
+			String databasePassword = "DATABASE_PASSWORD";
+
+			CustomLogger.logInfo(dotenv.get(databaseUsername));
+			CustomLogger.logInfo(dotenv.get(databasePassword));
+
+			if(dotenv.get(databaseUsername) != null && !dotenv.get(databaseUsername).isEmpty()) {
+				System.setProperty("spring.datasource.username", dotenv.get(databaseUsername));
+			}
+			if(dotenv.get(databasePassword) != null && !dotenv.get(databasePassword).isEmpty()) {
+				System.setProperty("spring.datasource.password", dotenv.get(databasePassword));
 			}
 
+		} catch (Exception e){
+			CustomLogger.logError("No .env file found, using default values", e);
+		}
 		// Run the application
 		SpringApplication.run(TauriApplication.class, args);
 	}
