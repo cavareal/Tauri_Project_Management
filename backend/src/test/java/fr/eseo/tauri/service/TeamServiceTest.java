@@ -12,13 +12,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Nested
@@ -339,7 +342,65 @@ class TeamServiceTest {
 //        }
 //    }
 
-}
+    @Test
+    void getTeamAvgGradeReturnsCorrectAverageWhenTeamExists() {
+        // Arrange
+        Integer teamId = 1;
+        double expectedAverage = 85.0;
+        Team team = new Team();
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(teamRepository.findAvgGradeByTeam(team)).thenReturn(expectedAverage);
+
+        // Act
+        double result = teamService.getTeamAvgGrade(teamId);
+
+        // Assert
+        assertThat(result).isEqualTo(expectedAverage);
+        verify(teamRepository, times(1)).findById(teamId);
+        verify(teamRepository, times(1)).findAvgGradeByTeam(team);
+    }
+
+    @Test
+    void getTeamAvgGradeThrowsExceptionWhenTeamDoesNotExist() {
+        // Arrange
+        Integer teamId = 1;
+        when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+
+        // Act and Assert
+        assertThrows(IllegalArgumentException.class, () -> teamService.getTeamAvgGrade(teamId));
+        verify(teamRepository, times(1)).findById(teamId);
+    }
+
+    @Test
+    void createTeamsReturnsCorrectNumberOfTeamsWhenTeamsDoNotExist() {
+        // Arrange
+        Integer nbTeams = 3;
+        int projectId = 1;
+        List<Team> result;
+
+        // Mocks
+        Project projectMock = mock(Project.class);
+
+        // Mocks behavior
+        when(projectService.getCurrentProject()).thenReturn(projectMock);
+        when(projectMock.id()).thenReturn(projectId);
+        when(teamRepository.findAllByProjectId(projectMock.id())).thenReturn(List.of());
+
+        try {
+            Method method = TeamService.class.getDeclaredMethod("createTeams", Integer.class);
+            method.setAccessible(true);
+
+            // Act
+            result = (List<Team>) method.invoke(teamService, nbTeams);
+
+            // Asserts
+            assertNotNull(result, "The result should not be null");
+            assertEquals(nbTeams,result.size(), "The result should contain " + nbTeams + " teams");
+            verify(teamRepository, times(nbTeams)).save(any(Team.class));
+        }catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
 
 
 
