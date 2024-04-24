@@ -96,7 +96,7 @@ public class TeamService {
      * @param womenPerTeam the ratio of women in the teams
      * @return a List<Teams> if teams are created, otherwise null
      */
-    public List<Team> generateTeams(Integer nbTeams, Integer womenPerTeam) {
+    public List<Team> generateTeams(Integer nbTeams, Integer womenPerTeam) throws IllegalArgumentException{
         CustomLogger.logInfo("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
@@ -106,8 +106,8 @@ public class TeamService {
 
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams * womenPerTeam - 1) {
-            CustomLogger.logError("TeamService.createTeams : Not enough students to create the teams");
-            return List.of();
+            CustomLogger.logError("TeamService.generateTeams : Not enough students to create the teams");
+            throw new IllegalArgumentException("Not enough students to create the teams");
         }else {
             List<Team> teams = this.createTeams(nbTeams);
             this.fillTeams(teams, women, men, womenPerTeam);
@@ -117,10 +117,15 @@ public class TeamService {
 
     /**
      * Delete already existing teams in te project and then create teams with the given number of teams.
+     * // TODO : check nbTeams to be sure it is correct
      * @param nbTeams the number of teams to create
      * @return a List<Teams> if teams are created, otherwise null
      */
-    private List<Team> createTeams(Integer nbTeams) {
+    private List<Team> createTeams(Integer nbTeams) throws IllegalArgumentException{
+        if (nbTeams < 1) {
+            CustomLogger.logError("TeamService.createTeams : The number of teams to create must be greater than 0");
+            throw new IllegalArgumentException("The number of teams to create must be greater than 0");
+        }
 
         Project project = this.projectService.getCurrentProject();
 
