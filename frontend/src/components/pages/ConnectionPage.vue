@@ -8,15 +8,23 @@ import { redirect } from "@/utils/router"
 import { Column } from "@/components/atoms/containers"
 import Title from "@/components/atoms/texts/Title.vue"
 import type { RoleType } from "@/types/role"
-import { login } from "@/services/connection-service"
+import { login, log } from "@/services/connection-service"
 import { RadioLabel } from "@/components/molecules/radio"
 import { CustomCard } from "@/components/molecules/card"
+import { useQuery } from "@tanstack/vue-query"
 
 const selectedRole = ref<RoleType>("OPTION_LEADER")
+const username = ref<string>("")
+const password = ref<string>("")
 
 const handleSubmit = async() => {
-	await login(selectedRole.value).then(() => redirect("/"))
+	// await login(selectedRole.value).then(() => redirect("/"))
+	await log(username, password).then(() => redirect("/"))
 }
+
+
+
+
 
 const CARD_TITLE = "Bienvenue sur Tauri !"
 const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette page de connexion est temporaire."
@@ -31,7 +39,16 @@ const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette 
 		</Column>
 
 		<CustomCard class="border-none drop-shadow-login-card" :title="CARD_TITLE" :description="CARD_DESCRIPTION">
-			<RadioGroup class="flex justify-center flex-row" v-model="selectedRole">
+			
+			<form action="javascript:checkUser()"> 
+				<input type="text" id="login" name="login" v-model="username" placeholder="Login" required> 
+				<input type="password" id="password" name="password" v-model="password" placeholder="Password" required> 
+				<input type="submit" value="Valider"> 
+			</form> 
+			
+			
+			<!-- <RadioGroup class="flex justify-center flex-row" v-model="selectedRole"> 
+				
 				<Column class="gap-2 w-1/2">
 					<h4 class="mb-1 font-medium">Rôles professeurs</h4>
 					<RadioLabel name="role" value="OPTION_LEADER">[OL] Option Leader</RadioLabel>
@@ -46,7 +63,7 @@ const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette 
 					<RadioLabel name="role" value="OPTION_STUDENT">[OS] Option Student</RadioLabel>
 					<RadioLabel name="role" value="TEAM_MEMBER">[TM] Team Member</RadioLabel>
 				</Column>
-			</RadioGroup>
+			</RadioGroup> -->
 
 			<template #footer>
 				<Button @click="handleSubmit">Connexion</Button>
