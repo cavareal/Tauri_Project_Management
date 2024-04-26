@@ -14,7 +14,7 @@ defineProps<{
 <template>
 	<Row class="items-center gap-2">
 		<RadioGroupItem :name="name" :id="value" :value="value" />
-		<Label :for="value">
+		<Label :for="value" class="cursor-pointer">
 			<slot />
 		</Label>
 	</Row>
