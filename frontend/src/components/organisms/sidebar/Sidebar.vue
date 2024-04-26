@@ -5,6 +5,8 @@ import SidebarLink from "./SidebarLink.vue"
 import Separator from "@/components/ui/separator/Separator.vue"
 import { Logo } from "@/components/atoms/logo"
 import { cn } from "@/utils/style"
+import { Button } from "@/components/ui/button"
+import NotificationView from "@/components/organisms/notifications/NotificationView.vue"
 
 const props = defineProps<{
 	class?: string
@@ -65,9 +67,11 @@ const style = cn(
 		<div>
 			<Separator class="my-2" />
 
-			<SidebarLink>
-				<Bell /> Notifications
-			</SidebarLink>
+      <NotificationView>
+        <SidebarLink>
+          <Bell /> Notifications
+        </SidebarLink>
+      </NotificationView>
 
 			<SidebarLink link="/login">
 				<LogOut /> Déconnexion
