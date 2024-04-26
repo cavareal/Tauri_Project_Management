@@ -259,4 +259,19 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
+
+    @PutMapping("/{teamId}/move-student")
+    public ResponseEntity<Team> moveTeamStudent(@RequestHeader("Authorization") String token, @PathVariable Integer teamId, @RequestParam Integer studentId) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, "teamUpdate"))){
+            try {
+                var newTeam = teamService.moveTeamStudent(teamId, studentId);
+                return ResponseEntity.ok(newTeam);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
 }

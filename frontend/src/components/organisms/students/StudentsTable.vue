@@ -34,7 +34,7 @@ defineProps<{
 		</TableHeader>
 
 		<TableBody v-if="students">
-			<TableRow v-for="(student, i) in students" :key="i">
+			<TableRow v-for="student in students" :key="student.id">
 				<TableCell class="font-medium" :class="rowClass">
 					{{ student.name }}
 				</TableCell>
@@ -48,7 +48,8 @@ defineProps<{
 					<Skeleton v-if="!grades" class="w-5/6 h-5" />
 					<span v-else>
 						<!-- eslint-disable-next-line max-len -->
-						{{ grades?.find(grade => grade.student?.id === student.id && grade.gradeType.id === gradeType.id)?.value.toPrecision(4) ?? "" }}
+						{{ grades?.find(grade => grade.student?.id === student.id && grade.gradeType.id ===
+							gradeType.id)?.value.toPrecision(4) ?? "" }}
 					</span>
 				</TableCell>
 			</TableRow>
