@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import { RadioGroup } from "@/components/ui/radio-group"
-import { Button } from "@/components/ui/button"
 import { ref } from "vue"
 import { Logo } from "@/components/atoms/logo"
 import { redirect } from "@/utils/router"
@@ -11,12 +10,15 @@ import type { RoleType } from "@/types/role"
 import { login } from "@/services/connection-service"
 import { RadioLabel } from "@/components/molecules/radio"
 import { CustomCard } from "@/components/molecules/card"
+import { useMutation } from "@tanstack/vue-query"
+import { LoadingButton } from "@/components/molecules/buttons"
 
 const selectedRole = ref<RoleType>("OPTION_LEADER")
 
-const handleSubmit = async() => {
-	await login(selectedRole.value).then(() => redirect("/"))
-}
+const { mutate, isPending, isSuccess } = useMutation({ mutationKey: ["login"], mutationFn: async() => {
+	await login(selectedRole.value)
+		.then(() => redirect("/"))
+} })
 
 const CARD_TITLE = "Bienvenue sur Tauri !"
 const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette page de connexion est temporaire."
@@ -49,7 +51,7 @@ const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette 
 			</RadioGroup>
 
 			<template #footer>
-				<Button @click="handleSubmit">Connexion</Button>
+				<LoadingButton @click="mutate" :loading="isPending || isSuccess">Connexion</LoadingButton>
 			</template>
 		</CustomCard>
 	</Column>
