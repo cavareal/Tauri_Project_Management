@@ -1,39 +1,22 @@
-import type { RoleType } from "@/types/role"
 import { LoginSchema } from "@/types/login"
-import { UserSchema } from "@/types/user"
 import { apiQuery } from "@/utils/api"
 import { setCookie } from "@/utils/cookie"
 
-export const login = async(role: RoleType) => {
-	setCookie("role", role)
-	setCookie("token", "bonamyRule34")
 
-	const response = await apiQuery({
-		route: `users/roles/${role}`,
-		responseSchema: UserSchema.array(),
-		method: "GET"
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
-
-	setCookie("user", response.data[0].id.toString())
-}
-
-export const log = async(username: String, password: String) => {
+export const login = async(username: String, password: String) => {
 	
 	const response = await apiQuery({
-		route: `api/auth/login`,
+		route: `auth/login`,
 		responseSchema: LoginSchema,
-		method: "POST"
+		method: "POST",
+		body: { username, password}
 	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+	console.log("response.data : ", response.data)
 
-	setCookie("role", response.data[0].role.toString())
-	setCookie("token", response.data[0].token.toString())
-
+	setCookie("role", response.data.role.toString())
+	setCookie("token", response.data.token.toString())
 }

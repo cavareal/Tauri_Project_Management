@@ -8,21 +8,30 @@ import { redirect } from "@/utils/router"
 import { Column } from "@/components/atoms/containers"
 import Title from "@/components/atoms/texts/Title.vue"
 import type { RoleType } from "@/types/role"
-import { login, log } from "@/services/connection-service"
+import { login } from "@/services/connection-service"
 import { RadioLabel } from "@/components/molecules/radio"
 import { CustomCard } from "@/components/molecules/card"
 import { useQuery } from "@tanstack/vue-query"
+import { useMutation } from "@tanstack/vue-query"
 
 const selectedRole = ref<RoleType>("OPTION_LEADER")
 const username = ref<string>("")
 const password = ref<string>("")
 
-const handleSubmit = async() => {
-	// await login(selectedRole.value).then(() => redirect("/"))
-	await log(username, password).then(() => redirect("/"))
+const handleSubmit = async(event: Event) => {
+  	event.preventDefault();
+  	// TODO xss/escape html before ???
+  	console.log(username.value, password.value)
+	await mutate();
 }
 
-
+const { mutate, isPending, error } = useMutation({ mutationKey: ["login"], mutationFn: async() => {
+	await login(username.value, password.value).then(() => {
+		redirect("/");
+	}).catch(() => {
+		console.log("errorlogin")
+	})
+} })
 
 
 
@@ -40,34 +49,12 @@ const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette 
 
 		<CustomCard class="border-none drop-shadow-login-card" :title="CARD_TITLE" :description="CARD_DESCRIPTION">
 			
-			<form action="javascript:checkUser()"> 
-				<input type="text" id="login" name="login" v-model="username" placeholder="Login" required> 
-				<input type="password" id="password" name="password" v-model="password" placeholder="Password" required> 
-				<input type="submit" value="Valider"> 
+			<form @submit.prevent="handleSubmit">
+				<input type="text" id="username" name="username" v-model="username" placeholder="Addresse mail" required> 
+				<input type="password" id="password" name="password" v-model="password" placeholder="Mot de passe" required> 
+				<Button type="submit">Connexion</Button>
 			</form> 
 			
-			
-			<!-- <RadioGroup class="flex justify-center flex-row" v-model="selectedRole"> 
-				
-				<Column class="gap-2 w-1/2">
-					<h4 class="mb-1 font-medium">Rôles professeurs</h4>
-					<RadioLabel name="role" value="OPTION_LEADER">[OL] Option Leader</RadioLabel>
-					<RadioLabel name="role" value="PROJECT_LEADER">[PL] Project Leader</RadioLabel>
-					<RadioLabel name="role" value="SYSTEM_ADMINISTRATOR">[SA] System Administrator</RadioLabel>
-					<RadioLabel name="role" value="SUPERVISING_STAFF">[SS] Supervising Staff</RadioLabel>
-					<RadioLabel name="role" value="TECHNICAL_COACH">[TC] Technical Coach</RadioLabel>
-				</Column>
-
-				<Column class="gap-2 w-1/2">
-					<h4 class="mb-1 font-medium">Rôles étudiants</h4>
-					<RadioLabel name="role" value="OPTION_STUDENT">[OS] Option Student</RadioLabel>
-					<RadioLabel name="role" value="TEAM_MEMBER">[TM] Team Member</RadioLabel>
-				</Column>
-			</RadioGroup> -->
-
-			<template #footer>
-				<Button @click="handleSubmit">Connexion</Button>
-			</template>
 		</CustomCard>
 	</Column>
 </template>
