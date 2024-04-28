@@ -116,14 +116,12 @@ public class TeamController {
         if (Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
 
             try {
-                List<Team> teams = teamService.generateTeams(nbTeams, womenPerTeam);
-
-                if (!teams.isEmpty()) {
-                    CustomLogger.logInfo("Teams have been created");
-                    return ResponseEntity.ok("La creation a bien été prise en compte");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : les équipes n'ont pas pu être créées");
-                }
+                teamService.generateTeams(nbTeams, womenPerTeam);
+                CustomLogger.logInfo("Teams have been created");
+                return ResponseEntity.ok("La creation a bien été prise en compte");
+            } catch (IllegalArgumentException e){
+                CustomLogger.logError("Erreur lors de la création des équipes : " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour, les équipes n'ont pas pu être créées : " + e.getMessage());
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
             }
