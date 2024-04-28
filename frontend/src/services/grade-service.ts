@@ -29,3 +29,38 @@ export const getAverageGrades = async(userId: number): Promise<z.infer<typeof Gr
 
 	return response.data
 }
+
+export const addGradesToTeam = async(userId: string | null, rate : any): Promise<void> => {
+	const response = await apiQuery({
+		route: `grades/add-grade-to-team/${userId}`,
+		responseSchema: z.string(),
+		method: "POST",
+		body: rate,
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const addGradeToTeam = async(userId: string | null, evaluations : any, token : any) => {
+	try {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/add-grade-to-team/" + userId, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: token || "null"
+			},
+			body: JSON.stringify(evaluations.value)
+		})
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`)
+		}
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return await response.json()
+	} catch (error) {
+		console.error(error)
+	}
+}

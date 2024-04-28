@@ -86,17 +86,29 @@ public class GradeController {
                 List<Map<String, Object>> evaluationsList = entry.getValue();
 
                 for (Map<String, Object> evaluation : evaluationsList) {
-                    if (evaluation.containsKey("gradeOverallPerformance")) {
-                        Integer value = (Integer) evaluation.get("gradeOverallPerformance");
+                    if (evaluation.get("gradeType").equals("gradeOverallPerformance")) {
+                        Integer value = (Integer) evaluation.get("grade");
                         gradeService.assignGradeToTeam(teamName, value, "Performance Globale", userId);
                     }
-                    if (evaluation.containsKey("gradeMaterialSupport")) {
-                        Integer value = (Integer) evaluation.get("gradeMaterialSupport");
+                    if (evaluation.get("gradeType").equals("gradeMaterialSupport")) {
+                        Integer value = (Integer) evaluation.get("grade");
                         gradeService.assignGradeToTeam(teamName, value, "Support Matériel", userId);
                     }
-                    if (evaluation.containsKey("gradeContentPresentation")) {
-                        Integer value = (Integer) evaluation.get("gradeContentPresentation");
+                    if (evaluation.get("gradeType").equals("gradeContentPresentation")) {
+                        Integer value = (Integer) evaluation.get("grade");
                         gradeService.assignGradeToTeam(teamName, value, "Contenu de la présentation", userId);
+                    }
+                    if(evaluation.get("gradeType").equals("gradeTechnicalSolution")) {
+                        Integer value = (Integer) evaluation.get("grade");
+                        gradeService.assignGradeToTeam(teamName, value, "Solution technique", userId);
+                    }
+                    if(evaluation.get("gradeType").equals("gradeProjectManagement")) {
+                        Integer value = (Integer) evaluation.get("grade");
+                        gradeService.assignGradeToTeam(teamName, value, "Gestion de projet", userId);
+                    }
+                    if(evaluation.get("gradeType").equals("gradeSprintConformity")) {
+                        Integer value = (Integer) evaluation.get("grade");
+                        gradeService.assignGradeToTeam(teamName, value, "Conformité au sprint", userId);
                     }
                 }
             }

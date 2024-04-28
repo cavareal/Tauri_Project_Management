@@ -12,6 +12,9 @@ public class GradeTypeSeeder {
 			"Performance Globale",
 			"Support Matériel",
 			"Contenu de la présentation",
+			"Solution technique",
+			"Gestion de projet",
+			"Conformité au sprint"
 	};
 
 	private final GradeTypeRepository gradeTypeRepository;
