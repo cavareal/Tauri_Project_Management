@@ -30,4 +30,5 @@ public class ValidationFlag {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Flag flag;
+
 }

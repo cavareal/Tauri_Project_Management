@@ -3,20 +3,17 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.repository.BonusRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/bonuses")
 @Tag(name = "bonuses")
 public class BonusController {
 
     private final BonusRepository bonusRepository;
-
-    @Autowired
-    public BonusController(BonusRepository bonusRepository) {
-        this.bonusRepository = bonusRepository;
-    }
 
     @PostMapping("/")
     public Bonus addBonus(@RequestBody Bonus bonus) {

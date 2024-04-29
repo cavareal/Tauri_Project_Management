@@ -43,4 +43,3 @@ public class Student extends User implements Serializable {
     private Project project;
 
 }
-

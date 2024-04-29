@@ -31,3 +31,17 @@ export const hasPermission = async(user: User, permission: PermissionType): Prom
 
 	return response.data
 }
+
+export const updateUser = async(id: string | null, name: string | null, email: string | null, password: string | null, key: string | null): Promise<void> => {
+	const response = await apiQuery({
+		method: "PUT",
+		route: `users/${id}`,
+		body: { name, email, password, key },
+		responseSchema: z.string(),
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}

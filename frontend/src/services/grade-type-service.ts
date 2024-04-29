@@ -42,3 +42,17 @@ export const updateGradeTypeFactor = async(id: number, factor: number): Promise<
 		throw new Error(response.error)
 	}
 }
+
+export const updateGradeType = async(id: string | null, name: string | null, factor: number | null, group: boolean | null, imported: boolean | null, scaleURL: string | null): Promise<void> => {
+	const response = await apiQuery({
+		method: "PUT",
+		route: `grade-types/${id}`,
+		body: { name, factor, group, imported, scaleURL },
+		responseSchema: z.string(),
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}

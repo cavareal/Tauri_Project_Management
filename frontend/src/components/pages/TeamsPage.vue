@@ -18,10 +18,11 @@ import { useQuery } from "@tanstack/vue-query"
 
 const token = getCookie("token")
 const role = getCookie<RoleType>("role")
+const project = getCookie("currentProject")
 
-const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({ queryKey: ["currentPhase"], queryFn: getCurrentPhase })
+const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({ queryKey: ["currentPhase"], queryFn: () => getCurrentPhase(project) })
 const { data: nbStudents } = useQuery({ queryKey: ["nbStudents"], queryFn: getQuantityOfStudents })
-const { data: teams, refetch: refetchTeams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
+const { data: teams, refetch: refetchTeams } = useQuery({ queryKey: ["teams"], queryFn: () => getTeams(project) })
 
 const displayButtons = computed(() => role === "PROJECT_LEADER" && nbStudents.value && nbStudents.value > 0
 	&& teams.value && teams.value.length > 0 && currentPhase.value && currentPhase.value === "COMPOSING")

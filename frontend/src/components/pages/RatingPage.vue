@@ -10,6 +10,7 @@ import SSTCRateView from "@/components/organisms/Rate/SSTCRateView.vue"
 
 const token = getCookie("token")
 const role = getCookie("role")
+const project = getCookie("currentProject")
 let nbSprints = ref("3")
 const teamsName = ref<string[]>([])
 
@@ -51,7 +52,7 @@ const requestOptionsStudents = {
 }
 const fetchNumberSprints = async() => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints-number", requestOptionsStudents)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + project, requestOptionsStudents)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}

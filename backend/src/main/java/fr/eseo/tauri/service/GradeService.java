@@ -106,7 +106,7 @@ public class GradeService {
             gradeTypeRepository.save(gradeType);
             gradeRepository.save(grade);
         } else {
-            throw new IllegalArgumentException("L'équipe avec le nom fourni n'a pas été trouvée.");
+            throw new IllegalArgumentException("Team with name " + teamName + " has not been found.");
         }
     }
 

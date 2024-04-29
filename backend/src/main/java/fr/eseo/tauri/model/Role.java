@@ -13,6 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 public class Role {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty

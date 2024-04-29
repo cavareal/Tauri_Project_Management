@@ -7,12 +7,10 @@ import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.repository.TeamRepository;
-import fr.eseo.tauri.repository.UserRepository;
-import fr.eseo.tauri.repository.RoleRepository;
+import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,6 +29,7 @@ public class TeamService {
     private final ProjectService projectService;
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
+    private final ProjectRepository projectRepository;
 
     public void deleteAllTeams() {
         var teams = teamRepository.findAll();
@@ -96,7 +95,7 @@ public class TeamService {
      * @param womenPerTeam the ratio of women in the teams
      * @return a List<Teams> if teams are created, otherwise null
      */
-    public List<Team> generateTeams(Integer nbTeams, Integer womenPerTeam) throws IllegalArgumentException{
+    public List<Team> generateTeams(Integer idProject, Integer nbTeams, Integer womenPerTeam) throws IllegalArgumentException{
         CustomLogger.logInfo("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
@@ -109,7 +108,7 @@ public class TeamService {
             CustomLogger.logError("TeamService.generateTeams : Not enough students to create the teams");
             throw new IllegalArgumentException("Not enough students to create the teams");
         }else {
-            List<Team> teams = this.createTeams(nbTeams);
+            List<Team> teams = this.createTeams(idProject, nbTeams);
             this.fillTeams(teams, women, men, womenPerTeam);
             return teams;
         }
@@ -121,13 +120,13 @@ public class TeamService {
      * @param nbTeams the number of teams to create
      * @return a List<Teams> if teams are created, otherwise null
      */
-    private List<Team> createTeams(Integer nbTeams) throws IllegalArgumentException{
+    private List<Team> createTeams(Integer idProject, Integer nbTeams) throws IllegalArgumentException{
         if (nbTeams < 1) {
             CustomLogger.logError("TeamService.createTeams : The number of teams to create must be greater than 0");
             throw new IllegalArgumentException("The number of teams to create must be greater than 0");
         }
 
-        Project project = this.projectService.getCurrentProject();
+        Project project = this.projectRepository.findById(idProject).orElse(null);
 
         // Delete all previous teams
         // TODO FUTURE : delete teams only when nbTeams is different from the number of teams in the project
@@ -224,8 +223,8 @@ public class TeamService {
      * Get all teams.
      * @return the list of all teams
      */
-    public List<Team> getAllTeams() {
-        var project = projectService.getCurrentProject();
+    public List<Team> getAllTeams(int idProject) {
+        var project = projectRepository.findById(idProject).orElse(null);
         return teamRepository.findAllByProjectId(project.id());
     }
 
@@ -298,8 +297,8 @@ public class TeamService {
         }
     }
 
-    public Team getTeamBySSId(Integer id){
-        var teams = getAllTeams();
+    public Team getTeamByLeaderId(Integer id, Integer idProject){
+        var teams = getAllTeams(idProject);
         for (var team : teams) {
             if (team.leader() != null && team.leader().id().equals(id)) {
                 return team;

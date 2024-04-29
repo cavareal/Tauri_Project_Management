@@ -2,6 +2,7 @@ package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.AssertTrue;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 public class Grade {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
@@ -46,4 +48,16 @@ public class Grade {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Team team;
+
+    @ManyToOne
+    @JoinColumn(name = "sprint_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
+    private Sprint sprint;
+
+    /*@AssertTrue
+    public boolean isStudentOrTeam() {
+
+    }*/
+
 }

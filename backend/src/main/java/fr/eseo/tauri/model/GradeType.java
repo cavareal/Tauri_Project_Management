@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GradeType {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
@@ -26,5 +27,8 @@ public class GradeType {
 
     @JsonProperty
     private Boolean imported;
+
+    @JsonProperty
+    private String scaleUrl;
 
 }

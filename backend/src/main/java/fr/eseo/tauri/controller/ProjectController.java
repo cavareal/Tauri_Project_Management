@@ -2,224 +2,168 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
-import fr.eseo.tauri.repository.ProjectRepository;
-import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Controller class for managing projects.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/projects")
 @Tag(name = "projects")
 public class ProjectController {
 
-    private final ProjectRepository projectRepository;
     private final ProjectService projectService;
-    private final AuthService authService;
-
-    private static final String UPDATE_ERROR_MESSAGE = "Erreur lors de la mise à jour";
-    private static final String UNAUTHORIZED_MESSAGE = "Non autorisé";
-    private static final String GOOD_EDIT_MESSAGE = "L'edit à bien été enregistré";
 
     /**
-     * Constructor for ProjectController.
-     * @param projectRepository the project repository
-     * @param projectService the project service
-     * @param authService the authentication service
+     * Get all projects.
+     * @return a response entity with the list of all projects
      */
-    @Autowired
-    public ProjectController(ProjectRepository projectRepository, ProjectService projectService, AuthService authService) {
-        this.projectRepository = projectRepository;
-        this.projectService = projectService;
-        this.authService = authService;
-    }
-
-    @GetMapping("/current")
-    public ResponseEntity<Project> getCurrentProject() {
-        Optional<Project> projectOptional = projectRepository.findAll().stream().findFirst();
-        if (projectOptional.isPresent()) {
-            Project project = projectOptional.get();
-            return ResponseEntity.status(HttpStatus.OK).body(project);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+    @GetMapping("/")
+    public ResponseEntity<List<Project>> getAllProjects() {
+        List<Project> projects = projectService.getAllProjects();
+        return ResponseEntity.ok(projects);
     }
 
     /**
      * Create a new project.
      * @param token the authentication token
-     * @param teamsNumber the number of teams
-     * @param genderRatio the gender ratio
-     * @param sprintsNumber the number of sprints
-     * @param phase the project phase
      * @return a response entity with a success message or an error message
      */
-    @PostMapping("/new-project")
-    public ResponseEntity<String> newProject(@RequestHeader("Authorization") String token, @RequestParam Integer teamsNumber, @RequestParam Integer genderRatio, @RequestParam Integer sprintsNumber, @RequestParam ProjectPhase phase) {
-        // Check for token, if user is GOOD, with authService ??
-        String permission = "teamCreation";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                Project project = projectService.newProject(teamsNumber, genderRatio, sprintsNumber, phase);
-                if (project != null) {
-                    CustomLogger.logInfo("New project created");
-                    return ResponseEntity.ok("L'ajout a bien été enregistré");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @PostMapping("/")
+    public ResponseEntity<String> newProject(@RequestHeader("Authorization") String token) {
+        projectService.newProject(token);
+        CustomLogger.logInfo("A new project has successfully been created");
+        return ResponseEntity.ok("The project has been created");
+    }
+
+    /**
+     * Get the number of sprints of this project.
+     *
+     * @param token the authentication token
+     * @param id the project id
+     * @return a response entity with the nb of sprints of the project if successful, or an error message if an exception occurs or if the user is not authorized
+     */
+    @GetMapping("/sprints/{id}")
+    public ResponseEntity<String> getSprintsNumber(@RequestHeader("Authorization") String token, @PathVariable int id) {
+            String sprintsNumber = projectService.getSprintsNumber(token, id);
+            return ResponseEntity.ok(sprintsNumber);
     }
 
     /**
      * Update the number of sprints for a project.
      * @param token the authentication token
-     * @param idProject the project ID
-     * @param request data from the front
+     * @param id the project id
+     * @param request the body of the request containing the new number of sprints
      * @return a response entity with a success message or an error message
      */
-    @PutMapping("/update-sprints-number/{idProject}")
-    public ResponseEntity<String> updateProjectSprintsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer idProject,  @RequestBody Map<String, String> request) {
-        // Check token, if user is GOOD
-        Integer newSprintsNumber = Integer.valueOf(request.get("nbSprints"));
-
-        String permission = "ManageTeamsNumber";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                Project project = projectService.updateProjectSprintsNumber(idProject, newSprintsNumber);
-                if (project != null) {
-                    CustomLogger.logInfo("Sprints number updated");
-                    return ResponseEntity.ok(GOOD_EDIT_MESSAGE);
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @PutMapping("/sprints/{id}")
+    public ResponseEntity<String> updateSprintsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer id,  @RequestBody Map<String, String> request) {
+        projectService.updateSprintsNumber(token, id, Integer.valueOf(request.get("nbSprints")));
+        CustomLogger.logInfo("Sprints number has successfully been updated");
+        return ResponseEntity.ok("The number of sprints has been updated");
     }
+
     /**
-     * Get the number of sprints of this project.
+     * Get the number of teams of this project.
      *
      * @param token the authentication token
-     * @return a response entity with the nb of sprints of the project if successful, or an error message if an exception occurs or if the user is not authorized
+     * @param id the project id
+     * @return a response entity with the nb of teams of the project if successful, or an error message if an exception occurs or if the user is not authorized
      */
-    @GetMapping("/sprints-number")
-    public ResponseEntity<String> getNumberSprints(@RequestHeader("Authorization") String token) {
-        String permission = "readSprintNumber";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                String currentPhase = projectService.getNumberSprints();
-                return ResponseEntity.status(HttpStatus.OK).body(currentPhase);
-            }catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération de la phase actuelle du projet : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @GetMapping("/teams/{id}")
+    public ResponseEntity<String> getTeamsNumber(@RequestHeader("Authorization") String token, @PathVariable int id) {
+        String teamsNumber = projectService.getTeamsNumber(token, id);
+        return ResponseEntity.ok(teamsNumber);
     }
-
-
 
     /**
      * Update the number of teams for a project.
      * @param token the authentication token
-     * @param idProject the project ID
+     * @param id the project id
      * @param newTeamsNumber the new number of teams
      * @return a response entity with a success message or an error message
      */
-    @PutMapping("/update-teams-number/{idProject}")
-    public ResponseEntity<String> updateProjectTeamsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam Integer newTeamsNumber) {
-        // Check token, if user is GOOD
-        String permission = "manageSprint";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                Project project = projectService.updateProjectTeamsNumber(idProject, newTeamsNumber);
-                if (project != null) {
-                    CustomLogger.logInfo("Teams number updated");
-                    return ResponseEntity.ok(GOOD_EDIT_MESSAGE);
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @PutMapping("/teams/{id}")
+    public ResponseEntity<String> updateTeamsNumber(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam Integer newTeamsNumber) {
+        projectService.updateTeamsNumber(token, id, newTeamsNumber);
+        CustomLogger.logInfo("Teams number has successfully been updated");
+        return ResponseEntity.ok("The number of teams has been updated");
+    }
+
+    /**
+     * Get the gender ratio of these projects teams.
+     *
+     * @param token the authentication token
+     * @param id the project id
+     * @return a response entity with the gender ratio of the project if successful, or an error message if an exception occurs or if the user is not authorized
+     */
+    @GetMapping("/women/{id}")
+    public ResponseEntity<String> getNbWomen(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        String nbWomen = projectService.getNbWomen(token, id);
+        return ResponseEntity.ok(nbWomen);
     }
 
     /**
      * Update the gender ratio for a project.
      * @param token the authentication token
-     * @param idProject the project ID
-     * @param newRatioGender the new gender ratio
+     * @param id the project id
+     * @param newNbWomen the new gender ratio
      * @return a response entity with a success message or an error message
      */
-    @PutMapping("/update-ratio-gender/{idProject}")
-    public ResponseEntity<String> updateProjectRatioGender(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam Integer newRatioGender) {
-        // Check token, if user is GOOD
-        String permission = "manageRatioGender";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                Project project = projectService.updateProjectRatioGender(idProject, newRatioGender);
-                if (project != null) {
-                    CustomLogger.logInfo("The gender ratio has been updated");
-                    return ResponseEntity.ok(GOOD_EDIT_MESSAGE);
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @PutMapping("/women/{id}")
+    public ResponseEntity<String> updateNbWomen(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam Integer newNbWomen) {
+        projectService.updateNbWomen(token, id, newNbWomen);
+        CustomLogger.logInfo("Gender ratio has successfully been updated");
+        return ResponseEntity.ok("The gender ratio has been updated");
     }
 
     /**
-     * Update the gender ratio for a project.
+     * Get the phase of a project.
      * @param token the authentication token
-     * @param idProject the project ID
-     * @param newPhase the new phase of the project
+     * @param id the project id
+     * @return a response entity with the phase of the project
+     */
+    @GetMapping("/phase/{id}")
+    public ResponseEntity<String> getProjectPhase(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        String projectPhase = projectService.getProjectPhase(token, id);
+        return ResponseEntity.ok(projectPhase);
+    }
+
+    /**
+     * Update the phase for a project.
+     * @param token the authentication token
+     * @param id the project id
+     * @param request the body of the request containing the new phase of the project
      * @return a response entity with a success message or an error message
      */
-    @PutMapping("/update-project-phase/{idProject}")
-    public ResponseEntity<String> updateProjectPhase(@RequestHeader("Authorization") String token, @PathVariable Integer idProject, @RequestParam ProjectPhase newPhase) {
-        // Check token, if user is GOOD
-        String permission = "manageProjectPhase";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                Project project = projectService.updateProjectPhase(idProject, newPhase);
-                if (project != null) {
-                    CustomLogger.logInfo("The project phase has been updated");
-                    return ResponseEntity.ok(GOOD_EDIT_MESSAGE);
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @PutMapping("/phase/{id}")
+    public ResponseEntity<String> updateProjectPhase(@RequestHeader("Authorization") String token, @PathVariable Integer id,  @RequestBody Map<String, String> request) {
+        projectService.updateProjectPhase(token, id, ProjectPhase.valueOf(request.get("phase")));
+        return ResponseEntity.ok("The project phase has been updated");
     }
+
+    /**
+     * Update the phase for a project.
+     * @param token the authentication token
+     * @param id the project id
+     * @param request the body of the request containing the new phase of the project
+     * @return a response entity with a success message or an error message
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateProjec(@RequestHeader("Authorization") String token, @PathVariable Integer id,  @RequestBody Map<String, String> request) {
+        projectService.updateProjectPhase(token, id, ProjectPhase.valueOf(request.get("phase")));
+        return ResponseEntity.ok("The project phase has been updated");
+    }
+
 
     /**
      * Delete a project.
@@ -227,66 +171,10 @@ public class ProjectController {
      * @param id the project ID
      * @return a response entity with a success message or an error message
      */
-    @DeleteMapping("/delete-project")
-    public ResponseEntity<String> deleteProject(@RequestHeader("Authorization") String token, @RequestParam Integer id) {
-        // Check token, if user is GOOD
-        String permission = "teamDelete";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                Project project = projectService.deleteProject(id);
-                if (project != null) {
-                    return ResponseEntity.ok("La suppression a bien été prise en compte");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
-    }
-
-
-    /**
-     * Get the current phase of the project.
-     *
-     * @param token the authentication token
-     * @return a response entity with the current phase of the project if successful, or an error message if an exception occurs or if the user is not authorized
-     */
-    @GetMapping("/current-phase")
-    public ResponseEntity<String> getCurrentPhase(@RequestHeader("Authorization") String token) {
-        String permission = "readProjectPhase";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                String currentPhase = projectService.getCurrentPhase();
-                return ResponseEntity.status(HttpStatus.OK).body(currentPhase);
-            }catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération de la phase actuelle du projet : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
-    }
-
-    @PutMapping("/current-phase")
-    public ResponseEntity<String> updateCurrentPhase(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
-        String permission = "manageProjectPhase";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                ProjectPhase newPhase = ProjectPhase.valueOf(request.get("phase"));
-                Project project = projectService.updateCurrentPhase(newPhase);
-                if (project != null) {
-                    return ResponseEntity.ok("La modification a bien été prise en compte");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE);
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(UPDATE_ERROR_MESSAGE + " : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProject(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        projectService.deleteProject(token, id);
+        return ResponseEntity.ok("The project with id : " + id + " has been deleted");
     }
 
 }

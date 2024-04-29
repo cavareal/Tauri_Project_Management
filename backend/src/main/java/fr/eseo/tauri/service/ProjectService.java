@@ -2,9 +2,9 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
+import fr.eseo.tauri.model.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.util.CustomLogger;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
@@ -19,176 +19,214 @@ import java.util.List;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final AuthService authService;
 
-    @PostConstruct
-    public void initDataIfTableIsEmpty() {
-        if (projectRepository.count() == 0) {
-            // Add a default project if the table is empty
-            Project project = new Project();
-            project.nbTeams(6);
-            project.ratioGender(10);
-            project.nbSprint(3);
-            project.phase(ProjectPhase.COMPOSING); // Default phase
-            projectRepository.save(project);
-        }
+    /**
+     * Get all projects.
+     * @return a list of all projects
+     */
+    public List<Project> getAllProjects() {
+        return projectRepository.findAll();
     }
 
     /**
      * Create a new project.
-     * @param teamsNumber the number of teams
-     * @param genderRatio the gender ratio
-     * @param nbSprints the number of sprints
-     * @param phase the project phase
-     * @return the newly created project, or null if an error occurred
+     * @param token the token of the user
      */
-    public Project newProject(Integer teamsNumber, Integer genderRatio, Integer nbSprints, ProjectPhase phase) {
-        Project project = new Project();
-        project.nbTeams(teamsNumber);
-        project.ratioGender(genderRatio);
-        project.nbTeams(nbSprints);
-        project.phase(phase);
-        try {
-            return projectRepository.save(project);
-        } catch (DataAccessException e) {
-            CustomLogger.logError("Error while creating a new project", e);
-            return null;
+    public void newProject(String token) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token, "projectCreation"))) { //A terme, on enlèvera tous les paramètres sauf le token
+            int numberOfProjects = projectRepository.findAll().size();
+            projectRepository.save(new Project());
+
+            if (projectRepository.findById(numberOfProjects + 1).isPresent()) {
+                CustomLogger.logInfo("New project created");
+            } else {
+                throw new DataAccessException("Error while creating the project") {};
+            }
+        } else {
+            throw new SecurityException("Unauthorized action");
+        }
+    }
+
+    /**
+     * Get the nb of sprints of the project.
+     * @param token the token of the user
+     * @param id the project id
+     * @return the nb of sprints of the project, or "Aucun projet trouvé" if no project is found
+     */
+    public String getSprintsNumber(String token, int id) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, "readSprintNumber"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                return String.valueOf(project.nbSprint());
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
+        } else {
+            throw new SecurityException("Unauthorized action");
         }
     }
 
     /**
      * Update the number of sprints in a project.
-     * @param projectId the ID of the project
+     * @param id the project id
      * @param newSprintsNumber the new number of sprints
      * @return the updated project, or null if the project was not found
      */
-    public Project updateProjectSprintsNumber(Integer projectId, Integer newSprintsNumber) {
-        Project project = projectRepository.findById(projectId).orElse(null);
-        if (project != null) {
-            project.nbSprint(newSprintsNumber);
-            return projectRepository.save(project);
-        }
-        return null;
-    }
-    /**
-     * Get the nb of sprints of the project.
-     *
-     * @return the nb of sprints of the project, or "Aucun projet trouvé" if no project is found
-     */
-    public String getNumberSprints() {
-        Project currentProject = projectRepository.findAll().get(0);
-        if (currentProject != null) {
-            return String.valueOf(currentProject.nbSprint());
+    public Project updateSprintsNumber(String token, Integer id, Integer newSprintsNumber) {
+
+        if(Boolean.TRUE.equals(authService.checkAuth(token,  "ManageSprintsNumber"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                project.nbSprint(newSprintsNumber);
+                return projectRepository.save(project);
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
         } else {
-            return "Aucun projet trouvé";
+            throw new SecurityException("Unauthorized action");
         }
     }
 
+    /**
+     * Get the nb of teams of the project.
+     * @param token the token of the user
+     * @param id the project id
+     * @return the nb of sprints of the project, or "Aucun projet trouvé" if no project is found
+     */
+    public String getTeamsNumber(String token, int id) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, "readSprintNumber"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                return String.valueOf(project.nbTeams());
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
+        } else {
+            throw new SecurityException("Unauthorized action");
+        }
+    }
 
     /**
      * Update the number of teams in a project.
-     * @param projectId the ID of the project
+     * @param id the project id
      * @param newTeamsNumber the new number of teams
      * @return the updated project, or null if the project was not found
      */
-    public Project updateProjectTeamsNumber(Integer projectId, Integer newTeamsNumber) {
-        Project project = projectRepository.findById(projectId).orElse(null);
-        if (project != null) {
-            project.nbTeams(newTeamsNumber);
-            return projectRepository.save(project);
+    public Project updateTeamsNumber(String token, Integer id, Integer newTeamsNumber) {
+
+        if(Boolean.TRUE.equals(authService.checkAuth(token,  "ManageTeamsNumber"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                project.nbTeams(newTeamsNumber);
+                return projectRepository.save(project);
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
+        } else {
+            throw new SecurityException("Unauthorized action");
         }
-        return null;
+    }
+
+    /**
+     * Get the number of women of the project teams
+     * @param token the token of the user
+     * @param id the project id
+     * @return the gender ratio
+     */
+    public String getNbWomen(String token, Integer id) {
+
+        if (Boolean.TRUE.equals(authService.checkAuth(token, "readNbWomen"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                return String.valueOf(project.nbWomen());
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
+        } else {
+            throw new SecurityException("Unauthorized action");
+        }
     }
 
     /**
      * Update the gender ratio in a project.
-     * @param projectId the ID of the project
-     * @param newRatioGender the new gender ratio
+     * @param token the token of the user
+     * @param id the project id
+     * @param newNbWomen the new gender ratio
      * @return the updated project, or null if the project was not found
      */
-    public Project updateProjectRatioGender(Integer projectId, Integer newRatioGender) {
-        Project project = projectRepository.findById(projectId).orElse(null);
-        if (project != null) {
-            project.ratioGender(newRatioGender);
-            return projectRepository.save(project);
-        }
-        return null;
-    }
+    public Project updateNbWomen(String token, Integer id, Integer newNbWomen) {
 
-    /**
-     * Update the gender ratio in a project.
-     * @param projectId the ID of the project
-     * @param newPhase the new phase of the project
-     * @return the updated project, or null if the project was not found
-     */
-    public Project updateProjectPhase(Integer projectId, ProjectPhase newPhase) {
-        Project project = projectRepository.findById(projectId).orElse(null);
-        if (project != null) {
-            project.phase(newPhase);
-            return projectRepository.save(project);
-        }
-        return null;
-    }
-
-    /**
-     * Delete a project.
-     * @param id the ID of the project to delete
-     * @return the deleted project, or null if the project was not found
-     */
-    public Project deleteProject(Integer id) {
-        try {
-            Project project = projectRepository.findById(id).orElseThrow(() -> new Exception("Project not found"));
-            projectRepository.delete(project);
-            CustomLogger.logInfo("Deleted project with ID " + id);
-            return project;
-        } catch (Exception e) {
-            return null;
+        if(Boolean.TRUE.equals(authService.checkAuth(token,  "ManageNbWomen"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                project.nbWomen(newNbWomen);
+                return projectRepository.save(project);
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
+        } else {
+            throw new SecurityException("Unauthorized action");
         }
     }
 
     /**
      * Get the current phase of the project.
-     *
+     * @param token the token of the user
+     * @param id the project id
      * @return the current phase of the project, or "Aucun projet trouvé" if no project is found
      */
-    public String getCurrentPhase() {
-        Project currentProject = projectRepository.findAll().get(0);
-        if (currentProject != null) {
-            return currentProject.phase().name();
+    public String getProjectPhase(String token, Integer id) {
+
+        if (Boolean.TRUE.equals(authService.checkAuth(token, "readProjectPhase"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                return project.phase().name();
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
         } else {
-            return "Aucun projet trouvé";
+            throw new SecurityException("Unauthorized action");
         }
     }
 
-    public Project updateCurrentPhase(ProjectPhase newPhase) {
-        Project currentProject = projectRepository.findAll().get(0);
-        if (currentProject != null) {
-            currentProject.phase(newPhase);
-            projectRepository.save(currentProject);
-            CustomLogger.logInfo("Updated phase of current project to " + newPhase.name());
-            return currentProject;
+    /**
+     * Update the gender ratio in a project.
+     * @param id the ID of the project
+     * @param newPhase the new phase of the project
+     * @return the updated project, or null if the project was not found
+     */
+    public Project updateProjectPhase(String token, Integer id, ProjectPhase newPhase) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token,  "ManagePhase"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                project.phase(newPhase);
+                CustomLogger.logInfo("Project phase has successfully been updated");
+                return projectRepository.save(project);
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
         } else {
-            return null;
+            throw new SecurityException("Unauthorized action");
         }
     }
 
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
-    }
-
-
-    public Integer getRatioGender() {
-        Project currentProject = getCurrentProject();
-        if (currentProject != null ) {
-            return currentProject.ratioGender();
+    /**
+     * Delete a project.
+     * @param token the token of the user
+     * @param id the ID of the project to delete
+     */
+    public void deleteProject(String token, Integer id) {
+        if(Boolean.TRUE.equals(authService.checkAuth(token,  "DeleteProject"))) {
+            Project project = projectRepository.findById(id).orElse(null);
+            if(project != null){
+                projectRepository.delete(project);
+                CustomLogger.logInfo("Deleted project with ID " + id);
+            } else {
+                throw new ResourceNotFoundException("project", id);
+            }
         } else {
-            return 0;
+            throw new SecurityException("Unauthorized action");
         }
-    }
-
-    public Project getCurrentProject() {
-        if (projectRepository.findAll().isEmpty()) {
-            return null;
-        }
-        return projectRepository.findAll().get(0);
     }
 }

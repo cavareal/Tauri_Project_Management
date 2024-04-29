@@ -3,18 +3,16 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.repository.NotificationRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/notifications")
 @Tag(name = "notifications")
 public class NotificationController {
 
     private final NotificationRepository notificationRepository;
-
-    public NotificationController(NotificationRepository notificationRepository) {
-        this.notificationRepository = notificationRepository;
-    }
 
     @PostMapping("/")
     public Notification addNotification(@RequestBody Notification notification) {

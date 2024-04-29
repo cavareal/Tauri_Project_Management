@@ -9,8 +9,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
-
-
 @Entity
 @Table(name = "teams")
 @Getter
@@ -43,5 +41,5 @@ public class Team {
     @JsonProperty
     private List<Student> students;
      */
-}
 
+}

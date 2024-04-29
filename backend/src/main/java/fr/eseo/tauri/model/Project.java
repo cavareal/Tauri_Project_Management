@@ -21,19 +21,14 @@ public class Project {
     private Integer nbTeams;
 
     @JsonProperty
-    private Integer ratioGender;        // Ratio/100
+    private Integer nbWomen;
 
     @JsonProperty
-    private Integer nbSprint;
+    private Integer nbSprint; //A supprimer une fois que la page Sprints aura été modifée en accord avec la maquette
 
     @Enumerated(EnumType.STRING)
-    @Column(name="phase")
+    @Column(name="phase", columnDefinition = "varchar(32) default 'COMPOSING'")
     @JsonProperty
-    private ProjectPhase phase;
+    private ProjectPhase phase = ProjectPhase.COMPOSING;
 
 }
-
-
-
-
-

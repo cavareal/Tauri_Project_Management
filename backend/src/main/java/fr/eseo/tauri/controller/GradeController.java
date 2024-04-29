@@ -1,5 +1,6 @@
 package fr.eseo.tauri.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.eseo.tauri.model.Grade;
@@ -9,6 +10,8 @@ import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.service.GradeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/grades")
 @Tag(name = "grades")
 public class GradeController {
@@ -27,13 +31,6 @@ public class GradeController {
     private final GradeService gradeService;
 
     private final GradeTypeRepository gradeTypeRepository;
-
-    @Autowired
-    public GradeController(GradeRepository gradeRepository, GradeService gradeService, GradeTypeRepository gradeTypeRepository) {
-        this.gradeRepository = gradeRepository;
-        this.gradeService = gradeService;
-        this.gradeTypeRepository = gradeTypeRepository;
-    }
 
     @GetMapping
     public ResponseEntity<Iterable<Grade>> getAllGrades() {
@@ -46,7 +43,7 @@ public class GradeController {
     }
 
     @GetMapping("/{id}")
-    public Grade getGradeById(@PathVariable Integer id) {
+    public @Valid Grade getGradeById(@PathVariable Integer id) {
         return gradeRepository.findById(id).orElse(null);
     }
 
@@ -74,8 +71,8 @@ public class GradeController {
      * @return A ResponseEntity with either a success message or an error message.
      */
     @PostMapping("/add-grade-to-team/{userId}")
-    public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId) {
-        try {
+    public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId) throws JsonProcessingException {
+        //try {
             ObjectMapper objectMapper = new ObjectMapper();
             TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<>() {
             };
@@ -101,18 +98,17 @@ public class GradeController {
                 }
             }
             return ResponseEntity.ok(Map.of("message", "Grades added successfully."));
-        } catch (NumberFormatException e) {
+       /* } /*catch (NumberFormatException e) {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid number format for grade value."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error occurred while adding grades: " + e.getMessage()));
-        }
+        }*/
     }
 
     //TODO : Handle the token
     @GetMapping("/average-grades-by-grade-type-by-role/{userId}")
     public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
-        try {
             ArrayList<List<Double>> gradeByTypes = new ArrayList<>();
             ArrayList<Double> gradeByRoles;
 
@@ -130,9 +126,6 @@ public class GradeController {
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(gradeByTypes);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
     }
 
     /**
@@ -145,5 +138,23 @@ public class GradeController {
             return -1.0;
         }
     }
+
+    /** GET
+     *      All Grades
+     *     Gradess by Student
+     *     Gradess by Team
+     *     Gradess by Author
+     *     Gradess by Type (GradeType)
+     *     Grade by Id
+     *  POST
+     *      Add grade(s)?
+     *  PUT
+     *      Value
+     *      Comment
+     *      //Faire en sorte que les PUT pour 1 table soient tous dans une seule requete (grâce au body)
+     *  DELETE
+     *      Delete Grade By Id
+     */
+
 
 }

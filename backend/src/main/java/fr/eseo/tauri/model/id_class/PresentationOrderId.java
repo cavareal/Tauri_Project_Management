@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.model.Student;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 

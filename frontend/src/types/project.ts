@@ -4,9 +4,9 @@ export const ProjectPhaseSchema = z.enum(["COMPOSING", "PREPUBLISHED", "PUBLISHE
 
 export const ProjectSchema = z.object({
 	id: z.number(),
-	nbTeams: z.number(),
-	ratioGender: z.number(),
-	nbSprint: z.number(),
+	nbTeams: z.number().nullable(),
+	nbWomen: z.number().nullable(),
+	nbSprint: z.number().nullable(),
 	phase: ProjectPhaseSchema
 })
 

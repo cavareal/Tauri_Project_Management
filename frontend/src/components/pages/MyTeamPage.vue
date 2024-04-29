@@ -6,22 +6,23 @@ import type { Team } from "@/types/team"
 import { SidebarTemplate } from "@/components/templates"
 import MyTeamCreated from "@/components/organisms/my-team/MyTeamCreated.vue"
 import { NotAuthorized, NotFound } from "@/components/organisms/errors"
-import { getTeamBySSId } from "@/services/team-service"
+import { getTeamByLeaderId } from "@/services/team-service"
 import { getCurrentPhase } from "@/services/project-service"
 import { Header } from "@/components/molecules/header"
 
 const token = getCookie("token")
 const role = getCookie("role")
+const idProject = getCookie("currentProject")
 const currentUser = getCookie("user")
 const currentPhase = ref<ProjectPhase>("COMPOSING")
 const team = ref<Team>()
 
 watch(() => { }, async() => {
-	currentPhase.value = await getCurrentPhase()
+	currentPhase.value = await getCurrentPhase(idProject)
 }, { immediate: true })
 
 onMounted(async() => {
-	const data = await getTeamBySSId(currentUser)
+	const data = await getTeamByLeaderId(currentUser, idProject)
 	team.value = data
 })
 </script>

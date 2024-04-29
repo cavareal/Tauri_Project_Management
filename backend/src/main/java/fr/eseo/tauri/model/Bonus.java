@@ -12,6 +12,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 public class Bonus {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
@@ -43,4 +44,5 @@ public class Bonus {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private User author;
+
 }

@@ -46,4 +46,5 @@ public class Flag implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private User author;
+
 }

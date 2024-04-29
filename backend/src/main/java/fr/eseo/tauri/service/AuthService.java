@@ -9,7 +9,7 @@ public class AuthService {
     public Boolean checkAuth(String token, String permission) {
         CustomLogger.logInfo("Checking if user's token can do this request" + token + " " + permission);
         // Check if user's token can do this request
-
+        //Use the hasPermission method
         // We need to set the
 
 

@@ -6,6 +6,7 @@ import { setCookie } from "@/utils/cookie"
 export const login = async(role: RoleType) => {
 	setCookie("role", role)
 	setCookie("token", "bonamyRule34")
+	setCookie("currentProject", "1")
 
 	const response = await apiQuery({
 		route: `users/roles/${role}`,

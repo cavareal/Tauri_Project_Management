@@ -3,20 +3,16 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.repository.PresentationOrderRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/presentation-orders")
 @Tag(name = "presentation-orders")
 public class PresentationOrderController {
 
-    //@Autowired
-
     private final PresentationOrderRepository presentationOrderRepository;
-
-    public PresentationOrderController(PresentationOrderRepository presentationOrderRepository) {
-        this.presentationOrderRepository = presentationOrderRepository;
-    }
 
     @PostMapping("/")
     public PresentationOrder addPresentationOrder(@RequestBody PresentationOrder presentationOrder) {

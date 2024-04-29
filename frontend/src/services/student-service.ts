@@ -3,6 +3,7 @@ import { StudentSchema } from "@/types/student"
 import { apiQuery } from "@/utils/api"
 import { uploadFile } from "@/utils/api/api.util"
 import { z } from "zod"
+import type { Team } from "@/types/team"
 
 export const getAllStudents = async(): Promise<Student[]> => {
 	const response = await apiQuery({
@@ -64,6 +65,20 @@ export const deleteAllStudents = async(): Promise<void> => {
 	const response = await apiQuery({
 		method: "DELETE",
 		route: "students",
+		responseSchema: z.string(),
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const updateStudent = async(id: string | null, gender: string | null, bachelor: boolean | null, teamRole: string | null, team: Team | null): Promise<void> => {
+	const response = await apiQuery({
+		method: "PUT",
+		route: `students/${id}`,
+		body: { gender, bachelor, teamRole, team },
 		responseSchema: z.string(),
 		textResponse: true
 	})

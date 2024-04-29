@@ -37,4 +37,5 @@ public class Sprint {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Project project;
+
 }

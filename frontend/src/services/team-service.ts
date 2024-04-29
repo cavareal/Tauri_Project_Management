@@ -4,10 +4,15 @@ import type { Team } from "@/types/team"
 import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
+import type { User } from "@/types/user"
 
-export const getTeams = async(): Promise<Team[]> => {
+export const getTeams = async(idProject: string | null): Promise<Team[]> => {
 	const response = await apiQuery({
-		route: "teams",
+		route: "teams?idProject=" + idProject,
+		/*headers: {
+			"Content-Type": "application/json",
+			Authorization: token || "null"
+		},*/
 		responseSchema: TeamSchema.array(),
 		method: "GET"
 	})
@@ -59,9 +64,9 @@ export const setTeamLeader = async(id: number, value: string): Promise<void> => 
 	}
 }
 
-export const generateTeams = async(nbTeams: string, womenPerTeam: string): Promise<void> => {
+export const generateTeams = async(idProject: string | null, nbTeams: string, womenPerTeam: string): Promise<void> => {
 	const response = await apiQuery({
-		route: "teams/",
+		route: `teams?idProject=${idProject}`,
 		responseSchema: z.string(),
 		method: "POST",
 		body: { nbTeams, womenPerTeam },
@@ -113,9 +118,9 @@ export const deleteAllTeams = async(): Promise<void> => {
 	}
 }
 
-export const getTeamBySSId = async(ssId: string | null): Promise<Team> => {
+export const getTeamByLeaderId = async(leaderId: string | null, idProject: string | null): Promise<Team> => {
 	const response = await apiQuery({
-		route: `teams/ss/${ssId}`,
+		route: `teams/leader/${leaderId}?idProject=${idProject}`,
 		responseSchema: TeamSchema,
 		method: "GET"
 	})
@@ -125,4 +130,18 @@ export const getTeamBySSId = async(ssId: string | null): Promise<Team> => {
 	}
 
 	return response.data
+}
+
+export const updateTeam = async(id: string | null, name: string | null, leader: User | null): Promise<void> => {
+	const response = await apiQuery({
+		method: "PUT",
+		route: `teams/${id}`,
+		body: { name, leader },
+		responseSchema: z.string(),
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }

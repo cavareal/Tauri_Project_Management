@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -107,16 +108,17 @@ public class TeamController {
      * @param token the authorization token
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
-    @PostMapping("/")
-    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
+    @PostMapping()
+    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestParam ("idProject") String idP, @RequestBody Map<String, String> request) {
 
+        Integer idProject = Integer.valueOf(idP);
         Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
         Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
 
         if (Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
 
             try {
-                teamService.generateTeams(nbTeams, womenPerTeam);
+                teamService.generateTeams(idProject, nbTeams, womenPerTeam);
                 CustomLogger.logInfo("Teams have been created");
                 return ResponseEntity.ok("La creation a bien été prise en compte");
             } catch (IllegalArgumentException e){
@@ -136,14 +138,14 @@ public class TeamController {
      * @return A list of all teams
      */
     @GetMapping()
-    public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token, @RequestParam("idProject") Integer idProject) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
-            try {
-                List<Team> teams = teamService.getAllTeams();
+            //try {
+                List<Team> teams = teamService.getAllTeams(idProject);
                 return ResponseEntity.ok(teams);
-            } catch (Exception e) {
+            /*} catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
+            }*/
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
@@ -190,7 +192,7 @@ public class TeamController {
                 Integer nbWoman = teamService.getNbWomanByTeamId(teamId);
                 Integer nbBachelor = teamService.getNbBachelorByTeamId(teamId);
                 Integer nbStudents = teamService.getNbStudentsByTeamId(teamId);
-                Criteria criteria = getCriteria(nbStudents, nbWoman, nbBachelor);
+                Criteria criteria = getCriteria(token, teamId,nbStudents, nbWoman, nbBachelor);
                 return ResponseEntity.ok(criteria);
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -201,17 +203,17 @@ public class TeamController {
     }
 
     @NotNull
-    private Criteria getCriteria(Integer nbStudents, Integer nbWoman, Integer nbBachelor) {
-        Integer womenPerTeam = projectService.getRatioGender();
+    private Criteria getCriteria(String token, Integer teamId, Integer nbStudents, Integer nbWomen, Integer nbBachelor) {
+        String womenPerTeam = projectService.getNbWomen(token, teamId);
         boolean validateWoman = false;
         boolean validateBachelor = false;
-        if (nbStudents > 0 && (nbWoman * 100) / nbStudents >= womenPerTeam) {
+        if (nbStudents > 0 && (nbWomen * 100) / nbStudents >= Integer.valueOf(womenPerTeam)) {
             validateWoman = true;
         }
         if (nbBachelor >= 1) {
             validateBachelor = true;
         }
-        return new Criteria(nbWoman, nbBachelor, nbStudents, validateWoman, validateBachelor);
+        return new Criteria(nbWomen, nbBachelor, nbStudents, validateWoman, validateBachelor);
     }
 
     @GetMapping("/{idTeam}/average")
@@ -246,17 +248,17 @@ public class TeamController {
         }
     }
 
-    @GetMapping("/ss/{ssId}")
-    public ResponseEntity<Team> getTeamBySupervisor(@RequestHeader("Authorization") String token, @PathVariable Integer ssId) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))){
-            try {
-                Team team = teamService.getTeamBySSId(ssId);
+    @GetMapping("/leader/{leaderId}")
+    public ResponseEntity<Team> getTeamByLeaderId(@RequestHeader("Authorization") String token, @PathVariable Integer leaderId, @RequestParam("idProject") Integer idProject) {
+        //if (Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))){
+            //try {
+                Team team = teamService.getTeamByLeaderId(leaderId, idProject);
                 return ResponseEntity.ok(team);
-            } catch (Exception e) {
+            /*} catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
+            }*/
+        /*} else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
+        }*/
     }
 }

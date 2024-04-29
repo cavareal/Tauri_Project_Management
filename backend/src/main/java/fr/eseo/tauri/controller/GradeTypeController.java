@@ -4,23 +4,19 @@ import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.service.GradeTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/grade-types")
 @Tag(name = "grade-types")
 public class GradeTypeController {
 
     private final GradeTypeRepository gradeTypeRepository;
     private final GradeTypeService gradeTypeService;
-
-    @Autowired
-    public GradeTypeController(GradeTypeRepository gradeTypeRepository, GradeTypeService gradeTypeService) {
-        this.gradeTypeRepository = gradeTypeRepository;
-        this.gradeTypeService = gradeTypeService;
-    }
 
     @GetMapping
     public ResponseEntity<Iterable<GradeType>> getGradeTypes() {

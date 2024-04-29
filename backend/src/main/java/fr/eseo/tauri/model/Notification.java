@@ -13,7 +13,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "notifications")
 @Getter
 @Setter
-public class    Notification {
+public class Notification {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
@@ -41,4 +42,5 @@ public class    Notification {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private User userFrom;
+
 }

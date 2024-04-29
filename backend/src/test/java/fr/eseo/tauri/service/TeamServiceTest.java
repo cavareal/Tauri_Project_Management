@@ -162,7 +162,7 @@ class TeamServiceTest {
 
     @Test
     void testGetNbBachelorsByTeamId() {
-        // Arrange
+        // Given
         Team team = new Team();
         Student student1 = new Student();
         student1.bachelor(true);
@@ -171,11 +171,11 @@ class TeamServiceTest {
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
         when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
 
-        // Act
+        // When
         Integer nbBachelorsTeam1 = teamService.getNbBachelorByTeamId(1);
         Integer nbBachelorsTeam2 = teamService.getNbBachelorByTeamId(2);
 
-        // Assert
+        // Then
         assertThat(nbBachelorsTeam1).isEqualTo(1);
         assertThat(nbBachelorsTeam2).isNull();
     }

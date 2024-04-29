@@ -12,6 +12,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 public class Comment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
@@ -40,5 +41,5 @@ public class Comment {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private User author;
-}
 
+}

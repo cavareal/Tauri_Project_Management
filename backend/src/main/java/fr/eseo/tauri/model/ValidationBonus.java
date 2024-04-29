@@ -30,4 +30,5 @@ public class ValidationBonus {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Bonus bonus;
+
 }

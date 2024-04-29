@@ -3,20 +3,17 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.repository.FlagRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/flags")
 @Tag(name = "flags")
 public class FlagController {
 
     private final FlagRepository flagRepository;
-
-    @Autowired
-    public FlagController(FlagRepository flagRepository) {
-        this.flagRepository = flagRepository;
-    }
 
     @PostMapping("/")
     public Flag addFlag(@RequestBody Flag flag) {

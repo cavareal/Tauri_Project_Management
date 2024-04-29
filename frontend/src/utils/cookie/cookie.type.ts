@@ -1,1 +1,1 @@
-export type CookieName = "role" | "token" | "user"
+export type CookieName = "role" | "token" | "user" | "currentProject"

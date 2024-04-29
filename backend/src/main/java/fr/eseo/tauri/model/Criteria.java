@@ -30,4 +30,5 @@ public class Criteria {
         this.validCriteriaWoman = validateWoman;
         this.validCriteriaBachelor = validateBachelor;
     }
+
 }
