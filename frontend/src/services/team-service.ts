@@ -1,4 +1,4 @@
-import { apiQuery, mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { TeamSchema } from "@/types/team"
 import type { Team } from "@/types/team"
 import { z } from "zod"

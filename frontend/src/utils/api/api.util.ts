@@ -1,6 +1,8 @@
 import type { ApiQueryRequest, ApiQueryResponse } from "."
 import { getCookie } from "@/utils/cookie"
-import type { FetchAndValidateFunction, FetchAndValidateRequest, MutateAndValidateRequest, MutateAndValidateResponse, QueryAndValidateRequest, QueryAndValidateResponse, QueryParams, UploadFileRequest } from "./api.type"
+import type {
+	MutateAndValidateRequest, MutateAndValidateResponse, QueryAndValidateRequest, QueryAndValidateResponse, UploadFileRequest
+} from "./api.type"
 import { wait } from "@/utils/time"
 import type { SafeParseReturnType } from "zod"
 
