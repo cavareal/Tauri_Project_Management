@@ -242,92 +242,69 @@ public class StudentService {
         List<GradeType> importedGrades = gradeTypeService.getImportedGradeTypes();
         List<Student> students = getStudents();
 
-        // Count the number of GradeType objects that are not "AVERAGE"
-        long count = importedGrades.stream().filter(gradeType -> !gradeType.name().equals("AVERAGE")).count();
-
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
-            // Prepare arrays for names and factors
-            String[] gradeTypeNames = new String[(int) count + 5];  // Add 5 for the blank cells
-            String[] gradeTypeFactors = new String[(int) count + 5];  // Add 5 for the blank cells
-
-            // Fill the arrays with blank cells
-            Arrays.fill(gradeTypeNames, 0, 5, "");
-            Arrays.fill(gradeTypeFactors, 0, 5, "");
-
-            // Add "sexe M / F" cell
-            gradeTypeNames[2] = "sexeM / F";
-
-            // Fill the arrays with GradeType data
-            int arrayIndex = 5;  // Start from the 6th cell
-            for (GradeType gradeType : importedGrades) {
-                if (gradeType.name().equals("AVERAGE")) {
-                    continue;
-                }
-                gradeTypeFactors[arrayIndex] = String.valueOf(gradeType.factor());
-                gradeTypeNames[arrayIndex] = gradeType.name();
-                arrayIndex++;
-            }
-
-            // Write the arrays to the CSV
-            csvWriter.writeNext(gradeTypeFactors);
-            csvWriter.writeNext(gradeTypeNames);
-
-            // Write the students' information starting from the third row
-            int studentIndex = 1;
-            for (Student student : students) {
-                String[] studentInfo = new String[4 +(int) count + 1];  // Add 5 for the blank cells
-                studentInfo[0] = String.valueOf(studentIndex);
-                studentInfo[1] = student.name();
-                studentInfo[2] = student.gender().toString().equals("MAN")? "M" : "F";
-                studentInfo[3] = student.bachelor() ? "B" : "";
-                arrayIndex = 4;  // Start from the 5th cell
-                for (GradeType gradeType : importedGrades) {
-                    // Retrieve the grade of the student for the current grade type
-                    Float grade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
-                    CustomLogger.logInfo("Grade: " + grade);
-                    studentInfo[arrayIndex] = grade != null ? String.valueOf(grade) : "";
-                    arrayIndex++;
-                }
-                CustomLogger.logInfo("Student grades: " + Arrays.toString(studentInfo));
-                csvWriter.writeNext(studentInfo);
-                studentIndex++;
-            }
-
-            // Skip 4 rows
-            for (int i = 0; i < 4; i++) {
-                String[] emptyRow = new String[4 +(int) count];
-                Arrays.fill(emptyRow, "");
-                csvWriter.writeNext(emptyRow);
-            }
-
-            // Write "Nombre F" and the number of women
-            String[] womenCount = new String[5 + (int) count];
-            womenCount[0] = "";
-            womenCount[1] = "Nombre F";
-            womenCount[2] = String.valueOf(getNumberWomen());
-            Arrays.fill(womenCount, 3, 5 + (int) count , "");
-            csvWriter.writeNext(womenCount);
-
-            String[] menCount = new String[5 + (int) count];
-            menCount[0] = "";
-            menCount[1] = "Nombre M";
-            menCount[2] = String.valueOf(getNumberStudents()-getNumberWomen());
-            Arrays.fill(menCount, 3, 5 + (int) count, "");
-            csvWriter.writeNext(menCount);
-
-            String[] bachelorCount = new String[5 + (int) count];
-            bachelorCount[0] = "";
-            bachelorCount[1] = "Nombre B";
-            bachelorCount[2] = "";
-            bachelorCount[3] = String.valueOf(getNumberBachelor());
-            Arrays.fill(bachelorCount, 4, 5 + (int) count, "");
-            csvWriter.writeNext(bachelorCount);
-
-            writer.flush();  // Ensure that the writer is flushed before the csvWriter is closed
+            writeHeaders(csvWriter, importedGrades);
+            writeStudentData(csvWriter, students, importedGrades);
+            writeSummaryData(csvWriter, students, importedGrades.size());
+            writer.flush();
         } catch (IOException e) {
             CustomLogger.logError("An error occurred while creating the CSV file", e);
             throw new RuntimeException(e);
         }
         return byteArrayOutputStream.toByteArray();
     }
+
+    private void writeHeaders(CSVWriter csvWriter, List<GradeType> importedGrades) {
+        String[] headers = new String[importedGrades.size() + 4];
+        Arrays.fill(headers, "");
+        headers[2] = "sexe M / F";
+        int index = 4;
+        for (GradeType gradeType : importedGrades) {
+            headers[index++] = gradeType.name();
+        }
+        csvWriter.writeNext(headers);
+    }
+
+    private void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGrades) {
+        int studentIndex = 1;
+        for (Student student : students) {
+            String[] studentInfo = new String[importedGrades.size() + 4];
+            Arrays.fill(studentInfo, "");
+            studentInfo[0] = String.valueOf(studentIndex++);
+            studentInfo[1] = student.name();
+            studentInfo[2] = student.gender().toString().equals("MAN") ? "M" : "F";
+            studentInfo[3] = student.bachelor() ? "B" : "";
+
+            int gradeIndex = 4;
+            for (GradeType gradeType : importedGrades) {
+                Float grade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
+                studentInfo[gradeIndex++] = grade != null ? String.valueOf(grade) : "";
+            }
+            csvWriter.writeNext(studentInfo);
+        }
+    }
+
+    private void writeSummaryData(CSVWriter csvWriter, List<Student> students, int numberOfGrades) {
+        writeEmptyRows(csvWriter, 4, numberOfGrades + 4);
+        writeCountRow(csvWriter, "Nombre F", getNumberWomen(), numberOfGrades + 4);
+        writeCountRow(csvWriter, "Nombre M", getNumberStudents() - getNumberWomen(), numberOfGrades + 4);
+        writeCountRow(csvWriter, "Nombre B", getNumberBachelor(), numberOfGrades + 4);
+    }
+
+    private void writeEmptyRows(CSVWriter csvWriter, int numRows, int rowLength) {
+        String[] emptyRow = new String[rowLength];
+        Arrays.fill(emptyRow, "");
+        for (int i = 0; i < numRows; i++) {
+            csvWriter.writeNext(emptyRow);
+        }
+    }
+
+    private void writeCountRow(CSVWriter csvWriter, String label, int count, int rowLength) {
+        String[] row = new String[rowLength];
+        Arrays.fill(row, "");
+        row[1] = label;
+        row[2] = String.valueOf(count);
+        csvWriter.writeNext(row);
+    }
+
 }
