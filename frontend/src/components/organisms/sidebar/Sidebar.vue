@@ -70,6 +70,7 @@ const style = cn(
       <NotificationView>
         <SidebarLink>
           <Bell /> Notifications
+          <div class="absolute top-0 right-0  bg-red-600 rounded-full"></div>
         </SidebarLink>
       </NotificationView>
 
