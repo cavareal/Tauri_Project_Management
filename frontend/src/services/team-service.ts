@@ -126,3 +126,15 @@ export const getTeamBySSId = async(ssId: string | null): Promise<Team> => {
 
 	return response.data
 }
+
+export const moveTeamStudent = async(teamId: number, studentId: number): Promise<void> => {
+	const response = await apiQuery({
+		route: `teams/${teamId}/move-student?studentId=${studentId}`,
+		responseSchema: TeamSchema,
+		method: "PUT"
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}

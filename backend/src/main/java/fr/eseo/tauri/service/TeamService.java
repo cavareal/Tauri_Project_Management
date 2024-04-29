@@ -209,7 +209,7 @@ public class TeamService {
                 student = men.get(i - nbWomen);
                 student.team(sortedTeams.get((i - index)% nbTeams));
             }
-            
+
             role.user(student);
             this.roleRepository.save(role);
             this.studentRepository.save(student);
@@ -314,5 +314,19 @@ public class TeamService {
             throw new IllegalArgumentException("Team with id " + idTeam + " not found");
         }
         return this.teamRepository.findAvgGradeByTeam(optionalTeam.get());
+    }
+
+    public Team moveTeamStudent(Integer idNewTeam, Integer idStudent) {
+        var student = studentRepository.findById(idStudent).orElse(null);
+        var newTeam = teamRepository.findById(idNewTeam).orElse(null);
+
+        if (student == null || newTeam == null) {
+            throw new IllegalArgumentException("Student or team not found");
+        }
+
+        student.team(newTeam);
+        studentRepository.save(student);
+
+        return newTeam;
     }
 }

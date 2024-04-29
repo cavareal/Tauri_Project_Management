@@ -10,7 +10,7 @@ import { getQuantityOfStudents } from "@/services/student-service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import { getTeams } from "@/services/team-service"
 import { getCurrentPhase } from "@/services/project-service"
-import { Header } from "../molecules/header"
+import { Header } from "@/components/molecules/header"
 import type { RoleType } from "@/types/role"
 import { computed } from "vue"
 import { PageSkeleton } from "@/components/atoms/skeletons"
@@ -21,10 +21,10 @@ const role = getCookie<RoleType>("role")
 
 const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({ queryKey: ["currentPhase"], queryFn: getCurrentPhase })
 const { data: nbStudents } = useQuery({ queryKey: ["nbStudents"], queryFn: getQuantityOfStudents })
-const { data: teams, refetch: refetchTeams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
+const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams()).length })
 
 const displayButtons = computed(() => role === "PROJECT_LEADER" && nbStudents.value && nbStudents.value > 0
-	&& teams.value && teams.value.length > 0 && currentPhase.value && currentPhase.value === "COMPOSING")
+	&& nbTeams.value && nbTeams.value > 0 && currentPhase.value && currentPhase.value === "COMPOSING")
 
 const generateTeams = computed(() => role === "PROJECT_LEADER" && currentPhase.value === "COMPOSING")
 const displayTeams = computed(() => (role === "PROJECT_LEADER" || (role === "SUPERVISING_STAFF" && currentPhase.value !== "COMPOSING")
@@ -44,10 +44,10 @@ const displayTeams = computed(() => (role === "PROJECT_LEADER" || (role === "SUP
 		</Header>
 
 		<NotAuthorized v-if="!token || !role" />
-		<PageSkeleton v-else-if="currentPhase === undefined || nbStudents === undefined || teams === undefined" />
+		<PageSkeleton v-else-if="currentPhase === undefined || nbStudents === undefined || nbTeams === undefined" />
 		<RedirectImportStudents v-else-if="generateTeams && nbStudents === 0" />
-		<GenerateTeams v-else-if="generateTeams && nbStudents > 0 && teams.length === 0" @generate:teams="refetchTeams" :nb-students="nbStudents" />
-		<TeamAccordion v-else-if="teams.length > 0 && displayTeams" :phase="currentPhase" />
+		<GenerateTeams v-else-if="generateTeams && nbStudents > 0 && nbTeams === 0" @generate:teams="refetchTeams" :nb-students="nbStudents" />
+		<TeamAccordion v-else-if="nbTeams > 0 && displayTeams" :phase="currentPhase" />
 		<TeamsNotCreated v-else-if="(role === 'SUPERVISING_STAFF' || role === 'OPTION_LEADER') && currentPhase === 'COMPOSING'" />
 		<NotAuthorized v-else />
 	</SidebarTemplate>
