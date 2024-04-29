@@ -7,8 +7,9 @@ import { CriteriaSchema } from "@/types/criteria"
 import type { User } from "@/types/user"
 
 export const getTeams = async(idProject: string | null): Promise<Team[]> => {
+	console.log("idProject", idProject)
 	const response = await apiQuery({
-		route: "teams?idProject=" + idProject,
+		route: `teams?idProject=${idProject}`,
 		/*headers: {
 			"Content-Type": "application/json",
 			Authorization: token || "null"

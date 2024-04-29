@@ -22,8 +22,7 @@ const project = getCookie("currentProject")
 
 const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({ queryKey: ["currentPhase"], queryFn: () => getCurrentPhase(project) })
 const { data: nbStudents } = useQuery({ queryKey: ["nbStudents"], queryFn: getQuantityOfStudents })
-const { data: teams, refetch: refetchTeams } = useQuery({ queryKey: ["teams"], queryFn: () => getTeams(project) })
-const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams()).length })
+const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams(project)).length })
 
 const displayButtons = computed(() => role === "PROJECT_LEADER" && nbStudents.value && nbStudents.value > 0
 	&& nbTeams.value && nbTeams.value > 0 && currentPhase.value && currentPhase.value === "COMPOSING")
