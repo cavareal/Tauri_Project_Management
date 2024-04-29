@@ -131,17 +131,3 @@ export const getTeamByLeaderId = async(leaderId: string | null, idProject: strin
 
 	return response.data
 }
-
-export const updateTeam = async(id: string | null, name: string | null, leader: User | null): Promise<void> => {
-	const response = await apiQuery({
-		method: "PUT",
-		route: `teams/${id}`,
-		body: { name, leader },
-		responseSchema: z.string(),
-		textResponse: true
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
-}

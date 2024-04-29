@@ -14,14 +14,14 @@ const file = defineModel<File | null>()
 
 const dragging = ref(false)
 
-const changeFile = (event: Event) => {
+const handleChangeFile = (event: Event) => {
 	const inputElement = event.target as HTMLInputElement
 	if (inputElement.files && inputElement.files[0]) {
 		file.value = inputElement.files[0]
 	}
 }
 
-const dropFile = (event: DragEvent) => {
+const handleDropFile = (event: DragEvent) => {
 	event.preventDefault()
 	if (event.dataTransfer && event.dataTransfer.files) {
 		if (event.dataTransfer.files[0].name.endsWith(".csv")) file.value = event.dataTransfer.files[0]
@@ -29,18 +29,18 @@ const dropFile = (event: DragEvent) => {
 	}
 }
 
-const dragEnter = (event: DragEvent) => {
+const handleDragEnter = (event: DragEvent) => {
 	event.preventDefault()
 	dragging.value = true
 }
 
-const dragOver = (event: DragEvent) => {
+const handleDragOver = (event: DragEvent) => {
 	event.preventDefault()
 	if (event.dataTransfer) event.dataTransfer.dropEffect = "move"
 	dragging.value = true
 }
 
-const dragLeave = (event: DragEvent) => {
+const handleDragLeave = (event: DragEvent) => {
 	event.preventDefault()
 	dragging.value = false
 }
@@ -63,11 +63,14 @@ const uploadAreaStyle = computed(() => cn(
 	</Row>
 
 	<Label v-else for="file-upload" :class="uploadAreaStyle">
-		<Column class="items-center px-20 py-5 gap-1" @dragenter="dragEnter" @dragover="dragOver" @dragleave="dragLeave" @drop="dropFile">
+		<Column
+			class="items-center px-20 py-5 gap-1" @dragenter="handleDragEnter" @dragover="handleDragOver"
+			@dragleave="handleDragLeave" @drop="handleDropFile"
+		>
 			<CloudUpload class="w-16 h-16 stroke-[1.2]" />
 			<Text>Déposez un fichier ici ou cliquez ici pour sélectionnez un fichier</Text>
 		</Column>
-		<Input id="file-upload" type="file" @change="changeFile" class="hidden" accept=".csv" />
+		<Input id="file-upload" type="file" @change="handleChangeFile" class="hidden" accept=".csv" />
 	</Label>
 	<InfoText v-if="!file" class="text-slate-400 mb-4">Format accepté : .csv</InfoText>
 </template>

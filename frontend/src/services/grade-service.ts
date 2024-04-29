@@ -1,11 +1,6 @@
 import { GradeDoubleArraySchema, GradeSchema, type Grade } from "@/types/grade"
 import { apiQuery } from "@/utils/api"
 import { z } from "zod"
-import type { GradeType } from "@/types/grade-type"
-import type { User } from "@/types/user"
-import type { Student } from "@/types/student"
-import type { Team } from "@/types/team"
-//import type { Sprint } from "@/types/sprint"
 
 export const getAllGrades = async(): Promise<Grade[]> => {
 	const response = await apiQuery({
@@ -60,5 +55,40 @@ export const updateTeamGrade = async(id: string | null, value: number | null, co
 
 	if (response.status === "error") {
 		throw new Error(response.error)
+	}
+}
+
+export const addGradesToTeam = async(userId: string | null, rate : any): Promise<void> => {
+	const response = await apiQuery({
+		route: `grades/add-grade-to-team/${userId}`,
+		responseSchema: z.string(),
+		method: "POST",
+		body: rate,
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const addGradeToTeam = async(userId: string | null, evaluations : any, token : any) => {
+	try {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/add-grade-to-team/" + userId, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: token || "null"
+			},
+			body: JSON.stringify(evaluations.value)
+		})
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`)
+		}
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return await response.json()
+	} catch (error) {
+		console.error(error)
 	}
 }

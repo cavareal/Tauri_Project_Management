@@ -41,5 +41,5 @@ public class Team {
     @JsonProperty
     private List<Student> students;
      */
-
 }
+
