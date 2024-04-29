@@ -25,8 +25,6 @@ const props = defineProps<{
 const queryClient = useQueryClient()
 
 const dragging = ref<number | null>(null)
-const open = ref<Record<number, boolean>>({})
-
 const students = ref<Record<number, Student[]>>()
 
 const { data: teams, refetch: refetchTeams, isLoading, isFetching } = useQuery({ queryKey: ["teams"], queryFn: async() => {
@@ -36,7 +34,6 @@ const { data: teams, refetch: refetchTeams, isLoading, isFetching } = useQuery({
 	await Promise.all(teams.map(async(team) => {
 		const teamStudents = await getStudentsByTeamId(team.id)
 		students.value = { ...students.value, [team.id]: teamStudents }
-		if (!open.value[team.id]) open.value = { ...open.value, [team.id]: false }
 	}))
 
 	return teams
@@ -80,7 +77,7 @@ const handleDragOver = (event: DragEvent, teamId: number) => {
 	dragging.value = teamId
 }
 
-const handleDragLeave = (event: DragEvent, teamId: number) => {
+const handleDragLeave = (event: DragEvent) => {
 	event.preventDefault()
 	if (event.dataTransfer) event.dataTransfer.dropEffect = "move"
 	dragging.value = null
@@ -97,11 +94,11 @@ const style = (teamId: number) => cn(
 	<PageSkeleton v-if="isLoading || isFetching" />
 	<Accordion v-else type="multiple">
 		<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
-			<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)" v-model:open="open[team.id]"
+			<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
 				v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"
 				v-on:dragenter="(e: DragEvent) => handleDragEnter(e, team.id)"
 				v-on:dragover="(e: DragEvent) => handleDragOver(e, team.id)"
-				v-on:dragleave="(e: DragEvent) => handleDragLeave(e, team.id)"
+				v-on:dragleave="handleDragLeave"
 			>
 				<AccordionTrigger>
 					{{ team.name }}
