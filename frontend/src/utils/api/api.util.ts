@@ -1,8 +1,13 @@
 import type { ApiQueryRequest, ApiQueryResponse } from "."
 import { getCookie } from "@/utils/cookie"
-import type { UploadFileRequest } from "./api.type"
+import type { FetchAndValidateFunction, FetchAndValidateRequest, MutateAndValidateRequest, MutateAndValidateResponse, QueryAndValidateRequest, QueryAndValidateResponse, QueryParams, UploadFileRequest } from "./api.type"
+import { wait } from "@/utils/time"
+import type { SafeParseReturnType } from "zod"
 
 
+/**
+ * @deprecated Utilisez la fonction newFunction à la place.
+ */
 export const apiQuery = async <T>(
 	{ route, responseSchema, method, body, delay = 0, textResponse = false }: ApiQueryRequest<T>
 ): Promise<ApiQueryResponse<T>> => {
@@ -87,4 +92,111 @@ export const uploadFile = async({ file, route }: UploadFileRequest): Promise<Api
 		status: "success",
 		data: await response.text()
 	}
+}
+
+
+// NEW FUNCTIONS
+
+const getApiUrl = () => {
+	let url = import.meta.env.VITE_TAURI_API_URL
+
+	if (!url) throw new Error("API URL is not set")
+	if (url.endsWith("/")) url = url.slice(0, -1)
+
+	return url
+}
+
+const buildUrl = (route: string, params?: Record<string, string>) => {
+	if (route.startsWith("/")) route = route.slice(1)
+
+	let url = getApiUrl()
+	if (url.endsWith("/")) url = url.slice(0, -1)
+	url += `/${route}`
+	if (!params) return url
+
+	url += "?"
+	for (const key in params) {
+		url += `${key}=${params[key]}&`
+	}
+	url = url.slice(0, -1)
+
+	return url
+}
+
+const getHeaders = (jsonContent: boolean = true) => {
+	const token = getCookie("token")
+
+	const headers = {
+		"Authorization": token || "null"
+	}
+
+	if (!jsonContent) return headers
+
+	return {
+		...headers,
+		"Content-Type": "application/json"
+	}
+}
+
+/**
+ * @param delay Delay before fetching in ms (useful for testing loading states)
+ */
+export const queryAndValidate = async <T>({
+	route, params, jsonContent = true, delay, responseSchema
+}: QueryAndValidateRequest<T>): Promise<QueryAndValidateResponse<T>> => {
+	if (delay) await wait(delay)
+
+	const response = await fetch(buildUrl(route, params), {
+		headers: getHeaders(jsonContent)
+	})
+	if (!response.ok) return {
+		status: "error",
+		error: `Failed to fetch GET ${route}: ${response.status} ${response.statusText}`
+	}
+
+	const parsedBody = responseSchema.safeParse(await response.json())
+	if (!parsedBody.success) return {
+		status: "error",
+		error: `Failed to validate GET ${route}: ${parsedBody.error.message}`
+	}
+
+	return {
+		status: "success",
+		data: parsedBody.data
+	}
+}
+
+export const mutateAndValidate = async <T>({
+	method, route, params, jsonContent = true, delay, body, bodySchema
+}: MutateAndValidateRequest<T>): Promise<MutateAndValidateResponse> => {
+	if (delay) await wait(delay)
+	if (body && !bodySchema) return {
+		status: "error",
+		error: "Body schema is required when body is provided"
+	}
+
+	let parsedBody: SafeParseReturnType<T, T> | null = null
+	if (body && bodySchema) {
+		parsedBody = bodySchema.safeParse(body)
+		if (!parsedBody.success) return {
+			status: "error",
+			error: `Failed to validate ${method} ${route}: ${parsedBody.error.message}`
+		}
+	}
+
+	let bodyData: BodyInit | undefined = undefined
+	if (body) bodyData = parsedBody?.data as BodyInit
+	if (jsonContent) bodyData = JSON.stringify(bodyData)
+
+	const response = await fetch(buildUrl(route, params), {
+		method,
+		body: bodyData,
+		headers: getHeaders(jsonContent)
+	})
+	if (!response.ok) return {
+		status: "error",
+		error: `Failed to fetch ${method} ${route}: ${response.status} ${response.statusText}`
+	}
+
+	return { status: "success" }
 }
