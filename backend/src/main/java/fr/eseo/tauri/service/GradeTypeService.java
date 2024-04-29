@@ -2,6 +2,7 @@ package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
@@ -181,6 +182,10 @@ public class GradeTypeService {
         } catch (Exception e) {
             CustomLogger.logError("Error occurred while deleting all imported GradeType objects", e);
         }
+    }
+
+    public List<GradeType> getImportedGradeTypes() {
+        return gradeTypeRepository.findAllImported();
     }
 }
 

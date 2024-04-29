@@ -169,4 +169,19 @@ public class GradeService {
         return gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType);
     }
 
+	public List<Grade> findImportedGradesByStudentId(int studentId) {
+		return gradeRepository.findImportedGradesByStudentId(studentId);
+	}
+
+
+	public Float getGradeByStudentAndGradeType(Student student, GradeType gradeType) {
+		try {
+			Float grade = gradeRepository.findValueByStudentAndGradeType(student, gradeType);
+			CustomLogger.logInfo("Getting grade for student " + student.name() + " and grade type " + gradeType.name() + ": " + grade);
+			return grade;
+		} catch (NullPointerException e) {
+			CustomLogger.logInfo("No grade found for student " + student.name() + " and grade type " + gradeType.name());
+			return null;
+		}
+	}
 }

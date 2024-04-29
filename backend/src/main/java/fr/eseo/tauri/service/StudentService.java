@@ -1,6 +1,7 @@
 package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
@@ -12,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -53,13 +52,14 @@ public class StudentService {
      *
      * @return the quantity of students
      */
-    public Integer getStudentQuantity(){
+    public Integer getStudentQuantity() {
         List<Student> students = studentRepository.findAll();
         return students.size();
     }
 
     /**
      * Retrieves students form a team.
+     *
      * @param teamId The id of the team
      * @return a list of students
      */
@@ -68,6 +68,21 @@ public class StudentService {
         return studentRepository.findStudentsByTeam(team);
     }
 
+    public List<Student> getStudents() {
+        return studentRepository.findAll();
+    }
+
+    public int getNumberWomen() {
+        return studentRepository.countWomen();
+    }
+
+    public int getNumberStudents() {
+        return studentRepository.countTotal();
+    }
+
+    public int getNumberBachelor() {
+        return studentRepository.countBachelor();
+    }
 
     /**
      * <b>HELPER METHOD</b>
@@ -135,8 +150,8 @@ public class StudentService {
      * This method is used to create a Student object from the provided data.
      * The data includes the student's name, gender, and bachelor status.
      *
-     * @param name the name of the student
-     * @param gender the gender of the student
+     * @param name     the name of the student
+     * @param gender   the gender of the student
      * @param bachelor the bachelor status of the student
      * @return the created Student object
      * @throws IllegalArgumentException if the name or gender is null or empty, or if the bachelor status is null
@@ -174,6 +189,7 @@ public class StudentService {
      * - Grades
      * - Coefficients
      * - Ratings
+     *
      * @param file The CSV file containing the student data.
      */
     @SuppressWarnings("unchecked")
@@ -220,4 +236,98 @@ public class StudentService {
         CustomLogger.logInfo("Successfully deleted all imported grade types from the database.");
     }
 
+    public byte[] createStudentsCSV() {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
+        List<GradeType> importedGrades = gradeTypeService.getImportedGradeTypes();
+        List<Student> students = getStudents();
+
+        // Count the number of GradeType objects that are not "AVERAGE"
+        long count = importedGrades.stream().filter(gradeType -> !gradeType.name().equals("AVERAGE")).count();
+
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+            // Prepare arrays for names and factors
+            String[] gradeTypeNames = new String[(int) count + 5];  // Add 5 for the blank cells
+            String[] gradeTypeFactors = new String[(int) count + 5];  // Add 5 for the blank cells
+
+            // Fill the arrays with blank cells
+            Arrays.fill(gradeTypeNames, 0, 5, "");
+            Arrays.fill(gradeTypeFactors, 0, 5, "");
+
+            // Add "sexe M / F" cell
+            gradeTypeNames[2] = "sexeM / F";
+
+            // Fill the arrays with GradeType data
+            int arrayIndex = 5;  // Start from the 6th cell
+            for (GradeType gradeType : importedGrades) {
+                if (gradeType.name().equals("AVERAGE")) {
+                    continue;
+                }
+                gradeTypeFactors[arrayIndex] = String.valueOf(gradeType.factor());
+                gradeTypeNames[arrayIndex] = gradeType.name();
+                arrayIndex++;
+            }
+
+            // Write the arrays to the CSV
+            csvWriter.writeNext(gradeTypeFactors);
+            csvWriter.writeNext(gradeTypeNames);
+
+            // Write the students' information starting from the third row
+            int studentIndex = 1;
+            for (Student student : students) {
+                String[] studentInfo = new String[4 +(int) count + 1];  // Add 5 for the blank cells
+                studentInfo[0] = String.valueOf(studentIndex);
+                studentInfo[1] = student.name();
+                studentInfo[2] = student.gender().toString().equals("MAN")? "M" : "F";
+                studentInfo[3] = student.bachelor() ? "B" : "";
+                arrayIndex = 4;  // Start from the 5th cell
+                for (GradeType gradeType : importedGrades) {
+                    // Retrieve the grade of the student for the current grade type
+                    Float grade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
+                    CustomLogger.logInfo("Grade: " + grade);
+                    studentInfo[arrayIndex] = grade != null ? String.valueOf(grade) : "";
+                    arrayIndex++;
+                }
+                CustomLogger.logInfo("Student grades: " + Arrays.toString(studentInfo));
+                csvWriter.writeNext(studentInfo);
+                studentIndex++;
+            }
+
+            // Skip 4 rows
+            for (int i = 0; i < 4; i++) {
+                String[] emptyRow = new String[4 +(int) count];
+                Arrays.fill(emptyRow, "");
+                csvWriter.writeNext(emptyRow);
+            }
+
+            // Write "Nombre F" and the number of women
+            String[] womenCount = new String[5 + (int) count];
+            womenCount[0] = "";
+            womenCount[1] = "Nombre F";
+            womenCount[2] = String.valueOf(getNumberWomen());
+            Arrays.fill(womenCount, 3, 5 + (int) count , "");
+            csvWriter.writeNext(womenCount);
+
+            String[] menCount = new String[5 + (int) count];
+            menCount[0] = "";
+            menCount[1] = "Nombre M";
+            menCount[2] = String.valueOf(getNumberStudents()-getNumberWomen());
+            Arrays.fill(menCount, 3, 5 + (int) count, "");
+            csvWriter.writeNext(menCount);
+
+            String[] bachelorCount = new String[5 + (int) count];
+            bachelorCount[0] = "";
+            bachelorCount[1] = "Nombre B";
+            bachelorCount[2] = "";
+            bachelorCount[3] = String.valueOf(getNumberBachelor());
+            Arrays.fill(bachelorCount, 4, 5 + (int) count, "");
+            csvWriter.writeNext(bachelorCount);
+
+            writer.flush();  // Ensure that the writer is flushed before the csvWriter is closed
+        } catch (IOException e) {
+            CustomLogger.logError("An error occurred while creating the CSV file", e);
+            throw new RuntimeException(e);
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
 }
