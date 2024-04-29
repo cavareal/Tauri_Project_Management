@@ -16,3 +16,4 @@ export const getNotifications = async(): Promise< Notification []> => {
 
 	return response.data
 }
+
