@@ -32,10 +32,10 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addComments(@RequestHeader("Authorization") String token, @RequestBody List<Comment> comments) {
-        commentService.addComments(token, comments);
-        CustomLogger.info("The comment(s) have been added");
-        return ResponseEntity.ok("The comment(s) have been added");
+    public ResponseEntity<String> addComment(@RequestHeader("Authorization") String token, @RequestBody CreateCommentValidator commentDetails) {
+        commentService.addComment(token, commentDetails);
+        CustomLogger.info("The comment has been created");
+        return ResponseEntity.ok("The comment has been created");
     }
 
     @PatchMapping("/{id}")
