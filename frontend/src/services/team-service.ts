@@ -5,9 +5,9 @@ import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
 
-export const getTeams = async(idProject: string | null): Promise<Team[]> => {
+export const getTeams = async(projectId: string | null): Promise<Team[]> => {
 	const response = await apiQuery({
-		route: `teams?idProject=${idProject}`,
+		route: `teams?projectId=${projectId}`,
 		responseSchema: TeamSchema.array(),
 		method: "GET"
 	})
@@ -59,9 +59,9 @@ export const setTeamLeader = async(id: number, value: string): Promise<void> => 
 	}
 }
 
-export const generateTeams = async(idProject: string | null, nbTeams: string, womenPerTeam: string): Promise<void> => {
+export const generateTeams = async(projectId: string | null, nbTeams: string, womenPerTeam: string): Promise<void> => {
 	const response = await apiQuery({
-		route: `teams?idProject=${idProject}`,
+		route: `teams?projectId=${projectId}`,
 		responseSchema: z.string(),
 		method: "POST",
 		body: { nbTeams, womenPerTeam },
@@ -73,9 +73,9 @@ export const generateTeams = async(idProject: string | null, nbTeams: string, wo
 	}
 }
 
-export const getCriteria = async(idProject: string | null, teamId: number): Promise<Criteria> => {
+export const getCriteria = async(projectId: string | null, teamId: number): Promise<Criteria> => {
 	const response = await apiQuery({
-		route: `teams/${teamId}/criteria?idProject=${idProject}`,
+		route: `teams/${teamId}/criteria?projectId=${projectId}`,
 		responseSchema: CriteriaSchema,
 		method: "GET"
 	})
@@ -113,9 +113,9 @@ export const deleteAllTeams = async(): Promise<void> => {
 	}
 }
 
-export const getTeamByLeaderId = async(leaderId: string | null, idProject: string | null): Promise<Team> => {
+export const getTeamByLeaderId = async(leaderId: string | null, projectId: string | null): Promise<Team> => {
 	const response = await apiQuery({
-		route: `teams/leader/${leaderId}?idProject=${idProject}`,
+		route: `teams/leader/${leaderId}?projectId=${projectId}`,
 		responseSchema: TeamSchema,
 		method: "GET"
 	})

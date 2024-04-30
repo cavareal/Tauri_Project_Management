@@ -12,17 +12,17 @@ import { Header } from "@/components/molecules/header"
 
 const token = getCookie("token")
 const role = getCookie("role")
-const idProject = getCookie("currentProject")
+const projectId = getCookie("currentProject")
 const currentUser = getCookie("user")
 const currentPhase = ref<ProjectPhase>("COMPOSING")
 const team = ref<Team>()
 
 watch(() => { }, async() => {
-	currentPhase.value = await getCurrentPhase(idProject)
+	currentPhase.value = await getCurrentPhase(projectId)
 }, { immediate: true })
 
 onMounted(async() => {
-	const data = await getTeamByLeaderId(currentUser, idProject)
+	const data = await getTeamByLeaderId(currentUser, projectId)
 	team.value = data
 })
 </script>

@@ -122,15 +122,15 @@ class ProjectControllerTest {
     void updateProjectSprintsNumber_returnsOk_whenUpdateIsSuccessful() {
         // Arrange
         String token = "token";
-        Integer idProject = 1;
+        Integer projectId = 1;
         Integer newSprintsNumber = 5;
         Map<String, String> request = new HashMap<>();
         request.put("nbSprints", newSprintsNumber.toString());
         when(authService.checkAuth(token, "ManageTeamsNumber")).thenReturn(true);
-        when(projectService.updateProjectSprintsNumber(idProject, newSprintsNumber)).thenReturn(new Project());
+        when(projectService.updateProjectSprintsNumber(projectId, newSprintsNumber)).thenReturn(new Project());
 
         // Act
-        ResponseEntity<String> response = projectController.updateProjectSprintsNumber(token, idProject, request);
+        ResponseEntity<String> response = projectController.updateProjectSprintsNumber(token, projectId, request);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -158,13 +158,13 @@ class ProjectControllerTest {
     void updateProjectTeamsNumber_returnsOk_whenUpdateIsSuccessful() {
         // Arrange
         String token = "token";
-        Integer idProject = 1;
+        Integer projectId = 1;
         Integer newTeamsNumber = 5;
         when(authService.checkAuth(token, "manageSprint")).thenReturn(true);
-        when(projectService.updateProjectTeamsNumber(idProject, newTeamsNumber)).thenReturn(new Project());
+        when(projectService.updateProjectTeamsNumber(projectId, newTeamsNumber)).thenReturn(new Project());
 
         // Act
-        ResponseEntity<String> response = projectController.updateProjectTeamsNumber(token, idProject, newTeamsNumber);
+        ResponseEntity<String> response = projectController.updateProjectTeamsNumber(token, projectId, newTeamsNumber);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -176,13 +176,13 @@ class ProjectControllerTest {
     void updateProjectRatioGender_returnsOk_whenUpdateIsSuccessful() {
         // Arrange
         String token = "token";
-        Integer idProject = 1;
+        Integer projectId = 1;
         Integer newRatioGender = 5;
         when(authService.checkAuth(token, "manageRatioGender")).thenReturn(true);
-        when(projectService.updateProjectRatioGender(idProject, newRatioGender)).thenReturn(new Project());
+        when(projectService.updateProjectRatioGender(projectId, newRatioGender)).thenReturn(new Project());
 
         // Act
-        ResponseEntity<String> response = projectController.updateProjectRatioGender(token, idProject, newRatioGender);
+        ResponseEntity<String> response = projectController.updateProjectRatioGender(token, projectId, newRatioGender);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -194,13 +194,13 @@ class ProjectControllerTest {
     void updateProjectPhase_returnsOk_whenUpdateIsSuccessful() {
         // Arrange
         String token = "token";
-        Integer idProject = 1;
+        Integer projectId = 1;
         ProjectPhase newPhase = ProjectPhase.COMPOSING;
         when(authService.checkAuth(token, "manageProjectPhase")).thenReturn(true);
-        when(projectService.updateProjectPhase(idProject, newPhase)).thenReturn(new Project());
+        when(projectService.updateProjectPhase(projectId, newPhase)).thenReturn(new Project());
 
         // Act
-        ResponseEntity<String> response = projectController.updateProjectPhase(token, idProject, newPhase);
+        ResponseEntity<String> response = projectController.updateProjectPhase(token, projectId, newPhase);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());

@@ -26,7 +26,6 @@ public class StudentService {
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
-
     static final String MAP_KEY_BACHELORS = "bachelors";
     static final String MAP_KEY_GRADES = "grades";
 

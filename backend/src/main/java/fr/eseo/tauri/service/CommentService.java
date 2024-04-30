@@ -7,6 +7,7 @@ import fr.eseo.tauri.repository.CommentRepository;
 import fr.eseo.tauri.repository.SprintRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.validator.comment.CreateCommentValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -38,18 +39,14 @@ public class CommentService {
         return commentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("comment", id));
     }
 
-    public void addComments(String token, List<Comment> comments) {
+    public void addComment(String token, CreateCommentValidator commentDetails) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addComment"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         int commentsNumber = commentRepository.findAll().size();
-        for(Comment comment : comments) {
             commentRepository.save(comment);
             if(commentRepository.findAll().size() == commentsNumber){
                 throw new DataAccessException("Error : Could not add comment written by " + comment.author().name()) {};
-            } else {
-                commentsNumber++;
-            }
         }
     }
 

@@ -140,9 +140,9 @@ public class TeamController {
      * @return A list of all teams
      */
     @GetMapping()
-    public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer idProject) {
+    public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
-                List<Team> teams = teamService.getAllTeams(idProject);
+                List<Team> teams = teamService.getAllTeams(projectId);
                 return ResponseEntity.ok(teams);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -184,13 +184,13 @@ public class TeamController {
     }
 
     @GetMapping("/{teamId}/criteria")
-    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer teamId, @RequestParam("idProject") Integer idProject) {
+    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer teamId, @RequestParam("projectId") Integer projectId) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, READ_CRITERIA))) {
             try {
                 Integer nbWomen = teamService.getNbWomenByTeamId(teamId);
                 Integer nbBachelor = teamService.getNbBachelorByTeamId(teamId);
                 Integer nbStudents = teamService.getNbStudentsByTeamId(teamId);
-                Criteria criteria = getCriteria(token, idProject, nbStudents, nbWomen, nbBachelor);
+                Criteria criteria = getCriteria(token, projectId, nbStudents, nbWomen, nbBachelor);
                 return ResponseEntity.ok(criteria);
             } catch (Exception e) {
                 CustomLogger.logInfo("Erreur au critère : " + e.getClass() + "" + e.getMessage());
@@ -202,8 +202,8 @@ public class TeamController {
     }
 
     @NotNull
-    private Criteria getCriteria(String token, Integer idProject, Integer nbStudents, Integer nbWomen, Integer nbBachelor) {
-        Integer womenPerTeam = projectService.getProjectById(token, idProject).nbWomen();
+    private Criteria getCriteria(String token, Integer projectId, Integer nbStudents, Integer nbWomen, Integer nbBachelor) {
+        Integer womenPerTeam = projectService.getProjectById(token, projectId).nbWomen();
         boolean validateWoman = false;
         boolean validateBachelor = false;
         if (nbStudents > 0 && (nbWomen * 100) / nbStudents >= womenPerTeam) {
@@ -247,9 +247,9 @@ public class TeamController {
     }
 
     @GetMapping("/leader/{leaderId}")
-    public ResponseEntity<Team> getTeamByLeaderId(@RequestHeader("Authorization") String token, @PathVariable Integer leaderId, @RequestParam("idProject") Integer idProject) {
+    public ResponseEntity<Team> getTeamByLeaderId(@RequestHeader("Authorization") String token, @PathVariable Integer leaderId, @RequestParam("projectId") Integer projectId) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))){
-                Team team = teamService.getTeamByLeaderId(leaderId, idProject);
+                Team team = teamService.getTeamByLeaderId(leaderId, projectId);
                 return ResponseEntity.ok(team);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);

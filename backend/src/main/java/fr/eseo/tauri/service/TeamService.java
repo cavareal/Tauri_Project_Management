@@ -94,7 +94,7 @@ public class TeamService {
      * @param womenPerTeam the ratio of women in the teams
      * @return a List<Teams> if teams are created, otherwise null
      */
-    public List<Team> generateTeams(Integer idProject, Integer nbTeams, Integer womenPerTeam) throws IllegalArgumentException{
+    public List<Team> generateTeams(Integer projectId, Integer nbTeams, Integer womenPerTeam) throws IllegalArgumentException{
         CustomLogger.logInfo("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
@@ -107,7 +107,7 @@ public class TeamService {
             CustomLogger.logError("TeamService.generateTeams : Not enough students to create the teams");
             throw new IllegalArgumentException("Not enough students to create the teams");
         }else {
-            List<Team> teams = this.createTeams(idProject, nbTeams);
+            List<Team> teams = this.createTeams(projectId, nbTeams);
             this.fillTeams(teams, women, men, womenPerTeam);
             return teams;
         }
@@ -119,13 +119,13 @@ public class TeamService {
      * @param nbTeams the number of teams to create
      * @return a List<Teams> if teams are created, otherwise null
      */
-    private List<Team> createTeams(Integer idProject, Integer nbTeams) throws IllegalArgumentException{
+    private List<Team> createTeams(Integer projectId, Integer nbTeams) throws IllegalArgumentException{
         if (nbTeams < 1) {
             CustomLogger.logError("TeamService.createTeams : The number of teams to create must be greater than 0");
             throw new IllegalArgumentException("The number of teams to create must be greater than 0");
         }
 
-        Project project = this.projectRepository.findById(idProject).orElse(null);
+        Project project = this.projectRepository.findById(projectId).orElse(null);
 
         // Delete all previous teams
         // TODO FUTURE : delete teams only when nbTeams is different from the number of teams in the project
@@ -222,8 +222,8 @@ public class TeamService {
      * Get all teams.
      * @return the list of all teams
      */
-    public List<Team> getAllTeams(int idProject) {
-        var project = projectRepository.findById(idProject).orElse(null);
+    public List<Team> getAllTeams(int projectId) {
+        var project = projectRepository.findById(projectId).orElse(null);
         return teamRepository.findAllByProjectId(project.id());
     }
 
@@ -296,8 +296,8 @@ public class TeamService {
         }
     }
 
-    public Team getTeamByLeaderId(Integer id, Integer idProject){
-        var teams = getAllTeams(idProject);
+    public Team getTeamByLeaderId(Integer id, Integer projectId){
+        var teams = getAllTeams(projectId);
         for (var team : teams) {
             if (team.leader() != null && team.leader().id().equals(id)) {
                 return team;
@@ -306,17 +306,17 @@ public class TeamService {
         return null;
     }
 
-    public double getTeamAvgGrade(Integer idTeam) throws IllegalArgumentException {
-        Optional<Team> optionalTeam = this.teamRepository.findById(idTeam);
+    public double getTeamAvgGrade(Integer teamId) throws IllegalArgumentException {
+        Optional<Team> optionalTeam = this.teamRepository.findById(teamId);
         if (optionalTeam.isEmpty()) {
-            throw new IllegalArgumentException("Team with id " + idTeam + " not found");
+            throw new IllegalArgumentException("Team with id " + teamId + " not found");
         }
         return this.teamRepository.findAvgGradeByTeam(optionalTeam.get());
     }
 
-    public Team moveTeamStudent(Integer idNewTeam, Integer idStudent) {
-        var student = studentRepository.findById(idStudent).orElse(null);
-        var newTeam = teamRepository.findById(idNewTeam).orElse(null);
+    public Team moveTeamStudent(Integer newTeamId, Integer studentId) {
+        var student = studentRepository.findById(studentId).orElse(null);
+        var newTeam = teamRepository.findById(newTeamId).orElse(null);
 
         if (student == null || newTeam == null) {
             throw new IllegalArgumentException("Student or team not found");

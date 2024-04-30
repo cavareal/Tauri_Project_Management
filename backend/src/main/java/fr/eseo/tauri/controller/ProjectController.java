@@ -3,6 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.validator.project.CreateProjectValidator;
 import fr.eseo.tauri.validator.project.UpdateProjectValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -33,15 +34,15 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addProjects(@RequestHeader("Authorization") String token, @RequestBody List<Project> projects) {
-        projectService.addProjects(token, projects);
-        CustomLogger.logInfo("The project(s) have been added");
-        return ResponseEntity.ok("The project(s) have been added");
+    public ResponseEntity<String> creatProject(@RequestHeader("Authorization") String token, @Valid @RequestBody CreateProjectValidator newProject) {
+        projectService.createProject(token, newProject);
+        CustomLogger.logInfo("The project have been created");
+        return ResponseEntity.ok("The project have been created");
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Valid @RequestBody UpdateProjectValidator body) {
-        projectService.updateProject(token, id, body);
+    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Valid @RequestBody UpdateProjectValidator requestBody) {
+        projectService.updateProject(token, id, requestBody);
         CustomLogger.logInfo("The project has been updated");
         return ResponseEntity.ok("The project has been updated");
     }

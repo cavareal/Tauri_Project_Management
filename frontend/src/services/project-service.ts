@@ -2,11 +2,11 @@ import { ProjectPhaseSchema, type ProjectPhase, type Project, ProjectSchema } fr
 import { apiQuery } from "@/utils/api"
 import { z } from "zod"
 
-export const getCurrentPhase = async(idProject : string | null): Promise<ProjectPhase> => {
+export const getCurrentPhase = async(projectId : string | null): Promise<ProjectPhase> => {
 	const response = await apiQuery({
 		responseSchema: ProjectPhaseSchema,
 		method: "GET",
-		route: `projects/phase/${idProject}`,
+		route: `projects/phase/${projectId}`,
 		textResponse: true
 	})
 
@@ -18,10 +18,10 @@ export const getCurrentPhase = async(idProject : string | null): Promise<Project
 }
 
 //A supprimer
-export const setCurrentPhase = async(phase: ProjectPhase | null, idProject : string | null): Promise<void> => {
+export const setCurrentPhase = async(phase: ProjectPhase | null, projectId : string | null): Promise<void> => {
 	const response = await apiQuery({
 		method: "PUT",
-		route: `projects/phase/${idProject}`,
+		route: `projects/phase/${projectId}`,
 		body: { phase },
 		responseSchema: z.string(),
 		textResponse: true

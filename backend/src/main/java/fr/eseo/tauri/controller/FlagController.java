@@ -32,10 +32,10 @@ public class FlagController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addFlags(@RequestHeader("Authorization") String token, @RequestBody List<Flag> flags) {
-        flagService.addFlags(token, flags);
-        CustomLogger.logInfo("The flag(s) have been added");
-        return ResponseEntity.ok("The flag(s) have been added");
+    public ResponseEntity<String> addFlags(@RequestHeader("Authorization") String token, @RequestBody CreateFlagValidator flag) {
+        flagService.addFlag(token, flag);
+        CustomLogger.logInfo("The flag has been created");
+        return ResponseEntity.ok("The flag has been created");
     }
 
     @PatchMapping("/{id}")

@@ -7,6 +7,7 @@ import fr.eseo.tauri.model.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.FlagRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.validator.flag.CreateFlagValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -37,18 +38,14 @@ public class FlagService {
         return flagRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("flag", id));
     }
 
-    public void addFlags(String token, List<Flag> flags) {
+    public void addFlag(String token, CreateFlagValidator flagDetails) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         int flagsNumber = flagRepository.findAll().size();
-        for(Flag flag : flags) {
             flagRepository.save(flag);
             if(flagRepository.findAll().size() == flagsNumber){
                 throw new DataAccessException("Error : Could not add flag created by " + flag.author().name()) {};
-            } else {
-                flagsNumber++;
-            }
         }
     }
 
