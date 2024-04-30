@@ -22,5 +22,6 @@ public class CreateProjectValidator {
 
     @JsonProperty
     private ProjectPhase phase;
+
 }
 

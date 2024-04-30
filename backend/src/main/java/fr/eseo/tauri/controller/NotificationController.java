@@ -3,12 +3,12 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.service.NotificationService;
 import fr.eseo.tauri.util.CustomLogger;
-import fr.eseo.tauri.validator.notification.CreateNotificationValidator;
-import fr.eseo.tauri.validator.notification.UpdateNotificationValidator;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,22 +34,22 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createNotification(@RequestHeader("Authorization") String token, @Valid @RequestBody CreateNotificationValidator notificationDetails) {
-        notificationService.createNotification(token, notificationDetails);
+    public ResponseEntity<String> createNotification(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Notification notification) {
+        notificationService.createNotification(token, notification);
         CustomLogger.info("The notification has been added");
         return ResponseEntity.ok("The notification has been added");
     }
 
     @PostMapping("/batch")
-    public ResponseEntity<String> createManyNotifications(@RequestHeader("Authorization") String token, @Valid @RequestBody List<CreateNotificationValidator> notificationsDetails) {
-        notificationService.createManyNotifications(token, notificationsDetails);
+    public ResponseEntity<String> createManyNotifications(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody List<Notification> notifications) {
+        notificationService.createManyNotifications(token, notifications);
         CustomLogger.info("The notification(s) have been added");
         return ResponseEntity.ok("The notification(s) have been added");
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Valid @RequestBody UpdateNotificationValidator request) {
-        notificationService.updateNotification(token, id, request);
+    public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Notification notification) {
+        notificationService.updateNotification(token, id, notification);
         CustomLogger.info("The notification has been updated");
         return ResponseEntity.ok("The notification has been updated");
     }
