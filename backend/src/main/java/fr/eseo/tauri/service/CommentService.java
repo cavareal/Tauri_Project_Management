@@ -44,7 +44,7 @@ public class CommentService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         int commentsNumber = commentRepository.findAll().size();
-            commentRepository.save(comment);
+            commentRepository.save(commentDetails);
             if(commentRepository.findAll().size() == commentsNumber){
                 throw new DataAccessException("Error : Could not add comment written by " + comment.author().name()) {};
         }

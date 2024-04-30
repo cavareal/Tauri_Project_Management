@@ -1,6 +1,7 @@
 package fr.eseo.tauri.validator.notification;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.eseo.tauri.model.enumeration.NotificationType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,13 +22,14 @@ public class CreateNotificationValidator {
 
     @NotNull(message = "The type field is required")
     @JsonProperty
-    private String type;
+    private NotificationType type;
 
-    @NotNull(message = "The userTo field is required")
+    @NotNull(message = "The userToId field is required")
     @JsonProperty
     private Integer userToId;
 
-    @NotNull(message = "The userFrom field is required")
+    @NotNull(message = "The userFromId field is required")
     @JsonProperty
     private Integer userFromId;
+
 }

@@ -34,7 +34,7 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<String> creatProject(@RequestHeader("Authorization") String token, @Valid @RequestBody CreateProjectValidator newProject) {
+    public ResponseEntity<String> createProject(@RequestHeader("Authorization") String token, @Valid @RequestBody CreateProjectValidator newProject) {
         projectService.createProject(token, newProject);
         CustomLogger.info("The project have been created");
         return ResponseEntity.ok("The project have been created");

@@ -3,11 +3,9 @@ package fr.eseo.tauri.validator.comment;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Builder
 public class CreateCommentValidator {
 
@@ -30,4 +28,5 @@ public class CreateCommentValidator {
     @NotNull(message = "The author field is required")
     @JsonProperty
     private Integer authorId;
+
 }

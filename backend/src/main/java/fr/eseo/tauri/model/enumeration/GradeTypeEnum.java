@@ -9,6 +9,6 @@ public enum GradeTypeEnum {
 
     AVERAGE("average");
 
-    private final String name;
+    private final String displayName;
 
 }

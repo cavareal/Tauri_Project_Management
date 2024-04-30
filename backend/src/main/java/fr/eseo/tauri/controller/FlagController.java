@@ -3,6 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.service.FlagService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.validator.flag.CreateFlagValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

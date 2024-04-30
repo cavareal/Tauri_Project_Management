@@ -21,4 +21,5 @@ public class UpdateNotificationValidator {
 
     @JsonProperty
     private Integer userFromId;
+
 }

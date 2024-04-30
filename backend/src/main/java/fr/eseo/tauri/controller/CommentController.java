@@ -3,6 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Comment;
 import fr.eseo.tauri.service.CommentService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.validator.comment.CreateCommentValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
