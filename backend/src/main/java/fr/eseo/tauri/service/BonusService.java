@@ -115,6 +115,7 @@ public class BonusService {
 
     public void deleteBonus(String token, Integer id) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
+            getBonusById(token, id);
             int bonusesNumber = bonusRepository.findAll().size();
             bonusRepository.deleteById(id);
             if(bonusRepository.findAll().size() == bonusesNumber){
