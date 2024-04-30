@@ -27,7 +27,7 @@ public class Project {
     private Integer nbSprint; //A supprimer une fois que la page Sprints aura été modifée en accord avec la maquette
 
     @Enumerated(EnumType.STRING)
-    @Column(name="phase", columnDefinition = "varchar(32) default 'COMPOSING'")
+    @Column(name="phase")
     @JsonProperty
     private ProjectPhase phase = ProjectPhase.COMPOSING;
 

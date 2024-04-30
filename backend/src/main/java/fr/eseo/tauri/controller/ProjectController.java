@@ -3,7 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.util.CustomLogger;
-import fr.eseo.tauri.validator.project.PartialUpdateProjectValidator;
+import fr.eseo.tauri.validator.project.UpdateProjectValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Valid @RequestBody PartialUpdateProjectValidator body) {
+    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Valid @RequestBody UpdateProjectValidator body) {
         projectService.updateProject(token, id, body);
         CustomLogger.logInfo("The project has been updated");
         return ResponseEntity.ok("The project has been updated");
@@ -60,4 +59,5 @@ public class ProjectController {
         CustomLogger.logInfo("The project has been deleted");
         return ResponseEntity.ok("The project has been deleted");
     }
+
 }

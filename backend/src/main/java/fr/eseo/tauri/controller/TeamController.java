@@ -6,19 +6,17 @@ import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
 import fr.eseo.tauri.util.CustomLogger;
-import fr.eseo.tauri.validator.project.PartialUpdateProjectValidator;
-import fr.eseo.tauri.validator.team.CreateTeamsValidator;
+import fr.eseo.tauri.validator.project.UpdateProjectValidator;
+import fr.eseo.tauri.validator.team.GenerateTeamsValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Controller class for managing teams.
@@ -112,20 +110,19 @@ public class TeamController {
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
     @PostMapping()
-    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestParam ("idProject") String idP, @Valid @RequestBody CreateTeamsValidator request) {
+    public ResponseEntity<String> generateTeams(@RequestHeader("Authorization") String token, @RequestParam ("projectId") Integer projectId, @Valid @RequestBody GenerateTeamsValidator request) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
 
-        Integer idProject = Integer.valueOf(idP);
-        Integer nbTeams = request.nbTeams();
-        Integer womenPerTeam = request.womenPerTeam();
+        var nbTeams = request.nbTeams();
+        var womenPerTeam = request.womenPerTeam();
 
         try {
-            teamService.generateTeams(idProject, nbTeams, womenPerTeam);
+            teamService.generateTeams(projectId, nbTeams, womenPerTeam);
 
-            var projectProperties = PartialUpdateProjectValidator.builder().nbTeams(nbTeams).womenPerTeam(womenPerTeam).build();
-            projectService.updateProject(token, idProject, projectProperties);
+            var projectProperties = UpdateProjectValidator.builder().nbTeams(nbTeams).womenPerTeam(womenPerTeam).build();
+            projectService.updateProject(token, projectId, projectProperties);
 
             CustomLogger.logInfo("Teams have been created");
             return ResponseEntity.ok("La creation a bien été prise en compte");
@@ -143,7 +140,7 @@ public class TeamController {
      * @return A list of all teams
      */
     @GetMapping()
-    public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token, @RequestParam("idProject") Integer idProject) {
+    public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer idProject) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
                 List<Team> teams = teamService.getAllTeams(idProject);
                 return ResponseEntity.ok(teams);
