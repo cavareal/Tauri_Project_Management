@@ -33,22 +33,23 @@ public class ProjectService {
         return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("project", id));
     }
 
-    public void addProjects(String token, List<Project> projects) {
+    public void createProject(String token, CreateProjectValidator projectDetails) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addProject"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         int projectsNumber = projectRepository.findAll().size();
-        for(Project project : projects) {
-            projectRepository.save(project);
-            if(projectRepository.findAll().size() == projectsNumber){
-                throw new DataAccessException("Error : Could not add project") {};
-            } else {
-                projectsNumber++;
-            }
+        Project project = new Project();
+        if(projectDetails.nbTeams() != null) project.nbTeams(projectDetails.nbTeams());
+        if(projectDetails.womenPerTeam() != null) project.nbWomen(projectDetails.womenPerTeam());
+        if(projectDetails.nbSprints() != null) project.nbSprint(projectDetails.nbSprints());
+        if(projectDetails.phase() != null) project.phase(projectDetails.phase());
+        projectRepository.save(project);
+        if(projectRepository.findAll().size() == projectsNumber){
+            throw new DataAccessException("Error : Could not add project") {};
         }
     }
 
-    public void updateProject(String token, Integer id, @Valid UpdateProjectValidator properties) {
+    public void updateProject(String token, Integer id,  UpdateProjectValidator properties) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateProject"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }

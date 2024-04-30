@@ -3,6 +3,8 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.service.BonusService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.validator.bonus.CreateBonusValidator;
+import fr.eseo.tauri.validator.bonus.UpdateBonusValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,15 +34,15 @@ public class BonusController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addBonuses(@RequestHeader("Authorization") String token, @RequestBody List<Bonus> bonuses) {
-        bonusService.addBonuses(token, bonuses);
+    public ResponseEntity<String> addBonuses(@RequestHeader("Authorization") String token, @RequestBody List<CreateBonusValidator> bonusesDetails) {
+        bonusService.addBonuses(token, bonusesDetails);
         CustomLogger.logInfo("The bonus(es) have been added");
         return ResponseEntity.ok("The bonus(es) have been added");
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
-        bonusService.updateBonus(token, id, request);
+    public ResponseEntity<String> updateBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody UpdateBonusValidator bonusDetails) {
+        bonusService.updateBonus(token, id, bonusDetails);
         CustomLogger.logInfo("The bonus has been updated");
         return ResponseEntity.ok("The bonus has been updated");
     }
