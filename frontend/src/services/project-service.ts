@@ -36,8 +36,7 @@ export const getProjectById = async(id : string | null): Promise<Project> => {
 	const response = await apiQuery({
 		responseSchema: ProjectSchema,
 		method: "GET",
-		route: `projects/${id}`,
-		textResponse: true
+		route: `projects/${id}`
 	})
 
 	if (response.status === "error") {

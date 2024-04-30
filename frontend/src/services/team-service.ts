@@ -4,10 +4,8 @@ import type { Team } from "@/types/team"
 import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
-import type { User } from "@/types/user"
 
 export const getTeams = async(idProject: string | null): Promise<Team[]> => {
-	console.log("idProject", idProject)
 	const response = await apiQuery({
 		route: `teams?idProject=${idProject}`,
 		responseSchema: TeamSchema.array(),

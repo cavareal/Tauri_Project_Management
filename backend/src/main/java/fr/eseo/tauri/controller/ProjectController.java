@@ -3,7 +3,9 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.validator.project.PartialUpdateProjectValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,8 +41,8 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
-        projectService.updateProject(token, id, request);
+    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Valid @RequestBody PartialUpdateProjectValidator body) {
+        projectService.updateProject(token, id, body);
         CustomLogger.logInfo("The project has been updated");
         return ResponseEntity.ok("The project has been updated");
     }

@@ -8,11 +8,15 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,10 +27,21 @@ public class GlobalExceptionHandler {
     //Pour les exceptions de validation, utiliser BAD REQUEST
     @ExceptionHandler(value = {IllegalArgumentException.class, NumberFormatException.class, ArrayIndexOutOfBoundsException.class,
             ServletRequestBindingException.class, HttpMessageNotReadableException.class, TypeMismatchException.class,
-            HandlerMethodValidationException.class, MethodArgumentNotValidException.class})
+            HandlerMethodValidationException.class})
     public ResponseEntity<ExceptionResponse> handleBadRequestException(Exception e, HttpServletRequest request) {
         CustomLogger.logInfo(String.valueOf(new ExceptionResponse(e, request)));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ExceptionResponse(e,  request));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleArgumentNotValidException(MethodArgumentNotValidException e) {
+        Map<String, String> errors = new HashMap<>();
+        e.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
     //Handle the exceptions related to not found elements

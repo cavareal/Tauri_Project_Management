@@ -6,11 +6,15 @@ import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.validator.project.PartialUpdateProjectValidator;
+import fr.eseo.tauri.validator.team.CreateTeamsValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -108,27 +112,28 @@ public class TeamController {
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
     @PostMapping()
-    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestParam ("idProject") String idP, @RequestBody Map<String, Object> request) {
+    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestParam ("idProject") String idP, @Valid @RequestBody CreateTeamsValidator request) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
+        }
 
         Integer idProject = Integer.valueOf(idP);
-        Integer nbTeams = (Integer) request.get("nbTeams");
-        Integer womenPerTeam = (Integer) request.get("womenPerTeam");
+        Integer nbTeams = request.nbTeams();
+        Integer womenPerTeam = request.womenPerTeam();
 
-        if (Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
+        try {
+            teamService.generateTeams(idProject, nbTeams, womenPerTeam);
 
-            try {
-                teamService.generateTeams(idProject, nbTeams, womenPerTeam);
-                projectService.updateProject(token, idProject, request);
-                CustomLogger.logInfo("Teams have been created");
-                return ResponseEntity.ok("La creation a bien été prise en compte");
-            } catch (IllegalArgumentException e){
-                CustomLogger.logError("Erreur lors de la création des équipes : " + e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour, les équipes n'ont pas pu être créées : " + e.getMessage());
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
+            var projectProperties = PartialUpdateProjectValidator.builder().nbTeams(nbTeams).womenPerTeam(womenPerTeam).build();
+            projectService.updateProject(token, idProject, projectProperties);
+
+            CustomLogger.logInfo("Teams have been created");
+            return ResponseEntity.ok("La creation a bien été prise en compte");
+        } catch (IllegalArgumentException e){
+            CustomLogger.logError("Erreur lors de la création des équipes : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour, les équipes n'ont pas pu être créées : " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
         }
     }
 
@@ -232,16 +237,15 @@ public class TeamController {
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllTeams(@RequestHeader("Authorization") String token) {
-        String permission = "teamDelete";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                teamService.deleteAllTeams();
-                return ResponseEntity.ok("Les équipes ont bien été supprimées");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "teamDelete"))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
+        }
+
+        try {
+            teamService.deleteAllTeams();
+            return ResponseEntity.ok("Les équipes ont bien été supprimées");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
         }
     }
 
