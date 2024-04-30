@@ -2,7 +2,7 @@ import { z } from "zod"
 
 export const CriteriaSchema = z.object({
 	nbStudents: z.number(),
-	nbWomans: z.number(),
+	nbWomens: z.number(),
 	nbBachelors: z.number(),
 	validCriteriaWoman: z.boolean(),
 	validCriteriaBachelor: z.boolean()

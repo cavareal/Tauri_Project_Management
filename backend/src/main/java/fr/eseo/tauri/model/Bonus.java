@@ -19,7 +19,7 @@ public class Bonus {
     private Integer id;
 
     @JsonProperty
-    private String value;
+    private Float value;
 
     @JsonProperty
     private String comment;

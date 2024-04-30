@@ -17,6 +17,7 @@ import { getStudentsByTeamId } from "@/services/student-service"
 import { cn } from "@/utils/style"
 
 const role = getCookie("role")
+const project = getCookie("currentProject")
 
 const props = defineProps<{
 	phase: ProjectPhase
@@ -28,7 +29,7 @@ const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()
 
 const { data: teams, refetch: refetchTeams, isLoading, isFetching } = useQuery({ queryKey: ["teams"], queryFn: async() => {
-	const teams = await getTeams()
+	const teams = await getTeams(project)
 
 	students.value = {}
 	await Promise.all(teams.map(async(team) => {

@@ -10,10 +10,6 @@ export const getTeams = async(idProject: string | null): Promise<Team[]> => {
 	console.log("idProject", idProject)
 	const response = await apiQuery({
 		route: `teams?idProject=${idProject}`,
-		/*headers: {
-			"Content-Type": "application/json",
-			Authorization: token || "null"
-		},*/
 		responseSchema: TeamSchema.array(),
 		method: "GET"
 	})
@@ -79,9 +75,9 @@ export const generateTeams = async(idProject: string | null, nbTeams: string, wo
 	}
 }
 
-export const getCriteria = async(teamId: number): Promise<Criteria> => {
+export const getCriteria = async(idProject: string | null, teamId: number): Promise<Criteria> => {
 	const response = await apiQuery({
-		route: `teams/${teamId}/criteria`,
+		route: `teams/${teamId}/criteria?idProject=${idProject}`,
 		responseSchema: CriteriaSchema,
 		method: "GET"
 	})
@@ -131,4 +127,16 @@ export const getTeamByLeaderId = async(leaderId: string | null, idProject: strin
 	}
 
 	return response.data
+}
+
+export const moveTeamStudent = async(teamId: number, studentId: number): Promise<void> => {
+	const response = await apiQuery({
+		route: `teams/${teamId}/move-student?studentId=${studentId}`,
+		responseSchema: TeamSchema,
+		method: "PUT"
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }

@@ -1,6 +1,10 @@
 import { GradeDoubleArraySchema, GradeSchema, type Grade } from "@/types/grade"
 import { apiQuery } from "@/utils/api"
 import { z } from "zod"
+import type { GradeType } from "@/types/grade-type"
+import type { User } from "@/types/user"
+import type { Student } from "@/types/student"
+import type { Team } from "@/types/team"
 
 export const getAllGrades = async(): Promise<Grade[]> => {
 	const response = await apiQuery({

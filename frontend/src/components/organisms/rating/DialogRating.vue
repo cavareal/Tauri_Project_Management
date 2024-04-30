@@ -16,6 +16,7 @@ const userId = getCookie("user")
 const selectedTeam = ref("")
 let note = ref("")
 const token = getCookie("token")
+const project = getCookie("currentProject")
 
 const props = defineProps<{
 	title: string,
@@ -25,7 +26,7 @@ const props = defineProps<{
 
 const evaluations: Ref<Record<string, { team: string, gradeType : string,  grade: number }[]>> = ref({})
 
-const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
+const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: () => getTeams(project) })
 
 const addEvaluation = () => {
 	if (!evaluations.value[selectedTeam.value]) {

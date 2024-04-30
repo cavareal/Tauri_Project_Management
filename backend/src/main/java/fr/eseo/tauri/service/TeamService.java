@@ -10,7 +10,6 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -243,17 +242,17 @@ public class TeamService {
      * @param id The ID of the team.
      * @return The number of women in the team if the team exists, otherwise 0.
      */
-    public Integer getNbWomanByTeamId(Integer id){
+    public Integer getNbWomenByTeamId(Integer id){
         Optional<Team> teamOptional = teamRepository.findById(id);
         if (teamOptional.isPresent()) {
             List<Student> students = studentRepository.findByTeam(teamOptional.get());
-            Integer nbWoman = 0;
+            Integer nbWomen = 0;
             for (Student student : students) {
                 if (student.gender() == Gender.WOMAN) {
-                    nbWoman++;
+                    nbWomen++;
                 }
             }
-            return nbWoman;
+            return nbWomen;
         } else {
             return null; // for example
         }

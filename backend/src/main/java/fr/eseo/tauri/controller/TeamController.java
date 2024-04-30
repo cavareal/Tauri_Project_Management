@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -119,6 +118,8 @@ public class TeamController {
 
             try {
                 teamService.generateTeams(idProject, nbTeams, womenPerTeam);
+                projectService.updateNbWomen(token, idProject, womenPerTeam);
+                projectService.updateTeamsNumber(token, idProject, nbTeams);
                 CustomLogger.logInfo("Teams have been created");
                 return ResponseEntity.ok("La creation a bien été prise en compte");
             } catch (IllegalArgumentException e){
@@ -140,12 +141,8 @@ public class TeamController {
     @GetMapping()
     public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token, @RequestParam("idProject") Integer idProject) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
-            //try {
                 List<Team> teams = teamService.getAllTeams(idProject);
                 return ResponseEntity.ok(teams);
-            /*} catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }*/
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
@@ -186,15 +183,16 @@ public class TeamController {
     }
 
     @GetMapping("/{teamId}/criteria")
-    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer teamId) {
+    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer teamId, @RequestParam("idProject") Integer idProject) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, READ_CRITERIA))) {
             try {
-                Integer nbWoman = teamService.getNbWomanByTeamId(teamId);
+                Integer nbWomen = teamService.getNbWomenByTeamId(teamId);
                 Integer nbBachelor = teamService.getNbBachelorByTeamId(teamId);
                 Integer nbStudents = teamService.getNbStudentsByTeamId(teamId);
-                Criteria criteria = getCriteria(token, teamId,nbStudents, nbWoman, nbBachelor);
+                Criteria criteria = getCriteria(token, idProject, nbStudents, nbWomen, nbBachelor);
                 return ResponseEntity.ok(criteria);
             } catch (Exception e) {
+                CustomLogger.logInfo("Erreur au critère : " + e.getClass() + "" + e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {
@@ -203,8 +201,8 @@ public class TeamController {
     }
 
     @NotNull
-    private Criteria getCriteria(String token, Integer teamId, Integer nbStudents, Integer nbWomen, Integer nbBachelor) {
-        String womenPerTeam = projectService.getNbWomen(token, teamId);
+    private Criteria getCriteria(String token, Integer idProject, Integer nbStudents, Integer nbWomen, Integer nbBachelor) {
+        String womenPerTeam = projectService.getNbWomen(token, idProject);
         boolean validateWoman = false;
         boolean validateBachelor = false;
         if (nbStudents > 0 && (nbWomen * 100) / nbStudents >= Integer.valueOf(womenPerTeam)) {
@@ -250,16 +248,12 @@ public class TeamController {
 
     @GetMapping("/leader/{leaderId}")
     public ResponseEntity<Team> getTeamByLeaderId(@RequestHeader("Authorization") String token, @PathVariable Integer leaderId, @RequestParam("idProject") Integer idProject) {
-        //if (Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))){
-            //try {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))){
                 Team team = teamService.getTeamByLeaderId(leaderId, idProject);
                 return ResponseEntity.ok(team);
-            /*} catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }*/
-        /*} else {
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }*/
+        }
     }
 
     @PutMapping("/{teamId}/move-student")

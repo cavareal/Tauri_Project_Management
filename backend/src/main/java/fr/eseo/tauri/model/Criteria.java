@@ -12,7 +12,7 @@ public class Criteria {
     private Integer nbStudents;
 
     @JsonProperty
-    private Integer nbWomans;
+    private Integer nbWomens;
 
     @JsonProperty
     private Integer nbBachelors;
@@ -23,8 +23,8 @@ public class Criteria {
     @JsonProperty
     private boolean validCriteriaBachelor;
 
-    public Criteria(Integer nbWoman, Integer nbBachelor, Integer nbStudents, Boolean validateWoman, Boolean validateBachelor) {
-        this.nbWomans = nbWoman;
+    public Criteria(Integer nbWomen, Integer nbBachelor, Integer nbStudents, Boolean validateWoman, Boolean validateBachelor) {
+        this.nbWomens = nbWomen;
         this.nbBachelors = nbBachelor;
         this.nbStudents = nbStudents;
         this.validCriteriaWoman = validateWoman;

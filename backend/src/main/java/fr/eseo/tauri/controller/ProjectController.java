@@ -159,7 +159,7 @@ public class ProjectController {
      * @return a response entity with a success message or an error message
      */
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateProjec(@RequestHeader("Authorization") String token, @PathVariable Integer id,  @RequestBody Map<String, String> request) {
+    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id,  @RequestBody Map<String, String> request) {
         projectService.updateProjectPhase(token, id, ProjectPhase.valueOf(request.get("phase")));
         return ResponseEntity.ok("The project phase has been updated");
     }
