@@ -1,5 +1,7 @@
 package fr.eseo.tauri.service;
 
+import com.opencsv.CSVWriter;
+import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
@@ -14,10 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.io.StringWriter;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -360,6 +360,241 @@ class StudentServiceTest {
 
         verify(studentRepository, times(1)).deleteAll();
         verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes();
+    }
+
+    @Test
+    void testGetStudents() {
+        Student student1 = new Student();
+        Student student2 = new Student();
+        when(studentRepository.findAll()).thenReturn(Arrays.asList(student1, student2));
+
+        List<Student> students = studentService.getStudents();
+
+        assertEquals(2, students.size());
+    }
+
+    @Test
+    void testGetNumberWomen() {
+        when(studentRepository.countWomen()).thenReturn(10);
+
+        int count = studentService.getNumberWomen();
+
+        assertEquals(10, count);
+    }
+
+    @Test
+    void testGetNumberStudents() {
+        when(studentRepository.countTotal()).thenReturn(20);
+
+        int count = studentService.getNumberStudents();
+
+        assertEquals(20, count);
+    }
+
+    @Test
+    void testGetNumberBachelor() {
+        when(studentRepository.countBachelor()).thenReturn(5);
+
+        int count = studentService.getNumberBachelor();
+
+        assertEquals(5, count);
+    }
+
+    @Test
+    void testWriteSummaryData() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        studentService.writeSummaryData(csvWriter, 0);
+
+        String expectedCsv = """
+                "","","",""
+                "","","",""
+                "","","",""
+                "","","",""
+                "","Nombre F","0",""
+                "","Nombre M","0",""
+                "","Nombre B","","0"
+                """;
+        String actualCsv = stringWriter.toString();
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    void testWriteEmptyRows() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        studentService.writeEmptyRows(csvWriter, 2, 2);
+
+        String expectedCsv = """
+                "",""
+                "",""
+                """;
+        String actualCsv = stringWriter.toString();
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    void testWriteCountRow() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        studentService.writeCountRow(csvWriter, "Nombre F", 2, 3);
+
+        String expectedCsv = "\"\",\"Nombre F\",\"2\"\n";
+        String actualCsv = stringWriter.toString();
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    void writeStudentData_writesCorrectDataForSingleStudent() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        Student student = new Student();
+        student.name("John Doe");
+        student.gender(Gender.MAN);
+        student.bachelor(true);
+
+        GradeType gradeType = new GradeType();
+        gradeType.name("GradeType1");
+
+        when(gradeService.getGradeByStudentAndGradeType(student, gradeType)).thenReturn(15.0f);
+
+        studentService.writeStudentData(csvWriter, List.of(student), List.of(gradeType));
+
+        String expectedCsv = "\"1\",\"John Doe\",\"M\",\"B\",\"15.0\"\n";
+        String actualCsv = stringWriter.toString();
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    void writeStudentData_writesCorrectDataForMultipleStudents() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        Student student1 = new Student();
+        student1.name("John Doe");
+        student1.gender(Gender.MAN);
+        student1.bachelor(true);
+
+        Student student2 = new Student();
+        student2.name("Jane Doe");
+        student2.gender(Gender.WOMAN);
+        student2.bachelor(false);
+
+        GradeType gradeType = new GradeType();
+        gradeType.name("GradeType1");
+
+        when(gradeService.getGradeByStudentAndGradeType(student1, gradeType)).thenReturn(15.0f);
+        when(gradeService.getGradeByStudentAndGradeType(student2, gradeType)).thenReturn(14.0f);
+
+        studentService.writeStudentData(csvWriter, Arrays.asList(student1, student2), List.of(gradeType));
+
+        String expectedCsv = """
+                "1","John Doe","M","B","15.0"
+                "2","Jane Doe","F","","14.0"
+                """;
+        String actualCsv = stringWriter.toString();
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    void writeStudentData_handlesNullGrade() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        Student student = new Student();
+        student.name("John Doe");
+        student.gender(Gender.MAN);
+        student.bachelor(true);
+
+        GradeType gradeType = new GradeType();
+        gradeType.name("GradeType1");
+
+        when(gradeService.getGradeByStudentAndGradeType(student, gradeType)).thenReturn(null);
+
+        studentService.writeStudentData(csvWriter, List.of(student), List.of(gradeType));
+
+        String expectedCsv = "\"1\",\"John Doe\",\"M\",\"B\",\"\"\n";
+        String actualCsv = stringWriter.toString();
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    @DisplayName("writeHeaders correctly handles empty grade types")
+    void writeHeaders_correctlyHandlesEmptyGradeTypes() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        List<GradeType> importedGrades = new ArrayList<>();
+
+        studentService.writeHeaders(csvWriter, importedGrades);
+
+        String expectedCsv = """
+                "","","",""
+                "","","sexe M / F",""
+                """;
+        String actualCsv = stringWriter.toString();
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    @DisplayName("writeHeaders correctly skips AVERAGE grade type")
+    void writeHeaders_correctlySkipsAverageGradeType() {
+        StringWriter stringWriter = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(stringWriter);
+
+        GradeType gradeType1 = new GradeType();
+        gradeType1.name("GradeType1");
+        gradeType1.factor(1.0f);
+
+        GradeType gradeType2 = new GradeType();
+        gradeType2.name("AVERAGE");
+        gradeType2.factor(2.0f);
+
+        List<GradeType> importedGrades = Arrays.asList(gradeType1, gradeType2);
+
+        studentService.writeHeaders(csvWriter, importedGrades);
+
+        String expectedCsv = """
+                "","","","","","1.0"
+                "","","sexe M / F","","","GradeType1"
+                """;
+        String actualCsv = stringWriter.toString();
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    @DisplayName("createStudentsCSV returns valid CSV for empty student list and grade types")
+    void createStudentsCSV_returnsValidCSVForEmptyStudentListAndGradeTypes() {
+        when(gradeTypeService.getImportedGradeTypes()).thenReturn(Collections.emptyList());
+        when(studentService.getStudents()).thenReturn(Collections.emptyList());
+
+        byte[] csv = studentService.createStudentsCSV();
+
+        String expectedCsv = """
+                "","","",""
+                "","","sexe M / F",""
+                "","","",""
+                "","","",""
+                "","","",""
+                "","","",""
+                "","Nombre F","0",""
+                "","Nombre M","0",""
+                "","Nombre B","","0"
+                """;
+
+        assertEquals(expectedCsv, new String(csv));
     }
 
 }

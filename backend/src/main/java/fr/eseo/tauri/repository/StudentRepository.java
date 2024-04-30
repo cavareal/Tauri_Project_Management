@@ -27,4 +27,13 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     // TODO: change the average grade name to the correct one
     @Query("SELECT s FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gt.name = 'AVERAGE' AND s.gender = ?1 ORDER BY s.bachelor, gr.value DESC")
     List<Student> findByGenderOrderByBachelorAndImportedAvgDesc(Gender gender);
+
+    @Query("SELECT COUNT(s) FROM Student s WHERE s.gender = 'WOMAN'")
+    int countWomen();
+
+    @Query("SELECT COUNT(s) FROM Student s")
+    int countTotal();
+
+    @Query("SELECT COUNT(s) FROM Student s WHERE s.bachelor = true")
+    int countBachelor();
 }
