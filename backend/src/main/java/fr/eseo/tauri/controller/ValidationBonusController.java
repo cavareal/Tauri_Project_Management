@@ -1,50 +1,62 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.ValidationBonus;
-import fr.eseo.tauri.repository.ValidationBonusRepository;
+import fr.eseo.tauri.model.id_class.ValidationBonusId;
+import fr.eseo.tauri.service.ValidationBonusService;
+import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/validation_bonuses")
+@RequiredArgsConstructor
+@RequestMapping("/api/validation-bonuses")
 @Tag(name = "validation-bonuses")
 public class ValidationBonusController {
 
-    private final ValidationBonusRepository validationBonusRepository;
+    private final ValidationBonusService validationBonusService;
 
-    @Autowired
-    public ValidationBonusController(ValidationBonusRepository validationBonusRepository) {
-        this.validationBonusRepository = validationBonusRepository;
-    }
-    @PostMapping("/")
-    public ValidationBonus addValidationBonus(@RequestBody ValidationBonus validationBonus) {
-        return validationBonusRepository.save(validationBonus);
+    @GetMapping
+    public ResponseEntity<List<ValidationBonus>> getAllValidationBonuses(@RequestHeader("Authorization") String token) {
+        List<ValidationBonus> validationBonuses = validationBonusService.getAllValidationBonuses(token);
+        return ResponseEntity.ok(validationBonuses);
     }
 
-    @GetMapping("/")
-    public Iterable<ValidationBonus> getAllValidationBonuses() {
-        return validationBonusRepository.findAll();
+    /*@GetMapping("/{id}")
+    public ResponseEntity<ValidationBonus> getValidationBonusById(@RequestHeader("Authorization") String token, @PathVariable ValidationBonusId id) {
+        /*ValidationBonus validationBonus = validationBonusService.getValidationBonusById(token, id);
+        return ResponseEntity.ok(validationBonus);
+    }*/
+
+    @PostMapping
+    public ResponseEntity<String> addValidationBonuses(@RequestHeader("Authorization") String token, @RequestBody List<ValidationBonus> validationBonuses) {
+        validationBonusService.addValidationBonuses(token, validationBonuses);
+        CustomLogger.logInfo("The validation bonus(es) have been added");
+        return ResponseEntity.ok("The validation bonus(es) have been added");
     }
 
-    @GetMapping("/{id}")
-    public ValidationBonus getValidationBonusById(@PathVariable Integer id) {
-        return validationBonusRepository.findById(id).orElse(null);
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateValidationBonus(@RequestHeader("Authorization") String token, @PathVariable ValidationBonusId id, @RequestBody Map<String, Object> request) {
+        validationBonusService.updateValidationBonus(token, id, request);
+        CustomLogger.logInfo("The validation bonus has been updated");
+        return ResponseEntity.ok("The validation bonus has been updated");
     }
 
-    @PutMapping("/{id}")
-    public ValidationBonus updateValidationBonus(@PathVariable Integer id, @RequestBody ValidationBonus validationBonusDetails) {
-        ValidationBonus validationBonus = validationBonusRepository.findById(id).orElse(null);
-        if (validationBonus != null) {
-            validationBonus.confirmed(validationBonusDetails.confirmed());
-            return validationBonusRepository.save(validationBonus);
-        }
-        return null;
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllValidationBonuses(@RequestHeader("Authorization") String token) {
+        validationBonusService.deleteAllValidationBonuses(token);
+        CustomLogger.logInfo("All the validation bonuses have been deleted");
+        return ResponseEntity.ok("All the validation bonuses have been deleted");
     }
 
     @DeleteMapping("/{id}")
-    public String deleteValidationBonus(@PathVariable Integer id) {
-        validationBonusRepository.deleteById(id);
-        return "ValidationBonus deleted";
+    public ResponseEntity<String> deleteValidationBonus(@RequestHeader("Authorization") String token, @PathVariable ValidationBonusId id) {
+        validationBonusService.deleteValidationBonus(token, id);
+        CustomLogger.logInfo("The validation bonus has been deleted");
+        return ResponseEntity.ok("The validation bonus has been deleted");
     }
 }

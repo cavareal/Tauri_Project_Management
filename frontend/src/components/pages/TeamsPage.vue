@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { getQuantityOfStudents } from "@/services/student-service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import { getTeams } from "@/services/team-service"
+import { getProjectById } from "@/services/project-service"
 import { getCurrentPhase } from "@/services/project-service"
 import { Header } from "@/components/molecules/header"
 import type { RoleType } from "@/types/role"
@@ -18,11 +19,19 @@ import { useQuery } from "@tanstack/vue-query"
 
 const token = getCookie("token")
 const role = getCookie<RoleType>("role")
-const project = getCookie("currentProject")
+const currentProject = getCookie("currentProject")
 
-const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({ queryKey: ["currentPhase"], queryFn: () => getCurrentPhase(project) })
+//Ici on doit récupérer la phase courante, l'idéal serait de passer par la raquête getProjectById et de récupérer la phase à partir du résultat de celle ci
+
+/*const { data: project, refetch: refetchCurrentPhase } = useQuery({ queryKey: ["project"], queryFn: () => getProjectById(currentProject) })
+const currentPhase = project.value.phase
+/*const { data: project } = useQuery({ queryKey: ["project"], queryFn: () => getProjectById(currentProject) })
+const { data: currentPhase, refetch: refetchCurrentPhase } = project.value ? useQuery({
+	queryKey: ["current-phase"],
+	queryFn: () => project.value.phase
+}) : { data: undefined, refetch: () => {} }*/
 const { data: nbStudents } = useQuery({ queryKey: ["nbStudents"], queryFn: getQuantityOfStudents })
-const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams(project)).length })
+const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams(currentProject)).length })
 
 const displayButtons = computed(() => role === "PROJECT_LEADER" && nbStudents.value && nbStudents.value > 0
 	&& nbTeams.value && nbTeams.value > 0 && currentPhase.value && currentPhase.value === "COMPOSING")

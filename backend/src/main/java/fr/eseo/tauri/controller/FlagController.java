@@ -1,11 +1,15 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Flag;
-import fr.eseo.tauri.repository.FlagRepository;
+import fr.eseo.tauri.service.FlagService;
+import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -13,38 +17,46 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "flags")
 public class FlagController {
 
-    private final FlagRepository flagRepository;
+    private final FlagService flagService;
 
-    @PostMapping("/")
-    public Flag addFlag(@RequestBody Flag flag) {
-        return flagRepository.save(flag);
-    }
-
-    @GetMapping("/")
-    public Iterable<Flag> getAllFlags() {
-        return flagRepository.findAll();
+    @GetMapping
+    public ResponseEntity<List<Flag>> getAllFlags(@RequestHeader("Authorization") String token) {
+        List<Flag> flags = flagService.getAllFlags(token);
+        return ResponseEntity.ok(flags);
     }
 
     @GetMapping("/{id}")
-    public Flag getFlagById(@PathVariable Integer id) {
-        return flagRepository.findById(id).orElse(null);
+    public ResponseEntity<Flag> getFlagById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        Flag flag = flagService.getFlagById(token, id);
+        return ResponseEntity.ok(flag);
     }
 
-    @PutMapping("/{id}")
-    public Flag updateFlag(@PathVariable Integer id, @RequestBody Flag flagDetails) {
-        Flag flag = flagRepository.findById(id).orElse(null);
-        if (flag != null) {
-            flag.description(flagDetails.description());
-            flag.type(flagDetails.type());
-            return flagRepository.save(flag);
-        }
-        return null;
+    @PostMapping
+    public ResponseEntity<String> addFlags(@RequestHeader("Authorization") String token, @RequestBody List<Flag> flags) {
+        flagService.addFlags(token, flags);
+        CustomLogger.logInfo("The flag(s) have been added");
+        return ResponseEntity.ok("The flag(s) have been added");
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateFlag(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
+        flagService.updateFlag(token, id, request);
+        CustomLogger.logInfo("The flag has been updated");
+        return ResponseEntity.ok("The flag has been updated");
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllFlags(@RequestHeader("Authorization") String token) {
+        flagService.deleteAllFlags(token);
+        CustomLogger.logInfo("All the flags have been deleted");
+        return ResponseEntity.ok("All the flags have been deleted");
     }
 
     @DeleteMapping("/{id}")
-    public String deleteFlag(@PathVariable Integer id) {
-        flagRepository.deleteById(id);
-        return "Flag deleted";
+    public ResponseEntity<String> deleteFlag(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        flagService.deleteFlag(token, id);
+        CustomLogger.logInfo("The flag has been deleted");
+        return ResponseEntity.ok("The flag has been deleted");
     }
 }
 

@@ -1,51 +1,62 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.ValidationFlag;
-import fr.eseo.tauri.repository.ValidationFlagRepository;
+import fr.eseo.tauri.model.id_class.ValidationFlagId;
+import fr.eseo.tauri.service.ValidationFlagService;
+import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/validation_flags")
+@RequiredArgsConstructor
+@RequestMapping("/api/validation-flags")
 @Tag(name = "validation-flags")
 public class ValidationFlagController {
 
-    private final ValidationFlagRepository validationFlagRepository;
+    private final ValidationFlagService validationFlagService;
 
-    @Autowired
-    public ValidationFlagController(ValidationFlagRepository validationFlagRepository) {
-        this.validationFlagRepository = validationFlagRepository;
+    @GetMapping
+    public ResponseEntity<List<ValidationFlag>> getAllValidationFlags(@RequestHeader("Authorization") String token) {
+        List<ValidationFlag> validationFlags = validationFlagService.getAllValidationFlags(token);
+        return ResponseEntity.ok(validationFlags);
     }
 
-    @PostMapping("/")
-    public ValidationFlag addValidationFlag(@RequestBody ValidationFlag validationFlag) {
-        return validationFlagRepository.save(validationFlag);
+   /* @GetMapping("/{id}")
+    public ResponseEntity<ValidationFlag> getValidationFlagById(@RequestHeader("Authorization") String token, @PathVariable ValidationFlagId id) {
+        /*ValidationFlag validationFlag = validationFlagService.getValidationFlagById(token, id);
+        return ResponseEntity.ok(validationFlag);
+    }*/
+
+    @PostMapping
+    public ResponseEntity<String> addValidationFlags(@RequestHeader("Authorization") String token, @RequestBody List<ValidationFlag> validationFlags) {
+        validationFlagService.addValidationFlags(token, validationFlags);
+        CustomLogger.logInfo("The validation flag(s) have been added");
+        return ResponseEntity.ok("The validation flag(s) have been added");
     }
 
-    @GetMapping("/")
-    public Iterable<ValidationFlag> getAllValidationFlags() {
-        return validationFlagRepository.findAll();
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateValidationFlag(@RequestHeader("Authorization") String token, @PathVariable ValidationFlagId id, @RequestBody Map<String, Object> request) {
+        validationFlagService.updateValidationFlag(token, id, request);
+        CustomLogger.logInfo("The validation flag has been updated");
+        return ResponseEntity.ok("The validation flag has been updated");
     }
 
-    @GetMapping("/{id}")
-    public ValidationFlag getValidationFlagById(@PathVariable Integer id) {
-        return validationFlagRepository.findById(id).orElse(null);
-    }
-
-    @PutMapping("/{id}")
-    public ValidationFlag updateValidationFlag(@PathVariable Integer id, @RequestBody ValidationFlag validationFlagDetails) {
-        ValidationFlag validationFlag = validationFlagRepository.findById(id).orElse(null);
-        if (validationFlag != null) {
-            validationFlag.confirmed(validationFlagDetails.confirmed());
-            return validationFlagRepository.save(validationFlag);
-        }
-        return null;
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllValidationFlags(@RequestHeader("Authorization") String token) {
+        validationFlagService.deleteAllValidationFlags(token);
+        CustomLogger.logInfo("All the validation flags have been deleted");
+        return ResponseEntity.ok("All the validation flags have been deleted");
     }
 
     @DeleteMapping("/{id}")
-    public String deleteValidationFlag(@PathVariable Integer id) {
-        validationFlagRepository.deleteById(id);
-        return "ValidationFlag deleted";
+    public ResponseEntity<String> deleteValidationFlag(@RequestHeader("Authorization") String token, @PathVariable ValidationFlagId id) {
+        validationFlagService.deleteValidationFlag(token, id);
+        CustomLogger.logInfo("The validation flag has been deleted");
+        return ResponseEntity.ok("The validation flag has been deleted");
     }
 }

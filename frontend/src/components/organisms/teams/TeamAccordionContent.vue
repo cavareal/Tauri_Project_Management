@@ -15,14 +15,14 @@ import type { Student } from "@/types/student"
 import { GripVertical } from "lucide-vue-next"
 import { getCookie } from "@/utils/cookie"
 
-const project = getCookie("currentProject")
+const currentProject = getCookie("currentProject")
 const props = defineProps<{
 	teamId: number
 	phase: ProjectPhase
 	students: Student[] | null
 }>()
 
-const { data: criteria } = useQuery({ queryKey: ["criteria", props.teamId], queryFn: () => getCriteria(project, props.teamId) })
+const { data: criteria } = useQuery({ queryKey: ["criteria", props.teamId], queryFn: () => getCriteria(currentProject, props.teamId) })
 const { data: average } = useQuery({ queryKey: ["average", props.teamId], queryFn: () => getTeamAverage(props.teamId) })
 
 const rowClass = cn("py-2 h-auto")

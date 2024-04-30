@@ -22,7 +22,7 @@ public class Comment {
     private String content;
 
     @JsonProperty
-    private String feedback;
+    private Boolean feedback;
 
     @ManyToOne
     @JoinColumn(name = "team_id")

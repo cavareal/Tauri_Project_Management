@@ -4,7 +4,6 @@ import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
-import { setCurrentPhase } from "@/services/project-service"
 import { updateProject } from "@/services/project-service"
 import { useMutation } from "@tanstack/vue-query"
 import { ref } from "vue"
@@ -12,10 +11,10 @@ import { getCookie } from "@/utils/cookie"
 
 const emits = defineEmits(["prepublish:teams"])
 const open = ref(false)
-const project = getCookie("currentProject")
+const currentProject = getCookie("currentProject")
 
 const { mutate, error, isPending } = useMutation({ mutationKey: ["prepublish-teams"], mutationFn: async() => {
-	await updateProject(project, null, null, "PREPUBLISHED")
+	await updateProject(currentProject, null, null, "PREPUBLISHED")
 		.then(() => open.value = false)
 		.then(() => emits("prepublish:teams"))
 } })

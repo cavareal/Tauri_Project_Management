@@ -1,51 +1,61 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Sprint;
-import fr.eseo.tauri.repository.SprintRepository;
+import fr.eseo.tauri.service.SprintService;
+import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/sprints")
 @Tag(name = "sprints")
 public class SprintController {
 
-    private final SprintRepository sprintRepository;
+    private final SprintService sprintService;
 
-    public SprintController(SprintRepository sprintRepository) {
-        this.sprintRepository = sprintRepository;
-    }
-
-    @PostMapping("/add")
-    public Sprint addSprint(@RequestBody Sprint sprint) {
-        return sprintRepository.save(sprint);
-    }
-
-    @GetMapping("/all")
-    public Iterable<Sprint> getAllSprints() {
-        return sprintRepository.findAll();
+    @GetMapping
+    public ResponseEntity<List<Sprint>> getAllSprints(@RequestHeader("Authorization") String token) {
+        List<Sprint> sprints = sprintService.getAllSprints(token);
+        return ResponseEntity.ok(sprints);
     }
 
     @GetMapping("/{id}")
-    public Sprint getSprintById(@PathVariable Integer id) {
-        return sprintRepository.findById(id).orElse(null);
+    public ResponseEntity<Sprint> getSprintById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        Sprint sprint = sprintService.getSprintById(token, id);
+        return ResponseEntity.ok(sprint);
     }
 
-    @PutMapping("/update/{id}")
-    public Sprint updateSprint(@PathVariable Integer id, @RequestBody Sprint sprintDetails) {
-        Sprint sprint = sprintRepository.findById(id).orElse(null);
-        if (sprint != null) {
-            sprint.startDate(sprintDetails.startDate());
-            sprint.endDate(sprintDetails.endDate());
-            sprint.endType(sprintDetails.endType());
-            return sprintRepository.save(sprint);
-        }
-        return null;
+    @PostMapping
+    public ResponseEntity<String> addSprints(@RequestHeader("Authorization") String token, @RequestBody List<Sprint> sprints) {
+        sprintService.addSprints(token, sprints);
+        CustomLogger.logInfo("The sprint(s) have been added");
+        return ResponseEntity.ok("The sprint(s) have been added");
     }
 
-    @DeleteMapping("/delete/{id}")
-    public String deleteSprint(@PathVariable Integer id) {
-        sprintRepository.deleteById(id);
-        return "Sprint deleted";
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
+        sprintService.updateSprint(token, id, request);
+        CustomLogger.logInfo("The sprint has been updated");
+        return ResponseEntity.ok("The sprint has been updated");
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllSprints(@RequestHeader("Authorization") String token) {
+        sprintService.deleteAllSprints(token);
+        CustomLogger.logInfo("All the sprints have been deleted");
+        return ResponseEntity.ok("All the sprints have been deleted");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        sprintService.deleteSprint(token, id);
+        CustomLogger.logInfo("The sprint has been deleted");
+        return ResponseEntity.ok("The sprint has been deleted");
     }
 }

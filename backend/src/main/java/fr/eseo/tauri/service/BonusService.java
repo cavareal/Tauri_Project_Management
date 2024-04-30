@@ -32,6 +32,14 @@ public class BonusService {
         }
     }
 
+    public Bonus getBonusById(String token, Integer id) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, "readBonus"))) {
+            return bonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("bonus", id));
+        } else {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+    }
+
 
     public void addBonuses(String token, List<Bonus> bonuses) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, "addBonus"))) {
@@ -44,14 +52,6 @@ public class BonusService {
                     bonusesNumber++;
                 }
             }
-        } else {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-    }
-
-    public Bonus getBonusById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readBonus"))) {
-            return bonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("bonus", id));
         } else {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }

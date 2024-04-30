@@ -14,7 +14,7 @@ import { getCookie } from "@/utils/cookie"
 
 const nbTeams = ref("6")
 const womenPerTeam = ref("1")
-const project = getCookie("currentProject")
+const currentProject = getCookie("currentProject")
 
 const open = ref(false)
 
@@ -25,7 +25,7 @@ defineProps<{
 }>()
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["generate-teams"], mutationFn: async() => {
-	await generateTeams(project, nbTeams.value, womenPerTeam.value)
+	await generateTeams(currentProject, nbTeams.value, womenPerTeam.value)
 		.then(() => open.value = false)
 		.then(() => emits("generate:teams"))
 } })

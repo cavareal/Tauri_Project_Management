@@ -19,7 +19,7 @@ import { Loader2 } from "lucide-vue-next"
 const nbSprints = ref("6")
 const errorMessage = ref("")
 const token = getCookie("token")
-const project = getCookie("currentProject")
+const currentProject = getCookie("currentProject")
 
 // État pour contrôler l'affichage des boutons
 const buttonsState = reactive({
@@ -37,7 +37,7 @@ const requestOptionsStudents = {
 }
 const fetchNumberSprints = async() => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + project, requestOptionsStudents)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + currentProject, requestOptionsStudents)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}
@@ -65,7 +65,7 @@ const updateNbSprints = async() => {
 	}
 
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + project, requestOptions)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + currentProject, requestOptions)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}

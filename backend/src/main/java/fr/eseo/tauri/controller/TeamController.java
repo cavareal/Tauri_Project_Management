@@ -108,18 +108,17 @@ public class TeamController {
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
     @PostMapping()
-    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestParam ("idProject") String idP, @RequestBody Map<String, String> request) {
+    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestParam ("idProject") String idP, @RequestBody Map<String, Object> request) {
 
         Integer idProject = Integer.valueOf(idP);
-        Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
-        Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
+        Integer nbTeams = (Integer) request.get("nbTeams");
+        Integer womenPerTeam = (Integer) request.get("womenPerTeam");
 
         if (Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
 
             try {
                 teamService.generateTeams(idProject, nbTeams, womenPerTeam);
-                projectService.updateNbWomen(token, idProject, womenPerTeam);
-                projectService.updateTeamsNumber(token, idProject, nbTeams);
+                projectService.updateProject(token, idProject, request);
                 CustomLogger.logInfo("Teams have been created");
                 return ResponseEntity.ok("La creation a bien été prise en compte");
             } catch (IllegalArgumentException e){
@@ -202,10 +201,10 @@ public class TeamController {
 
     @NotNull
     private Criteria getCriteria(String token, Integer idProject, Integer nbStudents, Integer nbWomen, Integer nbBachelor) {
-        String womenPerTeam = projectService.getNbWomen(token, idProject);
+        Integer womenPerTeam = projectService.getProjectById(token, idProject).nbWomen();
         boolean validateWoman = false;
         boolean validateBachelor = false;
-        if (nbStudents > 0 && (nbWomen * 100) / nbStudents >= Integer.valueOf(womenPerTeam)) {
+        if (nbStudents > 0 && (nbWomen * 100) / nbStudents >= womenPerTeam) {
             validateWoman = true;
         }
         if (nbBachelor >= 1) {

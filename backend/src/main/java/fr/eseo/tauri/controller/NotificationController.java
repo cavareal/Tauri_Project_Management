@@ -1,10 +1,15 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Notification;
-import fr.eseo.tauri.repository.NotificationRepository;
+import fr.eseo.tauri.service.NotificationService;
+import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -12,39 +17,45 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "notifications")
 public class NotificationController {
 
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
-    @PostMapping("/")
-    public Notification addNotification(@RequestBody Notification notification) {
-        return notificationRepository.save(notification);
-    }
-
-    @GetMapping("/")
-    public Iterable<Notification> getAllNotifications() {
-        return notificationRepository.findAll();
+    @GetMapping
+    public ResponseEntity<List<Notification>> getAllNotifications(@RequestHeader("Authorization") String token) {
+        List<Notification> notifications = notificationService.getAllNotifications(token);
+        return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/{id}")
-    public Notification getNotificationById(@PathVariable Integer id) {
-        return notificationRepository.findById(id).orElse(null);
+    public ResponseEntity<Notification> getNotificationById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        Notification notification = notificationService.getNotificationById(token, id);
+        return ResponseEntity.ok(notification);
     }
 
-    @PutMapping("/{id}")
-    public Notification updateNotification(@PathVariable Integer id, @RequestBody Notification notificationDetails) {
-        Notification notification = notificationRepository.findById(id).orElse(null);
-        if (notification != null) {
-            notification.message(notificationDetails.message());
-            notification.isRead(notificationDetails.isRead());
-            notification.type(notificationDetails.type());
-            // Si vous avez un champ User, vous pouvez également mettre à jour ici
-            return notificationRepository.save(notification);
-        }
-        return null;
+    @PostMapping
+    public ResponseEntity<String> addNotifications(@RequestHeader("Authorization") String token, @RequestBody List<Notification> notifications) {
+        notificationService.addNotifications(token, notifications);
+        CustomLogger.logInfo("The notification(s) have been added");
+        return ResponseEntity.ok("The notification(s) have been added");
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
+        notificationService.updateNotification(token, id, request);
+        CustomLogger.logInfo("The notification has been updated");
+        return ResponseEntity.ok("The notification has been updated");
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllNotifications(@RequestHeader("Authorization") String token) {
+        notificationService.deleteAllNotifications(token);
+        CustomLogger.logInfo("All the notifications have been deleted");
+        return ResponseEntity.ok("All the notifications have been deleted");
     }
 
     @DeleteMapping("/{id}")
-    public String deleteNotification(@PathVariable Integer id) {
-        notificationRepository.deleteById(id);
-        return "Notification deleted";
+    public ResponseEntity<String> deleteNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        notificationService.deleteNotification(token, id);
+        CustomLogger.logInfo("The notification has been deleted");
+        return ResponseEntity.ok("The notification has been deleted");
     }
 }

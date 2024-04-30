@@ -25,17 +25,17 @@ public class BonusController {
         return ResponseEntity.ok(bonuses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Bonus> getBonusById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        Bonus bonus = bonusService .getBonusById(token, id);
+        return ResponseEntity.ok(bonus);
+    }
+
     @PostMapping
     public ResponseEntity<String> addBonuses(@RequestHeader("Authorization") String token, @RequestBody List<Bonus> bonuses) {
         bonusService.addBonuses(token, bonuses);
         CustomLogger.logInfo("The bonus(es) have been added");
         return ResponseEntity.ok("The bonus(es) have been added");
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Bonus> getBonusById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Bonus bonus = bonusService .getBonusById(token, id);
-        return ResponseEntity.ok(bonus);
     }
 
     @PatchMapping("/{id}")

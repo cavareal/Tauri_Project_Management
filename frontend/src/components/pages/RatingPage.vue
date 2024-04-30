@@ -18,7 +18,7 @@ import {
 
 const token = getCookie("token")
 const role = getCookie("role")
-const project = getCookie("currentProject")
+const currentProject = getCookie("currentProject")
 let nbSprints = ref("3")
 
 /* GET number of sprints of this project */
@@ -31,7 +31,7 @@ const requestOptionsStudents = {
 }
 const fetchNumberSprints = async() => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + project, requestOptionsStudents)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + currentProject, requestOptionsStudents)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}
