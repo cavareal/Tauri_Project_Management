@@ -17,12 +17,6 @@ export type ApiQueryResponse<T> = {
     error: string
 }
 
-export type UploadFileRequest = {
-	file: File
-	route: string
-}
-
-
 export type QueryAndValidateRequest<T> = {
 	route: string
 	params?: Record<string, string>
@@ -55,34 +49,3 @@ export type MutateAndValidateResponse = {
 	status: "error"
 	error: string
 }
-
-// export type FetchAndValidateRequest<T> = {
-// 	route: string
-// 	params?: Record<string, string>
-// 	delay?: number
-// 	jsonContent?: boolean
-// } & ({
-// 	method: "GET"
-// 	responseSchema: z.ZodType<T>
-// } | ({
-// 	method: "POST" | "PUT" | "PATCH" | "DELETE"
-// 	bodySchema?: z.ZodType<T>
-// 	body?: unknown
-// }))
-
-// export type FetchAndValidateFunction<T> = ((request: {
-// 	route: string
-// 	params?: Record<string, string>
-// 	delay?: number
-// 	jsonContent?: boolean
-// 	responseSchema: z.ZodType<T>
-// 	method: "GET"
-// }) => Promise<QueryAndValidateResponse<T>>) | ((request: {
-// 	route: string
-// 	params?: Record<string, string>
-// 	delay?: number
-// 	jsonContent?: boolean
-// 	bodySchema?: z.ZodType<T>
-// 	body?: unknown
-// 	method: "POST" | "PUT" | "PATCH" | "DELETE"
-// }) => Promise<MutateAndValidateResponse>)

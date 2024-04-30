@@ -1,7 +1,7 @@
 import type { ApiQueryRequest, ApiQueryResponse } from "."
 import { getCookie } from "@/utils/cookie"
 import type {
-	MutateAndValidateRequest, MutateAndValidateResponse, QueryAndValidateRequest, QueryAndValidateResponse, UploadFileRequest
+	MutateAndValidateRequest, MutateAndValidateResponse, QueryAndValidateRequest, QueryAndValidateResponse
 } from "./api.type"
 import { wait } from "@/utils/time"
 import type { SafeParseReturnType } from "zod"
@@ -60,39 +60,6 @@ export const apiQuery = async <T>(
 	return {
 		status: "success",
 		data: data.data
-	}
-}
-
-export const uploadFile = async({ file, route }: UploadFileRequest): Promise<ApiQueryResponse<string>> => {
-	let url = import.meta.env.VITE_TAURI_API_URL
-	if (!url) {
-		return {
-			status: "error",
-			error: "API URL is not set"
-		}
-	}
-	if (!url.endsWith("/")) url += "/"
-	if (route.startsWith("/")) route = route.slice(1)
-
-	const token = getCookie("token")
-
-	const headers = {
-		"Authorization": token || "null"
-	}
-
-	const formData = new FormData()
-	formData.append("file-upload", file)
-	const response = await fetch(`${url}${route}`, { method: "POST", body: formData, headers })
-	if (!response.ok) {
-		return {
-			status: "error",
-			error: `Failed to fetch ${url}${route}`
-		}
-	}
-
-	return {
-		status: "success",
-		data: await response.text()
 	}
 }
 
@@ -200,5 +167,7 @@ export const mutateAndValidate = async <T>({
 		error: `Failed to fetch ${method} ${route}: ${response.status} ${response.statusText}`
 	}
 
-	return { status: "success" }
+	return {
+		status: "success"
+	}
 }
