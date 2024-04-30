@@ -123,7 +123,12 @@ export const queryAndValidate = async <T>({
 		error: `Failed to fetch GET ${route}: ${response.status} ${response.statusText}`
 	}
 
-	const parsedBody = responseSchema.safeParse(await response.json())
+	let data: unknown = await response.text()
+	try {
+		data = JSON.parse(data as string)
+	} catch (error) { /* Do nothing */ }
+
+	const parsedBody = responseSchema.safeParse(data)
 	if (!parsedBody.success) return {
 		status: "error",
 		error: `Failed to validate GET ${route}: ${parsedBody.error.message}`
