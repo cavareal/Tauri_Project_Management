@@ -15,6 +15,8 @@ import type { RoleType } from "@/types/role"
 import { computed } from "vue"
 import { PageSkeleton } from "@/components/atoms/skeletons"
 import { useQuery } from "@tanstack/vue-query"
+import SignalTeamDialog from "@/components/organisms/teams/SignalTeamDialog.vue"
+import ValidTeamDialog from "@/components/organisms/teams/ValidTeamDialog.vue"
 
 const token = getCookie("token")
 const role = getCookie<RoleType>("role")
@@ -25,6 +27,8 @@ const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams
 
 const displayButtons = computed(() => role === "PROJECT_LEADER" && nbStudents.value && nbStudents.value > 0
 	&& nbTeams.value && nbTeams.value > 0 && currentPhase.value && currentPhase.value === "COMPOSING")
+
+const displayPrepublishedButton = computed(() => role === "SUPERVISING_STAFF" && currentPhase.value === "PREPUBLISHED")
 
 const generateTeams = computed(() => role === "PROJECT_LEADER" && currentPhase.value === "COMPOSING")
 const displayTeams = computed(() => (role === "PROJECT_LEADER" || (role === "SUPERVISING_STAFF" && currentPhase.value !== "COMPOSING")
@@ -41,6 +45,12 @@ const displayTeams = computed(() => (role === "PROJECT_LEADER" || (role === "SUP
 			<PrepublishDialog v-if="displayButtons" @prepublish:teams="refetchCurrentPhase">
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
+      <SignalTeamDialog v-if="displayPrepublishedButton" @signal:teams="refetchTeams">
+        <Button variant="secondary">Signaler</Button>
+      </SignalTeamDialog>
+      <ValidTeamDialog v-if="displayPrepublishedButton" @valid:teams="refetchTeams">
+        <Button variant="default">Valider</Button>
+      </ValidTeamDialog>
 		</Header>
 
 		<NotAuthorized v-if="!token || !role" />
