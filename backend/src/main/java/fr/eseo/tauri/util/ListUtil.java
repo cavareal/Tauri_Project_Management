@@ -29,4 +29,13 @@ public class ListUtil {
 		return mappedList;
 	}
 
+	public static <T> boolean contains(List<T> list, T value) {
+		for (var element : list) {
+			if (element.equals(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

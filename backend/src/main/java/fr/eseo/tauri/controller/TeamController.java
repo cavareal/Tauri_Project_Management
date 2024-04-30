@@ -109,7 +109,7 @@ public class TeamController {
      * @param token the authorization token
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<String> generateTeams(@RequestHeader("Authorization") String token, @RequestParam ("projectId") Integer projectId, @Valid @RequestBody GenerateTeamsValidator request) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);

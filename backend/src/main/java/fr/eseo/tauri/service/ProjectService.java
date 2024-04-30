@@ -5,7 +5,6 @@ import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.validator.project.UpdateProjectValidator;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -48,7 +47,7 @@ public class ProjectService {
         }
     }
 
-    public void updateProject(String token, Integer id, @Valid UpdateProjectValidator properties) {
+    public void updateProject(String token, Integer id, UpdateProjectValidator properties) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateProject"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }

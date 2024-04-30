@@ -22,24 +22,29 @@ public class RoleSeeder {
 
 	public void seed(Faker faker) {
 		var users = userRepository.findAll();
-		RoleType[] roleTypes = RoleType.values();
+		var roleTypes = RoleType.values();
 
-		for(int i = 0; i < 10; i++) {
+		// Create one role record for each role type
+		for (int i = 0; i < roleTypes.length; i++) {
 			var role = new Role();
+
 			role.user(users.get(i));
 			role.type(roleTypes[i]);
+
 			roleRepository.save(role);
 		}
 
+		// Assign the supervising staff role to several users
 		for (var user : users) {
 			if (faker.number().numberBetween(0, 8) == 0 && !roleRepository.existsByUserAndType(user, RoleType.SUPERVISING_STAFF)) {
 				var role = new Role();
+
 				role.user(user);
 				role.type(RoleType.SUPERVISING_STAFF);
+
 				roleRepository.save(role);
 			}
 		}
-
 	}
 
 }

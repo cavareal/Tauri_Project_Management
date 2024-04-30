@@ -15,6 +15,8 @@ import java.security.SecureRandom;
 @Service
 public class StudentsWithAverageGradeSeeder {
 
+    // TODO: Vérifier si ce seeder est utilisé
+
     private final StudentRepository studentRepository;
     private final GradeRepository gradeRepository;
     private final GradeTypeRepository gradeTypeRepository;

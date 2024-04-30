@@ -27,10 +27,12 @@ public class GradeTypeSeeder {
 	public void seed() {
 		for (String name : NAMES_TEAM_GRADE) {
 			var gradeType = new GradeType();
+
 			gradeType.name(name);
-			gradeType.factor((float) 1);
+			gradeType.factor(1.f);
 			gradeType.forGroup(true);
 			gradeType.imported(false);
+
 			gradeTypeRepository.save(gradeType);
 		}
 	}
