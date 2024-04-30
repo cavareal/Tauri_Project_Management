@@ -2,13 +2,11 @@ package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
 @Table(name = "grade_types")
-@Getter
-@Setter
+@Data
 public class GradeType {
 
     @Id

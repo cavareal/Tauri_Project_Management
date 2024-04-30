@@ -19,26 +19,26 @@ class CustomLoggerTest {
 
     @Test
     void logInfo_logsInfoMessage() {
-        CustomLogger.logInfo("Info message");
+        CustomLogger.info("Info message");
         verify(logger, times(1)).info("Info message");
     }
 
     @Test
     void logWarn_logsWarnMessage() {
-        CustomLogger.logWarn("Warn message");
+        CustomLogger.warn("Warn message");
         verify(logger, times(1)).warn("Warn message");
     }
 
     @Test
     void logError_logsErrorMessageWithThrowable() {
         Throwable throwable = new Throwable("Test throwable");
-        CustomLogger.logError("Error message", throwable);
+        CustomLogger.error("Error message", throwable);
         verify(logger, times(1)).error("Error message", throwable);
     }
 
     @Test
     void logError_logsErrorMessage() {
-        CustomLogger.logError("Error message");
+        CustomLogger.error("Error message");
         verify(logger, times(1)).error("Error message");
     }
 

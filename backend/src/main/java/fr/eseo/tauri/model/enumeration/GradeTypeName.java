@@ -1,11 +1,14 @@
 package fr.eseo.tauri.model.enumeration;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
 
+@AllArgsConstructor
 @Getter
 public enum GradeTypeName {
+
     AVERAGE("average"),
     DEFAULT("default"),
     PADL("PADL"),
@@ -18,9 +21,7 @@ public enum GradeTypeName {
 
     private final String displayName;
 
-    GradeTypeName(String displayName) {
-        this.displayName = displayName;
-    }
+    // TODO: Vérifier si cette fonction est utilisée
 
     public static GradeTypeName fromDisplayName(String displayName) {
         return Arrays.stream(GradeTypeName.values())

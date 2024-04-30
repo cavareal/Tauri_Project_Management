@@ -3,21 +3,18 @@ package fr.eseo.tauri.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.enumeration.Gender;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.io.Serializable;
-
-
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "students")
 @OnDelete(action = OnDeleteAction.CASCADE)
 @PrimaryKeyJoinColumn(name="user_id")
-@Getter
-@Setter
-public class Student extends User implements Serializable {
+@Data
+public class Student extends User {
 
     @Enumerated(EnumType.STRING)
     @Column(name="gender")
@@ -27,8 +24,10 @@ public class Student extends User implements Serializable {
     @JsonProperty
     private Boolean bachelor;
 
+    // Énumeration avec PO / SA / etc etc + laisser la possibilitié d'y rajouter des trucs à la main par les étudiants
+    // Pour setup des trucs plus tard comme des canaux de discussion entre SA / PO et PL
     @JsonProperty
-    private String teamRole; //Enumeration avec PO / SA / etc etc + laisser la possibilitié d'y rajouter des trucs à la main par les étudiants ? Pour setup des trucs plus tard comme des canaux de discution entre SA / PO et PL
+    private String teamRole = "Not assigned";
 
     @ManyToOne
     @JoinColumn(name = "team_id")

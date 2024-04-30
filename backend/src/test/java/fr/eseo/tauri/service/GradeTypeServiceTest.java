@@ -79,7 +79,7 @@ class GradeTypeServiceTest {
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
         List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(inputStream);
-        CustomLogger.logInfo("size" + gradeTypes);
+        CustomLogger.info("size" + gradeTypes);
         assertTrue(gradeTypes.isEmpty());
         verify(gradeTypeRepository, never()).save(any(GradeType.class));
     }

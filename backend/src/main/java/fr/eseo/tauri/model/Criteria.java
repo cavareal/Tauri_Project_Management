@@ -1,12 +1,12 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class Criteria {
+
+    // TODO: Refactoriser ça
 
     @JsonProperty
     private Integer nbStudents;

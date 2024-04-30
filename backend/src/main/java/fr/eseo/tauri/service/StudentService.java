@@ -103,10 +103,10 @@ public class StudentService {
                 }
             }
         } catch (IOException | CsvValidationException e) {
-            CustomLogger.logError("An error occurred in extractNamesGenderAndBachelor", e);
+            CustomLogger.error("An error occurred in extractNamesGenderAndBachelor", e);
         }
 
-        CustomLogger.logInfo("Successfully extracted student data (names, genders, bachelors and grades ) from the CSV file.");
+        CustomLogger.info("Successfully extracted student data (names, genders, bachelors and grades ) from the CSV file.");
 
         result.put(MAP_KEY_NAMES, names);
         result.put(MAP_KEY_GENDERS, genders);
@@ -179,13 +179,13 @@ public class StudentService {
     @SuppressWarnings("unchecked")
     public void populateDatabaseFromCSV(MultipartFile file) {
         if (file.isEmpty()) {
-            CustomLogger.logInfo("Uploaded file is empty");
+            CustomLogger.info("Uploaded file is empty");
             return;
         }
 
         try {
             List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
-            CustomLogger.logInfo("Successfully created GradeType objects from the CSV file.");
+            CustomLogger.info("Successfully created GradeType objects from the CSV file.");
             Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
 
             List<String> names = (List<String>) extractedData.get(MAP_KEY_NAMES);
@@ -199,9 +199,9 @@ public class StudentService {
                 gradeService.createGradesFromGradeTypesAndValues(student, gradesList.get(i), gradeTypes, "Imported grades");
             }
 
-            CustomLogger.logInfo(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
+            CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
         } catch (Exception e) {
-            CustomLogger.logError("An error occurred while handling the uploaded file", e);
+            CustomLogger.error("An error occurred while handling the uploaded file", e);
             throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
     }
@@ -212,12 +212,12 @@ public class StudentService {
     public void deleteAllImportedStudentsAndGradeTypes() {
         try {
             studentRepository.deleteAll();
-            CustomLogger.logInfo("Successfully deleted all imported students from the database.");
+            CustomLogger.info("Successfully deleted all imported students from the database.");
         } catch (Exception e) {
-            CustomLogger.logError("An error occurred while deleting imported students", e);
+            CustomLogger.error("An error occurred while deleting imported students", e);
         }
         gradeTypeService.deleteAllImportedGradeTypes();
-        CustomLogger.logInfo("Successfully deleted all imported grade types from the database.");
+        CustomLogger.info("Successfully deleted all imported grade types from the database.");
     }
 
 }

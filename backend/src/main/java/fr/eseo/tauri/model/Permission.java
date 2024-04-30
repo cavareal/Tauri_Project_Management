@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
 @Table(name = "permissions")
-@Getter
-@Setter
+@Data
 public class Permission {
 
     @Id

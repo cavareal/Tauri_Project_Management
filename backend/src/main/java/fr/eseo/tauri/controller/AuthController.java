@@ -17,21 +17,21 @@ public class AuthController {
 
     @PostMapping("/login")
     public Boolean login(@RequestBody User user) {
-        CustomLogger.logInfo(user.email() + " is trying to log in");
+        CustomLogger.info(user.email() + " is trying to log in");
 
         return true;
     }
 
     @PostMapping("/logon")
     public Boolean logon(@RequestBody User user) {
-        CustomLogger.logInfo(user.email() + " is trying to log on");
+        CustomLogger.info(user.email() + " is trying to log on");
 
         return true;
     }
 
     @PostMapping("/logout")
     public Boolean logout(@RequestBody User user) {
-        CustomLogger.logInfo(user.email() + " is trying to log out");
+        CustomLogger.info(user.email() + " is trying to log out");
 
         return true;
     }

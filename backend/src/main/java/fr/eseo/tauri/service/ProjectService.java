@@ -1,8 +1,8 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.controller.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Project;
-import fr.eseo.tauri.model.exception.ResourceNotFoundException;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.validator.project.UpdateProjectValidator;
 import lombok.RequiredArgsConstructor;

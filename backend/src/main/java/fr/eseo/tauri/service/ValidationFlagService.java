@@ -1,9 +1,8 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.controller.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.ValidationFlag;
 import fr.eseo.tauri.model.id_class.ValidationFlagId;
-import fr.eseo.tauri.model.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.ValidationFlagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;

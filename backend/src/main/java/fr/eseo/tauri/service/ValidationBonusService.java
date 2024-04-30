@@ -1,8 +1,7 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.controller.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.ValidationBonus;
-import fr.eseo.tauri.model.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.id_class.ValidationBonusId;
 import fr.eseo.tauri.repository.ValidationBonusRepository;
 import lombok.RequiredArgsConstructor;

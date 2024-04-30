@@ -34,28 +34,28 @@ public class BonusController {
     @PostMapping
     public ResponseEntity<String> addBonuses(@RequestHeader("Authorization") String token, @RequestBody List<Bonus> bonuses) {
         bonusService.addBonuses(token, bonuses);
-        CustomLogger.logInfo("The bonus(es) have been added");
+        CustomLogger.info("The bonus(es) have been added");
         return ResponseEntity.ok("The bonus(es) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
         bonusService.updateBonus(token, id, request);
-        CustomLogger.logInfo("The bonus has been updated");
+        CustomLogger.info("The bonus has been updated");
         return ResponseEntity.ok("The bonus has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllBonuses(@RequestHeader("Authorization") String token) {
         bonusService.deleteAllBonuses(token);
-        CustomLogger.logInfo("All the bonuses have been deleted");
+        CustomLogger.info("All the bonuses have been deleted");
         return ResponseEntity.ok("All the bonuses have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         bonusService.deleteBonus(token, id);
-        CustomLogger.logInfo("The bonus has been deleted");
+        CustomLogger.info("The bonus has been deleted");
         return ResponseEntity.ok("The bonus has been deleted");
     }
 }

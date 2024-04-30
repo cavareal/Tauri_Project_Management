@@ -1,9 +1,9 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.controller.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.model.enumeration.SprintEndType;
-import fr.eseo.tauri.model.exception.ResourceNotFoundException;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.SprintRepository;
 import lombok.RequiredArgsConstructor;

@@ -35,28 +35,28 @@ public class ValidationBonusController {
     @PostMapping
     public ResponseEntity<String> addValidationBonuses(@RequestHeader("Authorization") String token, @RequestBody List<ValidationBonus> validationBonuses) {
         validationBonusService.addValidationBonuses(token, validationBonuses);
-        CustomLogger.logInfo("The validation bonus(es) have been added");
+        CustomLogger.info("The validation bonus(es) have been added");
         return ResponseEntity.ok("The validation bonus(es) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateValidationBonus(@RequestHeader("Authorization") String token, @PathVariable ValidationBonusId id, @RequestBody Map<String, Object> request) {
         validationBonusService.updateValidationBonus(token, id, request);
-        CustomLogger.logInfo("The validation bonus has been updated");
+        CustomLogger.info("The validation bonus has been updated");
         return ResponseEntity.ok("The validation bonus has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllValidationBonuses(@RequestHeader("Authorization") String token) {
         validationBonusService.deleteAllValidationBonuses(token);
-        CustomLogger.logInfo("All the validation bonuses have been deleted");
+        CustomLogger.info("All the validation bonuses have been deleted");
         return ResponseEntity.ok("All the validation bonuses have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteValidationBonus(@RequestHeader("Authorization") String token, @PathVariable ValidationBonusId id) {
         validationBonusService.deleteValidationBonus(token, id);
-        CustomLogger.logInfo("The validation bonus has been deleted");
+        CustomLogger.info("The validation bonus has been deleted");
         return ResponseEntity.ok("The validation bonus has been deleted");
     }
 }

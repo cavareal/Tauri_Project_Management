@@ -34,28 +34,28 @@ public class SprintController {
     @PostMapping
     public ResponseEntity<String> addSprints(@RequestHeader("Authorization") String token, @RequestBody List<Sprint> sprints) {
         sprintService.addSprints(token, sprints);
-        CustomLogger.logInfo("The sprint(s) have been added");
+        CustomLogger.info("The sprint(s) have been added");
         return ResponseEntity.ok("The sprint(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
         sprintService.updateSprint(token, id, request);
-        CustomLogger.logInfo("The sprint has been updated");
+        CustomLogger.info("The sprint has been updated");
         return ResponseEntity.ok("The sprint has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllSprints(@RequestHeader("Authorization") String token) {
         sprintService.deleteAllSprints(token);
-        CustomLogger.logInfo("All the sprints have been deleted");
+        CustomLogger.info("All the sprints have been deleted");
         return ResponseEntity.ok("All the sprints have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         sprintService.deleteSprint(token, id);
-        CustomLogger.logInfo("The sprint has been deleted");
+        CustomLogger.info("The sprint has been deleted");
         return ResponseEntity.ok("The sprint has been deleted");
     }
 }

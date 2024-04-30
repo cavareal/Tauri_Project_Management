@@ -34,28 +34,28 @@ public class PresentationOrderController {
     @PostMapping
     public ResponseEntity<String> addPresentationOrders(@RequestHeader("Authorization") String token, @RequestBody List<PresentationOrder> presentationOrders) {
         presentationOrderService.addPresentationOrders(token, presentationOrders);
-        CustomLogger.logInfo("The presentation order(s) have been added");
+        CustomLogger.info("The presentation order(s) have been added");
         return ResponseEntity.ok("The presentation order(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updatePresentationOrder(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
         presentationOrderService.updatePresentationOrder(token, id, request);
-        CustomLogger.logInfo("The presentation order has been updated");
+        CustomLogger.info("The presentation order has been updated");
         return ResponseEntity.ok("The presentation order has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllPresentationOrders(@RequestHeader("Authorization") String token) {
         presentationOrderService.deleteAllPresentationOrders(token);
-        CustomLogger.logInfo("All the presentation orders have been deleted");
+        CustomLogger.info("All the presentation orders have been deleted");
         return ResponseEntity.ok("All the presentation orders have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePresentationOrder(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         presentationOrderService.deletePresentationOrder(token, id);
-        CustomLogger.logInfo("The presentation order has been deleted");
+        CustomLogger.info("The presentation order has been deleted");
         return ResponseEntity.ok("The presentation order has been deleted");
     }
 }

@@ -2,16 +2,13 @@ package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.AssertTrue;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "grades")
-@Getter
-@Setter
+@Data
 public class Grade {
 
     @Id
@@ -38,26 +35,21 @@ public class Grade {
     private User author;
 
     @ManyToOne
-    @JoinColumn(name = "student_id", nullable = true)
+    @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Student student;
 
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = true)
+    @JoinColumn(name = "team_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Team team;
 
     @ManyToOne
-    @JoinColumn(name = "sprint_id", nullable = true)
+    @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Sprint sprint;
-
-    /*@AssertTrue
-    public boolean isStudentOrTeam() {
-
-    }*/
 
 }

@@ -35,28 +35,28 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<String> addProjects(@RequestHeader("Authorization") String token, @RequestBody List<Project> projects) {
         projectService.addProjects(token, projects);
-        CustomLogger.logInfo("The project(s) have been added");
+        CustomLogger.info("The project(s) have been added");
         return ResponseEntity.ok("The project(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Valid @RequestBody UpdateProjectValidator body) {
         projectService.updateProject(token, id, body);
-        CustomLogger.logInfo("The project has been updated");
+        CustomLogger.info("The project has been updated");
         return ResponseEntity.ok("The project has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllProjects(@RequestHeader("Authorization") String token) {
         projectService.deleteAllProjects(token);
-        CustomLogger.logInfo("All the projects have been deleted");
+        CustomLogger.info("All the projects have been deleted");
         return ResponseEntity.ok("All the projects have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProject(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         projectService.deleteProject(token, id);
-        CustomLogger.logInfo("The project has been deleted");
+        CustomLogger.info("The project has been deleted");
         return ResponseEntity.ok("The project has been deleted");
     }
 

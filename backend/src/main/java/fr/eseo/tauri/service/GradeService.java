@@ -41,7 +41,7 @@ public class GradeService {
 
 			gradeRepository.updateImportedMeanByStudentId(mean, student.id());
 		}
-		CustomLogger.logInfo("Updated imported mean for all students.");
+		CustomLogger.info("Updated imported mean for all students.");
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class GradeService {
             gradeRepository.save(grade);
         }
 		else{
-			CustomLogger.logInfo("Student with name " + studentName + " not found.");
+			CustomLogger.info("Student with name " + studentName + " not found.");
 		}
     }
 
@@ -161,7 +161,7 @@ public class GradeService {
 				}
 			}
 		}
-		CustomLogger.logInfo("Successfully created grades for student " + student.name() + " from grade types and values contained in the provided CSV file.");
+		CustomLogger.info("Successfully created grades for student " + student.name() + " from grade types and values contained in the provided CSV file.");
 	}
 
     public Double getAverageGradesByGradeTypeByRoleType(int userId, RoleType roleType, String gradeTypeName) {

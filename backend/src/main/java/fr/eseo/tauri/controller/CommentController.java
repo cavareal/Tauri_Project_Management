@@ -34,28 +34,28 @@ public class CommentController {
     @PostMapping
     public ResponseEntity<String> addComments(@RequestHeader("Authorization") String token, @RequestBody List<Comment> comments) {
         commentService.addComments(token, comments);
-        CustomLogger.logInfo("The comment(s) have been added");
+        CustomLogger.info("The comment(s) have been added");
         return ResponseEntity.ok("The comment(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateComment(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
         commentService.updateComment(token, id, request);
-        CustomLogger.logInfo("The comment has been updated");
+        CustomLogger.info("The comment has been updated");
         return ResponseEntity.ok("The comment has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllComments(@RequestHeader("Authorization") String token) {
         commentService.deleteAllComments(token);
-        CustomLogger.logInfo("All the comments have been deleted");
+        CustomLogger.info("All the comments have been deleted");
         return ResponseEntity.ok("All the comments have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteComment(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         commentService.deleteComment(token, id);
-        CustomLogger.logInfo("The comment has been deleted");
+        CustomLogger.info("The comment has been deleted");
         return ResponseEntity.ok("The comment has been deleted");
     }
 }

@@ -3,8 +3,7 @@ package fr.eseo.tauri.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.enumeration.FlagType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -12,8 +11,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "flags")
-@Getter
-@Setter
+@Data
 public class Flag implements Serializable {
 
     @Id

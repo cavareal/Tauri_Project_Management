@@ -1,10 +1,10 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.controller.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.model.exception.ResourceNotFoundException;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.util.ListUtil;

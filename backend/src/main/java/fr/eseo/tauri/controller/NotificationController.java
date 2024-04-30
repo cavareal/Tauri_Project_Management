@@ -34,28 +34,28 @@ public class NotificationController {
     @PostMapping
     public ResponseEntity<String> addNotifications(@RequestHeader("Authorization") String token, @RequestBody List<Notification> notifications) {
         notificationService.addNotifications(token, notifications);
-        CustomLogger.logInfo("The notification(s) have been added");
+        CustomLogger.info("The notification(s) have been added");
         return ResponseEntity.ok("The notification(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
         notificationService.updateNotification(token, id, request);
-        CustomLogger.logInfo("The notification has been updated");
+        CustomLogger.info("The notification has been updated");
         return ResponseEntity.ok("The notification has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllNotifications(@RequestHeader("Authorization") String token) {
         notificationService.deleteAllNotifications(token);
-        CustomLogger.logInfo("All the notifications have been deleted");
+        CustomLogger.info("All the notifications have been deleted");
         return ResponseEntity.ok("All the notifications have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         notificationService.deleteNotification(token, id);
-        CustomLogger.logInfo("The notification has been deleted");
+        CustomLogger.info("The notification has been deleted");
         return ResponseEntity.ok("The notification has been deleted");
     }
 }

@@ -35,28 +35,28 @@ public class ValidationFlagController {
     @PostMapping
     public ResponseEntity<String> addValidationFlags(@RequestHeader("Authorization") String token, @RequestBody List<ValidationFlag> validationFlags) {
         validationFlagService.addValidationFlags(token, validationFlags);
-        CustomLogger.logInfo("The validation flag(s) have been added");
+        CustomLogger.info("The validation flag(s) have been added");
         return ResponseEntity.ok("The validation flag(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateValidationFlag(@RequestHeader("Authorization") String token, @PathVariable ValidationFlagId id, @RequestBody Map<String, Object> request) {
         validationFlagService.updateValidationFlag(token, id, request);
-        CustomLogger.logInfo("The validation flag has been updated");
+        CustomLogger.info("The validation flag has been updated");
         return ResponseEntity.ok("The validation flag has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllValidationFlags(@RequestHeader("Authorization") String token) {
         validationFlagService.deleteAllValidationFlags(token);
-        CustomLogger.logInfo("All the validation flags have been deleted");
+        CustomLogger.info("All the validation flags have been deleted");
         return ResponseEntity.ok("All the validation flags have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteValidationFlag(@RequestHeader("Authorization") String token, @PathVariable ValidationFlagId id) {
         validationFlagService.deleteValidationFlag(token, id);
-        CustomLogger.logInfo("The validation flag has been deleted");
+        CustomLogger.info("The validation flag has been deleted");
         return ResponseEntity.ok("The validation flag has been deleted");
     }
 }

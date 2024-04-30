@@ -124,10 +124,10 @@ public class TeamController {
             var projectProperties = UpdateProjectValidator.builder().nbTeams(nbTeams).womenPerTeam(womenPerTeam).build();
             projectService.updateProject(token, projectId, projectProperties);
 
-            CustomLogger.logInfo("Teams have been created");
+            CustomLogger.info("Teams have been created");
             return ResponseEntity.ok("La creation a bien été prise en compte");
         } catch (IllegalArgumentException e){
-            CustomLogger.logError("Erreur lors de la création des équipes : " + e.getMessage());
+            CustomLogger.error("Erreur lors de la création des équipes : " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour, les équipes n'ont pas pu être créées : " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
@@ -193,7 +193,7 @@ public class TeamController {
                 Criteria criteria = getCriteria(token, idProject, nbStudents, nbWomen, nbBachelor);
                 return ResponseEntity.ok(criteria);
             } catch (Exception e) {
-                CustomLogger.logInfo("Erreur au critère : " + e.getClass() + "" + e.getMessage());
+                CustomLogger.info("Erreur au critère : " + e.getClass() + "" + e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {

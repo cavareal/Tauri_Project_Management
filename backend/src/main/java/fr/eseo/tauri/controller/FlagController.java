@@ -34,28 +34,28 @@ public class FlagController {
     @PostMapping
     public ResponseEntity<String> addFlags(@RequestHeader("Authorization") String token, @RequestBody List<Flag> flags) {
         flagService.addFlags(token, flags);
-        CustomLogger.logInfo("The flag(s) have been added");
+        CustomLogger.info("The flag(s) have been added");
         return ResponseEntity.ok("The flag(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateFlag(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
         flagService.updateFlag(token, id, request);
-        CustomLogger.logInfo("The flag has been updated");
+        CustomLogger.info("The flag has been updated");
         return ResponseEntity.ok("The flag has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllFlags(@RequestHeader("Authorization") String token) {
         flagService.deleteAllFlags(token);
-        CustomLogger.logInfo("All the flags have been deleted");
+        CustomLogger.info("All the flags have been deleted");
         return ResponseEntity.ok("All the flags have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteFlag(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         flagService.deleteFlag(token, id);
-        CustomLogger.logInfo("The flag has been deleted");
+        CustomLogger.info("The flag has been deleted");
         return ResponseEntity.ok("The flag has been deleted");
     }
 }

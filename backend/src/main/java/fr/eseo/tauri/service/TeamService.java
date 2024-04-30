@@ -51,7 +51,7 @@ public class TeamService {
             }
             teamRepository.deleteById(id);
         } else {
-            CustomLogger.logWarn("TeamService.deleteTeam : Team with id " + id + " not found");
+            CustomLogger.warn("TeamService.deleteTeam : Team with id " + id + " not found");
         }
     }
 
@@ -95,7 +95,7 @@ public class TeamService {
      * @return a List<Teams> if teams are created, otherwise null
      */
     public List<Team> generateTeams(Integer idProject, Integer nbTeams, Integer womenPerTeam) throws IllegalArgumentException{
-        CustomLogger.logInfo("TeamService.createTeams : Creating Teams");
+        CustomLogger.info("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
         List<Student> men = this.studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN);
@@ -104,7 +104,7 @@ public class TeamService {
 
         // Check if the number of students is enough to create the teams
         if (nbStudent < nbTeams * womenPerTeam - 1) {
-            CustomLogger.logError("TeamService.generateTeams : Not enough students to create the teams");
+            CustomLogger.error("TeamService.generateTeams : Not enough students to create the teams");
             throw new IllegalArgumentException("Not enough students to create the teams");
         }else {
             List<Team> teams = this.createTeams(idProject, nbTeams);
@@ -121,7 +121,7 @@ public class TeamService {
      */
     private List<Team> createTeams(Integer idProject, Integer nbTeams) throws IllegalArgumentException{
         if (nbTeams < 1) {
-            CustomLogger.logError("TeamService.createTeams : The number of teams to create must be greater than 0");
+            CustomLogger.error("TeamService.createTeams : The number of teams to create must be greater than 0");
             throw new IllegalArgumentException("The number of teams to create must be greater than 0");
         }
 

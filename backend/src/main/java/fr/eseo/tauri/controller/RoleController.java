@@ -38,28 +38,28 @@ public class RoleController {
     @PostMapping
     public ResponseEntity<String> addRoles(@RequestHeader("Authorization") String token, @RequestBody List<Role> roles) {
         roleService.addRoles(token, roles);
-        CustomLogger.logInfo("The role(s) have been added");
+        CustomLogger.info("The role(s) have been added");
         return ResponseEntity.ok("The role(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateRole(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
         roleService.updateRole(token, id, request);
-        CustomLogger.logInfo("The role has been updated");
+        CustomLogger.info("The role has been updated");
         return ResponseEntity.ok("The role has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllRoles(@RequestHeader("Authorization") String token) {
         roleService.deleteAllRoles(token);
-        CustomLogger.logInfo("All the roles have been deleted");
+        CustomLogger.info("All the roles have been deleted");
         return ResponseEntity.ok("All the roles have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteRole(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         roleService.deleteRole(token, id);
-        CustomLogger.logInfo("The role has been deleted");
+        CustomLogger.info("The role has been deleted");
         return ResponseEntity.ok("The role has been deleted");
     }
 

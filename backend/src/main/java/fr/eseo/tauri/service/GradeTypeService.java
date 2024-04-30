@@ -39,7 +39,7 @@ public class GradeTypeService {
         gradeTypeRepository.save(gradeType);
 
         gradeService.updateImportedMean();
-        CustomLogger.logInfo("Successfully updated factor for GradeType object with ID " + id);
+        CustomLogger.info("Successfully updated factor for GradeType object with ID " + id);
 
         return gradeType;
     }
@@ -88,7 +88,7 @@ public class GradeTypeService {
      */
     public List<GradeType> createGradeTypes(List<String> coefficients, List<String> ratings, Boolean forGroup, Boolean imported) {
         if (coefficients == null || ratings == null || coefficients.isEmpty() || ratings.isEmpty()) {
-            CustomLogger.logWarn("Coefficients or ratings are null or empty");
+            CustomLogger.warn("Coefficients or ratings are null or empty");
             return new ArrayList<>();
         }
         List<GradeType> gradeTypes = new ArrayList<>();
@@ -96,7 +96,7 @@ public class GradeTypeService {
         for (int i = 0; i < coefficients.size(); i++) {
             gradeTypes.add(createGradeType(Float.parseFloat(coefficients.get(i)), ratings.get(i), forGroup, imported));
         }
-        CustomLogger.logInfo("Successfully created GradeType objects from the provided coefficients and ratings.");
+        CustomLogger.info("Successfully created GradeType objects from the provided coefficients and ratings.");
         return gradeTypes;
     }
 
@@ -125,7 +125,7 @@ public class GradeTypeService {
                 }
             }
         } catch (IOException | CsvValidationException e) {
-           CustomLogger.logError("Error occurred while extracting coefficient rating and value", e);
+           CustomLogger.error("Error occurred while extracting coefficient rating and value", e);
         }
 
         return createGradeTypes(coefficients, ratings, false, true);
@@ -179,7 +179,7 @@ public class GradeTypeService {
         try {
             gradeTypeRepository.deleteAllImported();
         } catch (Exception e) {
-            CustomLogger.logError("Error occurred while deleting all imported GradeType objects", e);
+            CustomLogger.error("Error occurred while deleting all imported GradeType objects", e);
         }
     }
 }

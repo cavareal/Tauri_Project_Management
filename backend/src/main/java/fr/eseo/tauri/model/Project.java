@@ -3,13 +3,11 @@ package fr.eseo.tauri.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
 @Table(name = "projects")
-@Getter
-@Setter
+@Data
 public class Project {
 
     @Id
@@ -23,8 +21,9 @@ public class Project {
     @JsonProperty
     private Integer nbWomen;
 
+    // TODO: À supprimer une fois que la page Sprints aura été modifée en accord avec la maquette
     @JsonProperty
-    private Integer nbSprint; //A supprimer une fois que la page Sprints aura été modifée en accord avec la maquette
+    private Integer nbSprint;
 
     @Enumerated(EnumType.STRING)
     @Column(name="phase")

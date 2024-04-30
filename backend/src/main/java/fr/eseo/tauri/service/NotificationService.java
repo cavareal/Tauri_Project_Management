@@ -1,9 +1,9 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.controller.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.model.enumeration.NotificationType;
-import fr.eseo.tauri.model.exception.ResourceNotFoundException;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.NotificationRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -34,28 +34,28 @@ public class PermissionController {
     @PostMapping
     public ResponseEntity<String> addPermissions(@RequestHeader("Authorization") String token, @RequestBody List<Permission> permissions) {
         permissionService.addPermissions(token, permissions);
-        CustomLogger.logInfo("The permission(s) have been added");
+        CustomLogger.info("The permission(s) have been added");
         return ResponseEntity.ok("The permission(s) have been added");
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updatePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
         permissionService.updatePermission(token, id, request);
-        CustomLogger.logInfo("The permission has been updated");
+        CustomLogger.info("The permission has been updated");
         return ResponseEntity.ok("The permission has been updated");
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllPermissions(@RequestHeader("Authorization") String token) {
         permissionService.deleteAllPermissions(token);
-        CustomLogger.logInfo("All the permissions have been deleted");
+        CustomLogger.info("All the permissions have been deleted");
         return ResponseEntity.ok("All the permissions have been deleted");
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         permissionService.deletePermission(token, id);
-        CustomLogger.logInfo("The permission has been deleted");
+        CustomLogger.info("The permission has been deleted");
         return ResponseEntity.ok("The permission has been deleted");
     }
 }

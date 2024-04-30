@@ -1,9 +1,12 @@
 package fr.eseo.tauri.model.enumeration;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public enum PermissionType {
+
     LOGIN_OUT("Login/Logout"),
     LDAP("LDAP"),
     IMPORT_GENERATED_KEY("Import Generated Key"),
@@ -59,9 +62,5 @@ public enum PermissionType {
     VIEW_COMMENT("View Comment");
 
     private final String displayName;
-
-    PermissionType(String displayName) {
-        this.displayName = displayName;
-    }
 
 }
