@@ -53,11 +53,12 @@ class GradeTypeServiceTest {
 
     @Test
     void createGradeTypesFromCSV_withValidInput_createsGradeTypes() {
-        String csvContent = "\"\",\"\",\"\",\"\",\"\",\"2\",\"3\",\"3\",\"2\",\"2\",\"1\",\"1\"\n" +
-                "\"\",\"\",\"sexe\n" +
-                "M / F\",\"\",\"\",\"PADL\",\"PDLO\",\"PWND\",\"IRS\",\"STAGE S7\",\"S5\",\"S6\"\n" +
-                "\"1\",\"ABADIE Cyril\",\"M\",\"B\",\"  12.52 \",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\n" +
-                "\"2\",\"ALARD Sébastien\",\"M\",\"\",\"  13.72 \",\"  15.38 \",\"  10.97 \",\"  11.50 \",\"  18.57 \",\"  14.50 \",\"  13.19 \",\"  14.51 \"";
+        String csvContent = """
+                "","","","","","2","3","3","2","2","1","1"
+                "","","sexe
+                M / F","","","PADL","PDLO","PWND","IRS","STAGE S7","S5","S6"
+                "1","ABADIE Cyril","M","B","  12.52 ","","","","","","",""
+                "2","ALARD Sébastien","M","","  13.72 ","  15.38 ","  10.97 ","  11.50 ","  18.57 ","  14.50 ","  13.19 ","  14.51 \"""";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
         List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(inputStream);
@@ -90,14 +91,15 @@ class GradeTypeServiceTest {
 
     @Test
     void createGradeTypesFromCSV_withSummaryData_ignoresSummaryData() {
-        String csvContent = "\"\",\"\",\"\",\"\",\"\",\"2\",\"3\",\"3\",\"2\",\"2\",\"1\",\"1\"\n" +
-                "\"\",\"\",\"sexe\n" +
-                "M / F\",\"\",\"\",\"PADL\",\"PDLO\",\"PWND\",\"IRS\",\"STAGE S7\",\"S5\",\"S6\"\n" +
-                "\"1\",\"ABADIE Cyril\",\"M\",\"B\",\"  12.52 \",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\n" +
-                "\"2\",\"ALARD Sébastien\",\"M\",\"\",\"  13.72 \",\"  15.38 \",\"  10.97 \",\"  11.50 \",\"  18.57 \",\"  14.50 \",\"  13.19 \",\"  14.51 \"\n" +
-                "\"\",\"Nombre F\",\"6\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"Nombre H\",\"42\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"Nombre B\",\"\",\"6\",\"\",\"\",\"\",\"\",\"\",\"\",\"\",\"\"";
+        String csvContent = """
+                "","","","","","2","3","3","2","2","1","1"
+                "","","sexe
+                M / F","","","PADL","PDLO","PWND","IRS","STAGE S7","S5","S6"
+                "1","ABADIE Cyril","M","B","  12.52 ","","","","","","",""
+                "2","ALARD Sébastien","M","","  13.72 ","  15.38 ","  10.97 ","  11.50 ","  18.57 ","  14.50 ","  13.19 ","  14.51 "
+                "","Nombre F","6","","","","","","","","",""
+                "","Nombre H","42","","","","","","","","",""
+                "","Nombre B","","6","","","","","","","","\"""";
         InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
 
         List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(inputStream);

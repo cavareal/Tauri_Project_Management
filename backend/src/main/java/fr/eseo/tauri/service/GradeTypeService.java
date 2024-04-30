@@ -127,7 +127,6 @@ public class GradeTypeService {
         } catch (IOException | CsvValidationException e) {
            CustomLogger.logError("Error occurred while extracting coefficient rating and value", e);
         }
-        // TODO an error is coming from here
         return createGradeTypes(coefficients, ratings, false, true);
     }
 
