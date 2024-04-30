@@ -1,6 +1,9 @@
 package fr.eseo.tauri.repository;
 
+import ch.qos.logback.classic.spi.ConfiguratorRank;
 import fr.eseo.tauri.model.Grade;
+import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,4 +32,10 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 			"AND r.type = :roleType")
 	public Double findAverageGradesByGradeType(@Param("team") Team team, @Param("gradeTypeName") String gradeTypeName, @Param("roleType") RoleType roleType);
 
+	@Query("SELECT g FROM Grade g WHERE g.student.id = :studentId AND g.gradeType.imported = true AND g.gradeType.imported=true")
+	public List<Grade> findImportedGradesByStudentId(int studentId);
+
+
+	@Query("SELECT g.value FROM Grade g WHERE g.student = :student AND g.gradeType = :gradeType")
+	public Float findValueByStudentAndGradeType(Student student, GradeType gradeType);
 }

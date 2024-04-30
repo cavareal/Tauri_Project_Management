@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -286,6 +287,51 @@ class GradeServiceTest {
         gradeService.updateImportedMean();
 
         verify(gradeRepository, times(0)).updateImportedMeanByStudentId(anyFloat(), anyInt());
+    }
+
+    @Test
+    @DisplayName("getGradeByStudentAndGradeType returns grade for valid student and grade type")
+    void getGradeByStudentAndGradeType_returnsGradeForValidStudentAndGradeType() {
+        Student student = new Student();
+        student.name("John Doe");
+        GradeType gradeType = new GradeType();
+        gradeType.name("Test Grade");
+
+        when(gradeRepository.findValueByStudentAndGradeType(student, gradeType)).thenReturn(85.0f);
+
+        Float actualGrade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
+
+        assertEquals(85.0f, actualGrade);
+    }
+
+    @Test
+    @DisplayName("getGradeByStudentAndGradeType returns null for invalid student and grade type")
+    void getGradeByStudentAndGradeType_returnsNullForInvalidStudentAndGradeType() {
+        Student student = new Student();
+        student.name("Invalid Student");
+        GradeType gradeType = new GradeType();
+        gradeType.name("Invalid Grade");
+
+        when(gradeRepository.findValueByStudentAndGradeType(student, gradeType)).thenReturn(null);
+
+        Float actualGrade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
+
+        assertNull(actualGrade);
+    }
+
+    @Test
+    @DisplayName("getGradeByStudentAndGradeType handles NullPointerException")
+    void getGradeByStudentAndGradeType_handlesNullPointerException() {
+        Student student = new Student();
+        student.name("John Doe");
+        GradeType gradeType = new GradeType();
+        gradeType.name("Test Grade");
+
+        when(gradeRepository.findValueByStudentAndGradeType(student, gradeType)).thenThrow(new NullPointerException());
+
+        Float actualGrade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
+
+        assertNull(actualGrade);
     }
 
 }
