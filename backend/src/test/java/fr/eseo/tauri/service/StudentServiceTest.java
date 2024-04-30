@@ -461,7 +461,7 @@ class StudentServiceTest {
 
         when(gradeService.getGradeByStudentAndGradeType(student, gradeType)).thenReturn(15.0f);
 
-        studentService.writeStudentData(csvWriter, Arrays.asList(student), Arrays.asList(gradeType));
+        studentService.writeStudentData(csvWriter, List.of(student), List.of(gradeType));
 
         String expectedCsv = "\"1\",\"John Doe\",\"M\",\"B\",\"15.0\"\n";
         String actualCsv = stringWriter.toString();
@@ -490,7 +490,7 @@ class StudentServiceTest {
         when(gradeService.getGradeByStudentAndGradeType(student1, gradeType)).thenReturn(15.0f);
         when(gradeService.getGradeByStudentAndGradeType(student2, gradeType)).thenReturn(14.0f);
 
-        studentService.writeStudentData(csvWriter, Arrays.asList(student1, student2), Arrays.asList(gradeType));
+        studentService.writeStudentData(csvWriter, Arrays.asList(student1, student2), List.of(gradeType));
 
         String expectedCsv = "\"1\",\"John Doe\",\"M\",\"B\",\"15.0\"\n" +
                 "\"2\",\"Jane Doe\",\"F\",\"\",\"14.0\"\n";
@@ -514,7 +514,7 @@ class StudentServiceTest {
 
         when(gradeService.getGradeByStudentAndGradeType(student, gradeType)).thenReturn(null);
 
-        studentService.writeStudentData(csvWriter, Arrays.asList(student), Arrays.asList(gradeType));
+        studentService.writeStudentData(csvWriter, List.of(student), List.of(gradeType));
 
         String expectedCsv = "\"1\",\"John Doe\",\"M\",\"B\",\"\"\n";
         String actualCsv = stringWriter.toString();
