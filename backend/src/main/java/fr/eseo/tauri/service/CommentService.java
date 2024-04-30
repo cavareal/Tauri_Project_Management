@@ -25,34 +25,31 @@ public class CommentService {
     private final UserRepository userRepository;
 
     public List<Comment> getAllComments(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readComments"))) {
-            return commentRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readComments"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return commentRepository.findAll();
     }
 
     public Comment getCommentById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readComment"))) {
-            return commentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("comment", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readComment"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return commentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("comment", id));
     }
 
     public void addComments(String token, List<Comment> comments) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addComment"))) {
-            int commentsNumber = commentRepository.findAll().size();
-            for(Comment comment : comments) {
-                commentRepository.save(comment);
-                if(commentRepository.findAll().size() == commentsNumber){
-                    throw new DataAccessException("Error : Could not add comment written by " + comment.author().name()) {};
-                } else {
-                    commentsNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addComment"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int commentsNumber = commentRepository.findAll().size();
+        for(Comment comment : comments) {
+            commentRepository.save(comment);
+            if(commentRepository.findAll().size() == commentsNumber){
+                throw new DataAccessException("Error : Could not add comment written by " + comment.author().name()) {};
+            } else {
+                commentsNumber++;
+            }
         }
     }
 
@@ -100,26 +97,24 @@ public class CommentService {
     }
 
     public void deleteAllComments(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
-            commentRepository.deleteAll();
-            if(!commentRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all comments") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        commentRepository.deleteAll();
+        if(!commentRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all comments") {};
         }
     }
 
     public void deleteComment(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
-            getCommentById(token, id);
-            int commentsNumber = commentRepository.findAll().size();
-            commentRepository.deleteById(id);
-            if(commentRepository.findAll().size() == commentsNumber){
-                throw new DataAccessException("Error : Could not delete comment with id : " + id) {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getCommentById(token, id);
+        int commentsNumber = commentRepository.findAll().size();
+        commentRepository.deleteById(id);
+        if(commentRepository.findAll().size() == commentsNumber){
+            throw new DataAccessException("Error : Could not delete comment with id : " + id) {};
         }
     }
 }

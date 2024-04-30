@@ -24,34 +24,31 @@ public class FlagService {
     private final StudentRepository studentRepository;
 
     public List<Flag> getAllFlags(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readFlags"))) {
-            return flagRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readFlags"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return flagRepository.findAll();
     }
 
     public Flag getFlagById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readFlag"))) {
-            return flagRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("flag", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return flagRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("flag", id));
     }
 
     public void addFlags(String token, List<Flag> flags) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addFlag"))) {
-            int flagsNumber = flagRepository.findAll().size();
-            for(Flag flag : flags) {
-                flagRepository.save(flag);
-                if(flagRepository.findAll().size() == flagsNumber){
-                    throw new DataAccessException("Error : Could not add flag created by " + flag.author().name()) {};
-                } else {
-                    flagsNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int flagsNumber = flagRepository.findAll().size();
+        for(Flag flag : flags) {
+            flagRepository.save(flag);
+            if(flagRepository.findAll().size() == flagsNumber){
+                throw new DataAccessException("Error : Could not add flag created by " + flag.author().name()) {};
+            } else {
+                flagsNumber++;
+            }
         }
     }
 
@@ -98,26 +95,24 @@ public class FlagService {
     }
 
     public void deleteAllFlags(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteFlag"))) {
-            flagRepository.deleteAll();
-            if(!flagRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all flags") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        flagRepository.deleteAll();
+        if(!flagRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all flags") {};
         }
     }
 
     public void deleteFlag(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteFlag"))) {
-            getFlagById(token, id);
-            int flagsNumber = flagRepository.findAll().size();
-            flagRepository.deleteById(id);
-            if(flagRepository.findAll().size() == flagsNumber){
-                throw new DataAccessException("Error : Could not delete flag with id : " + id) {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getFlagById(token, id);
+        int flagsNumber = flagRepository.findAll().size();
+        flagRepository.deleteById(id);
+        if(flagRepository.findAll().size() == flagsNumber){
+            throw new DataAccessException("Error : Could not delete flag with id : " + id) {};
         }
     }
 }

@@ -24,34 +24,31 @@ public class RoleService {
 	private final UserRepository userRepository;
 
 	public List<Role> getAllRoles(String token) {
-		if (Boolean.TRUE.equals(authService.checkAuth(token, "readRoles"))) {
-			return roleRepository.findAll();
-		} else {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readRoles"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
+		return roleRepository.findAll();
 	}
 
 	public Role getRoleById(String token, Integer id) {
-		if (Boolean.TRUE.equals(authService.checkAuth(token, "readRole"))) {
-			return roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("role", id));
-		} else {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readRole"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
+		return roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("role", id));
 	}
 
 	public void addRoles(String token, List<Role> roles) {
-		if (Boolean.TRUE.equals(authService.checkAuth(token, "addRole"))) {
-			int rolesNumber = roleRepository.findAll().size();
-			for(Role role : roles) {
-				roleRepository.save(role);
-				if(roleRepository.findAll().size() == rolesNumber){
-					throw new DataAccessException("Error : Could not add role") {};
-				} else {
-					rolesNumber++;
-				}
-			}
-		} else {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "addRole"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+		int rolesNumber = roleRepository.findAll().size();
+		for(Role role : roles) {
+			roleRepository.save(role);
+			if(roleRepository.findAll().size() == rolesNumber){
+				throw new DataAccessException("Error : Could not add role") {};
+			} else {
+				rolesNumber++;
+			}
 		}
 	}
 
@@ -89,25 +86,23 @@ public class RoleService {
 
 	public void deleteAllRoles(String token) {
 		if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteRole"))) {
-			roleRepository.deleteAll();
-			if(!roleRepository.findAll().isEmpty()){
-				throw new DataAccessException("Error : Could not delete all roles") {};
-			}
-		} else {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+		roleRepository.deleteAll();
+		if(!roleRepository.findAll().isEmpty()){
+			throw new DataAccessException("Error : Could not delete all roles") {};
 		}
 	}
 
 	public void deleteRole(String token, Integer id) {
-		if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteRole"))) {
-			getRoleById(token, id);
-			int rolesNumber = roleRepository.findAll().size();
-			roleRepository.deleteById(id);
-			if(roleRepository.findAll().size() == rolesNumber){
-				throw new DataAccessException("Error : Could not delete role with id : " + id) {};
-			}
-		} else {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteRole"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+		getRoleById(token, id);
+		int rolesNumber = roleRepository.findAll().size();
+		roleRepository.deleteById(id);
+		if(roleRepository.findAll().size() == rolesNumber){
+			throw new DataAccessException("Error : Could not delete role with id : " + id) {};
 		}
 	}
 

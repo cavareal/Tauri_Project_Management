@@ -20,34 +20,31 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
 
     public List<Project> getAllProjects(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readProjects"))) {
-            return projectRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readProjects"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return projectRepository.findAll();
     }
 
     public Project getProjectById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readProject"))) {
-            return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("project", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readProject"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("project", id));
     }
 
     public void addProjects(String token, List<Project> projects) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addProject"))) {
-            int projectsNumber = projectRepository.findAll().size();
-            for(Project project : projects) {
-                projectRepository.save(project);
-                if(projectRepository.findAll().size() == projectsNumber){
-                    throw new DataAccessException("Error : Could not add project") {};
-                } else {
-                    projectsNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addProject"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int projectsNumber = projectRepository.findAll().size();
+        for(Project project : projects) {
+            projectRepository.save(project);
+            if(projectRepository.findAll().size() == projectsNumber){
+                throw new DataAccessException("Error : Could not add project") {};
+            } else {
+                projectsNumber++;
+            }
         }
     }
 
@@ -67,26 +64,24 @@ public class ProjectService {
     }
 
     public void deleteAllProjects(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteProject"))) {
-            projectRepository.deleteAll();
-            if(!projectRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all projects") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteProject"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        projectRepository.deleteAll();
+        if(!projectRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all projects") {};
         }
     }
 
     public void deleteProject(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteProject"))) {
-            getProjectById(token, id);
-            int projectsNumber = projectRepository.findAll().size();
-            projectRepository.deleteById(id);
-            if(projectRepository.findAll().size() == projectsNumber){
-                throw new DataAccessException("Error : Could not delete project with id : " + id) {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteProject"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getProjectById(token, id);
+        int projectsNumber = projectRepository.findAll().size();
+        projectRepository.deleteById(id);
+        if(projectRepository.findAll().size() == projectsNumber){
+            throw new DataAccessException("Error : Could not delete project with id : " + id) {};
         }
     }
 }

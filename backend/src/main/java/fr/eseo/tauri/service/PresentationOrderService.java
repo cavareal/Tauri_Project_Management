@@ -23,34 +23,31 @@ public class PresentationOrderService {
     private final SprintRepository sprintRepository;
 
     public List<PresentationOrder> getAllPresentationOrders(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readPresentationOrders"))) {
-            return presentationOrderRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPresentationOrders"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return presentationOrderRepository.findAll();
     }
 
     public PresentationOrder getPresentationOrderById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readPresentationOrder"))) {
-            return presentationOrderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("presentationOrder", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPresentationOrder"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return presentationOrderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("presentationOrder", id));
     }
 
     public void addPresentationOrders(String token, List<PresentationOrder> presentationOrders) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addPresentationOrder"))) {
-            int presentationOrdersNumber = presentationOrderRepository.findAll().size();
-            for(PresentationOrder presentationOrder : presentationOrders) {
-                presentationOrderRepository.save(presentationOrder);
-                if(presentationOrderRepository.findAll().size() == presentationOrdersNumber){
-                    throw new DataAccessException("Error : Could not add presentation order") {};
-                } else {
-                    presentationOrdersNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addPresentationOrder"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int presentationOrdersNumber = presentationOrderRepository.findAll().size();
+        for(PresentationOrder presentationOrder : presentationOrders) {
+            presentationOrderRepository.save(presentationOrder);
+            if(presentationOrderRepository.findAll().size() == presentationOrdersNumber){
+                throw new DataAccessException("Error : Could not add presentation order") {};
+            } else {
+                presentationOrdersNumber++;
+            }
         }
     }
 
@@ -91,26 +88,24 @@ public class PresentationOrderService {
     }
 
     public void deleteAllPresentationOrders(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deletePresentationOrder"))) {
-            presentationOrderRepository.deleteAll();
-            if(!presentationOrderRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all presentation orders") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deletePresentationOrder"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        presentationOrderRepository.deleteAll();
+        if(!presentationOrderRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all presentation orders") {};
         }
     }
 
     public void deletePresentationOrder(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deletePresentationOrder"))) {
-            getPresentationOrderById(token, id);
-            int presentationOrdersNumber = presentationOrderRepository.findAll().size();
-            presentationOrderRepository.deleteById(id);
-            if(presentationOrderRepository.findAll().size() == presentationOrdersNumber){
-                throw new DataAccessException("Error : Could not delete presentation order with id : " + id) {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deletePresentationOrder"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getPresentationOrderById(token, id);
+        int presentationOrdersNumber = presentationOrderRepository.findAll().size();
+        presentationOrderRepository.deleteById(id);
+        if(presentationOrderRepository.findAll().size() == presentationOrdersNumber){
+            throw new DataAccessException("Error : Could not delete presentation order with id : " + id) {};
         }
     }
 }

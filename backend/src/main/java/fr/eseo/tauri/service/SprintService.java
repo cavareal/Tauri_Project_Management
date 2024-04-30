@@ -23,34 +23,31 @@ public class SprintService {
     private final ProjectRepository projectRepository;
 
     public List<Sprint> getAllSprints(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readSprints"))) {
-            return sprintRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readSprints"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return sprintRepository.findAll();
     }
 
     public Sprint getSprintById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readSprint"))) {
-            return sprintRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("sprint", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readSprint"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return sprintRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("sprint", id));
     }
 
     public void addSprints(String token, List<Sprint> sprints) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addSprint"))) {
-            int sprintsNumber = sprintRepository.findAll().size();
-            for(Sprint sprint : sprints) {
-                sprintRepository.save(sprint);
-                if(sprintRepository.findAll().size() == sprintsNumber){
-                    throw new DataAccessException("Error : Could not add sprint") {};
-                } else {
-                    sprintsNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addSprint"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int sprintsNumber = sprintRepository.findAll().size();
+        for(Sprint sprint : sprints) {
+            sprintRepository.save(sprint);
+            if(sprintRepository.findAll().size() == sprintsNumber){
+                throw new DataAccessException("Error : Could not add sprint") {};
+            } else {
+                sprintsNumber++;
+            }
         }
     }
 
@@ -93,26 +90,24 @@ public class SprintService {
     }
 
     public void deleteAllSprints(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteSprint"))) {
-            sprintRepository.deleteAll();
-            if(!sprintRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all sprints") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteSprint"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        sprintRepository.deleteAll();
+        if(!sprintRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all sprints") {};
         }
     }
 
     public void deleteSprint(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteSprint"))) {
-            getSprintById(token, id);
-            int sprintsNumber = sprintRepository.findAll().size();
-            sprintRepository.deleteById(id);
-            if(sprintRepository.findAll().size() == sprintsNumber){
-                throw new DataAccessException("Error : Could not delete sprint with id : " + id) {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteSprint"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getSprintById(token, id);
+        int sprintsNumber = sprintRepository.findAll().size();
+        sprintRepository.deleteById(id);
+        if(sprintRepository.findAll().size() == sprintsNumber){
+            throw new DataAccessException("Error : Could not delete sprint with id : " + id) {};
         }
     }
 }

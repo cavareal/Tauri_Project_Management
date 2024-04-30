@@ -22,34 +22,31 @@ public class NotificationService {
     private final UserRepository userRepository;
 
     public List<Notification> getAllNotifications(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readNotifications"))) {
-            return notificationRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotifications"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return notificationRepository.findAll();
     }
 
     public Notification getNotificationById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readNotification"))) {
-            return notificationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("notification", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotification"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return notificationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("notification", id));
     }
 
     public void addNotifications(String token, List<Notification> notifications) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addNotification"))) {
-            int notificationsNumber = notificationRepository.findAll().size();
-            for(Notification notification : notifications) {
-                notificationRepository.save(notification);
-                if(notificationRepository.findAll().size() == notificationsNumber){
-                    throw new DataAccessException("Error : Could not add notification sent by " + notification.userFrom().name()) {};
-                } else {
-                    notificationsNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addNotification"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int notificationsNumber = notificationRepository.findAll().size();
+        for(Notification notification : notifications) {
+            notificationRepository.save(notification);
+            if(notificationRepository.findAll().size() == notificationsNumber){
+                throw new DataAccessException("Error : Could not add notification sent by " + notification.userFrom().name()) {};
+            } else {
+                notificationsNumber++;
+            }
         }
     }
 
@@ -95,26 +92,24 @@ public class NotificationService {
     }
 
     public void deleteAllNotifications(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteNotification"))) {
-            notificationRepository.deleteAll();
-            if(!notificationRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all notifications") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteNotification"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        notificationRepository.deleteAll();
+        if(!notificationRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all notifications") {};
         }
     }
 
     public void deleteNotification(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteNotification"))) {
-            getNotificationById(token, id);
-            int notificationsNumber = notificationRepository.findAll().size();
-            notificationRepository.deleteById(id);
-            if(notificationRepository.findAll().size() == notificationsNumber){
-                throw new DataAccessException("Error : Could not delete notification with id : " + id) {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteNotification"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getNotificationById(token, id);
+        int notificationsNumber = notificationRepository.findAll().size();
+        notificationRepository.deleteById(id);
+        if(notificationRepository.findAll().size() == notificationsNumber){
+            throw new DataAccessException("Error : Could not delete notification with id : " + id) {};
         }
     }
 }

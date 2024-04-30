@@ -28,26 +28,24 @@ public class ValidationBonusService {
     }
 
     /*public ValidationBonus getValidationBonusById(String token, ValidationBonusId id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readValidationBonus"))) {
-            return validationBonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("validationBonus", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return validationBonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("validationBonus", id));
     }*/
 
     public void addValidationBonuses(String token, List<ValidationBonus> validationBonuses) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addValidationBonus"))) {
-            int validationBonusesNumber = validationBonusRepository.findAll().size();
-            for(ValidationBonus validationBonus : validationBonuses) {
-                validationBonusRepository.save(validationBonus);
-                if(validationBonusRepository.findAll().size() == validationBonusesNumber){
-                    throw new DataAccessException("Error : Could not add validation bonus") {};
-                } else {
-                    validationBonusesNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int validationBonusesNumber = validationBonusRepository.findAll().size();
+        for(ValidationBonus validationBonus : validationBonuses) {
+            validationBonusRepository.save(validationBonus);
+            if(validationBonusRepository.findAll().size() == validationBonusesNumber){
+                throw new DataAccessException("Error : Could not add validation bonus") {};
+            } else {
+                validationBonusesNumber++;
+            }
         }
     }
 
@@ -80,26 +78,24 @@ public class ValidationBonusService {
     }
 
     public void deleteAllValidationBonuses(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
-            validationBonusRepository.deleteAll();
-            if(!validationBonusRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all validation bonuses") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        validationBonusRepository.deleteAll();
+        if(!validationBonusRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all validation bonuses") {};
         }
     }
 
     public void deleteValidationBonus(String token, ValidationBonusId id) {
-        /*if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
-            getValidationBonusById(token, id);
-            int validationBonusesNumber = validationBonusRepository.findAll().size();
-            validationBonusRepository.deleteById(id);
-            if(validationBonusRepository.findAll().size() == validationBonusesNumber){
-                throw new DataAccessException("Error : Could not delete validation bonus with id : " + id) {};
-            }
-        } else {
+        /*if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getValidationBonusById(token, id);
+        int validationBonusesNumber = validationBonusRepository.findAll().size();
+        validationBonusRepository.deleteById(id);
+        if(validationBonusRepository.findAll().size() == validationBonusesNumber){
+            throw new DataAccessException("Error : Could not delete validation bonus with id : " + id) {};
         }*/
     }
 }

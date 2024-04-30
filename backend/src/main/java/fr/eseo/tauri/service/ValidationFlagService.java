@@ -20,34 +20,31 @@ public class ValidationFlagService {
     private final ValidationFlagRepository validationFlagRepository;
 
     public List<ValidationFlag> getAllValidationFlags(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readValidationFlags"))) {
-            return validationFlagRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationFlags"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return validationFlagRepository.findAll();
     }
 
     /*public ValidationFlag getValidationFlagById(String token, ValidationFlagId id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readValidationFlag"))) {
-            return validationFlagRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("validationFlag", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return validationFlagRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("validationFlag", id));
     }*/
 
     public void addValidationFlags(String token, List<ValidationFlag> validationFlags) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addValidationFlag"))) {
-            int validationFlagsNumber = validationFlagRepository.findAll().size();
-            for(ValidationFlag validationFlag : validationFlags) {
-                validationFlagRepository.save(validationFlag);
-                if(validationFlagRepository.findAll().size() == validationFlagsNumber){
-                    throw new DataAccessException("Error : Could not add validation flag") {};
-                } else {
-                    validationFlagsNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int validationFlagsNumber = validationFlagRepository.findAll().size();
+        for(ValidationFlag validationFlag : validationFlags) {
+            validationFlagRepository.save(validationFlag);
+            if(validationFlagRepository.findAll().size() == validationFlagsNumber){
+                throw new DataAccessException("Error : Could not add validation flag") {};
+            } else {
+                validationFlagsNumber++;
+            }
         }
     }
 
@@ -80,26 +77,24 @@ public class ValidationFlagService {
     }
 
     public void deleteAllValidationFlags(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationFlag"))) {
-            validationFlagRepository.deleteAll();
-            if(!validationFlagRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all validation flags") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        validationFlagRepository.deleteAll();
+        if(!validationFlagRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all validation flags") {};
         }
     }
 
     public void deleteValidationFlag(String token, ValidationFlagId id) {
         /*if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationFlag"))) {
-            getValidationFlagById(token, id);
-            int validationFlagsNumber = validationFlagRepository.findAll().size();
-            validationFlagRepository.deleteById(id);
-            if(validationFlagRepository.findAll().size() == validationFlagsNumber){
-                throw new DataAccessException("Error : Could not delete validation flag with id : " + id) {};
-            }
-        } else {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getValidationFlagById(token, id);
+        int validationFlagsNumber = validationFlagRepository.findAll().size();
+        validationFlagRepository.deleteById(id);
+        if(validationFlagRepository.findAll().size() == validationFlagsNumber){
+            throw new DataAccessException("Error : Could not delete validation flag with id : " + id) {};
         }*/
     }
 }

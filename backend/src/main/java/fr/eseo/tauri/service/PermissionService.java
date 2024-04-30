@@ -21,34 +21,31 @@ public class PermissionService {
     private final PermissionRepository permissionRepository;
 
     public List<Permission> getAllPermissions(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
-            return permissionRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return permissionRepository.findAll();
     }
 
     public Permission getPermissionById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readPermission"))) {
-            return permissionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("permission", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermission"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return permissionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("permission", id));
     }
 
     public void addPermissions(String token, List<Permission> permissions) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addPermission"))) {
-            int permissionsNumber = permissionRepository.findAll().size();
-            for(Permission permission : permissions) {
-                permissionRepository.save(permission);
-                if(permissionRepository.findAll().size() == permissionsNumber){
-                    throw new DataAccessException("Error : Could not add permission") {};
-                } else {
-                    permissionsNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addPermission"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int permissionsNumber = permissionRepository.findAll().size();
+        for(Permission permission : permissions) {
+            permissionRepository.save(permission);
+            if(permissionRepository.findAll().size() == permissionsNumber){
+                throw new DataAccessException("Error : Could not add permission") {};
+            } else {
+                permissionsNumber++;
+            }
         }
     }
 
@@ -84,26 +81,24 @@ public class PermissionService {
     }
 
     public void deleteAllPermissions(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deletePermission"))) {
-            permissionRepository.deleteAll();
-            if(!permissionRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all permissions") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deletePermission"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        permissionRepository.deleteAll();
+        if(!permissionRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all permissions") {};
         }
     }
 
     public void deletePermission(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deletePermission"))) {
-            getPermissionById(token, id);
-            int permissionsNumber = permissionRepository.findAll().size();
-            permissionRepository.deleteById(id);
-            if(permissionRepository.findAll().size() == permissionsNumber){
-                throw new DataAccessException("Error : Could not delete permission with id : " + id) {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deletePermission"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getPermissionById(token, id);
+        int permissionsNumber = permissionRepository.findAll().size();
+        permissionRepository.deleteById(id);
+        if(permissionRepository.findAll().size() == permissionsNumber){
+            throw new DataAccessException("Error : Could not delete permission with id : " + id) {};
         }
     }
 }

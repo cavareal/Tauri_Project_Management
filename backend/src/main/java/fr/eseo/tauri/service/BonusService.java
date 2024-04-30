@@ -25,35 +25,32 @@ public class BonusService {
     private final StudentRepository studentRepository;
 
     public List<Bonus> getAllBonuses(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
-                return bonusRepository.findAll();
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return bonusRepository.findAll();
     }
 
     public Bonus getBonusById(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readBonus"))) {
-            return bonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("bonus", id));
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        return bonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("bonus", id));
     }
 
 
     public void addBonuses(String token, List<Bonus> bonuses) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "addBonus"))) {
-            int bonusesNumber = bonusRepository.findAll().size();
-            for(Bonus bonus : bonuses) {
-                bonusRepository.save(bonus);
-                if(bonusRepository.findAll().size() == bonusesNumber){
-                    throw new DataAccessException("Error : Could not add bonus attributed by " + bonus.author().name() + " to " + bonus.student().name()) {};
-                } else {
-                    bonusesNumber++;
-                }
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        int bonusesNumber = bonusRepository.findAll().size();
+        for(Bonus bonus : bonuses) {
+            bonusRepository.save(bonus);
+            if(bonusRepository.findAll().size() == bonusesNumber){
+                throw new DataAccessException("Error : Could not add bonus attributed by " + bonus.author().name() + " to " + bonus.student().name()) {};
+            } else {
+                bonusesNumber++;
+            }
         }
     }
 
@@ -103,26 +100,24 @@ public class BonusService {
     }
 
     public void deleteAllBonuses(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
-            bonusRepository.deleteAll();
-            if(!bonusRepository.findAll().isEmpty()){
-                throw new DataAccessException("Error : Could not delete all bonuses") {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        bonusRepository.deleteAll();
+        if(!bonusRepository.findAll().isEmpty()){
+            throw new DataAccessException("Error : Could not delete all bonuses") {};
         }
     }
 
     public void deleteBonus(String token, Integer id) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
-            getBonusById(token, id);
-            int bonusesNumber = bonusRepository.findAll().size();
-            bonusRepository.deleteById(id);
-            if(bonusRepository.findAll().size() == bonusesNumber){
-                throw new DataAccessException("Error : Could not delete bonus with id : " + id) {};
-            }
-        } else {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getBonusById(token, id);
+        int bonusesNumber = bonusRepository.findAll().size();
+        bonusRepository.deleteById(id);
+        if(bonusRepository.findAll().size() == bonusesNumber){
+            throw new DataAccessException("Error : Could not delete bonus with id : " + id) {};
         }
     }
 
