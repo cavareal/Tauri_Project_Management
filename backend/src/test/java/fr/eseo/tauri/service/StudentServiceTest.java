@@ -407,13 +407,15 @@ class StudentServiceTest {
 
         studentService.writeSummaryData(csvWriter, 0);
 
-        String expectedCsv = "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"Nombre F\",\"0\",\"\"\n" +
-                "\"\",\"Nombre M\",\"0\",\"\"\n" +
-                "\"\",\"Nombre B\",\"\",\"0\"\n";
+        String expectedCsv = """
+                "","","",""
+                "","","",""
+                "","","",""
+                "","","",""
+                "","Nombre F","0",""
+                "","Nombre M","0",""
+                "","Nombre B","","0"
+                """;
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
@@ -426,8 +428,10 @@ class StudentServiceTest {
 
         studentService.writeEmptyRows(csvWriter, 2, 2);
 
-        String expectedCsv = "\"\",\"\"\n" +
-                "\"\",\"\"\n";
+        String expectedCsv = """
+                "",""
+                "",""
+                """;
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
@@ -492,8 +496,10 @@ class StudentServiceTest {
 
         studentService.writeStudentData(csvWriter, Arrays.asList(student1, student2), List.of(gradeType));
 
-        String expectedCsv = "\"1\",\"John Doe\",\"M\",\"B\",\"15.0\"\n" +
-                "\"2\",\"Jane Doe\",\"F\",\"\",\"14.0\"\n";
+        String expectedCsv = """
+                "1","John Doe","M","B","15.0"
+                "2","Jane Doe","F","","14.0"
+                """;
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
@@ -532,8 +538,10 @@ class StudentServiceTest {
 
         studentService.writeHeaders(csvWriter, importedGrades);
 
-        String expectedCsv = "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"\",\"sexe M / F\",\"\"\n";
+        String expectedCsv = """
+                "","","",""
+                "","","sexe M / F",""
+                """;
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
@@ -557,8 +565,10 @@ class StudentServiceTest {
 
         studentService.writeHeaders(csvWriter, importedGrades);
 
-        String expectedCsv = "\"\",\"\",\"\",\"\",\"\",\"1.0\"\n" +
-                "\"\",\"\",\"sexe M / F\",\"\",\"\",\"GradeType1\"\n";
+        String expectedCsv = """
+                "","","","","","1.0"
+                "","","sexe M / F","","","GradeType1"
+                """;
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
@@ -566,21 +576,23 @@ class StudentServiceTest {
 
     @Test
     @DisplayName("createStudentsCSV returns valid CSV for empty student list and grade types")
-    void createStudentsCSV_returnsValidCSVForEmptyStudentListAndGradeTypes() throws IOException {
+    void createStudentsCSV_returnsValidCSVForEmptyStudentListAndGradeTypes() {
         when(gradeTypeService.getImportedGradeTypes()).thenReturn(Collections.emptyList());
         when(studentService.getStudents()).thenReturn(Collections.emptyList());
 
         byte[] csv = studentService.createStudentsCSV();
 
-        String expectedCsv = "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"\",\"sexe M / F\",\"\"\n" +
-                "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"\",\"\",\"\"\n" +
-                "\"\",\"Nombre F\",\"0\",\"\"\n" +
-                "\"\",\"Nombre M\",\"0\",\"\"\n" +
-                "\"\",\"Nombre B\",\"\",\"0\"\n";
+        String expectedCsv = """
+                "","","",""
+                "","","sexe M / F",""
+                "","","",""
+                "","","",""
+                "","","",""
+                "","","",""
+                "","Nombre F","0",""
+                "","Nombre M","0",""
+                "","Nombre B","","0"
+                """;
 
         assertEquals(expectedCsv, new String(csv));
     }
