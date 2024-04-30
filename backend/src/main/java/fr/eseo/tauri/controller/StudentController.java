@@ -102,7 +102,15 @@ public class StudentController {
 
     @GetMapping("/download-students-csv")
     public ResponseEntity<byte[]> downloadStudentsCSV() {
-        CustomLogger.logInfo("Downloading students CSV");
-        return ResponseEntity.ok(studentService.createStudentsCSV());
+        try{
+            CustomLogger.logInfo("Downloading students CSV");
+            return ResponseEntity.ok(studentService.createStudentsCSV());
+        }
+        catch (Exception e){
+            CustomLogger.logError("Error downloading students CSV", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
+
     }
 }
