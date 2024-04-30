@@ -169,11 +169,6 @@ public class GradeService {
         return gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType);
     }
 
-	public List<Grade> findImportedGradesByStudentId(int studentId) {
-		return gradeRepository.findImportedGradesByStudentId(studentId);
-	}
-
-
 	public Float getGradeByStudentAndGradeType(Student student, GradeType gradeType) {
 		try {
 			Float grade = gradeRepository.findValueByStudentAndGradeType(student, gradeType);

@@ -2,7 +2,6 @@ package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
@@ -128,7 +127,7 @@ public class GradeTypeService {
         } catch (IOException | CsvValidationException e) {
            CustomLogger.logError("Error occurred while extracting coefficient rating and value", e);
         }
-
+        // TODO an error is coming from here
         return createGradeTypes(coefficients, ratings, false, true);
     }
 
@@ -145,7 +144,7 @@ public class GradeTypeService {
         for (String part : nextLine) {
             String trimmedPart = part.trim();
             try {
-                Integer.parseInt(trimmedPart); // Check if it's a coefficient
+                Float.parseFloat(trimmedPart); // Check if it's a coefficient
                 coefficients.add(trimmedPart);
             } catch (NumberFormatException ignored) {
                 startingCoefficients++;
