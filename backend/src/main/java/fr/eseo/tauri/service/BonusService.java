@@ -7,6 +7,8 @@ import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.SprintRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.validator.bonus.CreateBonusValidator;
+import fr.eseo.tauri.validator.bonus.UpdateBonusValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -39,12 +41,21 @@ public class BonusService {
     }
 
 
-    public void addBonuses(String token, List<Bonus> bonuses) {
+    public void addBonuses(String token, List<CreateBonusValidator> bonusesDetails) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         int bonusesNumber = bonusRepository.findAll().size();
-        for(Bonus bonus : bonuses) {
+        Bonus bonus = new Bonus();
+        for(CreateBonusValidator bonusDetails : bonusesDetails) {
+
+            if(bonusDetails.value() != null) bonus.value(bonusDetails.value());
+            if(bonusDetails.comment() != null) bonus.comment(bonusDetails.comment());
+            if(bonusDetails.limited() != null) bonus.limited(bonusDetails.limited());
+            if(bonusDetails.sprintId() != null) bonus.sprint(sprintRepository.findById(bonusDetails.sprintId()).orElseThrow(() -> new ResourceNotFoundException("sprint", bonusDetails.sprintId())));
+            if(bonusDetails.authorId() != null) bonus.author(userRepository.findById(bonusDetails.authorId()).orElseThrow(() -> new ResourceNotFoundException("user", bonusDetails.authorId())));
+            if(bonusDetails.studentId() != null) bonus.student(studentRepository.findById(bonusDetails.studentId()).orElseThrow(() -> new ResourceNotFoundException("student", bonusDetails.studentId())));
+
             bonusRepository.save(bonus);
             if(bonusRepository.findAll().size() == bonusesNumber){
                 throw new DataAccessException("Error : Could not add bonus attributed by " + bonus.author().name() + " to " + bonus.student().name()) {};
@@ -54,49 +65,21 @@ public class BonusService {
         }
     }
 
-    public void updateBonus(String token, Integer id, Map<String, Object> bonusDetails) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "updateBonus"))) {
-            Bonus bonus = getBonusById(token, id);
-
-            for (Map.Entry<String, Object> entry : bonusDetails.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-
-                if (value == null) {
-                    continue;
-                }
-
-                switch (key) {
-                    case "value":
-                        bonus.value(Float.parseFloat((String) value));
-                        break;
-                    case "comment":
-                        bonus.comment((String) value);
-                        break;
-                    case "limited":
-                        bonus.limited((Boolean) value);
-                        break;
-                    case "sprint": //à changer si on change le schéma des clés étrangères dans le front pour n'envoyer que l'id de l'objet et pas l'objet tout entier
-                        Map<String, Object> sprintMap = (Map<String, Object>) value;
-                        bonus.sprint(sprintRepository.findById((Integer) sprintMap.get("id")).orElseThrow(() -> new ResourceNotFoundException("sprint", (Integer) sprintMap.get("id"))));
-                        break;
-                    case "author":
-                        Map<String, Object> userMap = (Map<String, Object>) value;
-                        bonus.author(userRepository.findById((Integer) userMap.get("id")).orElseThrow(() -> new ResourceNotFoundException("user", (Integer) userMap.get("id"))));
-                        break;
-                    case "student":
-                        Map<String, Object> studentMap = (Map<String, Object>) value;
-                        bonus.student(studentRepository.findById((Integer) studentMap.get("id")).orElseThrow(() -> new ResourceNotFoundException("student", (Integer) studentMap.get("id"))));
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Invalid key: " + key);
-                }
-            }
-            bonusRepository.save(bonus);
-
-        } else {
+    public void updateBonus(String token, Integer id, UpdateBonusValidator bonusDetails) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+
+            Bonus bonus = getBonusById(token, id);
+
+            if (bonusDetails.value() != null) bonus.value(bonusDetails.value());
+            if (bonusDetails.comment() != null) bonus.comment(bonusDetails.comment());
+            if (bonusDetails.limited() != null) bonus.limited(bonusDetails.limited());
+            if (bonusDetails.sprintId() != null) bonus.sprint(sprintRepository.findById(bonusDetails.sprintId()).orElseThrow(() -> new ResourceNotFoundException("sprint", bonusDetails.sprintId())));
+            if (bonusDetails.authorId() != null) bonus.author(userRepository.findById(bonusDetails.authorId()).orElseThrow(() -> new ResourceNotFoundException("user", bonusDetails.authorId())));
+            if (bonusDetails.studentId() != null) bonus.student(studentRepository.findById(bonusDetails.studentId()).orElseThrow(() -> new ResourceNotFoundException("student", bonusDetails.studentId())));
+
+            bonusRepository.save(bonus);
     }
 
     public void deleteAllBonuses(String token) {
