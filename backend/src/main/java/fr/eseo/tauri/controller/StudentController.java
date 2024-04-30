@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
+import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -81,7 +82,7 @@ public class StudentController {
     public ResponseEntity<List<Student>> getStudentsByTeam(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         // Check token, if user is GOOD
         String permission = "readStudentByTeam";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try {
                 List<Student> students = studentService.getStudentsByTeamId(id);
                 return ResponseEntity.ok(students);
@@ -94,8 +95,21 @@ public class StudentController {
     }
 
     @DeleteMapping()
-    public ResponseEntity<String> deleteStudents(){
+    public ResponseEntity<String> deleteStudents() {
         studentService.deleteAllImportedStudentsAndGradeTypes();
-        return  ResponseEntity.ok("students have been deleted successfully");
+        return ResponseEntity.ok("students have been deleted successfully");
+    }
+
+    @GetMapping("/download-students-csv")
+    public ResponseEntity<byte[]> downloadStudentsCSV() {
+        try{
+            CustomLogger.logInfo("Downloading students CSV");
+            return ResponseEntity.ok(studentService.createStudentsCSV());
+        }
+        catch (Exception e){
+            CustomLogger.logError("Error downloading students CSV", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+
     }
 }
