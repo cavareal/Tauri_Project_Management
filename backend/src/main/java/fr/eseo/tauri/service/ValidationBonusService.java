@@ -2,14 +2,12 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.ValidationBonus;
-import fr.eseo.tauri.model.id_class.ValidationBonusId;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.ValidationBonusRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -17,84 +15,59 @@ public class ValidationBonusService {
 
     private final AuthService authService;
     private final ValidationBonusRepository validationBonusRepository;
+    private final UserService userService;
+    private final BonusService bonusService;
 
-    public List<ValidationBonus> getAllValidationBonuses(String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readValidationBonuses"))) {
-            return validationBonusRepository.findAll();
-        } else {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-    }
-
-    /*public ValidationBonus getValidationBonusById(String token, ValidationBonusId id) {
+    public ValidationBonus getValidationBonusById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return validationBonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("validationBonus", id));
-    }*/
+    }
 
-    public void addValidationBonuses(String token, List<ValidationBonus> validationBonuses) {
+    public List<ValidationBonus> getAllValidationBonusesByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationBonuses"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return validationBonusRepository.findAllByProject(projectId);
+    }
+
+    public void createValidationBonus(String token, ValidationBonus validationBonus) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        int validationBonusesNumber = validationBonusRepository.findAll().size();
-        for(ValidationBonus validationBonus : validationBonuses) {
-            validationBonusRepository.save(validationBonus);
-            if(validationBonusRepository.findAll().size() == validationBonusesNumber){
-                throw new DataAccessException("Error : Could not add validation bonus") {};
-            } else {
-                validationBonusesNumber++;
-            }
-        }
+        validationBonus.author(userService.getUserById(token, validationBonus.authorId()));
+        validationBonus.bonus(bonusService.getBonusById(token, validationBonus.bonusId()));
+
+        validationBonusRepository.save(validationBonus);
     }
 
-    public void updateValidationBonus(String token, ValidationBonusId id, Map<String, Object> validationupdatedBonus) {
-        /*if (Boolean.TRUE.equals(authService.checkAuth(token, "updateValidationBonus"))) {
-            ValidationBonus validationBonus = getValidationBonusById(token, id);
-
-            for (Map.Entry<String, Object> entry : validationupdatedBonus.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-
-                if (value == null) {
-                    continue;
-                }
-
-                switch (key) {
-                    case "confirmed":
-                        validationBonus.confirmed((Boolean) value);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Invalid key: " + key);
-                }
-            }
-
-            validationBonusRepository.save(validationBonus);
-
-        } else {
+    public void updateValidationBonus(String token, Integer id, ValidationBonus updatedValidationBonus) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }*/
+        }
+
+        ValidationBonus validationBonus = getValidationBonusById(token, id);
+
+        if (updatedValidationBonus.confirmed() != null) validationBonus.confirmed(updatedValidationBonus.confirmed());
+        if (updatedValidationBonus.authorId() != null) validationBonus.author(userService.getUserById(token, updatedValidationBonus.authorId()));
+        if (updatedValidationBonus.bonusId() != null) validationBonus.bonus(bonusService.getBonusById(token, updatedValidationBonus.bonusId()));
+
+        validationBonusRepository.save(validationBonus);
     }
 
-    public void deleteAllValidationBonuses(String token) {
+    public void deleteValidationBonus(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        validationBonusRepository.deleteAll();
-        if(!validationBonusRepository.findAll().isEmpty()){
-            throw new DataAccessException("Error : Could not delete all validation bonuses") {};
-        }
+        getValidationBonusById(token, id);
+        validationBonusRepository.deleteById(id);
     }
 
-    public void deleteValidationBonus(String token, ValidationBonusId id) {
-        /*if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
+    public void deleteAllValidationBonusesByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        getValidationBonusById(token, id);
-        int validationBonusesNumber = validationBonusRepository.findAll().size();
-        validationBonusRepository.deleteById(id);
-        if(validationBonusRepository.findAll().size() == validationBonusesNumber){
-            throw new DataAccessException("Error : Could not delete validation bonus with id : " + id) {};
-        }*/
+        validationBonusRepository.deleteAllByProject(projectId);
     }
 }

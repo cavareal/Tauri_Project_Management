@@ -71,10 +71,10 @@ public class StudentService {
      * @param teamId The id of the team
      * @return a list of students
      */
-    public List<Student> getStudentsByTeamId(Integer teamId) {
+    /*public List<Student> getStudentsByTeamId(Integer teamId) {
         Team team = teamService.getTeamById(teamId);
         return studentRepository.findStudentsByTeam(team);
-    }
+    }*/
 
 
     /**

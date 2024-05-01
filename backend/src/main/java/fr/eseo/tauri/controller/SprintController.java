@@ -3,13 +3,16 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.service.SprintService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,12 +21,7 @@ import java.util.Map;
 public class SprintController {
 
     private final SprintService sprintService;
-
-    @GetMapping
-    public ResponseEntity<List<Sprint>> getAllSprints(@RequestHeader("Authorization") String token) {
-        List<Sprint> sprints = sprintService.getAllSprints(token);
-        return ResponseEntity.ok(sprints);
-    }
+    private final ResponseMessage responseMessage = new ResponseMessage("sprint");
 
     @GetMapping("/{id}")
     public ResponseEntity<Sprint> getSprintById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -31,31 +29,37 @@ public class SprintController {
         return ResponseEntity.ok(sprint);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Sprint>> getAllSprintsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        List<Sprint> sprints = sprintService.getAllSprintsByProject(token, projectId);
+        return ResponseEntity.ok(sprints);
+    }
+
     @PostMapping
-    public ResponseEntity<String> addSprints(@RequestHeader("Authorization") String token, @RequestBody List<Sprint> sprints) {
-        sprintService.addSprints(token, sprints);
-        CustomLogger.info("The sprint(s) have been added");
-        return ResponseEntity.ok("The sprint(s) have been added");
+    public ResponseEntity<String> createSprint(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Sprint sprint) {
+        sprintService.createSprint(token, sprint);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
-        sprintService.updateSprint(token, id, request);
-        CustomLogger.info("The sprint has been updated");
-        return ResponseEntity.ok("The sprint has been updated");
-    }
-
-    @DeleteMapping
-    public ResponseEntity<String> deleteAllSprints(@RequestHeader("Authorization") String token) {
-        sprintService.deleteAllSprints(token);
-        CustomLogger.info("All the sprints have been deleted");
-        return ResponseEntity.ok("All the sprints have been deleted");
+    public ResponseEntity<String> updateSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Sprint updatedSprint) {
+        sprintService.updateSprint(token, id, updatedSprint);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         sprintService.deleteSprint(token, id);
-        CustomLogger.info("The sprint has been deleted");
-        return ResponseEntity.ok("The sprint has been deleted");
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllSprintsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        sprintService.deleteAllSprintsByProject(token, projectId);
+        CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+        return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 }

@@ -31,6 +31,9 @@ public class Flag implements Serializable {
     @JsonProperty
     private FlagType type;
 
+    @JsonProperty
+    private Boolean status;
+
     @ManyToOne
     @JoinColumn(name = "first_student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -49,6 +52,12 @@ public class Flag implements Serializable {
     @JsonProperty
     private User author;
 
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
+    private Project project;
+
     @Transient
     @JsonDeserialize
     private Integer firstStudentId;
@@ -61,5 +70,10 @@ public class Flag implements Serializable {
     @Transient
     @JsonDeserialize
     private Integer authorId;
+
+    @NotNull(groups = { Create.class }, message = "The projectId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer projectId;
 
 }

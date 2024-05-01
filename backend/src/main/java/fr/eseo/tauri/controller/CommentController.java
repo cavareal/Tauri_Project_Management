@@ -3,9 +3,13 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Comment;
 import fr.eseo.tauri.service.CommentService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +21,7 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-
+    private final ResponseMessage responseMessage = new ResponseMessage("comment");
 
     @GetMapping("/{id}")
     public ResponseEntity<Comment> getCommentById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -26,36 +30,36 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Comment>> getAllComments(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        List<Comment> comments = commentService.getAllComments(token, projectId);
+    public ResponseEntity<List<Comment>> getAllCommentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        List<Comment> comments = commentService.getAllCommentsByProject(token, projectId);
         return ResponseEntity.ok(comments);
     }
 
-    /*@PostMapping
-    public ResponseEntity<String> addComment(@RequestHeader("Authorization") String token, @RequestBody CreateCommentValidator commentDetails) {
-        commentService.addComment(token, commentDetails);
-        CustomLogger.info("The comment has been created");
-        return ResponseEntity.ok("The comment has been created");
+    @PostMapping
+    public ResponseEntity<String> createComment(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Comment comment) {
+        commentService.createComment(token, comment);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateComment(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody UpdateCommentValidator commentDetails) {
-        //commentService.updateComment(token, id, commentDetails);
-        CustomLogger.info("The comment has been updated");
-        return ResponseEntity.ok("The comment has been updated");
-    }*/
+    public ResponseEntity<String> updateComment(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class)@RequestBody Comment updatedComment) {
+        commentService.updateComment(token, id, updatedComment);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteComment(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         commentService.deleteComment(token, id);
-        CustomLogger.info("The comment has been deleted");
-        return ResponseEntity.ok("The comment has been deleted");
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllComments(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        commentService.deleteAllComments(token, projectId);
-        CustomLogger.info("All the comments have been deleted");
-        return ResponseEntity.ok("All the comments have been deleted");
+    public ResponseEntity<String> deleteAllCommentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        commentService.deleteAllCommentsByProject(token, projectId);
+        CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+        return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 }

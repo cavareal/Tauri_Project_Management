@@ -3,13 +3,16 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.service.PermissionService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,12 +21,7 @@ import java.util.Map;
 public class PermissionController {
 
     private final PermissionService permissionService;
-
-    @GetMapping
-    public ResponseEntity<List<Permission>> getAllPermissions(@RequestHeader("Authorization") String token) {
-        List<Permission> permissions = permissionService.getAllPermissions(token);
-        return ResponseEntity.ok(permissions);
-    }
+    private final ResponseMessage responseMessage = new ResponseMessage("permission");
 
     @GetMapping("/{id}")
     public ResponseEntity<Permission> getPermissionById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -31,31 +29,37 @@ public class PermissionController {
         return ResponseEntity.ok(permission);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Permission>> getAllPermissionsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        List<Permission> permissions = permissionService.getAllPermissions(token);
+        return ResponseEntity.ok(permissions);
+    }
+
     @PostMapping
-    public ResponseEntity<String> addPermissions(@RequestHeader("Authorization") String token, @RequestBody List<Permission> permissions) {
-        permissionService.addPermissions(token, permissions);
-        CustomLogger.info("The permission(s) have been added");
-        return ResponseEntity.ok("The permission(s) have been added");
+    public ResponseEntity<String> createPermission(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Permission permission) {
+        permissionService.createPermission(token, permission);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updatePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
-        permissionService.updatePermission(token, id, request);
-        CustomLogger.info("The permission has been updated");
-        return ResponseEntity.ok("The permission has been updated");
-    }
-
-    @DeleteMapping
-    public ResponseEntity<String> deleteAllPermissions(@RequestHeader("Authorization") String token) {
-        permissionService.deleteAllPermissions(token);
-        CustomLogger.info("All the permissions have been deleted");
-        return ResponseEntity.ok("All the permissions have been deleted");
+    public ResponseEntity<String> updatePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Permission updatedPermission) {
+        permissionService.updatePermission(token, id, updatedPermission);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         permissionService.deletePermission(token, id);
-        CustomLogger.info("The permission has been deleted");
-        return ResponseEntity.ok("The permission has been deleted");
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllPermissionsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        permissionService.deleteAllPermissions(token);
+        CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+        return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 }

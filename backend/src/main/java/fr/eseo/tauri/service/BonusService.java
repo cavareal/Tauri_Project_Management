@@ -85,9 +85,9 @@ public class BonusService {
     }
 
     /**
-     * Delete a bonus
-     * @param token
-     * @param id
+     * Delete a bonus with its id
+     * @param token the token of the user
+     * @param id the id of the bonus
      */
     public void deleteBonus(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
@@ -98,11 +98,11 @@ public class BonusService {
     }
 
     /**
-     * Delete all bonuses
-     * @param token
-     * @param projectId
+     * Delete all bonuses by project
+     * @param token the token of the user
+     * @param projectId the id of the project
      */
-    public void deleteAllBonuses(String token, Integer projectId) {
+    public void deleteAllBonusesByProject(String token, Integer projectId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }

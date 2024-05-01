@@ -3,6 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.service.BonusService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Create;
 import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +21,7 @@ import java.util.List;
 public class BonusController {
 
     private final BonusService bonusService;
+    private final ResponseMessage responseMessage = new ResponseMessage("bonus");
 
     /**
      * Get a bonus by its id
@@ -54,8 +56,8 @@ public class BonusController {
     @PostMapping
     public ResponseEntity<String> createBonus(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Bonus bonus) {
         bonusService.createBonus(token, bonus);
-        CustomLogger.info("The bonus has been created");
-        return ResponseEntity.ok("The bonus has been created");
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
     /**
@@ -68,8 +70,8 @@ public class BonusController {
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class)@RequestBody Bonus updatedBonus) {
         bonusService.updateBonus(token, id, updatedBonus);
-        CustomLogger.info("The bonus has been updated");
-        return ResponseEntity.ok("The bonus has been updated");
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
     /**
@@ -81,8 +83,8 @@ public class BonusController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         bonusService.deleteBonus(token, id);
-        CustomLogger.info("The bonus has been deleted");
-        return ResponseEntity.ok("The bonus has been deleted");
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
     }
 
     /**
@@ -92,10 +94,10 @@ public class BonusController {
      * @return a message
      */
     @DeleteMapping
-    public ResponseEntity<String> deleteAllBonuses(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        bonusService.deleteAllBonuses(token, projectId);
-        CustomLogger.info("All the bonuses have been deleted");
-        return ResponseEntity.ok("All the bonuses have been deleted");
+    public ResponseEntity<String> deleteAllBonusesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        bonusService.deleteAllBonusesByProject(token, projectId);
+        CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+        return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 
 }

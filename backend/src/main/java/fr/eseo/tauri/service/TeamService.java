@@ -232,7 +232,7 @@ public class TeamService {
      * @param id the ID of the team
      * @return the team if it exists, otherwise null
      */
-    public Team getTeamById(Integer id) {
+    public Team getTeamById(String token, Integer id) {
         return teamRepository.findById(id).orElse(null);
     }
 

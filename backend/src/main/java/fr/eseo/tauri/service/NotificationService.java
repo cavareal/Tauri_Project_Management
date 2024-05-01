@@ -5,7 +5,6 @@ import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -94,10 +93,6 @@ public class NotificationService {
 
 		getNotificationById(token, id);
 		notificationRepository.deleteById(id);
-
-		if (notificationRepository.findById(id).isPresent()) {
-			throw new DataAccessException("Error : Could not delete notification with id " + id) {};
-		}
 	}
 
 	/**
@@ -110,10 +105,6 @@ public class NotificationService {
 		}
 
 		notificationRepository.deleteAll();
-
-		if (!notificationRepository.findAll().isEmpty()) {
-			throw new DataAccessException("Error : Could not delete all notifications") {};
-		}
 	}
 
 }

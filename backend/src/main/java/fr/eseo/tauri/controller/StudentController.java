@@ -77,7 +77,7 @@ public class StudentController {
         }
     }
 
-    @GetMapping("/team/{id}")
+    /*@GetMapping("/team/{id}")
     public ResponseEntity<List<Student>> getStudentsByTeam(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         // Check token, if user is GOOD
         String permission = "readStudentByTeam";
@@ -91,7 +91,7 @@ public class StudentController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-    }
+    }*/
 
     @DeleteMapping()
     public ResponseEntity<String> deleteStudents(){

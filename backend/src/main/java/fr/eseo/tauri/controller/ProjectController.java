@@ -3,12 +3,13 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.util.CustomLogger;
-import fr.eseo.tauri.validator.project.CreateProjectValidator;
-import fr.eseo.tauri.validator.project.UpdateProjectValidator;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,12 +21,7 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
-
-    @GetMapping
-    public ResponseEntity<List<Project>> getAllProjects(@RequestHeader("Authorization") String token) {
-        List<Project> projects = projectService.getAllProjects(token);
-        return ResponseEntity.ok(projects);
-    }
+    private final ResponseMessage responseMessage = new ResponseMessage("project");
 
     @GetMapping("/{id}")
     public ResponseEntity<Project> getProjectById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -33,32 +29,37 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
+    @GetMapping
+    public ResponseEntity<List<Project>> getAllProjects(@RequestHeader("Authorization") String token) {
+        List<Project> projects = projectService.getAllProjects(token);
+        return ResponseEntity.ok(projects);
+    }
+
     @PostMapping
-    public ResponseEntity<String> createProject(@RequestHeader("Authorization") String token, @Valid @RequestBody CreateProjectValidator newProject) {
-        projectService.createProject(token, newProject);
-        CustomLogger.info("The project have been created");
-        return ResponseEntity.ok("The project have been created");
+    public ResponseEntity<String> createProject(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Project project) {
+        projectService.createProject(token, project);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Valid @RequestBody UpdateProjectValidator requestBody) {
-        projectService.updateProject(token, id, requestBody);
-        CustomLogger.info("The project has been updated");
-        return ResponseEntity.ok("The project has been updated");
+    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Project updatedProject) {
+        projectService.updateProject(token, id, updatedProject);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProjectById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        projectService.deleteProjectById(token, id);
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
     }
 
     @DeleteMapping
     public ResponseEntity<String> deleteAllProjects(@RequestHeader("Authorization") String token) {
         projectService.deleteAllProjects(token);
-        CustomLogger.info("All the projects have been deleted");
-        return ResponseEntity.ok("All the projects have been deleted");
+        CustomLogger.info(responseMessage.deleteAll());
+        return ResponseEntity.ok(responseMessage.deleteAll());
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProject(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        projectService.deleteProject(token, id);
-        CustomLogger.info("The project has been deleted");
-        return ResponseEntity.ok("The project has been deleted");
-    }
-
 }

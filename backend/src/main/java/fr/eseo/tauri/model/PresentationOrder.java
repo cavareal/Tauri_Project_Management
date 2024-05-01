@@ -1,12 +1,10 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.eseo.tauri.model.id_class.PresentationOrderId;
-import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.NonNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -20,6 +18,7 @@ public class PresentationOrder {
     @ManyToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @NonNull
     @JsonProperty
     private Sprint sprint;
 
@@ -27,6 +26,7 @@ public class PresentationOrder {
     @ManyToOne
     @JoinColumn(name = "student_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @NonNull
     @JsonProperty
     private Student student;
 
