@@ -2,6 +2,7 @@ package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
@@ -33,6 +34,7 @@ public class StudentService {
     private final TeamService teamService;
     private final GradeTypeService gradeTypeService;
     private final GradeService gradeService;
+    private final AuthService authService;
 
     /**
      * This method is used to create a new student and save it to the repository.
@@ -45,6 +47,13 @@ public class StudentService {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         studentRepository.save(student);
+    }
+
+    public Student getStudentById(String token, Integer id){
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Student not found"));
     }
 
     /**
