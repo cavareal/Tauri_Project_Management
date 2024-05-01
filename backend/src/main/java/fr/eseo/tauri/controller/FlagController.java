@@ -32,12 +32,12 @@ public class FlagController {
         return ResponseEntity.ok(flag);
     }
 
-    @PostMapping
-    public ResponseEntity<String> addFlags(@RequestHeader("Authorization") String token, @RequestBody CreateFlagValidator flag) {
-        flagService.addFlag(token, flag);
-        CustomLogger.info("The flag has been created");
-        return ResponseEntity.ok("The flag has been created");
-    }
+//    @PostMapping
+//    public ResponseEntity<String> addFlags(@RequestHeader("Authorization") String token, @RequestBody CreateFlagValidator flag) {
+//        flagService.addFlag(token, flag);
+//        CustomLogger.info("The flag has been created");
+//        return ResponseEntity.ok("The flag has been created");
+//    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateFlag(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody Map<String, Object> request) {
@@ -59,5 +59,6 @@ public class FlagController {
         CustomLogger.info("The flag has been deleted");
         return ResponseEntity.ok("The flag has been deleted");
     }
+
 }
 

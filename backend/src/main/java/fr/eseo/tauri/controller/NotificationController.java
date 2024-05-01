@@ -8,6 +8,7 @@ import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final Validator validator;
 
     @GetMapping("/{id}")
     public ResponseEntity<Notification> getNotificationById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -40,8 +42,15 @@ public class NotificationController {
         return ResponseEntity.ok("The notification has been added");
     }
 
+    // TODO: Fix le validator pour le batch
     @PostMapping("/batch")
-    public ResponseEntity<String> createManyNotifications(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody List<Notification> notifications) {
+    public ResponseEntity<String> createManyNotifications(@RequestHeader("Authorization") String token, @RequestBody List<Notification> notifications) {
+//        for (var notification: notifications) {
+//            Set<ConstraintViolation<Notification>> violations = validator.validate(notification, Create.class);
+//            if (!violations.isEmpty()) {
+//                // handle validation errors
+//            }
+//        }
         notificationService.createManyNotifications(token, notifications);
         CustomLogger.info("The notification(s) have been added");
         return ResponseEntity.ok("The notification(s) have been added");

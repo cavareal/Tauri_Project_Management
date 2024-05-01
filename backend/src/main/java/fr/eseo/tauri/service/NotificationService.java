@@ -39,6 +39,9 @@ public class NotificationService {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 
+		notification.userFrom(userService.getUserById(notification.userFromId()));
+		notification.userTo(userService.getUserById(notification.userToId()));
+
 		notificationRepository.save(notification);
 	}
 

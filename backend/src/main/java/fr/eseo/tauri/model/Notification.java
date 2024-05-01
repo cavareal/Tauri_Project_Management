@@ -25,9 +25,8 @@ public class Notification {
     @JsonProperty
     private String message;
 
-    @NotNull(groups = { Create.class }, message = "The isRead field is required")
-    @JsonProperty
-    private Boolean isRead;
+    @JsonProperty("read")
+    private Boolean isRead = false;
 
     @NotNull(groups = { Create.class }, message = "The type field is required")
     @Enumerated(EnumType.STRING)
