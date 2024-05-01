@@ -2,6 +2,7 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Criteria;
 import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
@@ -100,6 +101,12 @@ public class TeamController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
         }
+    }
+
+    @GetMapping("/{id}/students")
+    public ResponseEntity<List<Student>> getStudentsByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        var students = teamService.getStudentsByTeamId(token, id);
+        return ResponseEntity.ok(students);
     }
 
 
