@@ -4,9 +4,6 @@ import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.BonusRepository;
-import fr.eseo.tauri.repository.SprintRepository;
-import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,12 +42,6 @@ public class BonusService {
         bonus.sprint(sprintService.getSprintById(token, bonus.sprintId()));
 
         bonusRepository.save(bonus);
-    }
-
-    public void createManyBonuses(String token, List<Bonus> bonuses) {
-        for(Bonus bonus : bonuses) {
-            createBonus(token, bonus);
-        }
     }
 
     public void updateBonus(String token, Integer id, Bonus updatedBonus) {

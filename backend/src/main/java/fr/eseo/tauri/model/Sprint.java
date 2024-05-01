@@ -1,8 +1,11 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.eseo.tauri.model.enumeration.SprintEndType;
+import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -19,12 +22,15 @@ public class Sprint {
     @JsonProperty
     private Integer id;
 
+    @NotNull(groups = { Create.class }, message = "The name field is required")
     @JsonProperty
     private LocalDate startDate;
 
+    @NotNull(groups = { Create.class }, message = "The name field is required")
     @JsonProperty
     private LocalDate endDate;
 
+    @NotNull(groups = { Create.class }, message = "The endType field is required")
     @Enumerated(EnumType.STRING)
     @Column(name="end_type")
     @JsonProperty
@@ -35,5 +41,10 @@ public class Sprint {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Project project;
+
+    @NotNull(groups = { Create.class }, message = "The projectId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer projectId;
 
 }

@@ -59,7 +59,7 @@ public class Bonus {
     @JsonDeserialize
     private Integer studentId;
 
-    @NotNull(groups = { Create.class, Update.class }, message = "The authorId field is required")
+    @NotNull(groups = { Create.class }, message = "The authorId field is required")
     @Transient
     @JsonDeserialize
     private Integer authorId;

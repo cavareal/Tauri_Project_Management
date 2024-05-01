@@ -1,8 +1,11 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.eseo.tauri.model.enumeration.FlagType;
+import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -22,6 +25,7 @@ public class Flag implements Serializable {
     @JsonProperty
     private String description;
 
+    @NotNull(groups = { Create.class }, message = "The type field is required")
     @Enumerated(EnumType.STRING)
     @Column(name="type")
     @JsonProperty
@@ -44,5 +48,18 @@ public class Flag implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private User author;
+
+    @Transient
+    @JsonDeserialize
+    private Integer firstStudentId;
+
+    @Transient
+    @JsonDeserialize
+    private Integer secondStudentId;
+
+    @NotNull(groups = { Create.class }, message = "The authorId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer authorId;
 
 }

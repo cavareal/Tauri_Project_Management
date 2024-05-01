@@ -40,13 +40,6 @@ public class BonusController {
         return ResponseEntity.ok("The bonus(es) have been added");
     }
 
-    @PostMapping("/batch")
-    public ResponseEntity<String> createManyBonuses(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody List<Bonus> bonuses) {
-        bonusService.createManyBonuses(token, bonuses);
-        CustomLogger.info("The bonus(es) have been added");
-        return ResponseEntity.ok("The bonus(es) have been added");
-    }
-
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class)@RequestBody Bonus updatedBonus) {
         bonusService.updateBonus(token, id, updatedBonus);
