@@ -31,7 +31,6 @@ export const apiQuery = async <T>(
 		"Authorization": token || "null",
 		"Content-Type": "application/json"
 	}
-
 	const response = await fetch(`${url}${route}`, { method, body: body ? JSON.stringify(body) : undefined, headers })
 	if (!response.ok) {
 		return {

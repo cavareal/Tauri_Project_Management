@@ -20,6 +20,7 @@ import ValidTeamDialog from "@/components/organisms/teams/ValidTeamDialog.vue"
 
 const token = getCookie("token")
 const role = getCookie<RoleType>("role")
+const currentUserId = getCookie("user")
 
 const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({ queryKey: ["currentPhase"], queryFn: getCurrentPhase })
 const { data: nbStudents } = useQuery({ queryKey: ["nb-students"], queryFn: getQuantityOfStudents })
@@ -48,7 +49,7 @@ const displayTeams = computed(() => (role === "PROJECT_LEADER" || (role === "SUP
       <SignalTeamDialog v-if="displayPrepublishedButton" @signal:teams="refetchTeams">
         <Button variant="secondary">Signaler</Button>
       </SignalTeamDialog>
-      <ValidTeamDialog v-if="displayPrepublishedButton" @valid:teams="refetchTeams">
+      <ValidTeamDialog v-if="displayPrepublishedButton" @valid:teams="refetchTeams" :currentUserId="currentUserId">
         <Button variant="default">Valider</Button>
       </ValidTeamDialog>
 		</Header>
