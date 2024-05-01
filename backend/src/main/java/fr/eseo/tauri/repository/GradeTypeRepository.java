@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface GradeTypeRepository extends JpaRepository<GradeType, Integer> {
 
-	public List<GradeType> findByForGroupIsTrue();
+	@Query("SELECT g FROM GradeType g WHERE g.forGroup = true")
+	public List<GradeType> findAllForGroup();
 
 	@Query("SELECT g FROM GradeType g WHERE g.imported")
 	public List<GradeType> findAllImported();

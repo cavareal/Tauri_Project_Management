@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
+
     @Query("SELECT c FROM Comment c JOIN c.sprint s JOIN s.project p WHERE p.id = :projectId")
     List<Comment> findAllByProject(Integer projectId);
 
@@ -16,4 +17,5 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     @Modifying
     @Query(value = "DELETE FROM comments WHERE sprint_id IN (SELECT id FROM sprints WHERE project_id = :projectId)", nativeQuery = true)
     void deleteAllByProject(Integer projectId);
+
 }

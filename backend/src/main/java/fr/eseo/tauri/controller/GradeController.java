@@ -12,7 +12,6 @@ import fr.eseo.tauri.service.GradeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -124,7 +123,7 @@ public class GradeController {
             ArrayList<List<Double>> gradeByTypes = new ArrayList<>();
             ArrayList<Double> gradeByRoles;
 
-            for (GradeType gradeType : gradeTypeRepository.findByForGroupIsTrue()) {
+            for (GradeType gradeType : gradeTypeRepository.findAllForGroup()) {
                 gradeByRoles = new ArrayList<>();
                 for (RoleType roleType : RoleType.values()) {
                     double grade = getAverageGradeByRoleType(userId, roleType, gradeType.name());

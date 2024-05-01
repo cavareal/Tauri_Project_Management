@@ -20,8 +20,6 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     @Query(value = "DELETE FROM students WHERE project_id = :projectId", nativeQuery = true)
     void deleteAllByProject(Integer projectId);
 
-    List<Student> findByTeamId(Team teamId);
-
     List<Student> findByTeamName(String teamName);
 
     Student findByName(String studentName);

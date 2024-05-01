@@ -3,7 +3,6 @@ package fr.eseo.tauri.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.eseo.tauri.util.valid.Create;
-import fr.eseo.tauri.util.valid.Update;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

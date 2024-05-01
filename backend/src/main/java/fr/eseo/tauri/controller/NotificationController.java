@@ -3,6 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.service.NotificationService;
 import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Create;
 import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,6 +21,7 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final ResponseMessage responseMessage = new ResponseMessage("notification");
 
     /**
      * Get a notification by its id
@@ -54,8 +56,8 @@ public class NotificationController {
     @PostMapping
     public ResponseEntity<String> createNotification(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Notification notification) {
         notificationService.createNotification(token, notification);
-        CustomLogger.info("The notification has been added");
-        return ResponseEntity.ok("The notification has been added");
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
     /**
@@ -68,8 +70,8 @@ public class NotificationController {
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Notification updatedNotification) {
         notificationService.updateNotification(token, id, updatedNotification);
-        CustomLogger.info("The notification has been updated");
-        return ResponseEntity.ok("The notification has been updated");
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
     /**
@@ -81,20 +83,20 @@ public class NotificationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteNotificationById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         notificationService.deleteNotificationById(token, id);
-        CustomLogger.info("The notification has been deleted");
-        return ResponseEntity.ok("The notification has been deleted");
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
     }
 
     /**
      * Delete all notifications
-     * @param token
-     * @return
+     * @param token the token of the user
+     * @return a message
      */
     @DeleteMapping
     public ResponseEntity<String> deleteAllNotifications(@RequestHeader("Authorization") String token) {
         notificationService.deleteAllNotifications(token);
-        CustomLogger.info("All the notifications have been deleted");
-        return ResponseEntity.ok("All the notifications have been deleted");
+        CustomLogger.info(responseMessage.deleteAll());
+        return ResponseEntity.ok(responseMessage.deleteAll());
     }
 
 }

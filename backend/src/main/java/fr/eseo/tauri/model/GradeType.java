@@ -23,7 +23,7 @@ public class GradeType {
     @JsonProperty
     private Float factor;
 
-    @NotNull(groups = { Create.class }, message = "The  field is required")
+    @NotNull(groups = { Create.class }, message = "The forGroup field is required")
     @JsonProperty
     private Boolean forGroup;
 

@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class ValidationBonusId implements Serializable {
 
     @JsonProperty
-    private User user;
+    private User author;
 
     @JsonProperty
     private Bonus bonus;

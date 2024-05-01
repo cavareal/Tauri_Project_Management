@@ -2,6 +2,7 @@ package fr.eseo.tauri.repository;
 
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,7 +25,7 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 	@Modifying
 	@Transactional
 	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported = true AND (lower(g.gradeType.name) = 'mean' OR lower(g.gradeType.name) = 'average')")
-	void updateImportedMeanByStudentId(@Param("value") float value, @Param("studentId") int studentId);
+	void updateImportedMeanByStudentId(float value, int studentId);
 
 	@Query("SELECT g FROM Grade g WHERE g.team.id = :teamId")
 	List<Grade> findAllByTeamId(Long teamId);
@@ -34,6 +35,6 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 			"AND gt.name = :gradeTypeName " +
 			"AND gr.team = :team " +
 			"AND r.type = :roleType")
-	public Double findAverageGradesByGradeType(@Param("team") Team team, @Param("gradeTypeName") String gradeTypeName, @Param("roleType") RoleType roleType);
+	public Double findAverageGradesByGradeType(Team team, String gradeTypeName, RoleType roleType);
 
 }
