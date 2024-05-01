@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
+
     @Query("SELECT s FROM Student s JOIN s.project p WHERE p.id = :projectId")
     List<Student> findAllByProject(Integer projectId);
 
@@ -35,4 +36,5 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     // TODO: change the average grade name to the correct one
     @Query("SELECT s FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gt.name = 'AVERAGE' AND s.gender = ?1 ORDER BY s.bachelor, gr.value DESC")
     List<Student> findByGenderOrderByBachelorAndImportedAvgDesc(Gender gender);
+
 }

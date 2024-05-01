@@ -10,11 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface ValidationBonusRepository extends JpaRepository<ValidationBonus, Integer> {
-    @Query("SELECT vb FROM ValidationBonus vb JOIN vb.bonus b JOIN b.sprint s JOIN s.project p WHERE p.id = :projectId")
+
+    @Query("SELECT vb FROM ValidationBonus vb WHERE vb.bonus.sprint.project.id = :projectId")
     List<ValidationBonus> findAllByProject(@Param("projectId") Integer projectId);
 
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM validation_bonuses WHERE bonus_id IN (SELECT id FROM bonuses WHERE sprint_id IN (SELECT id FROM sprints WHERE project_id = :projectId))", nativeQuery = true)
     void deleteAllByProject(@Param("projectId") Integer projectId);
+
 }

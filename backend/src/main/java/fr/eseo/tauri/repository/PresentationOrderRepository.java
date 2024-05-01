@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface PresentationOrderRepository extends JpaRepository<PresentationOrder, Integer> {
 
-    @Query("SELECT po FROM PresentationOrder po JOIN po.sprint s JOIN s.project p WHERE p.id = :projectId")
+    @Query("SELECT po FROM PresentationOrder po WHERE po.sprint.project.id = :projectId")
     List<PresentationOrder> findAllByProject(Integer projectId);
 
     @Transactional

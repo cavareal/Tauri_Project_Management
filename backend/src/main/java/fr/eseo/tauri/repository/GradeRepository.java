@@ -22,11 +22,6 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 	@Query(value = "DELETE FROM grades WHERE sprint_id IN (SELECT id FROM sprints WHERE project_id = :projectId)", nativeQuery = true)
 	void deleteAllByProject(Integer projectId);
 
-	@Modifying
-	@Transactional
-	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported = true AND (lower(g.gradeType.name) = 'mean' OR lower(g.gradeType.name) = 'average')")
-	void updateImportedMeanByStudentId(float value, int studentId);
-
 	@Query("SELECT g FROM Grade g WHERE g.team.id = :teamId")
 	List<Grade> findAllByTeamId(Long teamId);
 
@@ -35,6 +30,17 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 			"AND gt.name = :gradeTypeName " +
 			"AND gr.team = :team " +
 			"AND r.type = :roleType")
-	public Double findAverageGradesByGradeType(Team team, String gradeTypeName, RoleType roleType);
+	Double findAverageGradesByGradeType(Team team, String gradeTypeName, RoleType roleType);
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported AND LOWER(g.gradeType.name) = :gradeTypeName")
+	void updateImportedMeanByStudentId(Float value, Integer studentId, String gradeTypeName);
+
+	@Modifying
+	@Transactional
+	default void updateImportedMeanByStudentId(Float value, Integer studentId) {
+		updateImportedMeanByStudentId(value, studentId, GradeTypeName.AVERAGE.displayName());
+	}
 
 }
