@@ -58,7 +58,6 @@ public class BonusService {
         bonus.student(studentService.getStudentById(token, bonus.studentId()));
         bonus.sprint(sprintService.getSprintById(token, bonus.sprintId()));
 
-
         bonusRepository.save(bonus);
     }
 

@@ -1,6 +1,7 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
@@ -17,7 +18,7 @@ public class SprintService {
 
     private final AuthService authService;
     private final SprintRepository sprintRepository;
-    private final UserService userService;
+    //private final BonusService bonusService;
     private final ProjectService projectService;
     private final StudentService studentService;
     private final PresentationOrderService presentationOrderService;
@@ -43,8 +44,14 @@ public class SprintService {
         //TODO : à remettre quand on aura le studentservice de pret
         /*sprint.project(projectService.getProjectById(token, sprint.projectId()));
         List<Student> students = studentService.getAllStudentsByProject(token, sprint.projectId());
+        Bonus bonus = new Bonus();
+        bonus.value((float) 0);
+        bonus.limited(true);
         for(Student student: students) {
             presentationOrderService.createPresentationOrder(token, new PresentationOrder(sprint, student));
+            bonus.sprint(sprint);
+            bonus.student(student);
+            bonusService.createBonus(token, bonus);
         }*/
         sprintRepository.save(sprint);
     }
