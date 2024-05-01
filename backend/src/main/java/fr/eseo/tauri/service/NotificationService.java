@@ -18,6 +18,12 @@ public class NotificationService {
 	private final NotificationRepository notificationRepository;
 	private final UserService userService;
 
+	/**
+	 * Get a notification by its id
+	 * @param token the token of the user
+	 * @param id the id of the notification
+	 * @return the notification
+	 */
 	public Notification getNotificationById(String token, Integer id) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotification"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -26,6 +32,11 @@ public class NotificationService {
 		return notificationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("notification", id));
 	}
 
+	/**
+	 * Get all notifications
+	 * @param token the token of the user
+	 * @return the list of notifications
+	 */
 	public List<Notification> getAllNotifications(String token) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotifications"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -34,6 +45,11 @@ public class NotificationService {
 		return notificationRepository.findAll();
 	}
 
+	/**
+	 * Create a notification
+	 * @param token the token of the user
+	 * @param notification the notification to create
+	 */
 	public void createNotification(String token, Notification notification) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "addNotification"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -45,6 +61,12 @@ public class NotificationService {
 		notificationRepository.save(notification);
 	}
 
+	/**
+	 * Update a notification by its id
+	 * @param token the token of the user
+	 * @param id the id of the notification
+	 * @param updatedNotification the updated notification
+	 */
 	public void updateNotification(String token, Integer id, Notification updatedNotification) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateNotification"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -60,6 +82,11 @@ public class NotificationService {
 		notificationRepository.save(notification);
 	}
 
+	/**
+	 * Delete a notification by its id
+	 * @param token the token of the user
+	 * @param id the id of the notification
+	 */
 	public void deleteNotificationById(String token, Integer id) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteNotification"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -73,6 +100,10 @@ public class NotificationService {
 		}
 	}
 
+	/**
+	 * Delete all notifications
+	 * @param token the token of the user
+	 */
 	public void deleteAllNotifications(String token) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteNotification"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);

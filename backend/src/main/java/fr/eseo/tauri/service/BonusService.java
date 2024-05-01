@@ -19,6 +19,12 @@ public class BonusService {
     private final StudentService studentService;
     private final SprintService sprintService;
 
+    /**
+     * Get a bonus by its id
+     * @param token the token of the user
+     * @param id the id of the bonus
+     * @return the bonus
+     */
     public Bonus getBonusById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -26,6 +32,12 @@ public class BonusService {
         return bonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("bonus", id));
     }
 
+    /**
+     * Get all bonuses by project
+     * @param token the token of the user
+     * @param projectId the id of the project
+     * @return the list of bonuses
+     */
     public List<Bonus> getAllBonusesByProject(String token, Integer projectId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -33,6 +45,11 @@ public class BonusService {
         return bonusRepository.findAllByProject(projectId);
     }
 
+    /**
+     * Create a bonus
+     * @param token the token of the user
+     * @param bonus the bonus to create
+     */
     public void createBonus(String token, Bonus bonus) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -44,6 +61,12 @@ public class BonusService {
         bonusRepository.save(bonus);
     }
 
+    /**
+     * Update a bonus
+     * @param token the token of the user
+     * @param id the id of the bonus
+     * @param updatedBonus the updated bonus
+     */
     public void updateBonus(String token, Integer id, Bonus updatedBonus) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -61,6 +84,11 @@ public class BonusService {
             bonusRepository.save(bonus);
     }
 
+    /**
+     * Delete a bonus
+     * @param token
+     * @param id
+     */
     public void deleteBonus(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -69,6 +97,11 @@ public class BonusService {
         bonusRepository.deleteById(id);
     }
 
+    /**
+     * Delete all bonuses
+     * @param token
+     * @param projectId
+     */
     public void deleteAllBonuses(String token, Integer projectId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
