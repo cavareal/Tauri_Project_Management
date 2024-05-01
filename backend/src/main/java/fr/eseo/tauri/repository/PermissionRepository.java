@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PermissionRepository extends JpaRepository<Permission, Integer> {
 
-    @Query("SELECT p FROM Permission p WHERE p.role = :role")
-    List<Permission> findByRole(RoleType role);
+    @Query("SELECT p FROM Permission p WHERE p.role = :roleType")
+    List<Permission> findByRole(RoleType roleType);
 
 }

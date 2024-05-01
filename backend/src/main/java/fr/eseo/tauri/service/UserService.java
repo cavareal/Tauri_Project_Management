@@ -2,12 +2,8 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.Permission;
-import fr.eseo.tauri.model.Role;
-import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
-import fr.eseo.tauri.repository.PermissionRepository;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
@@ -16,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,58 +21,101 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final TeamRepository teamRepository;
 	private final RoleRepository roleRepository;
-	private final PermissionRepository permissionRepository;
+	private final PermissionService permissionService;
 
 	public User getUserById(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readUser"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
+
 		return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user", id));
 	}
 
-	/**
-	 * Change team's leader to null when their leader is deleted.
-	 *
-	 * @param id the user's id
-	 */
-	public void deleteUser(Integer id) {
-		Optional<User> user = userRepository.findById(id);
-		if (user.isPresent()) {
-			List<Team> teams = teamRepository.findByLeader(user.get());
-			for (Team team : teams) {
-				team.leader(null);
-				teamRepository.save(team);
-			}
-			userRepository.deleteById(id);
+	public List<User> getAllUsers(String token) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readUser"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
+
+		return userRepository.findAll();
 	}
 
-	public List<PermissionType> getPermissions(Integer id) {
-		Optional<User> user = userRepository.findById(id);
+	public void createUser(String token, User user) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "createUser"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+
+		userRepository.save(user);
+	}
+
+	public void updateUser(String token, Integer id, User updatedUser) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateUser"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+
+		var user = getUserById(token, id);
+
+		if (updatedUser.name() != null) user.name(updatedUser.name());
+		if (updatedUser.email() != null) user.email(updatedUser.email());
+		if (updatedUser.password() != null) user.password(updatedUser.password());
+		if (updatedUser.privateKey() != null) user.privateKey(updatedUser.privateKey());
+
+		userRepository.save(user);
+	}
+
+	public void deleteUserById(String token, Integer id) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteUser"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+
+		var user = getUserById(token, id);
+
+		// Change team's leader to null when their leader is deleted.
+		var teams = teamRepository.findByLeaderId(user.id());
+		for (var team : teams) {
+			team.leader(null);
+			teamRepository.save(team);
+		}
+
+		userRepository.deleteById(id);
+	}
+
+	public void deleteAllUsers(String token) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteUser"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+
+		userRepository.deleteAll();
+	}
+
+	public List<PermissionType> getPermissions(String token, Integer id) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+
+		var user = getUserById(token, id);
+		var roles = roleRepository.findByUser(user);
+
 		List<PermissionType> permissions = new ArrayList<>();
-		if (user.isPresent()) {
-			List<Role> roles = roleRepository.findByUser(user.get());
-			for (Role role : roles) {
-				List<Permission> permissionRelations = permissionRepository.findByRole(role.type());
-				for (Permission permission : permissionRelations) {
-					permissions.add(permission.type());
-				}
+
+		for (var role : roles) {
+			var permissionsRoles = permissionService.getAllPermissionsByRole(token, role.type());
+			for (var permission : permissionsRoles) {
+				if (permissions.contains(permission.type())) continue;
+				permissions.add(permission.type());
 			}
 		}
+
 		return permissions;
 	}
 
-	public Boolean hasPermission(Integer id, PermissionType permissionRequired) {
-		Optional<User> user = userRepository.findById(id);
-		List<PermissionType> permissions = this.getPermissions(id);
-		if (user.isPresent()) {
-			for (PermissionType permission : permissions) {
-				if (permission == permissionRequired) {
-					return true;
-				}
-			}
+	public Boolean hasPermission(String token, Integer id, PermissionType permission) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
-		return false;
+
+		var permissions = getPermissions(token, id);
+
+		return permissions.contains(permission);
 	}
 
 }

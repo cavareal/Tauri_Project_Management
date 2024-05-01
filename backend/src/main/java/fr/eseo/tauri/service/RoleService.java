@@ -76,7 +76,10 @@ public class RoleService {
 	 * @param roleType The type of role to fetch users for.
 	 * @return An iterable of users associated with the provided role type.
 	 */
-	public Iterable<User> getUsersByRoleType(RoleType roleType) {
+	public List<User> getUsersByRoleType(String token, RoleType roleType) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteRole"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
 		var roles = roleRepository.findByType(roleType);
 		return ListUtil.map(roles, Role::user);
 	}

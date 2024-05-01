@@ -38,7 +38,6 @@ public class ValidationBonus {
     @JsonDeserialize
     private Integer authorId;
 
-    @NotNull(groups = { Create.class }, message = "The bonusId field is required")
     @Transient
     @JsonDeserialize
     private Integer bonusId;

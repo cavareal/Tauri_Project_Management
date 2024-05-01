@@ -1,7 +1,6 @@
 package fr.eseo.tauri.repository;
 
 import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,7 +21,8 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     @Query("SELECT t FROM Team t WHERE t.leader.id = :leaderId AND t.project.id = :projectId")
     Team findByLeaderId(Integer leaderId, Integer projectId);
 
-    List<Team> findByLeader(User leader);
+    @Query("SELECT t FROM Team t WHERE t.leader.id = :leaderId")
+    List<Team> findByLeaderId(Integer leaderId);
 
     @Query("SELECT t FROM Team t WHERE t.name = :name")
     Team findByName(String name);

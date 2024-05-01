@@ -72,16 +72,16 @@ public class BonusService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-            Bonus bonus = getBonusById(token, id);
+        Bonus bonus = getBonusById(token, id);
 
-            if (updatedBonus.value() != null) bonus.value(updatedBonus.value());
-            if (updatedBonus.comment() != null) bonus.comment(updatedBonus.comment());
-            if (updatedBonus.limited() != null) bonus.limited(updatedBonus.limited());
-            if (updatedBonus.sprintId() != null) bonus.sprint(sprintService.getSprintById(token, updatedBonus.sprintId()));
-            if (updatedBonus.authorId() != null) bonus.author(userService.getUserById(token, updatedBonus.authorId()));
-            if (updatedBonus.studentId() != null) bonus.student(studentService.getStudentById(token, updatedBonus.studentId()));
+        if (updatedBonus.value() != null) bonus.value(updatedBonus.value());
+        if (updatedBonus.comment() != null) bonus.comment(updatedBonus.comment());
+        if (updatedBonus.limited() != null) bonus.limited(updatedBonus.limited());
+        if (updatedBonus.sprintId() != null) bonus.sprint(sprintService.getSprintById(token, updatedBonus.sprintId()));
+        if (updatedBonus.authorId() != null) bonus.author(userService.getUserById(token, updatedBonus.authorId()));
+        if (updatedBonus.studentId() != null) bonus.student(studentService.getStudentById(token, updatedBonus.studentId()));
 
-            bonusRepository.save(bonus);
+        bonusRepository.save(bonus);
     }
 
     /**

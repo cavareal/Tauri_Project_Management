@@ -2,75 +2,70 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
-import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.repository.UserRepository;
-import fr.eseo.tauri.service.RoleService;
 import fr.eseo.tauri.service.UserService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(path = "/api/users")
 @Tag(name = "users")
 public class UserController {
 
-	private final UserRepository userRepository;
 	private final UserService userService;
-	private final RoleService roleService;
+	private final ResponseMessage responseMessage = new ResponseMessage("user");
 
-	@Autowired
-	public UserController(UserRepository userRepository, UserService userService, RoleService roleService) {
-		this.userRepository = userRepository;
-		this.userService = userService;
-		this.roleService = roleService;
+	@GetMapping("/{id}")
+	public User getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		return userService.getUserById(token, id);
 	}
 
-	@PostMapping(path = "/")
-	public @ResponseBody String addUser(@RequestParam String name, @RequestParam String email) {
-		User user = new User();
-		user.name(name);
-		user.email(email);
-		userRepository.save(user);
-		return "Saved";
+	@GetMapping
+	public List<User> getAllUsers(@RequestHeader("Authorization") String token) {
+		return userService.getAllUsers(token);
 	}
 
-	@GetMapping(path = "/")
-	public @ResponseBody Iterable<User> allUsers() {
-		return userRepository.findAll();
+	@PostMapping
+	public ResponseEntity<String> createUser(@RequestParam String name, @Validated(Create.class) @RequestBody User user) {
+		userService.createUser(name, user);
+		CustomLogger.info(responseMessage.create());
+		return ResponseEntity.ok(responseMessage.create());
 	}
 
-	@GetMapping(path = "/roles/{roleType}")
-	public @ResponseBody Iterable<User> getUsersByRole(@PathVariable RoleType roleType) {
-		return roleService.getUsersByRoleType(roleType);
-	}
-
-	@GetMapping(path = "/{id}")
-	public @ResponseBody User getUser(@PathVariable Integer id) {
-		return userRepository.findById(id).orElse(null);
-	}
-
-	@GetMapping(path = "/{id}/hasPermission")
-	public @ResponseBody Boolean hasPermission(@PathVariable Integer id, @RequestParam PermissionType permissionRequired) {
-		return userService.hasPermission(id, permissionRequired);
-	}
-
-	@PutMapping(path = "/update")
-	public @ResponseBody String updateUser(@RequestParam Integer id, @RequestParam String name, @RequestParam String email) {
-		User user = userRepository.findById(id).orElse(null);
-		if (user != null) {
-			user.name(name);
-			user.email(email);
-			userRepository.save(user);
-			return "Updated";
-		}
-		return "User not found";
+	@PatchMapping("/{id}")
+	public ResponseEntity<String> updateUser(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody User user) {
+		userService.updateUser(token, id, user);
+		CustomLogger.info(responseMessage.update());
+		return ResponseEntity.ok(responseMessage.update());
 	}
 
 	@DeleteMapping(path = "/delete/{id}")
-	public @ResponseBody String deleteUser(@PathVariable Integer id) {
-		userRepository.deleteById(id);
-		return "Deleted";
+	public ResponseEntity<String> deleteUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		userService.deleteUserById(token, id);
+		CustomLogger.info(responseMessage.delete());
+		return ResponseEntity.ok(responseMessage.delete());
+	}
+
+	@DeleteMapping
+	public ResponseEntity<String> deleteAllUsers(@RequestHeader("Authorization") String token) {
+		userService.deleteAllUsers(token);
+		CustomLogger.info(responseMessage.deleteAll());
+		return ResponseEntity.ok(responseMessage.deleteAll());
+	}
+
+	@GetMapping(path = "/{id}/permissions/{permissionType}")
+	public ResponseEntity<Boolean> hasPermission(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable PermissionType permissionType) {
+		var hasPermission = userService.hasPermission(token, id, permissionType);
+		return ResponseEntity.ok(hasPermission);
 	}
 
 }

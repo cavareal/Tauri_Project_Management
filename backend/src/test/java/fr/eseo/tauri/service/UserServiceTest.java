@@ -51,7 +51,7 @@ class UserServiceTest {
         when(teamRepository.findByLeader(user)).thenReturn(List.of(team));
 
         // Act
-        userService.deleteUser(1);
+        userService.deleteUserById(1);
 
         // Assert
         verify(userRepository, times(1)).findById(1);

@@ -31,7 +31,7 @@ public class BonusController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Bonus> getBonusById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Bonus bonus = bonusService .getBonusById(token, id);
+        Bonus bonus = bonusService.getBonusById(token, id);
         return ResponseEntity.ok(bonus);
     }
 

@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.PermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,6 @@ public class PermissionService {
 
     private final AuthService authService;
     private final PermissionRepository permissionRepository;
-    private final UserService userService;
-    private final SprintService sprintService;
 
     public Permission getPermissionById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermission"))) {
@@ -30,6 +29,13 @@ public class PermissionService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return permissionRepository.findAll();
+    }
+
+    public List<Permission> getAllPermissionsByRole(String token, RoleType roleType) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return permissionRepository.findByRole(roleType);
     }
 
     public void createPermission(String token, Permission permission) {
@@ -66,4 +72,5 @@ public class PermissionService {
         }
         permissionRepository.deleteAll();
     }
+
 }
