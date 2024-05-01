@@ -18,9 +18,9 @@ public class BonusService {
 
     private final AuthService authService;
     private final BonusRepository bonusRepository;
-    private final SprintRepository sprintRepository;
-    private final UserRepository userRepository;
-    private final StudentRepository studentRepository;
+    private final UserService userService;
+    private final StudentService studentService;
+    private final SprintService sprintService;
 
     public Bonus getBonusById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonus"))) {
@@ -40,9 +40,10 @@ public class BonusService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        if(bonus.authorId()!=null) bonus.author(userRepository.findById(bonus.authorId()).orElseThrow(() -> new ResourceNotFoundException("user", bonus.authorId())));
-        if(bonus.studentId()!=null) bonus.student(studentRepository.findById(bonus.studentId()).orElseThrow(() -> new ResourceNotFoundException("student", bonus.studentId())));
-        if(bonus.sprintId()!=null) bonus.sprint(sprintRepository.findById(bonus.sprintId()).orElseThrow(() -> new ResourceNotFoundException("sprint", bonus.sprintId())));
+        bonus.author(userService.getUserById(token, bonus.authorId()));
+        bonus.student(studentService.getStudentById(token, bonus.studentId()));
+        bonus.sprint(sprintService.getSprintById(token, bonus.sprintId()));
+
         bonusRepository.save(bonus);
     }
 
@@ -62,9 +63,9 @@ public class BonusService {
             if (updatedBonus.value() != null) bonus.value(updatedBonus.value());
             if (updatedBonus.comment() != null) bonus.comment(updatedBonus.comment());
             if (updatedBonus.limited() != null) bonus.limited(updatedBonus.limited());
-            if (updatedBonus.sprintId() != null) bonus.sprint(sprintRepository.findById(updatedBonus.sprintId()).orElseThrow(() -> new ResourceNotFoundException("sprint", updatedBonus.sprintId())));
-            if (updatedBonus.authorId() != null) bonus.author(userRepository.findById(updatedBonus.authorId()).orElseThrow(() -> new ResourceNotFoundException("user", updatedBonus.authorId())));
-            if (updatedBonus.studentId() != null) bonus.student(studentRepository.findById(updatedBonus.studentId()).orElseThrow(() -> new ResourceNotFoundException("student", updatedBonus.studentId())));
+            if (updatedBonus.sprintId() != null) bonus.sprint(sprintService.getSprintById(token, updatedBonus.sprintId()));
+            if (updatedBonus.authorId() != null) bonus.author(userService.getUserById(token, updatedBonus.authorId()));
+            if (updatedBonus.studentId() != null) bonus.student(studentService.getStudentById(token, updatedBonus.studentId()));
 
             bonusRepository.save(bonus);
     }

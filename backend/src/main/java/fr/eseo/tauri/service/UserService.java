@@ -1,5 +1,6 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.Role;
@@ -21,12 +22,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
+	private final AuthService authService;
 	private final UserRepository userRepository;
 	private final TeamRepository teamRepository;
 	private final RoleRepository roleRepository;
 	private final PermissionRepository permissionRepository;
 
-	public User getUserById(Integer id) {
+	public User getUserById(String token, Integer id) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
 		return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user", id));
 	}
 
