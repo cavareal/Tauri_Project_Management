@@ -43,9 +43,9 @@ public class FlagService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         int flagsNumber = flagRepository.findAll().size();
-            flagRepository.save(flag);
+            //flagRepository.save(flag);
             if(flagRepository.findAll().size() == flagsNumber){
-                throw new DataAccessException("Error : Could not add flag created by " + flag.author().name()) {};
+            //    throw new DataAccessException("Error : Could not add flag created by " + flag.author().name()) {};
         }
     }
 

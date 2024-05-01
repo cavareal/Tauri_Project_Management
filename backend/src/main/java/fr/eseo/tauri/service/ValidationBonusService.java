@@ -48,11 +48,11 @@ public class ValidationBonusService {
         }
     }
 
-    public void updateValidationBonus(String token, ValidationBonusId id, Map<String, Object> validationBonusDetails) {
+    public void updateValidationBonus(String token, ValidationBonusId id, Map<String, Object> validationupdatedBonus) {
         /*if (Boolean.TRUE.equals(authService.checkAuth(token, "updateValidationBonus"))) {
             ValidationBonus validationBonus = getValidationBonusById(token, id);
 
-            for (Map.Entry<String, Object> entry : validationBonusDetails.entrySet()) {
+            for (Map.Entry<String, Object> entry : validationupdatedBonus.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
 

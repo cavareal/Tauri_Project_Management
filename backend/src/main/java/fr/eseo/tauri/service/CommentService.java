@@ -25,13 +25,6 @@ public class CommentService {
     private final SprintRepository sprintRepository;
     private final UserRepository userRepository;
 
-    public List<Comment> getAllComments(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readComments"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        return commentRepository.findAll();
-    }
-
     public Comment getCommentById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readComment"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -39,14 +32,21 @@ public class CommentService {
         return commentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("comment", id));
     }
 
+    public List<Comment> getAllComments(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readComments"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return commentRepository.findAllByProject(projectId);
+    }
+
     public void addComment(String token, CreateCommentValidator commentDetails) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addComment"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         int commentsNumber = commentRepository.findAll().size();
-            commentRepository.save(commentDetails);
+            //commentRepository.save(commentDetails);
             if(commentRepository.findAll().size() == commentsNumber){
-                throw new DataAccessException("Error : Could not add comment written by " + comment.author().name()) {};
+                //throw new DataAccessException("Error : Could not add comment written by " + comment.author().name()) {};
         }
     }
 
@@ -93,16 +93,6 @@ public class CommentService {
         }
     }
 
-    public void deleteAllComments(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        commentRepository.deleteAll();
-        if(!commentRepository.findAll().isEmpty()){
-            throw new DataAccessException("Error : Could not delete all comments") {};
-        }
-    }
-
     public void deleteComment(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -113,5 +103,12 @@ public class CommentService {
         if(commentRepository.findAll().size() == commentsNumber){
             throw new DataAccessException("Error : Could not delete comment with id : " + id) {};
         }
+    }
+
+    public void deleteAllComments(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        commentRepository.deleteAllByProject(projectId);
     }
 }

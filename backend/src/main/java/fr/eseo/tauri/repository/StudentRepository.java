@@ -4,12 +4,22 @@ import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
 import org.springframework.data.jpa.repository.JpaRepository;
 import fr.eseo.tauri.model.Student;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
+    @Query("SELECT s FROM Student s JOIN s.project p WHERE p.id = :projectId")
+    List<Student> findAllByProject(Integer projectId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM students WHERE project_id = :projectId", nativeQuery = true)
+    void deleteAllByProject(Integer projectId);
+
     List<Student> findByTeamId(Team teamId);
 
     List<Student> findByTeamName(String teamName);

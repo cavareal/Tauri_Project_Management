@@ -12,7 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface GradeRepository extends JpaRepository<Grade, Integer> {
-    // Vous pouvez ajouter des requêtes personnalisées ici si nécessaire
+
+	@Query("SELECT g FROM Grade g JOIN g.sprint s JOIN s.project p WHERE p.id = :projectId")
+	List<Grade> findAllByProject(Integer projectId);
+
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE FROM grades WHERE sprint_id IN (SELECT id FROM sprints WHERE project_id = :projectId)", nativeQuery = true)
+	void deleteAllByProject(Integer projectId);
 
 	@Modifying
 	@Transactional

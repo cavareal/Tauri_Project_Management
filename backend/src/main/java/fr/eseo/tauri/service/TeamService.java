@@ -129,7 +129,7 @@ public class TeamService {
 
         // Delete all previous teams
         // TODO FUTURE : delete teams only when nbTeams is different from the number of teams in the project
-        List<Team> teamsToDelete = this.teamRepository.findAllByProjectId(project.id());
+        List<Team> teamsToDelete = this.teamRepository.findAllByProject(project.id());
         for (Team team : teamsToDelete) {
             this.deleteTeam(team.id());
         }
@@ -224,7 +224,7 @@ public class TeamService {
      */
     public List<Team> getAllTeams(int projectId) {
         var project = projectRepository.findById(projectId).orElse(null);
-        return teamRepository.findAllByProjectId(project.id());
+        return teamRepository.findAllByProject(project.id());
     }
 
     /**

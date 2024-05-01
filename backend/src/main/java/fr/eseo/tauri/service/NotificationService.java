@@ -46,19 +46,19 @@ public class NotificationService {
 		notifications.forEach(notification -> createNotification(token, notification));
 	}
 
-	public void updateNotification(String token, Integer id, Notification notification) {
+	public void updateNotification(String token, Integer id, Notification updatedNotification) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateNotification"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 
-		var oldNotification = getNotificationById(token, id);
+		var notification = getNotificationById(token, id);
 
-		if (notification.message() != null) oldNotification.message(notification.message());
-		if (notification.isRead() != null) oldNotification.isRead(notification.isRead());
-		if (notification.userToId() != null) oldNotification.userTo(userService.getUserById(notification.userToId()));
-		if (notification.userFromId() != null) oldNotification.userFrom(userService.getUserById(notification.userFromId()));
+		if (updatedNotification.message() != null) notification.message(updatedNotification.message());
+		if (updatedNotification.isRead() != null) notification.isRead(updatedNotification.isRead());
+		if (updatedNotification.userToId() != null) notification.userTo(userService.getUserById(updatedNotification.userToId()));
+		if (updatedNotification.userFromId() != null) notification.userFrom(userService.getUserById(updatedNotification.userFromId()));
 
-		notificationRepository.save(oldNotification);
+		notificationRepository.save(notification);
 	}
 
 	public void deleteNotificationById(String token, Integer id) {

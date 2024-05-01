@@ -7,14 +7,10 @@ import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.SprintRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.UserRepository;
-import fr.eseo.tauri.validator.bonus.CreateBonusValidator;
-import fr.eseo.tauri.validator.bonus.UpdateBonusValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -26,13 +22,6 @@ public class BonusService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
 
-    public List<Bonus> getAllBonuses(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        return bonusRepository.findAll();
-    }
-
     public Bonus getBonusById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -40,56 +29,44 @@ public class BonusService {
         return bonusRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("bonus", id));
     }
 
+    public List<Bonus> getAllBonusesByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return bonusRepository.findAllByProject(projectId);
+    }
 
-    public void addBonuses(String token, List<CreateBonusValidator> bonusesDetails) {
+    public void createBonus(String token, Bonus bonus) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        int bonusesNumber = bonusRepository.findAll().size();
-        Bonus bonus = new Bonus();
-        for(CreateBonusValidator bonusDetails : bonusesDetails) {
+        if(bonus.authorId()!=null) bonus.author(userRepository.findById(bonus.authorId()).orElseThrow(() -> new ResourceNotFoundException("user", bonus.authorId())));
+        if(bonus.studentId()!=null) bonus.student(studentRepository.findById(bonus.studentId()).orElseThrow(() -> new ResourceNotFoundException("student", bonus.studentId())));
+        if(bonus.sprintId()!=null) bonus.sprint(sprintRepository.findById(bonus.sprintId()).orElseThrow(() -> new ResourceNotFoundException("sprint", bonus.sprintId())));
+        bonusRepository.save(bonus);
+    }
 
-            if(bonusDetails.value() != null) bonus.value(bonusDetails.value());
-            if(bonusDetails.comment() != null) bonus.comment(bonusDetails.comment());
-            if(bonusDetails.limited() != null) bonus.limited(bonusDetails.limited());
-            if(bonusDetails.sprintId() != null) bonus.sprint(sprintRepository.findById(bonusDetails.sprintId()).orElseThrow(() -> new ResourceNotFoundException("sprint", bonusDetails.sprintId())));
-            if(bonusDetails.authorId() != null) bonus.author(userRepository.findById(bonusDetails.authorId()).orElseThrow(() -> new ResourceNotFoundException("user", bonusDetails.authorId())));
-            if(bonusDetails.studentId() != null) bonus.student(studentRepository.findById(bonusDetails.studentId()).orElseThrow(() -> new ResourceNotFoundException("student", bonusDetails.studentId())));
-
-            bonusRepository.save(bonus);
-            if(bonusRepository.findAll().size() == bonusesNumber){
-                throw new DataAccessException("Error : Could not add bonus attributed by " + bonus.author().name() + " to " + bonus.student().name()) {};
-            } else {
-                bonusesNumber++;
-            }
+    public void createManyBonuses(String token, List<Bonus> bonuses) {
+        for(Bonus bonus : bonuses) {
+            createBonus(token, bonus);
         }
     }
 
-    public void updateBonus(String token, Integer id, UpdateBonusValidator bonusDetails) {
+    public void updateBonus(String token, Integer id, Bonus updatedBonus) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
             Bonus bonus = getBonusById(token, id);
 
-            if (bonusDetails.value() != null) bonus.value(bonusDetails.value());
-            if (bonusDetails.comment() != null) bonus.comment(bonusDetails.comment());
-            if (bonusDetails.limited() != null) bonus.limited(bonusDetails.limited());
-            if (bonusDetails.sprintId() != null) bonus.sprint(sprintRepository.findById(bonusDetails.sprintId()).orElseThrow(() -> new ResourceNotFoundException("sprint", bonusDetails.sprintId())));
-            if (bonusDetails.authorId() != null) bonus.author(userRepository.findById(bonusDetails.authorId()).orElseThrow(() -> new ResourceNotFoundException("user", bonusDetails.authorId())));
-            if (bonusDetails.studentId() != null) bonus.student(studentRepository.findById(bonusDetails.studentId()).orElseThrow(() -> new ResourceNotFoundException("student", bonusDetails.studentId())));
+            if (updatedBonus.value() != null) bonus.value(updatedBonus.value());
+            if (updatedBonus.comment() != null) bonus.comment(updatedBonus.comment());
+            if (updatedBonus.limited() != null) bonus.limited(updatedBonus.limited());
+            if (updatedBonus.sprintId() != null) bonus.sprint(sprintRepository.findById(updatedBonus.sprintId()).orElseThrow(() -> new ResourceNotFoundException("sprint", updatedBonus.sprintId())));
+            if (updatedBonus.authorId() != null) bonus.author(userRepository.findById(updatedBonus.authorId()).orElseThrow(() -> new ResourceNotFoundException("user", updatedBonus.authorId())));
+            if (updatedBonus.studentId() != null) bonus.student(studentRepository.findById(updatedBonus.studentId()).orElseThrow(() -> new ResourceNotFoundException("student", updatedBonus.studentId())));
 
             bonusRepository.save(bonus);
-    }
-
-    public void deleteAllBonuses(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        bonusRepository.deleteAll();
-        if(!bonusRepository.findAll().isEmpty()){
-            throw new DataAccessException("Error : Could not delete all bonuses") {};
-        }
     }
 
     public void deleteBonus(String token, Integer id) {
@@ -97,11 +74,14 @@ public class BonusService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getBonusById(token, id);
-        int bonusesNumber = bonusRepository.findAll().size();
         bonusRepository.deleteById(id);
-        if(bonusRepository.findAll().size() == bonusesNumber){
-            throw new DataAccessException("Error : Could not delete bonus with id : " + id) {};
+    }
+
+    public void deleteAllBonuses(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteBonus"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        bonusRepository.deleteAllByProject(projectId);
     }
 
 }

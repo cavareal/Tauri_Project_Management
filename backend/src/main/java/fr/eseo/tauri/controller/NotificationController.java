@@ -28,7 +28,7 @@ public class NotificationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Notification>> getAllNotifications(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<Notification>> getAllNotifications(@RequestHeader("Authorization") String token , @RequestParam("projectId") Integer projectId) {
         var notifications = notificationService.getAllNotifications(token);
         return ResponseEntity.ok(notifications);
     }
@@ -48,8 +48,8 @@ public class NotificationController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Notification notification) {
-        notificationService.updateNotification(token, id, notification);
+    public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Notification updatedNotification) {
+        notificationService.updateNotification(token, id, updatedNotification);
         CustomLogger.info("The notification has been updated");
         return ResponseEntity.ok("The notification has been updated");
     }
