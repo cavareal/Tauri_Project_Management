@@ -45,10 +45,6 @@ public class NotificationService {
 		notificationRepository.save(notification);
 	}
 
-	public void createManyNotifications(String token, List<Notification> notifications) {
-		notifications.forEach(notification -> createNotification(token, notification));
-	}
-
 	public void updateNotification(String token, Integer id, Notification updatedNotification) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateNotification"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -57,7 +53,7 @@ public class NotificationService {
 		var notification = getNotificationById(token, id);
 
 		if (updatedNotification.message() != null) notification.message(updatedNotification.message());
-		if (updatedNotification.isRead() != null) notification.isRead(updatedNotification.isRead());
+		if (updatedNotification.checked() != null) notification.checked(updatedNotification.checked());
 		if (updatedNotification.userToId() != null) notification.userTo(userService.getUserById(updatedNotification.userToId()));
 		if (updatedNotification.userFromId() != null) notification.userFrom(userService.getUserById(updatedNotification.userFromId()));
 
