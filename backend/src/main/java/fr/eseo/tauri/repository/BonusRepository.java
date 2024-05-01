@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface BonusRepository extends JpaRepository<Bonus, Integer> {
 
-    @Query("SELECT b FROM Bonus b JOIN b.sprint s JOIN s.project p WHERE p.id = :projectId")
+    @Query("SELECT b FROM Bonus b WHERE b.sprint.project.id = :projectId")
     List<Bonus> findAllByProject(Integer projectId);
 
     @Transactional

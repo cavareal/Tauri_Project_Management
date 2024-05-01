@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface FlagRepository extends JpaRepository<Flag, Integer> {
-    @Query("SELECT f FROM Flag f JOIN f.project p WHERE p.id = :projectId")
+    @Query("SELECT f FROM Flag f WHERE f.project.id = :projectId")
     List<Flag> findAllByProject(Integer projectId);
 
     @Transactional

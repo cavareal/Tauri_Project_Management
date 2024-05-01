@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    @Query("SELECT c FROM Comment c JOIN c.sprint s JOIN s.project p WHERE p.id = :projectId")
+    @Query("SELECT c FROM Comment c WHERE c.sprint.project.id = :projectId")
     List<Comment> findAllByProject(Integer projectId);
 
     @Transactional
