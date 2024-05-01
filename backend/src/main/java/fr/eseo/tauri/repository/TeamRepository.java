@@ -19,6 +19,9 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     @Query(value = "DELETE FROM teams WHERE project_id = :projectId", nativeQuery = true)
     void deleteAllByProject(Integer projectId);
 
+    @Query("SELECT t FROM Team t WHERE t.leader.id = :leaderId AND t.project.id = :projectId")
+    Team findByLeaderId(Integer leaderId, Integer projectId);
+
     List<Team> findByLeader(User leader);
 
     @Query("SELECT t FROM Team t WHERE t.name = :name")

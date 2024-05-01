@@ -15,9 +15,6 @@ public class PresentationOrderService {
 
     private final AuthService authService;
     private final PresentationOrderRepository presentationOrderRepository;
-    private final UserService userService;
-    private final StudentService studentService;
-    private final SprintService sprintService;
 
     public PresentationOrder getPresentationOrderById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPresentationOrder"))) {
@@ -66,4 +63,5 @@ public class PresentationOrderService {
         }
         presentationOrderRepository.deleteAllByProject(projectId);
     }
+
 }

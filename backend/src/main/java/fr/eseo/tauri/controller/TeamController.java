@@ -1,12 +1,12 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Criteria;
+import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
 import fr.eseo.tauri.util.CustomLogger;
-import fr.eseo.tauri.validator.project.UpdateProjectValidator;
 import fr.eseo.tauri.validator.team.GenerateTeamsValidator;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -121,7 +121,9 @@ public class TeamController {
         try {
             teamService.generateTeams(projectId, nbTeams, womenPerTeam);
 
-            var projectProperties = UpdateProjectValidator.builder().nbTeams(nbTeams).womenPerTeam(womenPerTeam).build();
+            var projectProperties = new Project();
+            projectProperties.nbTeams(nbTeams);
+            projectProperties.nbWomen(womenPerTeam);
             projectService.updateProject(token, projectId, projectProperties);
 
             CustomLogger.info("Teams have been created");
@@ -153,7 +155,7 @@ public class TeamController {
     public ResponseEntity<Team> getTeamById(@RequestHeader("Authorization") String token, @PathVariable Integer teamId) {
         if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
             try {
-                Team team = teamService.getTeamById(teamId);
+                Team team = teamService.getTeamById(token, teamId);
                 if (team == null) {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
                 }
@@ -193,7 +195,7 @@ public class TeamController {
                 Criteria criteria = getCriteria(token, projectId, nbStudents, nbWomen, nbBachelor);
                 return ResponseEntity.ok(criteria);
             } catch (Exception e) {
-                CustomLogger.info("Erreur au critère : " + e.getClass() + "" + e.getMessage());
+                CustomLogger.info("Erreur au critère : " + e.getClass() + e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
         } else {

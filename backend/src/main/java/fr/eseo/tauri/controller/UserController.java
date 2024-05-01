@@ -22,9 +22,9 @@ public class UserController {
 	@Autowired
 	public UserController(UserRepository userRepository, UserService userService, RoleService roleService) {
 		this.userRepository = userRepository;
-        this.userService = userService;
+		this.userService = userService;
 		this.roleService = roleService;
-    }
+	}
 
 	@PostMapping(path = "/")
 	public @ResponseBody String addUser(@RequestParam String name, @RequestParam String email) {
@@ -67,7 +67,7 @@ public class UserController {
 		return "User not found";
 	}
 
- 	@DeleteMapping(path = "/delete/{id}")
+	@DeleteMapping(path = "/delete/{id}")
 	public @ResponseBody String deleteUser(@PathVariable Integer id) {
 		userRepository.deleteById(id);
 		return "Deleted";

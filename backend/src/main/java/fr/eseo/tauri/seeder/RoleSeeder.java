@@ -36,7 +36,9 @@ public class RoleSeeder {
 
 		// Assign the supervising staff role to several users
 		for (var user : users) {
-			if (faker.number().numberBetween(0, 8) == 0 && !roleRepository.existsByUserAndType(user, RoleType.SUPERVISING_STAFF)) {
+			var userRole = roleRepository.findFirstByUserAndType(user, RoleType.SUPERVISING_STAFF);
+
+			if (faker.number().numberBetween(0, 8) == 0 && userRole == null) {
 				var role = new Role();
 
 				role.user(user);

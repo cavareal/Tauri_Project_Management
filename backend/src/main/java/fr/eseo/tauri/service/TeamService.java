@@ -25,7 +25,6 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
-    private final ProjectService projectService;
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
@@ -327,4 +326,5 @@ public class TeamService {
 
         return newTeam;
     }
+
 }
