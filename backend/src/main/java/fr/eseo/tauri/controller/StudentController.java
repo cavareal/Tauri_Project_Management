@@ -4,10 +4,14 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +24,8 @@ public class StudentController {
 
 	private final StudentRepository studentRepository;
 	private final StudentService studentService;
-
 	private final AuthService authService;
+	private final ResponseMessage responseMessage = new ResponseMessage("student");
 
 	@Autowired
 	public StudentController(StudentService studentService, AuthService authService, StudentRepository studentRepository) {
@@ -92,6 +96,13 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }*/
+
+	@PatchMapping("/{id}")
+	public ResponseEntity<String> updateStudent(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Student student) {
+		studentService.updateStudent(token, id, student);
+		CustomLogger.info(responseMessage.update());
+		return ResponseEntity.ok(responseMessage.update());
+	}
 
 	@DeleteMapping()
 	public ResponseEntity<String> deleteStudents() {

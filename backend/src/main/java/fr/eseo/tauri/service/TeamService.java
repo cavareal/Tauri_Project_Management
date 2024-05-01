@@ -1,5 +1,6 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
@@ -28,6 +29,7 @@ public class TeamService {
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
+    private final AuthService authService;
 
     public void deleteAllTeams() {
         var teams = teamRepository.findAll();
@@ -325,6 +327,14 @@ public class TeamService {
         studentRepository.save(student);
 
         return newTeam;
+    }
+
+    public List<Student> getStudentsByTeamId(String token, Integer teamId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        return studentRepository.findByTeamId(teamId);
     }
 
 }

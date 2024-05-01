@@ -35,6 +35,7 @@ public class StudentService {
     private final GradeTypeService gradeTypeService;
     private final GradeService gradeService;
     private final AuthService authService;
+    private final ProjectService projectService;
 
     /**
      * This method is used to create a new student and save it to the repository.
@@ -75,6 +76,26 @@ public class StudentService {
         Team team = teamService.getTeamById(teamId);
         return studentRepository.findStudentsByTeam(team);
     }*/
+
+
+    public void updateStudent(String token, Integer studentId, Student updatedStudent) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateStudent"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        var student = getStudentById(token, studentId);
+
+        if (updatedStudent.name() != null) student.name(updatedStudent.name());
+        if (updatedStudent.email() != null) student.email(updatedStudent.email());
+        if (updatedStudent.password() != null) student.password(updatedStudent.password());
+        if (updatedStudent.privateKey() != null) student.privateKey(updatedStudent.privateKey());
+        if (updatedStudent.gender() != null) student.gender(updatedStudent.gender());
+        if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
+        if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(token, updatedStudent.projectId()));
+        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(token, updatedStudent.teamId()));
+
+        studentRepository.save(student);
+    }
 
 
     /**

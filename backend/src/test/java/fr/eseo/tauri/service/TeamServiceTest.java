@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
@@ -131,7 +130,7 @@ class TeamServiceTest {
         Student student2 = new Student();
         student2.gender(Gender.MAN);
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+        when(studentRepository.findByTeamId(team)).thenReturn(Arrays.asList(student1, student2));
 
         // Act
         Integer nbWomanTeam1 = teamService.getNbWomanByTeamId(1);
@@ -151,7 +150,7 @@ class TeamServiceTest {
         Student student2 = new Student();
         student2.gender(Gender.MAN);
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+        when(studentRepository.findByTeamId(team)).thenReturn(Arrays.asList(student1, student2));
 
         // Act
         Integer nbWoman = teamService.getNbWomanByTeamId(1);
@@ -169,7 +168,7 @@ class TeamServiceTest {
         Student student2 = new Student();
         student2.bachelor(false);
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+        when(studentRepository.findByTeamId(team)).thenReturn(Arrays.asList(student1, student2));
 
         // When
         Integer nbBachelorsTeam1 = teamService.getNbBachelorByTeamId(1);
@@ -189,7 +188,7 @@ class TeamServiceTest {
         Student student2 = new Student();
         student2.bachelor(false);
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+        when(studentRepository.findByTeamId(team)).thenReturn(Arrays.asList(student1, student2));
 
         // Act
         Integer nbBachelors = teamService.getNbBachelorByTeamId(1);
@@ -205,7 +204,7 @@ class TeamServiceTest {
         Student student1 = new Student();
         Student student2 = new Student();
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+        when(studentRepository.findByTeamId(team)).thenReturn(Arrays.asList(student1, student2));
 
         // Act
         Integer nbStudentsTeam1 = teamService.getNbStudentsByTeamId(1);
@@ -222,7 +221,7 @@ class TeamServiceTest {
         // Arrange
         Team team = new Team();
         when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(List.of());
+        when(studentRepository.findByTeamId(team)).thenReturn(List.of());
 
         // Act
         Integer nbStudents = teamService.getNbStudentsByTeamId(1);
