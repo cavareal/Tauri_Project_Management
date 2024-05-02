@@ -213,10 +213,10 @@ public class GradeService {
 	public Float getGradeByStudentAndGradeType(Student student, GradeType gradeType) {
 		try {
 			Float grade = gradeRepository.findValueByStudentAndGradeType(student, gradeType);
-			CustomLogger.logInfo("Getting grade for student " + student.name() + " and grade type " + gradeType.name() + ": " + grade);
+			CustomLogger.info("Getting grade for student " + student.name() + " and grade type " + gradeType.name() + ": " + grade);
 			return grade;
 		} catch (NullPointerException e) {
-			CustomLogger.logInfo("No grade found for student " + student.name() + " and grade type " + gradeType.name());
+			CustomLogger.info("No grade found for student " + student.name() + " and grade type " + gradeType.name());
 			return null;
 		}
 	}
