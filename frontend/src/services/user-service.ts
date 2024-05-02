@@ -30,3 +30,16 @@ export const hasPermission = async(user: User, permission: PermissionType): Prom
 
 	return response.data
 }
+
+export const getUserById = async(id: string): Promise<User> => {
+	const response = await queryAndValidate({
+		route: `users/${id}`,
+		responseSchema: UserSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}

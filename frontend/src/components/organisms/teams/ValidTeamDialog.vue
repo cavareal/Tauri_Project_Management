@@ -6,18 +6,28 @@ import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
+import { createValidationFlag } from "@/services/flag-service"
+import { getUserById } from "@/services/user-service"
+import type { User } from "@/types/user"
+
+const props = defineProps<{
+  currentUserId: string,
+}>()
 
 const emits = defineEmits(["valid:teams"])
 const open = ref(false)
+const currentUser = ref<User>()
 
-// eslint-disable-next-line @typescript-eslint/require-await
-const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-teams"], mutationFn: async() => {
-	open.value = false
-	emits("valid:teams")
+const { mutate, isPending, error } = useMutation({ mutationKey: ["validate-teams"], mutationFn: async() => {
+	currentUser.value = await getUserById(props.currentUserId)
+	await createValidationFlag(currentUser.value)
+		.then(() => open.value = false)
+		.then(() => emits("valid:teams"))
 } })
 
 const DIALOG_TITLE = "Valider la composition des équipes"
-const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir valider la composition des équipes ?"
+const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de valider la composition des équipes ? "
+    + "Une fois ceci fait, vous ne pourrez plus ajouter de signalements."
 
 </script>
 
