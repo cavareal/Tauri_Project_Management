@@ -1,12 +1,11 @@
 import { GradeTypeSchema } from "@/types/grade-type"
-import { apiQuery } from "@/utils/api"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
 
 export const getAllImportedGradeTypes = async() => {
-	const response = await apiQuery({
+	const response = await queryAndValidate({
 		responseSchema: z.array(GradeTypeSchema),
-		method: "GET",
-		route: "grade-types"
+		route: "grade-types/imported"
 	})
 
 	if (response.status === "error") {
@@ -31,11 +30,24 @@ export const getAllImportedGradeTypes = async() => {
 }
 
 export const updateGradeTypeFactor = async(id: number, factor: number): Promise<void> => {
-	const response = await apiQuery({
+	const response = await mutateAndValidate({
 		method: "PATCH",
-		responseSchema: GradeTypeSchema,
 		route: `grade-types/${id}`,
-		body: { factor }
+		body: { factor },
+		bodySchema: z.object({ factor: z.number() })
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const updateGradeType = async(id: string | null, name: string | null, factor: number | null, group: boolean | null, imported: boolean | null, scaleURL: string | null): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "PUT",
+		route: `grade-types/${id}`,
+		body: { name, factor, group, imported, scaleURL },
+		bodySchema: z.any()
 	})
 
 	if (response.status === "error") {

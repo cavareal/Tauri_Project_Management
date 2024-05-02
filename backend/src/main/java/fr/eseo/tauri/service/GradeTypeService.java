@@ -8,6 +8,8 @@ import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,29 +21,68 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GradeTypeService {
 
-    private final GradeService gradeService;
+    private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
+    private final GradeService gradeService;
 
+    public GradeType getGradeTypeById(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("gradeType", id));
+    }
 
-    /**
-     * This method is used to update the factor of a GradeType object and save it to the database.
-     *
-     * @param id the ID of the GradeType object to be updated
-     * @param factor the new factor for the GradeType object
-     *
-     * @return the updated GradeType object, or null if no GradeType object with the provided ID exists
-     */
-    public GradeType updateFactor(int id, float factor) {
-        var gradeType = gradeTypeRepository.findById(id).orElse(null);
-        if (gradeType == null) return null;
+    public List<GradeType> getAllImportedGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findAllImported();
+    }
 
-        gradeType.factor(factor);
+    public List<GradeType> getAllUnimportedGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findAllUnimported();
+    }
+
+    public void createGradeType(String token, GradeType gradeType) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
         gradeTypeRepository.save(gradeType);
+    }
 
+    public void updateGradeType(String token, Integer id, GradeType updatedGradeType) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        GradeType gradeType = getGradeTypeById(token, id);
+
+        if (updatedGradeType.name() != null) gradeType.name(updatedGradeType.name());
+        if (updatedGradeType.factor() != null) gradeType.factor(updatedGradeType.factor());
+        if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
+        if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
+        if (updatedGradeType.scaleUrl() != null) gradeType.scaleUrl(updatedGradeType.scaleUrl());
+
+        gradeTypeRepository.save(gradeType);
         gradeService.updateImportedMean();
-        CustomLogger.logInfo("Successfully updated factor for GradeType object with ID " + id);
+    }
 
-        return gradeType;
+    public void deleteGradeTypeById(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getGradeTypeById(token, id);
+        gradeTypeRepository.deleteById(id);
+    }
+
+    public void deleteAllGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        gradeTypeRepository.deleteAll();
     }
 
     /**
@@ -88,7 +129,7 @@ public class GradeTypeService {
      */
     public List<GradeType> createGradeTypes(List<String> coefficients, List<String> ratings, Boolean forGroup, Boolean imported) {
         if (coefficients == null || ratings == null || coefficients.isEmpty() || ratings.isEmpty()) {
-            CustomLogger.logWarn("Coefficients or ratings are null or empty");
+            CustomLogger.warn("Coefficients or ratings are null or empty");
             return new ArrayList<>();
         }
         List<GradeType> gradeTypes = new ArrayList<>();
@@ -96,7 +137,7 @@ public class GradeTypeService {
         for (int i = 0; i < coefficients.size(); i++) {
             gradeTypes.add(createGradeType(Float.parseFloat(coefficients.get(i)), ratings.get(i), forGroup, imported));
         }
-        CustomLogger.logInfo("Successfully created GradeType objects from the provided coefficients and ratings.");
+        CustomLogger.info("Successfully created GradeType objects from the provided coefficients and ratings.");
         return gradeTypes;
     }
 
@@ -125,9 +166,8 @@ public class GradeTypeService {
                 }
             }
         } catch (IOException | CsvValidationException e) {
-           CustomLogger.logError("Error occurred while extracting coefficient rating and value", e);
+           CustomLogger.error("Error occurred while extracting coefficient rating and value", e);
         }
-
         return createGradeTypes(coefficients, ratings, false, true);
     }
 
@@ -144,7 +184,7 @@ public class GradeTypeService {
         for (String part : nextLine) {
             String trimmedPart = part.trim();
             try {
-                Integer.parseInt(trimmedPart); // Check if it's a coefficient
+                Float.parseFloat(trimmedPart); // Check if it's a coefficient
                 coefficients.add(trimmedPart);
             } catch (NumberFormatException ignored) {
                 startingCoefficients++;
@@ -179,8 +219,12 @@ public class GradeTypeService {
         try {
             gradeTypeRepository.deleteAllImported();
         } catch (Exception e) {
-            CustomLogger.logError("Error occurred while deleting all imported GradeType objects", e);
+            CustomLogger.error("Error occurred while deleting all imported GradeType objects", e);
         }
+    }
+
+    public List<GradeType> getImportedGradeTypes() {
+        return gradeTypeRepository.findAllImported();
     }
 }
 

@@ -1,16 +1,17 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Getter
-@Setter
+@Data
 public class User {
 
 	@Id
@@ -18,15 +19,21 @@ public class User {
 	@JsonProperty
 	private Integer id;
 
+	@NotNull(groups = { Create.class }, message = "The name field is required")
 	@JsonProperty
 	private String name;
 
+	// TODO: The email must be unique
+	@NotNull(groups = { Create.class }, message = "The email field is required")
+	@Email(groups = { Create.class, Update.class }, message = "The email field must be a valid email")
 	@JsonProperty
 	private String email;
 
+	@NotNull(groups = { Create.class }, message = "The password field is required")
 	@JsonProperty
 	private String password;
 
+	@NotNull(groups = { Create.class }, message = "The privateKey field is required")
 	@JsonProperty
 	private String privateKey;
 

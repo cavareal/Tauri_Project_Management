@@ -1,33 +1,26 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NonNull;
 
-@Getter
-@Setter
+@Data
 public class Criteria {
 
+    @NonNull
     @JsonProperty
-    private Integer nbStudents;
+    private Integer nbWomens;
 
-    @JsonProperty
-    private Integer nbWomans;
-
+    @NonNull
     @JsonProperty
     private Integer nbBachelors;
 
+    @NonNull
     @JsonProperty
-    private boolean validCriteriaWoman;
+    private Boolean validCriteriaWoman;
 
+    @NonNull
     @JsonProperty
-    private boolean validCriteriaBachelor;
+    private Boolean validCriteriaBachelor;
 
-    public Criteria(Integer nbWoman, Integer nbBachelor, Integer nbStudents, Boolean validateWoman, Boolean validateBachelor) {
-        this.nbWomans = nbWoman;
-        this.nbBachelors = nbBachelor;
-        this.nbStudents = nbStudents;
-        this.validCriteriaWoman = validateWoman;
-        this.validCriteriaBachelor = validateBachelor;
-    }
 }

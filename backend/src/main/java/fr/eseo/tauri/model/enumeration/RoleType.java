@@ -1,9 +1,12 @@
 package fr.eseo.tauri.model.enumeration;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public enum RoleType {
+
     SUPERVISING_STAFF("Personnel Encadrant"),
     OPTION_LEADER("Chef d'Option"),
     PROJECT_LEADER("Chef de Projet"),
@@ -17,7 +20,4 @@ public enum RoleType {
 
     private final String displayName;
 
-    RoleType(String displayName) {
-        this.displayName = displayName;
-    }
 }

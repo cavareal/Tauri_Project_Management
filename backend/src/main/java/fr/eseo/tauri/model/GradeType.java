@@ -1,30 +1,38 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 @Entity
 @Table(name = "grade_types")
-@Getter
-@Setter
+@Data
 public class GradeType {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
     private Integer id;
 
+    @NotNull(groups = { Create.class }, message = "The name field is required")
     @JsonProperty
     private String name;
 
+    // TODO: Why is this field nullable?
     @JsonProperty
     private Float factor;
 
+    @NotNull(groups = { Create.class }, message = "The forGroup field is required")
     @JsonProperty
     private Boolean forGroup;
 
+    @NotNull(groups = { Create.class }, message = "The imported field is required")
     @JsonProperty
     private Boolean imported;
+
+    @JsonProperty
+    private String scaleUrl;
 
 }

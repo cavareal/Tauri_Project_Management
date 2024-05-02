@@ -190,11 +190,11 @@ class ProjectServiceTest {
     void getRatioGender_returnsRatio_whenProjectExists() {
         // Arrange
         Project project = new Project();
-        project.ratioGender(10);
+        project.genderRatio(10);
         when(projectRepository.findAll()).thenReturn(Collections.singletonList(project));
 
         // Act
-        Integer ratioGender = projectService.getRatioGender();
+        Integer ratioGender = projectService.getGenderRatio();
 
         // Assert
         assertEquals(10, ratioGender);

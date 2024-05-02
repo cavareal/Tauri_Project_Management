@@ -7,12 +7,14 @@ import { ref } from "vue"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
+import { getCookie } from "@/utils/cookie"
 
 const open = ref(false)
 const emits = defineEmits(["delete:students"])
+const currentProjectId = getCookie("currentProject")
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-students"], mutationFn: async() => {
-	await deleteAllStudents()
+	await deleteAllStudents(currentProjectId)
 		.then(() => open.value = false)
 		.then(() => emits("delete:students"))
 } })

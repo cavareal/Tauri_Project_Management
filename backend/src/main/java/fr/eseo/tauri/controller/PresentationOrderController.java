@@ -1,51 +1,65 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.PresentationOrder;
-import fr.eseo.tauri.repository.PresentationOrderRepository;
+import fr.eseo.tauri.service.PresentationOrderService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/presentation-orders")
-@Tag(name = "presentation-orders")
+@RequiredArgsConstructor
+@RequestMapping("/api/presentationOrders")
+@Tag(name = "presentationOrders")
 public class PresentationOrderController {
 
-    //@Autowired
-
-    private final PresentationOrderRepository presentationOrderRepository;
-
-    public PresentationOrderController(PresentationOrderRepository presentationOrderRepository) {
-        this.presentationOrderRepository = presentationOrderRepository;
-    }
-
-    @PostMapping("/")
-    public PresentationOrder addPresentationOrder(@RequestBody PresentationOrder presentationOrder) {
-        return presentationOrderRepository.save(presentationOrder);
-    }
-
-    @GetMapping("/")
-    public Iterable<PresentationOrder> getAllPresentationOrders() {
-        return presentationOrderRepository.findAll();
-    }
+    private final PresentationOrderService presentationOrderService;
+    private final ResponseMessage responseMessage = new ResponseMessage("presentationOrder");
 
     @GetMapping("/{id}")
-    public PresentationOrder getPresentationOrderById(@PathVariable Integer id) {
-        return presentationOrderRepository.findById(id).orElse(null);
+    public ResponseEntity<PresentationOrder> getPresentationOrderById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        PresentationOrder presentationOrder = presentationOrderService.getPresentationOrderById(token, id);
+        return ResponseEntity.ok(presentationOrder);
     }
 
-    @PutMapping("/{id}")
-    public PresentationOrder updatePresentationOrder(@PathVariable Integer id, @RequestBody PresentationOrder presentationOrderDetails) {
-        PresentationOrder presentationOrder = presentationOrderRepository.findById(id).orElse(null);
-        if (presentationOrder != null) {
-            presentationOrder.value(presentationOrderDetails.value());
-            return presentationOrderRepository.save(presentationOrder);
-        }
-        return null;
+    @GetMapping
+    public ResponseEntity<List<PresentationOrder>> getAllPresentationOrdersByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+        List<PresentationOrder> presentationOrders = presentationOrderService.getAllPresentationOrdersByProject(token, projectId);
+        return ResponseEntity.ok(presentationOrders);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createPresentationOrder(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody PresentationOrder presentationOrder) {
+        presentationOrderService.createPresentationOrder(token, presentationOrder);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updatePresentationOrder(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody PresentationOrder updatedPresentationOrder) {
+        presentationOrderService.updatePresentationOrder(token, id, updatedPresentationOrder);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public String deletePresentationOrder(@PathVariable Integer id) {
-        presentationOrderRepository.deleteById(id);
-        return "PresentationOrder deleted";
+    public ResponseEntity<String> deletePresentationOrder(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        presentationOrderService.deletePresentationOrder(token, id);
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllPresentationOrdersByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+        presentationOrderService.deleteAllPresentationOrdersByProject(token, projectId);
+        CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+        return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 }

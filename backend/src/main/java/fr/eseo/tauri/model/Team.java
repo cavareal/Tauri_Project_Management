@@ -1,17 +1,17 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-
 @Entity
 @Table(name = "teams")
-@Getter
-@Setter
+@Data
 public class Team {
 
     @Id
@@ -33,6 +33,15 @@ public class Team {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JsonProperty
     private User leader;
+
+    @NotNull(groups = { Create.class }, message = "The projectId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer projectId;
+
+    @Transient
+    @JsonDeserialize
+    private Integer leaderId;
 
 }
 

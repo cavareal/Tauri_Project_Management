@@ -1,16 +1,15 @@
 package fr.eseo.tauri.model.enumeration;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public enum Gender {
+
     WOMAN("Femme"),
     MAN("Homme");
 
     private final String genderName;
-
-    Gender(String genderName) {
-        this.genderName = genderName;
-    }
 
 }

@@ -5,6 +5,9 @@ import SidebarLink from "./SidebarLink.vue"
 import Separator from "@/components/ui/separator/Separator.vue"
 import { Logo } from "@/components/atoms/logo"
 import { cn } from "@/utils/style"
+import { Column } from "@/components/atoms/containers"
+import Title from "@/components/atoms/texts/Title.vue"
+import Row from "@/components/atoms/containers/Row.vue"
 import NotificationView from "@/components/organisms/notifications/NotificationView.vue"
 
 const props = defineProps<{
@@ -22,11 +25,11 @@ const style = cn(
 
 <template>
 	<nav :class="style">
-		<div>
-			<div class="flex flex-row items-center justify-center gap-4 mt-4 mb-8">
+		<Column>
+			<Row class="items-center justify-center gap-4 mt-4 mb-8">
 				<Logo class="h-12 fill-light-blue" />
-				<h3 class="text-3xl uppercase font-title-medium text-light-blue">Tauri</h3>
-			</div>
+				<Title class="text-3xl uppercase font-title-medium text-light-blue">Tauri</Title>
+			</Row>
 
 			<SidebarLink link="/">
 				<LayoutDashboard /> Tableau de bord
@@ -34,36 +37,36 @@ const style = cn(
 
 			<Separator class="my-2" />
 
-			<SidebarLink link="/students">
+			<SidebarLink link="/students" permission="STUDENTS_PAGE">
 				<GraduationCap /> Étudiants
 			</SidebarLink>
 
-			<SidebarLink link="/teams">
+			<SidebarLink link="/teams" permission="TEAMS_PAGE">
 				<Users /> Équipes
 			</SidebarLink>
 
-			<SidebarLink link="/my-team">
+			<SidebarLink link="/my-team" permission="MY_TEAM_PAGE">
 				<User /> Mon équipe
 			</SidebarLink>
 
-			<SidebarLink link="/sprints">
+			<SidebarLink link="/sprints" permission="SPRINTS_PAGE">
 				<Play /> Sprints
 			</SidebarLink>
 
-			<SidebarLink link="/grades">
+			<SidebarLink link="/grades" permission="GRADES_PAGE">
 				<Tag /> Notes
 			</SidebarLink>
 
-			<SidebarLink link="/rating">
+			<SidebarLink link="/rating" permission="RATING_PAGE">
 				<Check /> Évaluations
 			</SidebarLink>
 
-			<SidebarLink link="/grade-scales">
+			<SidebarLink link="/grade-scales" permission="GRADE_SCALES_PAGE">
 				<Scale /> Barèmes
 			</SidebarLink>
-		</div>
+		</Column>
 
-		<div>
+		<Column>
 			<Separator class="my-2" />
 
       <NotificationView>
@@ -76,6 +79,6 @@ const style = cn(
 			<SidebarLink link="/login">
 				<LogOut /> Déconnexion
 			</SidebarLink>
-		</div>
+		</Column>
 	</nav>
 </template>

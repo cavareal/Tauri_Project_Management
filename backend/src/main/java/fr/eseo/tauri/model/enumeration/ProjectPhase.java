@@ -1,7 +1,9 @@
 package fr.eseo.tauri.model.enumeration;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public enum ProjectPhase {
 
@@ -12,7 +14,4 @@ public enum ProjectPhase {
 
     private final String displayName;
 
-    ProjectPhase(String displayName) {
-        this.displayName = displayName;
-    }
 }

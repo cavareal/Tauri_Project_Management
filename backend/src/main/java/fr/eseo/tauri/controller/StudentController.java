@@ -1,101 +1,99 @@
 package fr.eseo.tauri.controller;
 
+import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import fr.eseo.tauri.util.valid.Create;
+import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/students")
 @Tag(name = "students")
 public class StudentController {
 
-    private final StudentRepository studentRepository;
-    private final StudentService studentService;
+	private final StudentService studentService;
+	private final ResponseMessage responseMessage = new ResponseMessage("student");
 
-    private final AuthService authService;
+	@GetMapping("/{id}")
+	public ResponseEntity<Student> getStudentById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		Student student = studentService.getStudentById(token, id);
+		return ResponseEntity.ok(student);
+	}
 
-    @Autowired
-    public StudentController(StudentService studentService, AuthService authService, StudentRepository studentRepository) {
-        this.studentService = studentService;
-        this.authService = authService;
-        this.studentRepository = studentRepository;
-    }
+	@GetMapping
+	public ResponseEntity<List<Student>> getAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+		List<Student> students = studentService.getAllStudentsByProject(token, projectId);
+		return ResponseEntity.ok(students);
+	}
 
-    @GetMapping
-    public ResponseEntity<List<Student>> getStudents() {
-        return ResponseEntity.ok(studentRepository.findAll());
-    }
+	@PostMapping
+	public ResponseEntity<String> createStudent(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Student student) {
+		studentService.createStudent(token, student);
+		CustomLogger.info(responseMessage.create());
+		return ResponseEntity.ok(responseMessage.create());
+	}
 
-    @GetMapping("/quantity-all")
-    public ResponseEntity<String> getStudentQuantity(@RequestHeader("Authorization") String token) {
-        // Check token, if user is GOOD
-        String permission = "readStudentQuantity";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                Integer quantity = studentService.getStudentQuantity();
-                return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(quantity));
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
-        }
-    }
+	@PatchMapping("/{id}")
+	public ResponseEntity<String> updateStudent(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Student updatedStudent) {
+		studentService.updateStudent(token, id, updatedStudent);
+		CustomLogger.info(responseMessage.update());
+		return ResponseEntity.ok(responseMessage.update());
+	}
 
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteStudent(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		studentService.deleteStudent(token, id);
+		CustomLogger.info(responseMessage.delete());
+		return ResponseEntity.ok(responseMessage.delete());
+	}
 
-    /**
-     * This method is responsible for handling file uploads.
-     * It is mapped to the "/uploadCSV" endpoint and only responds to HTTP POST requests.
-     *
-     * @param file This is the file that is uploaded by the client. It is expected to be a CSV file.
-     * @return ResponseEntity<String> This returns a response entity with a message indicating the result of the operation.
-     * If the file is empty, it returns a bad request response with a message "Uploaded file is empty".
-     * If the file is processed successfully, it returns an OK response with a message "File uploaded successfully".
-     * If an error occurs during the processing of the file, it returns an internal server error response with a message indicating the error.
-     */
-    @PostMapping("/uploadCSV")
-    public ResponseEntity<String> handleFileUpload(@RequestParam("file-upload") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("Uploaded file is empty");
-        }
+	@DeleteMapping
+	public ResponseEntity<String> deleteAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+		studentService.deleteAllStudentsByProject(token, projectId);
+		CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+		return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
+	}
 
-        try {
-            // Pass the uploaded file to the service method for further processing
-            studentService.populateDatabaseFromCSV(file);
-            return ResponseEntity.ok("File uploaded successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
-        }
-    }
+	/**
+	 * This method is responsible for handling file uploads.
+	 * It is mapped to the "/uploadCSV" endpoint and only responds to HTTP POST requests.
+	 *
+	 * @param file This is the file that is uploaded by the client. It is expected to be a CSV file.
+	 * @return ResponseEntity<String> This returns a response entity with a message indicating the result of the operation.
+	 * If the file is empty, it returns a bad request response with a message "Uploaded file is empty".
+	 * If the file is processed successfully, it returns an OK response with a message "File uploaded successfully".
+	 * If an error occurs during the processing of the file, it returns an internal server error response with a message indicating the error.
+	 */
+	@PostMapping("/upload")
+	public ResponseEntity<String> handleFileUpload(@RequestHeader("Authorization") String token, @RequestParam("file-upload") MultipartFile file, @RequestParam Integer projectId) throws IOException, CsvValidationException {
+		studentService.populateDatabaseFromCSV(token, file, projectId);
+		return ResponseEntity.ok("File uploaded successfully");
+	}
 
-    @GetMapping("/team/{id}")
-    public ResponseEntity<List<Student>> getStudentsByTeam(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        // Check token, if user is GOOD
-        String permission = "readStudentByTeam";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                List<Student> students = studentService.getStudentsByTeamId(id);
-                return ResponseEntity.ok(students);
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }
+	@GetMapping("/download-students-csv")
+	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+		try{
+			CustomLogger.info("Downloading students CSV");
+			return ResponseEntity.ok(studentService.createStudentsCSV(token, projectId));
+		}
+		catch (Exception e){
+			CustomLogger.error("Error downloading students CSV", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 
-    @DeleteMapping()
-    public ResponseEntity<String> deleteStudents(){
-        studentService.deleteAllImportedStudentsAndGradeTypes();
-        return  ResponseEntity.ok("students have been deleted successfully");
-    }
+	}
+
 }
