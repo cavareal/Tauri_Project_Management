@@ -10,7 +10,7 @@ import { Header } from "@/components/molecules/header"
 import { useQuery } from "@tanstack/vue-query"
 import { getAllNotifications } from "@/services/notification-service"
 import NotificationTable from "@/components/organisms/notifications/NotificationTable.vue"
-import { Row } from "@/components/atoms/containers"
+import { Text } from "@/components/atoms/texts"
 
 const { data: notifications }
     = useQuery({ queryKey: ["notifications"], queryFn: getAllNotifications })
@@ -32,8 +32,10 @@ console.log(getAllNotifications())
           </Header>
         </SheetTitle>
       </SheetHeader>
-      <Row v-if="!notifications" class="mt-5">Vous n'avez aucune notification pour le moment</Row>
-      <NotificationTable v-else :notifications="notifications ?? null"/>
+      <div class="mt-5 h-5/6 overflow-y-auto">
+        <Text v-if="!notifications">Vous n'avez aucune notification pour le moment</Text>
+        <NotificationTable v-else :notifications="notifications ?? null"/>
+      </div>
      </SheetContent>
    </Sheet>
 

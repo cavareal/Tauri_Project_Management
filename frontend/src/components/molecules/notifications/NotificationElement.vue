@@ -16,7 +16,7 @@ defineProps<{
 </script>
 
 <template>
-  <Column class="mt-5 border rounded-lg p-6">
+  <Column class="mb-5 mr-5 border rounded-lg p-6">
     <Row >
       <Column class="items-start justify-center flex-1 gap-1">
         <Subtitle>{{ title }}</Subtitle>
