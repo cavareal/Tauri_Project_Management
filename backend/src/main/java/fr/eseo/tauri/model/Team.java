@@ -7,9 +7,6 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.List;
-
-
 
 @Entity
 @Table(name = "teams")
@@ -37,9 +34,5 @@ public class Team {
     @JsonProperty
     private User leader;
 
-    @OneToMany(mappedBy = "team", orphanRemoval = true)
-    @OnDelete(action = OnDeleteAction.NO_ACTION)
-    @JsonProperty
-    private List<Student> students;
 }
 

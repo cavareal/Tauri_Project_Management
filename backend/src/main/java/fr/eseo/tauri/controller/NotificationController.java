@@ -2,7 +2,6 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.model.User;
-import fr.eseo.tauri.model.enumeration.NotificationType;
 import fr.eseo.tauri.repository.NotificationRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,33 +23,6 @@ public class NotificationController {
     public NotificationController(NotificationRepository notificationRepository, UserRepository userRepository) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
-        testAddNotification();
-    }
-
-    public void testAddNotification(){
-        Notification test = new Notification();
-        Notification test2 = new Notification();
-        User userTo = new User();
-        User userFrom = new User();
-        userFrom.name("R. Woodward");
-        userTo.name("Clément P");
-        test.message("La composition des équipes a été prépubliée.");
-        test.isRead(false);
-        test.type(NotificationType.valueOf("CREATE_TEAMS"));
-        userRepository.save(userTo);
-        userRepository.save(userFrom);
-        test.userTo(userTo);
-        test.userFrom(userFrom);
-
-        test2.message("Un bonus a été ajouté à votre équipe.");
-        test2.isRead(false);
-        test2.type(NotificationType.valueOf("CREATE_TEAMS"));
-        test2.userTo(userTo);
-        test2.userFrom(userFrom);
-        notificationRepository.save(test);
-        notificationRepository.save(test2);
-        notificationRepository.save(test);
-        notificationRepository.save(test2);
     }
 
     @PostMapping("/")
