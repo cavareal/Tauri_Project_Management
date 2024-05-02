@@ -2,6 +2,7 @@ package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -22,8 +23,9 @@ public class User {
 	@JsonProperty
 	private String name;
 
+	// TODO: The email must be unique
 	@NotNull(groups = { Create.class }, message = "The email field is required")
-	@Email(groups = { Create.class }, message = "The email field must be a valid email")
+	@Email(groups = { Create.class, Update.class }, message = "The email field must be a valid email")
 	@JsonProperty
 	private String email;
 

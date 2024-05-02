@@ -108,14 +108,22 @@ const getHeaders = (jsonContent: boolean = true) => {
 }
 
 /**
+ * Fetches data from the API and validates it against a Zod schema.
+ * @param route API route to fetch, without the base URL defined in .env (example: "roles" for "{VITE_TAURI_API_URL}/roles")
+ * @param params Query parameters to append to the URL (example: { param: value })
+ * @param jsonContent Booleam that indicates if the content should be sent as JSON (true by default)
  * @param delay Delay before fetching in ms (useful for testing loading states)
+ * @param responseSchema Zod schema to validate the response
+ * @returns An object with the status of the request, an error message if it failed and the data if it succeeded
  */
 export const queryAndValidate = async <T>({
 	route, params, jsonContent = true, delay, responseSchema
 }: QueryAndValidateRequest<T>): Promise<QueryAndValidateResponse<T>> => {
 	if (delay) await wait(delay)
 
-	const response = await fetch(buildUrl(route, params), {
+	const currentProjectId = getCookie("currentProject")
+
+	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId ?? "" }), {
 		headers: getHeaders(jsonContent)
 	})
 	if (!response.ok) return {
@@ -128,7 +136,10 @@ export const queryAndValidate = async <T>({
 		data = JSON.parse(data as string)
 	} catch (error) { /* Do nothing */ }
 
+	console.log(data)
+
 	const parsedBody = responseSchema.safeParse(data)
+	console.log(parsedBody)
 	if (!parsedBody.success) return {
 		status: "error",
 		error: `Failed to validate GET ${route}: ${parsedBody.error.message}`
@@ -140,6 +151,17 @@ export const queryAndValidate = async <T>({
 	}
 }
 
+/**
+ * Mutates data in the API and validates the response.
+ * @param method HTTP method to use for mutation (POST, PUT, PATCH or DELETE)
+ * @param route API route to fetch, without the base URL defined in .env (example: "roles" for "{VITE_TAURI_API_URL}/roles")
+ * @param params Query parameters to append to the URL (example: { param: value })
+ * @param jsonContent Booleam that indicates if the content should be sent as JSON (true by default)
+ * @param delay Delay before fetching in ms (useful for testing loading states)
+ * @param body Data to send in the request body
+ * @param bodySchema Zod schema to validate the body
+ * @returns An object with the status of the request and an error message if it failed
+ */
 export const mutateAndValidate = async <T>({
 	method, route, params, jsonContent = true, delay, body, bodySchema
 }: MutateAndValidateRequest<T>): Promise<MutateAndValidateResponse> => {
@@ -162,7 +184,9 @@ export const mutateAndValidate = async <T>({
 	if (body) bodyData = parsedBody?.data as BodyInit
 	if (jsonContent) bodyData = JSON.stringify(bodyData)
 
-	const response = await fetch(buildUrl(route, params), {
+	const currentProjectId = getCookie("currentProject")
+
+	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId ?? "" }), {
 		method,
 		body: bodyData,
 		headers: getHeaders(jsonContent)

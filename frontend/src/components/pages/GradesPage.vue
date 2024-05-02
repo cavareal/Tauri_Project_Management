@@ -14,7 +14,7 @@ const role = getCookie("role")
 
 <template>
 	<SidebarTemplate>
-		<h1 class="text-3xl font-title-bold">Note</h1>
+		<h1 class="text-3xl font-title-bold">Notes</h1>
 		<div class="tabs-example">
 			<div class="example example-1">
 				<NotAutorized v-if="!token || !role"/>

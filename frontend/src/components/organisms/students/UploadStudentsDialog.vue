@@ -41,7 +41,7 @@ const { error, isPending, mutate: upload } = useMutation({ mutationKey: ["import
 		<ErrorText v-if="error" class="mb-2">Une erreur est survenue lors de l'importation du fichier.</ErrorText>
 
 		<template #footer>
-			<DialogClose>
+			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
 			<LoadingButton type="submit" class="flex items-center" :loading="isPending" @click="upload">

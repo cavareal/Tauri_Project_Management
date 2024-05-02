@@ -1,14 +1,17 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.util.ListUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -19,6 +22,7 @@ public class RoleService {
 	private final AuthService authService;
 	private final RoleRepository roleRepository;
 	private final UserService userService;
+	private final PermissionService permissionService;
 
 	public Role getRoleById(String token, Integer id) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readRole"))) {
@@ -82,6 +86,11 @@ public class RoleService {
 		}
 		var roles = roleRepository.findByType(roleType);
 		return ListUtil.map(roles, Role::user);
+	}
+
+	public Boolean hasPermission(String token, RoleType roleType, PermissionType permissionType) {
+		var permissions = permissionService.getAllPermissionsByRole(token, roleType);
+		return ListUtil.map(permissions, Permission::type).contains(permissionType);
 	}
 
 }

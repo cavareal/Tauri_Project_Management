@@ -4,21 +4,16 @@ import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RoleSeeder {
 
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
-
-	@Autowired
-	public RoleSeeder(UserRepository userRepository, RoleRepository roleRepository) {
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
-	}
 
 	public void seed(Faker faker) {
 		var users = userRepository.findAll();

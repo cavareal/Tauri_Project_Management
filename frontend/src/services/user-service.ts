@@ -17,9 +17,9 @@ export const getUsersByRole = async(role: RoleType): Promise<User[]> => {
 	return response.data
 }
 
-export const hasPermission = async(user: User, permission: PermissionType): Promise<boolean> => {
+export const hasPermission = async(userId: number, permission: PermissionType): Promise<boolean> => {
 	const response = await queryAndValidate({
-		route: `users/${user.id}/permissions/${permission}`,
+		route: `users/${userId}/permissions/${permission}`,
 		responseSchema: z.boolean()
 	})
 

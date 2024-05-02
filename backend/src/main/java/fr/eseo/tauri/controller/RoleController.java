@@ -2,6 +2,7 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.service.RoleService;
@@ -63,6 +64,12 @@ public class RoleController {
     public ResponseEntity<List<User>> getUsersByRole(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType) {
         var users = roleService.getUsersByRoleType(token, roleType);
         return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/{roleType}/permissions/{permissionType}")
+    public ResponseEntity<Boolean> hasPermission(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType, @PathVariable PermissionType permissionType) {
+        var hasPermission = roleService.hasPermission(token, roleType, permissionType);
+        return ResponseEntity.ok(hasPermission);
     }
 
 }

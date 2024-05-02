@@ -23,7 +23,7 @@ const currentProjectId = getCookie("currentProject")
 const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
 	queryKey: ["project"], queryFn: async() => (await (getProjectById(currentProjectId))).phase
 })
-const { data: nbStudents } = useQuery({ queryKey: ["nbStudents"], queryFn: async() => (await (getAllStudents(currentProjectId))).length })
+const { data: nbStudents } = useQuery({ queryKey: ["nbStudents"], queryFn: async() => (await getAllStudents()).length })
 const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams(currentProjectId)).length })
 
 const displayButtons = computed(() => role === "PROJECT_LEADER" && nbStudents.value && nbStudents.value > 0

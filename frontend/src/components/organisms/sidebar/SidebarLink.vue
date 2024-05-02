@@ -4,28 +4,42 @@ import { computed } from "vue"
 import { cn } from "@/utils/style"
 import { useRoute } from "vue-router"
 import { LinkButton } from "@/components/molecules/buttons"
+import type { PermissionType } from "@/types/permission"
+import { getCookie } from "@/utils/cookie"
+import type { RoleType } from "@/types/role"
+import { useQuery } from "@tanstack/vue-query"
+import { hasPermission } from "@/services/role-service"
 
+const role = getCookie<RoleType>("role")
 const route = useRoute()
 
 const props = defineProps<{
 	link?: string | null
+	permission?: PermissionType
 	class?: string
 }>()
+
+const { data: display, isFetching, isLoading } = useQuery({ queryKey: ["has-permission", role, props.permission], queryFn: async() => {
+	if (!role) return false
+	if (!props.permission) return true
+	return await hasPermission(role, props.permission)
+} })
 
 const selected = computed(() => props.link && route.path === props.link)
 
 const style = cn(
 	"w-full my-1",
 	"flex flex-row items-center justify-start gap-2",
-	"text-white hover:bg-white/10 hover:text-white transition-colors",
-	{ "bg-white/20": selected.value },
+	"text-white transition-colors hover:text-white",
+	{ "bg-white/20 hover:bg-white/20": selected.value },
+	{ "hover:bg-white/10": !selected.value },
 	props.class
 )
 
 </script>
 
 <template>
-	<LinkButton :link="link" :class="style" variant="ghost">
+	<LinkButton :link="link" :class="style" variant="ghost" v-if="!isFetching && !isLoading && display">
 		<slot />
 	</LinkButton>
 </template>

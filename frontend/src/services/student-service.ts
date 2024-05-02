@@ -2,14 +2,13 @@ import type { Student } from "@/types/student"
 import { StudentSchema } from "@/types/student"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
-import type { Team } from "@/types/team"
 
-export const getAllStudents = async(projectId: string | null): Promise<Student[]> => {
+export const getAllStudents = async(): Promise<Student[]> => {
 	const response = await queryAndValidate({
 		responseSchema: StudentSchema.array(),
-		route: "students",
-		params: { projectId: projectId ?? "" }
+		route: "students"
 	})
+	console.log(response)
 
 	if (response.status === "error") {
 		throw new Error(response.error)

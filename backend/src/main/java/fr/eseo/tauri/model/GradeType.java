@@ -20,6 +20,7 @@ public class GradeType {
     @JsonProperty
     private String name;
 
+    // TODO: Why is this field nullable?
     @JsonProperty
     private Float factor;
 

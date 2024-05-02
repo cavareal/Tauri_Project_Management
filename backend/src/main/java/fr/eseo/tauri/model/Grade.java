@@ -66,12 +66,12 @@ public class Grade {
     @JsonDeserialize
     private Integer authorId;
 
-    @NotNull(groups = { Create.class }, message = "The studentId field is required")
+//    @NotNull(groups = { Create.class }, message = "The studentId field is required")
     @Transient
     @JsonDeserialize
     private Integer studentId;
 
-    @NotNull(groups = { Create.class }, message = "The teamId field is required")
+//    @NotNull(groups = { Create.class }, message = "The teamId field is required")
     @Transient
     @JsonDeserialize
     private Integer teamId;
