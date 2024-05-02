@@ -18,7 +18,6 @@ import java.util.List;
 public class GradeTypeController {
 
     private final GradeTypeService gradeTypeService;
-    private final GradeTypeRepository gradeTypeRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity<GradeType> getGradeTypeById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -26,9 +25,15 @@ public class GradeTypeController {
         return ResponseEntity.ok(gradeType);
     }
 
-    @GetMapping
-    public ResponseEntity<List<GradeType>> getAllGradeTypes(@RequestHeader("Authorization") String token) {
-        List<GradeType> gradeTypes = gradeTypeService.getAllGradeTypes(token);
+    @GetMapping("/imported")
+    public ResponseEntity<List<GradeType>> getAllImportedGradeTypes(@RequestHeader("Authorization") String token) {
+        List<GradeType> importedGradeTypes = gradeTypeService.getAllImportedGradeTypes(token);
+        return ResponseEntity.ok(importedGradeTypes);
+    }
+
+    @GetMapping("/unimported")
+    public ResponseEntity<List<GradeType>> getAllUnimportedGradeTypes(@RequestHeader("Authorization") String token) {
+        List<GradeType> gradeTypes = gradeTypeService.getAllUnimportedGradeTypes(token);
         return ResponseEntity.ok(gradeTypes);
     }
 
@@ -55,53 +60,5 @@ public class GradeTypeController {
         gradeTypeService.deleteAllGradeTypes(token);
         return ResponseEntity.ok("All GradeTypes deleted successfully.");
     }
-
-    /*@GetMapping
-    public ResponseEntity<Iterable<GradeType>> getGradeTypes() {
-        return ResponseEntity.ok(gradeTypeRepository.findAll());
-    }*/
-
-    /*@PatchMapping("/{id}")
-    public ResponseEntity<GradeType> partialUpdateGradeType(@PathVariable Integer id, @RequestBody GradeType gradeType) {
-        if (gradeType.factor() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        return ResponseEntity.ok(gradeTypeService.updateFactor(id, gradeType.factor()));
-    }*/
-
-    @PostMapping("/")
-    public GradeType addGradeType(@RequestBody GradeType gradeType) {
-        return gradeTypeRepository.save(gradeType);
-    }
-
-    @GetMapping("/")
-    public Iterable<GradeType> getAllGradeTypes() {
-        return gradeTypeRepository.findAll();
-    }
-
-    /*@GetMapping("/{id}")
-    public GradeType getGradeTypeById(@PathVariable Integer id) {
-        return gradeTypeRepository.findById(id).orElse(null);
-    }*/
-
-    @PutMapping("/{id}")
-    public GradeType updateGradeType(@PathVariable Integer id, @RequestBody GradeType gradeTypeDetails) {
-        GradeType gradeType = gradeTypeRepository.findById(id).orElse(null);
-        if (gradeType != null) {
-            gradeType.name(gradeTypeDetails.name());
-            gradeType.factor(gradeTypeDetails.factor());
-            gradeType.forGroup(gradeTypeDetails.forGroup());
-            gradeType.imported(gradeTypeDetails.imported());
-            return gradeTypeRepository.save(gradeType);
-        }
-        return null;
-    }
-
-    /*@DeleteMapping("/{id}")
-    public String deleteGradeType(@PathVariable Integer id) {
-        gradeTypeRepository.deleteById(id);
-        return "GradeType deleted";
-    }*/
 
 }

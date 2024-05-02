@@ -42,10 +42,16 @@ public class GradeController {
         return ResponseEntity.ok(grade);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Grade>> getAllGradesByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
-        List<Grade> grades = gradeService.getAllGradesByProject(token, projectId);
+    @GetMapping("/unimported")
+    public ResponseEntity<List<Grade>> getAllUnimportedGradesByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+        List<Grade> grades = gradeService.getAllUnimportedGradesByProject(token, projectId);
         return ResponseEntity.ok(grades);
+    }
+
+    @GetMapping("/imported")
+    public ResponseEntity<List<Grade>> getAllImportedGradesByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+        List<Grade> importedGrades = gradeService.getAllImportedGradesByProject(token, projectId);
+        return ResponseEntity.ok(importedGrades);
     }
 
     @PostMapping
@@ -83,11 +89,6 @@ public class GradeController {
         return gradeRepository.save(grade);
     }
 
-    /*@GetMapping("/{id}")
-    public @Valid Grade getGradeById(@PathVariable Integer id) {
-        return gradeRepository.findById(id).orElse(null);
-    }*/
-
     @PutMapping("/{id}")
     public Grade updateGrade(@PathVariable Integer id, @RequestBody Grade gradeDetails) {
         Grade grade = gradeRepository.findById(id).orElse(null);
@@ -98,12 +99,6 @@ public class GradeController {
         }
         return null;
     }
-
-    /*@DeleteMapping("/{id}")
-    public String deleteGrade(@PathVariable Integer id) {
-        gradeRepository.deleteById(id);
-        return "Grade deleted";
-    }*/
 
     /**
      * This method is a POST endpoint that accepts a JSON string representing a map of evaluations.

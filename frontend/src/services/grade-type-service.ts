@@ -5,7 +5,7 @@ import { z } from "zod"
 export const getAllImportedGradeTypes = async() => {
 	const response = await queryAndValidate({
 		responseSchema: z.array(GradeTypeSchema),
-		route: "grade-types"
+		route: "grade-types/imported"
 	})
 
 	if (response.status === "error") {

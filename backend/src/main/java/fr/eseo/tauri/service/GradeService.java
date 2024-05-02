@@ -41,11 +41,18 @@ public class GradeService {
         return gradeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("grade", id));
     }
 
-    public List<Grade> getAllGradesByProject(String token, Integer projectId) {
+    public List<Grade> getAllUnimportedGradesByProject(String token, Integer projectId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return gradeRepository.findAllByProject(projectId);
+        return gradeRepository.findAllUnimportedByProject(projectId);
+    }
+
+    public List<Grade> getAllImportedGradesByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeRepository.findAllImportedByProject(projectId);
     }
 
     public void createGrade(String token, Grade grade) {

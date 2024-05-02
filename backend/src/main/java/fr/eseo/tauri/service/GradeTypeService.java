@@ -32,11 +32,18 @@ public class GradeTypeService {
         return gradeTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("gradeType", id));
     }
 
-    public List<GradeType> getAllGradeTypes(String token) {
+    public List<GradeType> getAllImportedGradeTypes(String token) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return gradeTypeRepository.findAll();
+        return gradeTypeRepository.findAllImported();
+    }
+
+    public List<GradeType> getAllUnimportedGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findAllUnimported();
     }
 
     public void createGradeType(String token, GradeType gradeType) {
@@ -75,27 +82,6 @@ public class GradeTypeService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         gradeTypeRepository.deleteAll();
-    }
-
-    /**
-     * This method is used to update the factor of a GradeType object and save it to the database.
-     *
-     * @param id the ID of the GradeType object to be updated
-     * @param factor the new factor for the GradeType object
-     *
-     * @return the updated GradeType object, or null if no GradeType object with the provided ID exists
-     */
-    public GradeType updateFactor(int id, float factor) {
-        var gradeType = gradeTypeRepository.findById(id).orElse(null);
-        if (gradeType == null) return null;
-
-        gradeType.factor(factor);
-        gradeTypeRepository.save(gradeType);
-
-        gradeService.updateImportedMean();
-        CustomLogger.info("Successfully updated factor for GradeType object with ID " + id);
-
-        return gradeType;
     }
 
     /**

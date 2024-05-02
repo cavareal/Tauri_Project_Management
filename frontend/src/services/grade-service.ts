@@ -6,9 +6,10 @@ import type { User } from "@/types/user"
 import type { Student } from "@/types/student"
 import type { Team } from "@/types/team"
 
-export const getAllGrades = async(): Promise<Grade[]> => {
+export const getAllImportedGrades = async(projectId: string | null): Promise<Grade[]> => {
 	const response = await queryAndValidate({
-		route: "grades",
+		route: "grades/imported",
+		params: { projectId: projectId ?? "" },
 		responseSchema: GradeSchema.array()
 	})
 

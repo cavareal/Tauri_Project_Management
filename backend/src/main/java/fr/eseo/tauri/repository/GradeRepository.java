@@ -14,8 +14,11 @@ import java.util.List;
 
 public interface GradeRepository extends JpaRepository<Grade, Integer> {
 
-	@Query("SELECT g FROM Grade g WHERE g.student.project.id = :projectId")
-	List<Grade> findAllByProject(Integer projectId);
+	@Query("SELECT g FROM Grade g WHERE g.gradeType.imported = true  AND g.student.project.id = :projectId")
+	List<Grade> findAllImportedByProject(Integer projectId);
+
+	@Query("SELECT g FROM Grade g WHERE g.gradeType.imported = false  AND g.student.project.id = :projectId")
+	List<Grade> findAllUnimportedByProject(Integer projectId);
 
 	@Transactional
 	@Modifying

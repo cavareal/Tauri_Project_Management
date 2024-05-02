@@ -6,7 +6,9 @@ import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
+import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class UserService {
 	private final AuthService authService;
 	private final UserRepository userRepository;
 	private final TeamRepository teamRepository;
+	private final StudentRepository studentRepository;
 	private final RoleRepository roleRepository;
 	private final PermissionService permissionService;
 
@@ -72,7 +75,7 @@ public class UserService {
 		var user = getUserById(token, id);
 
 		// Change team's leader to null when their leader is deleted.
-		var teams = teamRepository.findByLeaderId(user.id());
+		var teams = teamRepository.findAllByLeaderId(user.id());
 		for (var team : teams) {
 			team.leader(null);
 			teamRepository.save(team);
@@ -89,14 +92,28 @@ public class UserService {
 		userRepository.deleteAll();
 	}
 
-	/*public Team getTeamByMemberId(String token, Integer userId, Integer projectId) {
+	public List<RoleType> getRolesByUserId(String token, Integer id) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readRoleByUserId"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+		User user = getUserById(token, id);
+		return roleRepository.findByUser(user);
+	}
+
+	public List<Team> getTeamByMemberId(String token, Integer userId, Integer projectId) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
-		/*User user = getUserById(token, userId);
-		Role role = roleService.getRoleById(token, user.id());
-		return teamRepository.findByMemberId(leaderId, projectId);
-	}*/
+		List<RoleType> roles = getRolesByUserId(token, userId);
+
+		if (roles.contains(RoleType.SUPERVISING_STAFF)) {
+			return teamRepository.findByLeaderId(userId, projectId);
+		} else if (roles.contains(RoleType.TEAM_MEMBER)) {
+			return teamRepository.findByStudentId(userId);
+		} else {
+			throw new IllegalArgumentException(getUserById(token, userId).name() + "is not a member of any team");
+		}
+	}
 
 	public List<PermissionType> getPermissions(String token, Integer id) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
@@ -109,7 +126,7 @@ public class UserService {
 		List<PermissionType> permissions = new ArrayList<>();
 
 		for (var role : roles) {
-			var permissionsRoles = permissionService.getAllPermissionsByRole(token, role.type());
+			var permissionsRoles = permissionService.getAllPermissionsByRole(token, role);
 			for (var permission : permissionsRoles) {
 				if (permissions.contains(permission.type())) continue;
 				permissions.add(permission.type());
