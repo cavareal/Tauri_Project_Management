@@ -11,10 +11,11 @@ import {
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 	SelectValue
 } from "@/components/ui/select"
+import { useQuery } from "@tanstack/vue-query"
+import { getTeams } from "@/services/team-service"
 
 const token = getCookie("token")
 const role = getCookie("role")
@@ -41,6 +42,8 @@ const fetchNumberSprints = async() => {
 }
 void fetchNumberSprints()
 
+const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
+
 </script>
 
 <template>
@@ -55,6 +58,16 @@ void fetchNumberSprints()
 						<SelectItem value="1">Sprint 1</SelectItem>
 						<SelectItem value="2">Sprint 2</SelectItem>
 						<SelectItem value="3">Sprint 3</SelectItem>
+					</SelectGroup>
+				</SelectContent>
+			</Select>
+			<Select>
+				<SelectTrigger class="w-[180px]">
+					<SelectValue :placeholder="teams && teams.length > 0 ? teams[0].name : 'Error'" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup >
+						<SelectItem v-for="team in teams" :key="team.id" :value="team.id">{{ team.name }}</SelectItem>
 					</SelectGroup>
 				</SelectContent>
 			</Select>

@@ -2,7 +2,7 @@
 import { ContainerGradeType } from "@/components/molecules/rateContainer"
 import { Button } from "@/components/ui/button"
 import { Users, LucideCircleFadingPlus } from "lucide-vue-next"
-import { DialogRating, DialogViewGrades } from "@/components/organisms/rating"
+import { DialogRating, DialogViewGrades, DialogBonus } from "@/components/organisms/rating"
 
 </script>
 
@@ -25,6 +25,7 @@ import { DialogRating, DialogViewGrades } from "@/components/organisms/rating"
 			<LucideCircleFadingPlus :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
+			<DialogBonus></DialogBonus>
 		</template>
 	</ContainerGradeType>
 </template>
