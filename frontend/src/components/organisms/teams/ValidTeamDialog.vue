@@ -11,14 +11,14 @@ import { getUserById } from "@/services/user-service"
 import type { User } from "@/types/user"
 
 const props = defineProps<{
-  currentUserId: string
+  currentUserId: string,
 }>()
 
 const emits = defineEmits(["valid:teams"])
 const open = ref(false)
 const currentUser = ref<User>()
 
-const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-teams"], mutationFn: async() => {
+const { mutate, isPending, error } = useMutation({ mutationKey: ["validate-teams"], mutationFn: async() => {
 	currentUser.value = await getUserById(props.currentUserId)
 	await createValidationFlag(currentUser.value)
 		.then(() => open.value = false)
@@ -26,7 +26,8 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-teams"]
 } })
 
 const DIALOG_TITLE = "Valider la composition des équipes"
-const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir valider la composition des équipes ?"
+const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de valider la composition des équipes ? "
+    + "Une fois ceci fait, vous ne pourrez plus ajouter de signalements."
 
 </script>
 

@@ -7,18 +7,29 @@ import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { Textarea } from "@/components/ui/textarea"
+import type { User } from "@/types/user"
+import { getUserById } from "@/services/user-service"
+import { createReportingFlag } from "@/services/flag-service"
+
+const props = defineProps<{
+  currentUserId: string
+}>()
 
 const emits = defineEmits(["signal:teams"])
 const open = ref(false)
+const currentUser = ref<User>()
+const textareaValue = ref("")
 
-// eslint-disable-next-line @typescript-eslint/require-await
-const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-teams"], mutationFn: async() => {
-	open.value = false
-	emits("signal:teams")
+const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"], mutationFn: async() => {
+	currentUser.value = await getUserById(props.currentUserId)
+	let description = textareaValue.value !== "" ? textareaValue.value : "Signalement d'un problème dans la création des équipes"
+	await createReportingFlag(currentUser.value, description)
+		.then(() => open.value = false)
+		.then(() => emits("signal:teams"))
 } })
 
-const DIALOG_TITLE = "Signaler l'équipe"
-const DIALOG_DESCRIPTION = "Qu'avez vous à signaler ?"
+const DIALOG_TITLE = "Signaler la composition des équipes"
+const DIALOG_DESCRIPTION = "Envoyez un signalement sur la composition des équipes au project leader."
 
 </script>
 
@@ -29,7 +40,8 @@ const DIALOG_DESCRIPTION = "Qu'avez vous à signaler ?"
     </template>
 
     <ErrorText v-if="error" class="mb-2">Une erreur est survenue.</ErrorText>
-    <Textarea></Textarea>
+    <p>Votre commentaire</p>
+    <Textarea v-model="textareaValue"></Textarea>
 
     <template #footer>
       <DialogClose v-if="!isPending">

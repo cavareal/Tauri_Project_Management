@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/flags")
 @Tag(name = "flags")
@@ -53,12 +55,26 @@ public class FlagController {
         return "Flag deleted";
     }
 
-    @PostMapping("/")
+    @PostMapping()
     public ResponseEntity<Flag> addFlag(@RequestBody Flag flag, @RequestHeader("Authorization") String token){
         String permission = "create Flag";
         if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
             try{
                 return ResponseEntity.status(HttpStatus.OK).body(flagService.addFlag(flag));
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+    @GetMapping("/author/{authorId}/description/{description}")
+    public ResponseEntity<List<Flag>> getFlagsByAuthorAndDescription(@PathVariable Integer authorId, @PathVariable String description, @RequestHeader("Authorization") String token){
+        String permission = "read Flag";
+        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+            try{
+                return ResponseEntity.status(HttpStatus.OK).body(flagService.getFlagsByAuthorAndDescription(authorId, description));
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
             }
