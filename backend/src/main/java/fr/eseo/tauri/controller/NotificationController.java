@@ -36,6 +36,11 @@ public class NotificationController {
         return ResponseEntity.ok(notificationRepository.findAll());
     }
 
+    @GetMapping("/isRead")
+    public ResponseEntity<Iterable<Notification>> getAllNotificationsIfNotRead() {
+        return ResponseEntity.ok(notificationRepository.findIfNotRead());
+    }
+
     @GetMapping("/{id}")
     public Notification getNotificationById(@PathVariable Integer id) {
         return notificationRepository.findById(id).orElse(null);
@@ -44,7 +49,6 @@ public class NotificationController {
     @GetMapping("/users/{userId}/notifications")
     public ResponseEntity<Iterable<Notification>> getAllNotificationsUser(@PathVariable Integer userId) {
         Optional<User> actualUser = userRepository.findById(userId);
-
         return ResponseEntity.ok(notificationRepository.findByUser(userId));
     }
 

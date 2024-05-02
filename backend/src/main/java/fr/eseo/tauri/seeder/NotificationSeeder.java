@@ -41,7 +41,7 @@ public class NotificationSeeder {
             String MESSAGE = "La composition des équipes a été prépubliée.";
             notification.message(MESSAGE);
             notification.type(NotificationType.valueOf("CREATE_TEAMS"));
-            notification.isRead(faker.bool().bool());
+            notification.isRead(false);
             notification.userTo(users.get(usersId.get(userId1)));
             notification.userFrom(users.get(usersId.get(userId2)));
 

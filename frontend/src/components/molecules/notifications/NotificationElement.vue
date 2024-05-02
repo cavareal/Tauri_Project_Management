@@ -1,10 +1,12 @@
 <script setup lang="ts">
 
+import { SheetClose } from "@/components/ui/sheet"
 import InfoText from "../../atoms/texts/InfoText.vue"
 import { Column, Row } from "@/components/atoms/containers"
 import Subtitle from "../../atoms/texts/Subtitle.vue"
 import { Check, ExternalLink } from "lucide-vue-next"
 import { Button } from "@/components/ui/button"
+import { LinkButton } from "@/components/molecules/buttons"
 
 const emits = defineEmits(["read:notifications"])
 
@@ -24,13 +26,14 @@ defineProps<{
       </Column>
     </Row>
     <Row class ="mt-2.5 justify-end">
-      <Button variant="outline">
-        <ExternalLink class="mr-2"/>Voir
-      </Button>
-      <Button class="mx-4" variant="outline">
+      <SheetClose>
+        <LinkButton variant="outline" link="/teams">
+          <ExternalLink/>Voir
+        </LinkButton>
+      </SheetClose>
+      <Button class="ml-4" variant="outline">
         <Check/>
       </Button>
-      <div class="absolute top-0 right-0 bg-red-600 rounded-full"></div>
     </Row>
   </Column>
 </template>
