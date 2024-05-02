@@ -1,5 +1,6 @@
 package fr.eseo.tauri.repository;
 
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,6 +18,15 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     @Modifying
     @Query(value = "DELETE FROM teams WHERE project_id = :projectId", nativeQuery = true)
     void deleteAllByProject(Integer projectId);
+
+    @Query("SELECT COUNT(s) FROM Student s WHERE s.team.id = :teamId AND s.gender = 'WOMAN'")
+    Integer countWomenInTeam(Integer teamId);
+
+    @Query("SELECT COUNT(s) FROM Student s WHERE s.team.id = :teamId AND s.bachelor = true")
+    Integer countBachelorInTeam(Integer teamId);
+
+    @Query("SELECT s FROM Student s WHERE s.team.id = :teamId")
+    List<Student> findByTeamId(Integer teamId);
 
     @Query("SELECT t FROM Team t WHERE t.leader.id = :leaderId AND t.project.id = :projectId")
     Team findByLeaderId(Integer leaderId, Integer projectId);

@@ -30,7 +30,7 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Comment>> getAllCommentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<List<Comment>> getAllCommentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
         List<Comment> comments = commentService.getAllCommentsByProject(token, projectId);
         return ResponseEntity.ok(comments);
     }
@@ -57,7 +57,7 @@ public class CommentController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllCommentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<String> deleteAllCommentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
         commentService.deleteAllCommentsByProject(token, projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());

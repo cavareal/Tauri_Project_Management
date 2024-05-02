@@ -30,7 +30,7 @@ public class ValidationFlagController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ValidationFlag>> getAllValidationFlagsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<List<ValidationFlag>> getAllValidationFlagsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
         List<ValidationFlag> validationFlags = validationFlagService.getAllValidationFlagsByProject(token, projectId);
         return ResponseEntity.ok(validationFlags);
     }
@@ -57,7 +57,7 @@ public class ValidationFlagController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllValidationFlagsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<String> deleteAllValidationFlagsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
         validationFlagService.deleteAllValidationFlagsByProject(token, projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());

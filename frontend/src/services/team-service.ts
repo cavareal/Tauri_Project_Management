@@ -59,12 +59,12 @@ export const setTeamLeader = async(id: number, value: string): Promise<void> => 
 	}
 }
 
-export const generateTeams = async(projectId: string | null, nbTeams: string, womenPerTeam: string): Promise<void> => {
+export const generateTeams = async(projectId: string | null, nbTeams: string, nbWomen: string): Promise<void> => {
 	const response = await apiQuery({
 		route: `teams?projectId=${projectId}`,
 		responseSchema: z.string(),
 		method: "POST",
-		body: { nbTeams, womenPerTeam },
+		body: { nbTeams, nbWomen },
 		textResponse: true
 	})
 

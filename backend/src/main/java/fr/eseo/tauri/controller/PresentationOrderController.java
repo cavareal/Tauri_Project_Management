@@ -30,7 +30,7 @@ public class PresentationOrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PresentationOrder>> getAllPresentationOrdersByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<List<PresentationOrder>> getAllPresentationOrdersByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
         List<PresentationOrder> presentationOrders = presentationOrderService.getAllPresentationOrdersByProject(token, projectId);
         return ResponseEntity.ok(presentationOrders);
     }
@@ -57,7 +57,7 @@ public class PresentationOrderController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllPresentationOrdersByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<String> deleteAllPresentationOrdersByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
         presentationOrderService.deleteAllPresentationOrdersByProject(token, projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());

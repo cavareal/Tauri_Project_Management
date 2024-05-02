@@ -42,7 +42,7 @@ public class NotificationController {
      * @return the list of notifications
      */
     @GetMapping
-    public ResponseEntity<List<Notification>> getAllNotifications(@RequestHeader("Authorization") String token , @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<List<Notification>> getAllNotifications(@RequestHeader("Authorization") String token) {
         var notifications = notificationService.getAllNotifications(token);
         return ResponseEntity.ok(notifications);
     }

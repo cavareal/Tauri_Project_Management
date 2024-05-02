@@ -5,11 +5,11 @@ import { uploadFile } from "@/utils/api/api.util"
 import { z } from "zod"
 import type { Team } from "@/types/team"
 
-export const getAllStudents = async(): Promise<Student[]> => {
+export const getAllStudents = async(projectId: string | null): Promise<Student[]> => {
 	const response = await apiQuery({
 		responseSchema: z.array(StudentSchema),
 		method: "GET",
-		route: "students"
+		route: `students?projectId=${projectId}`
 	})
 
 	if (response.status === "error") {
@@ -33,9 +33,9 @@ export const getQuantityOfStudents = async(): Promise<number> => {
 	return response.data
 }
 
-export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => {
+export const getStudentsByTeamId = async(id: number): Promise<Student[]> => {
 	const response = await apiQuery({
-		route: `students/team/${teamId}`,
+		route: `team/${id}/students`,
 		responseSchema: StudentSchema.array(),
 		method: "GET"
 	})
@@ -61,10 +61,10 @@ export const importStudentFile = async(file: File): Promise<void> => {
 	return
 }
 
-export const deleteAllStudents = async(): Promise<void> => {
+export const deleteAllStudents = async(projectId: string | null): Promise<void> => {
 	const response = await apiQuery({
 		method: "DELETE",
-		route: "students",
+		route: `students?projectId=${projectId}`,
 		responseSchema: z.string(),
 		textResponse: true
 	})

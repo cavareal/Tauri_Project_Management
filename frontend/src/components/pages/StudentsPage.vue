@@ -15,9 +15,10 @@ import { getAllGrades } from "@/services/grade-service"
 import { useQuery } from "@tanstack/vue-query"
 
 const role = getCookie<RoleType>("role")
+const currentProjectId = getCookie("currentProject")
 const hasPermission = role === "PROJECT_LEADER" || role === "OPTION_LEADER"
 
-const { data: students, refetch: refetchStudents, error: studentsError } = useQuery({ queryKey: ["students"], queryFn: getAllStudents })
+const { data: students, refetch: refetchStudents, error: studentsError } = useQuery({ queryKey: ["students"], queryFn: async() => (await (getAllStudents(currentProjectId))) })
 const { data: gradeTypes, refetch: refetchGradeTypes, error: gradeTypesError } = useQuery(
 	{ queryKey: ["gradeTypes"], queryFn: getAllImportedGradeTypes }
 )

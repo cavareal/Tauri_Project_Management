@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
+import fr.eseo.tauri.service.TeamService;
 import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Update;
@@ -14,47 +15,61 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import fr.eseo.tauri.util.valid.Create;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/students")
 @Tag(name = "students")
 public class StudentController {
 
-	private final StudentRepository studentRepository;
-	private final StudentService studentService;
 	private final AuthService authService;
+	private final StudentService studentService;
 	private final ResponseMessage responseMessage = new ResponseMessage("student");
+	private final TeamService teamService;
 
-	@Autowired
-	public StudentController(StudentService studentService, AuthService authService, StudentRepository studentRepository) {
-		this.studentService = studentService;
-		this.authService = authService;
-		this.studentRepository = studentRepository;
+	@GetMapping("/{id}")
+	public ResponseEntity<Student> getStudentById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		Student student = studentService.getStudentById(token, id);
+		return ResponseEntity.ok(student);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Student>> getStudents() {
-		return ResponseEntity.ok(studentRepository.findAll());
+	public ResponseEntity<List<Student>> getAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+		List<Student> students = studentService.getAllStudentsByProject(token, projectId);
+		return ResponseEntity.ok(students);
 	}
 
-	@GetMapping("/quantity-all")
-	public ResponseEntity<String> getStudentQuantity(@RequestHeader("Authorization") String token) {
-		// Check token, if user is GOOD
-		String permission = "readStudentQuantity";
-		if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-			try {
-				Integer quantity = studentService.getStudentQuantity();
-				return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(quantity));
-			} catch (Exception e) {
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
-			}
-		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non autorisé");
-		}
+	@PostMapping
+	public ResponseEntity<String> createStudent(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Student student) {
+		studentService.createStudent(token, student);
+		CustomLogger.info(responseMessage.create());
+		return ResponseEntity.ok(responseMessage.create());
 	}
 
+	@PatchMapping("/{id}")
+	public ResponseEntity<String> updateStudent(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Student updatedStudent) {
+		studentService.updateStudent(token, id, updatedStudent);
+		CustomLogger.info(responseMessage.update());
+		return ResponseEntity.ok(responseMessage.update());
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteStudent(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		studentService.deleteStudent(token, id);
+		CustomLogger.info(responseMessage.delete());
+		return ResponseEntity.ok(responseMessage.delete());
+	}
+
+	@DeleteMapping
+	public ResponseEntity<String> deleteAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+		studentService.deleteAllStudentsByProject(token, projectId);
+		CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+		return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
+	}
 
 	/**
 	 * This method is responsible for handling file uploads.
@@ -79,35 +94,6 @@ public class StudentController {
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());
 		}
-	}
-
-    /*@GetMapping("/team/{id}")
-    public ResponseEntity<List<Student>> getStudentsByTeam(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        // Check token, if user is GOOD
-        String permission = "readStudentByTeam";
-        if(Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                List<Student> students = studentService.getStudentsByTeamId(id);
-                return ResponseEntity.ok(students);
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }*/
-
-	@PatchMapping("/{id}")
-	public ResponseEntity<String> updateStudent(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Student student) {
-		studentService.updateStudent(token, id, student);
-		CustomLogger.info(responseMessage.update());
-		return ResponseEntity.ok(responseMessage.update());
-	}
-
-	@DeleteMapping()
-	public ResponseEntity<String> deleteStudents() {
-		studentService.deleteAllImportedStudentsAndGradeTypes();
-		return ResponseEntity.ok("students have been deleted successfully");
 	}
 
 }

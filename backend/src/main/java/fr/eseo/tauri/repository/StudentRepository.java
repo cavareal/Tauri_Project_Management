@@ -25,13 +25,8 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     Student findByName(String studentName);
 
-    List<Student> findByTeam(Team team);
-
     @Query("SELECT s FROM Student s WHERE s.team.id = :teamId")
-    List<Student> findByTeamId(Integer teamId);
-
-    @Query("SELECT s FROM Student s WHERE s.team = :team")
-    List<Student> findStudentsByTeam(@Param("team") Team team);
+    List<Student> findByTeam(Integer teamId);
 
     List<Student> findByGender(Gender gender);
 

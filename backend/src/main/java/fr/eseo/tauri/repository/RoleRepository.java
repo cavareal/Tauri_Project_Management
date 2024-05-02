@@ -17,6 +17,9 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
     List<Role> findByType(RoleType roleType);
 
     @Query("SELECT r FROM Role r WHERE r.user = :user AND r.type = :roleType")
+    Role findFirstByType(RoleType roleType);
+
+    @Query("SELECT r FROM Role r WHERE r.user = :user AND r.type = :roleType")
     Role findFirstByUserAndType(User user, RoleType roleType);
 
 }

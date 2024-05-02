@@ -5,37 +5,95 @@ import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-/**
- * Service class for handling student-related operations.
- */
 @Service
 @RequiredArgsConstructor
 public class StudentService {
+
+    private final AuthService authService;
+    private final StudentRepository studentRepository;
+    private final UserService userService;
+    private final ProjectService projectService;
+    private final TeamService teamService;
+    private final GradeTypeService gradeTypeService;
+    private final GradeService gradeService;
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
     static final String MAP_KEY_BACHELORS = "bachelors";
     static final String MAP_KEY_GRADES = "grades";
 
-    private final StudentRepository studentRepository;
-    private final TeamService teamService;
-    private final GradeTypeService gradeTypeService;
-    private final GradeService gradeService;
-    private final AuthService authService;
-    private final ProjectService projectService;
+    public Student getStudentById(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readStudent"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("student", id));
+    }
+
+    public List<Student> getAllStudentsByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readStudents"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return studentRepository.findAllByProject(projectId);
+    }
+
+    public void createStudent(String token, Student student) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        student.team(teamService.getTeamById(token, student.teamId()));
+        student.project(projectService.getProjectById(token, student.projectId()));
+
+        studentRepository.save(student);
+    }
+
+    public void updateStudent(String token, Integer id, Student updatedStudent) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateStudent"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        Student student = getStudentById(token, id);
+
+        if (updatedStudent.name() != null) student.name(updatedStudent.name());
+        if (updatedStudent.email() != null) student.email(updatedStudent.email());
+        if (updatedStudent.password() != null) student.password(updatedStudent.password());
+        if (updatedStudent.privateKey() != null) student.privateKey(updatedStudent.privateKey());
+        if (updatedStudent.gender() != null) student.gender(updatedStudent.gender());
+        if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
+        if (updatedStudent.teamRole() != null) student.teamRole(updatedStudent.teamRole());
+        if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(token, updatedStudent.projectId()));
+        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(token, updatedStudent.teamId()));
+
+        studentRepository.save(student);
+    }
+
+    public void deleteStudent(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteStudent"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getStudentById(token, id);
+        studentRepository.deleteById(id);
+    }
+
+    public void deleteAllStudentsByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteStudent"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        studentRepository.deleteAllByProject(projectId);
+        gradeTypeService.deleteAllImportedGradeTypes();
+    }
 
     /**
      * This method is used to create a new student and save it to the repository.
@@ -50,23 +108,6 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public Student getStudentById(String token, Integer id){
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        return studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Student not found"));
-    }
-
-    /**
-     * Retrieves the quantity of students.
-     *
-     * @return the quantity of students
-     */
-    public Integer getStudentQuantity(){
-        List<Student> students = studentRepository.findAll();
-        return students.size();
-    }
-
     /**
      * Retrieves students form a team.
      * @param teamId The id of the team
@@ -76,27 +117,6 @@ public class StudentService {
         Team team = teamService.getTeamById(teamId);
         return studentRepository.findStudentsByTeam(team);
     }*/
-
-
-    public void updateStudent(String token, Integer studentId, Student updatedStudent) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateStudent"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        var student = getStudentById(token, studentId);
-
-        if (updatedStudent.name() != null) student.name(updatedStudent.name());
-        if (updatedStudent.email() != null) student.email(updatedStudent.email());
-        if (updatedStudent.password() != null) student.password(updatedStudent.password());
-        if (updatedStudent.privateKey() != null) student.privateKey(updatedStudent.privateKey());
-        if (updatedStudent.gender() != null) student.gender(updatedStudent.gender());
-        if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
-        if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(token, updatedStudent.projectId()));
-        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(token, updatedStudent.teamId()));
-
-        studentRepository.save(student);
-    }
-
 
     /**
      * <b>HELPER METHOD</b>
@@ -233,20 +253,6 @@ public class StudentService {
             CustomLogger.error("An error occurred while handling the uploaded file", e);
             throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
         }
-    }
-
-    /**
-     * This method is used to delete all students that have been imported into the database.
-     */
-    public void deleteAllImportedStudentsAndGradeTypes() {
-        try {
-            studentRepository.deleteAll();
-            CustomLogger.info("Successfully deleted all imported students from the database.");
-        } catch (Exception e) {
-            CustomLogger.error("An error occurred while deleting imported students", e);
-        }
-        gradeTypeService.deleteAllImportedGradeTypes();
-        CustomLogger.info("Successfully deleted all imported grade types from the database.");
     }
 
 }

@@ -30,7 +30,7 @@ public class PermissionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Permission>> getAllPermissionsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<List<Permission>> getAllPermissionsByProject(@RequestHeader("Authorization") String token) {
         List<Permission> permissions = permissionService.getAllPermissions(token);
         return ResponseEntity.ok(permissions);
     }
@@ -57,7 +57,7 @@ public class PermissionController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllPermissionsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+    public ResponseEntity<String> deleteAllPermissionsByProject(@RequestHeader("Authorization") String token) {
         permissionService.deleteAllPermissions(token);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());

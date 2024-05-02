@@ -3,6 +3,7 @@ package fr.eseo.tauri.controller;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.service.RoleService;
 import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
@@ -56,13 +57,6 @@ public class RoleController {
         roleService.deleteRoleById(token, id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
-    }
-
-    @DeleteMapping
-    public ResponseEntity<String> deleteAllRoles(@RequestHeader("Authorization") String token) {
-        roleService.deleteAllRoles(token);
-        CustomLogger.info(responseMessage.deleteAll());
-        return ResponseEntity.ok(responseMessage.deleteAll());
     }
 
     @GetMapping("/{roleType}/users")
