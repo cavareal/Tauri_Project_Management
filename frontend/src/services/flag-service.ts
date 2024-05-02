@@ -10,6 +10,7 @@ export const addFlag = async(flag: FlagWithoutId): Promise<void> => {
 		route: "flags",
 		bodySchema: FlagWithoutIdSchema
 	})
+	console.log(response)
 
 	if (response.status === "error") {
 		throw new Error(response.error)
