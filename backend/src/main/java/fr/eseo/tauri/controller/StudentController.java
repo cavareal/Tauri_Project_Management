@@ -84,10 +84,10 @@ public class StudentController {
 	}
 
 	@GetMapping("/download-students-csv")
-	public ResponseEntity<byte[]> downloadStudentsCSV() {
+	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
 		try{
 			CustomLogger.info("Downloading students CSV");
-			return ResponseEntity.ok(studentService.createStudentsCSV());
+			return ResponseEntity.ok(studentService.createStudentsCSV(token, projectId));
 		}
 		catch (Exception e){
 			CustomLogger.error("Error downloading students CSV", e);

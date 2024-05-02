@@ -238,21 +238,17 @@ public class StudentService {
      * @return A byte array representing the CSV file.
      * @throws RuntimeException if an IOException occurs while creating the CSV file.
      */
-    public byte[] createStudentsCSV() {
+    public byte[] createStudentsCSV(String token, Integer projectId) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
-        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes();
-        List<Student> students = getStudents();
+        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(token);
+        List<Student> students = getAllStudentsByProject(token, projectId);
 
-        try (CSVWriter csvWriter = new CSVWriter(writer)) {
-            writeHeaders(csvWriter, importedGrades);
-            writeStudentData(csvWriter, students, importedGrades);
-            writeSummaryData(csvWriter, importedGrades.size());
-            writer.flush();
-        } catch (IOException e) {
-            CustomLogger.error("An error occurred while creating the CSV file", e);
-            throw new RuntimeException(e);
-        }
+        CSVWriter csvWriter = new CSVWriter(writer);
+        writeHeaders(csvWriter, importedGrades);
+        writeStudentData(csvWriter, students, importedGrades);
+        writeSummaryData(csvWriter, importedGrades.size());
+        writer.flush();
         return byteArrayOutputStream.toByteArray();
     }
 
@@ -316,12 +312,12 @@ public class StudentService {
      */
     void writeSummaryData(CSVWriter csvWriter, int numberOfGrades) {
         writeEmptyRows(csvWriter, 4, numberOfGrades + 4);
-        writeCountRow(csvWriter, "Nombre F", getNumberWomen(), numberOfGrades + 4);
-        writeCountRow(csvWriter, "Nombre M", getNumberStudents() - getNumberWomen(), numberOfGrades + 4);
+        writeCountRow(csvWriter, "Nombre F", studentRepository.countWomen(), numberOfGrades + 4);
+        writeCountRow(csvWriter, "Nombre M", studentRepository.countTotal() - studentRepository.countWomen(), numberOfGrades + 4);
         String[] row = new String[numberOfGrades + 4];
         Arrays.fill(row, "");
         row[1] = "Nombre B";
-        row[3] = String.valueOf(getNumberBachelor());
+        row[3] = String.valueOf(studentRepository.countBachelor());
         csvWriter.writeNext(row);
     }
 
