@@ -1,5 +1,5 @@
 import { GradeDoubleArraySchema, GradeSchema, type Grade } from "@/types/grade"
-import { apiQuery } from "@/utils/api"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
 import type { GradeType } from "@/types/grade-type"
 import type { User } from "@/types/user"
@@ -7,10 +7,9 @@ import type { Student } from "@/types/student"
 import type { Team } from "@/types/team"
 
 export const getAllGrades = async(): Promise<Grade[]> => {
-	const response = await apiQuery({
+	const response = await queryAndValidate({
 		route: "grades",
-		responseSchema: z.array(GradeSchema),
-		method: "GET"
+		responseSchema: GradeSchema.array()
 	})
 
 	if (response.status === "error") {
@@ -21,10 +20,9 @@ export const getAllGrades = async(): Promise<Grade[]> => {
 }
 
 export const getAverageGrades = async(userId: number): Promise<z.infer<typeof GradeDoubleArraySchema>> => {
-	const response = await apiQuery({
+	const response = await queryAndValidate({
 		route: `grades/average-grades-by-grade-type-by-role/${userId}`,
-		responseSchema: GradeDoubleArraySchema,
-		method: "GET"
+		responseSchema: GradeDoubleArraySchema
 	})
 
 	if (response.status === "error") {
@@ -35,12 +33,11 @@ export const getAverageGrades = async(userId: number): Promise<z.infer<typeof Gr
 }
 
 export const updateStudentGrade = async(id: string | null, value: number | null, comment: string | null, gradeType: GradeType | null, author: User | null, student: Student | null/*, sprint: Sprint | null*/): Promise<void> => {
-	const response = await apiQuery({
+	const response = await mutateAndValidate({
 		method: "PUT",
 		route: `grades/student/${id}`,
 		body: { value, comment, gradeType, author, student },
-		responseSchema: z.string(),
-		textResponse: true
+		bodySchema: z.any()
 	})
 
 	if (response.status === "error") {
@@ -49,12 +46,11 @@ export const updateStudentGrade = async(id: string | null, value: number | null,
 }
 
 export const updateTeamGrade = async(id: string | null, value: number | null, comment: string | null, gradeType: GradeType | null, author: User | null, team: Team | null/*, sprint: Sprint | null*/): Promise<void> => {
-	const response = await apiQuery({
+	const response = await mutateAndValidate({
 		method: "PUT",
 		route: `grades/team/${id}`,
 		body: { value, comment, gradeType, author, team },
-		responseSchema: z.string(),
-		textResponse: true
+		bodySchema: z.any()
 	})
 
 	if (response.status === "error") {
@@ -63,12 +59,11 @@ export const updateTeamGrade = async(id: string | null, value: number | null, co
 }
 
 export const addGradesToTeam = async(userId: string | null, rate : any): Promise<void> => {
-	const response = await apiQuery({
-		route: `grades/add-grade-to-team/${userId}`,
-		responseSchema: z.string(),
+	const response = await mutateAndValidate({
 		method: "POST",
+		route: `grades/add-grade-to-team/${userId}`,
 		body: rate,
-		textResponse: true
+		bodySchema: z.any()
 	})
 
 	if (response.status === "error") {

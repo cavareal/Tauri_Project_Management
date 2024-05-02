@@ -14,7 +14,7 @@ const open = ref(false)
 const currentProject = getCookie("currentProject")
 
 const { mutate, error, isPending } = useMutation({ mutationKey: ["prepublish-teams"], mutationFn: async() => {
-	await updateProject(currentProject, null, null, "PREPUBLISHED")
+	await updateProject(currentProject, { phase: "PREPUBLISHED" })
 		.then(() => open.value = false)
 		.then(() => emits("prepublish:teams"))
 } })

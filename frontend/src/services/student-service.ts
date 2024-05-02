@@ -1,15 +1,14 @@
 import type { Student } from "@/types/student"
 import { StudentSchema } from "@/types/student"
-import { apiQuery } from "@/utils/api"
-import { uploadFile } from "@/utils/api/api.util"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
 import type { Team } from "@/types/team"
 
 export const getAllStudents = async(projectId: string | null): Promise<Student[]> => {
-	const response = await apiQuery({
-		responseSchema: z.array(StudentSchema),
-		method: "GET",
-		route: `students?projectId=${projectId}`
+	const response = await queryAndValidate({
+		responseSchema: StudentSchema.array(),
+		route: "students",
+		params: { projectId: projectId ?? "" }
 	})
 
 	if (response.status === "error") {
@@ -20,10 +19,9 @@ export const getAllStudents = async(projectId: string | null): Promise<Student[]
 }
 
 export const getQuantityOfStudents = async(): Promise<number> => {
-	const response = await apiQuery({
-		responseSchema: z.number(),
-		method: "GET",
-		route: "students/quantity-all"
+	const response = await queryAndValidate({
+		route: "students/quantity-all",
+		responseSchema: z.number()
 	})
 
 	if (response.status === "error") {
@@ -34,10 +32,9 @@ export const getQuantityOfStudents = async(): Promise<number> => {
 }
 
 export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => {
-	const response = await apiQuery({
+	const response = await queryAndValidate({
 		route: `teams/${teamId}/students`,
-		responseSchema: StudentSchema.array(),
-		method: "GET"
+		responseSchema: StudentSchema.array()
 	})
 
 	if (response.status === "error") {
@@ -48,25 +45,28 @@ export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => 
 }
 
 export const importStudentFile = async(file: File, projectId: string | null): Promise<void> => {
-	const response = await uploadFile({
-		file,
-		route: `students/upload?projectId=${projectId}`
+	const formData = new FormData()
+	formData.append("file-upload", file)
+
+	const response = await mutateAndValidate({
+		method: "POST",
+		route: "students/upload",
+		params: { projectId: projectId ?? "" },
+		body: formData,
+		bodySchema: z.instanceof(FormData),
+		jsonContent: false
 	})
 
 	if (response.status === "error") {
-		console.error(response.error)
 		throw new Error(response.error)
 	}
-
-	return
 }
 
 export const deleteAllStudents = async(projectId: string | null): Promise<void> => {
-	const response = await apiQuery({
+	const response = await mutateAndValidate({
 		method: "DELETE",
-		route: `students?projectId=${projectId}`,
-		responseSchema: z.string(),
-		textResponse: true
+		route: "students",
+		params: { projectId: projectId ?? "" }
 	})
 
 	if (response.status === "error") {
@@ -75,12 +75,11 @@ export const deleteAllStudents = async(projectId: string | null): Promise<void> 
 }
 
 export const updateStudent = async(id: string | null, gender: string | null, bachelor: boolean | null, teamRole: string | null, team: Team | null): Promise<void> => {
-	const response = await apiQuery({
-		method: "PUT",
+	const response = await mutateAndValidate({
+		method: "PATCH",
 		route: `students/${id}`,
 		body: { gender, bachelor, teamRole, team },
-		responseSchema: z.string(),
-		textResponse: true
+		bodySchema: z.any()
 	})
 
 	if (response.status === "error") {
@@ -89,12 +88,11 @@ export const updateStudent = async(id: string | null, gender: string | null, bac
 }
 
 export const changeStudentTeam = async(studentId: number, teamId: number): Promise<void> => {
-	const response = await apiQuery({
+	const response = await mutateAndValidate({
 		method: "PATCH",
 		route: `students/${studentId}`,
 		body: { teamId },
-		responseSchema: z.string(),
-		textResponse: true
+		bodySchema: z.object({ teamId: z.number() })
 	})
 
 	if (response.status === "error") {

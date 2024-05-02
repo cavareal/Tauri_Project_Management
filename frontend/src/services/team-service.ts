@@ -1,4 +1,4 @@
-import { apiQuery } from "@/utils/api"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { TeamSchema } from "@/types/team"
 import type { Team } from "@/types/team"
 import { z } from "zod"
@@ -6,10 +6,10 @@ import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
 
 export const getTeams = async(projectId: string | null): Promise<Team[]> => {
-	const response = await apiQuery({
-		route: `teams?projectId=${projectId}`,
-		responseSchema: TeamSchema.array(),
-		method: "GET"
+	const response = await queryAndValidate({
+		route: "teams",
+		params: { projectId: projectId ?? "" },
+		responseSchema: TeamSchema.array()
 	})
 
 	if (response.status === "error") {
@@ -20,10 +20,9 @@ export const getTeams = async(projectId: string | null): Promise<Team[]> => {
 }
 
 export const getTeamById = async(id: number): Promise<Team> => {
-	const response = await apiQuery({
+	const response = await queryAndValidate({
 		route: `teams/${id}`,
-		responseSchema: TeamSchema,
-		method: "GET"
+		responseSchema: TeamSchema
 	})
 
 	if (response.status === "error") {
@@ -34,11 +33,10 @@ export const getTeamById = async(id: number): Promise<Team> => {
 }
 
 export const setTeamName = async(id: number, value: string): Promise<void> => {
-	const response = await apiQuery({
-		route: `teams/update-name-team/${id}?newName=${value}`,
-		responseSchema: z.string(),
-		method: "PUT",
-		textResponse: true
+	const response = await mutateAndValidate({
+		route: `teams/update-name-team/${id}`,
+		params: { newName: value },
+		method: "PUT"
 	})
 
 	if (response.status === "error") {
@@ -47,11 +45,10 @@ export const setTeamName = async(id: number, value: string): Promise<void> => {
 }
 
 export const setTeamLeader = async(id: number, value: string): Promise<void> => {
-	const response = await apiQuery({
-		route: `teams/update-leader-team/${id}?idLeader=${value}`,
-		responseSchema: z.string(),
-		method: "PUT",
-		textResponse: true
+	const response = await mutateAndValidate({
+		route: `teams/update-leader-team/${id}`,
+		params: { idLeader: value },
+		method: "PUT"
 	})
 
 	if (response.status === "error") {
@@ -60,12 +57,12 @@ export const setTeamLeader = async(id: number, value: string): Promise<void> => 
 }
 
 export const generateTeams = async(projectId: string | null, nbTeams: string, nbWomen: string): Promise<void> => {
-	const response = await apiQuery({
-		route: `teams?projectId=${projectId}`,
-		responseSchema: z.string(),
+	const response = await mutateAndValidate({
 		method: "POST",
+		route: "teams",
+		params: { projectId: projectId ?? "" },
 		body: { nbTeams, nbWomen },
-		textResponse: true
+		bodySchema: z.any()
 	})
 
 	if (response.status === "error") {
@@ -74,10 +71,10 @@ export const generateTeams = async(projectId: string | null, nbTeams: string, nb
 }
 
 export const getCriteria = async(projectId: string | null, teamId: number): Promise<Criteria> => {
-	const response = await apiQuery({
-		route: `teams/${teamId}/criteria?projectId=${projectId}`,
-		responseSchema: CriteriaSchema,
-		method: "GET"
+	const response = await queryAndValidate({
+		route: `teams/${teamId}/criteria`,
+		params: { projectId: projectId ?? "" },
+		responseSchema: CriteriaSchema
 	})
 
 	if (response.status === "error") {
@@ -87,10 +84,9 @@ export const getCriteria = async(projectId: string | null, teamId: number): Prom
 }
 
 export const getTeamAverage = async(teamId: number): Promise<number> => {
-	const response = await apiQuery({
+	const response = await queryAndValidate({
 		route: `teams/${teamId}/average`,
-		responseSchema: z.number(),
-		method: "GET"
+		responseSchema: z.number()
 	})
 
 	if (response.status === "error") {
@@ -101,11 +97,10 @@ export const getTeamAverage = async(teamId: number): Promise<number> => {
 }
 
 export const deleteAllTeams = async(projectId: string | null): Promise<void> => {
-	const response = await apiQuery({
-		route: `teams?projectId=${projectId}`,
-		responseSchema: z.string(),
+	const response = await mutateAndValidate({
 		method: "DELETE",
-		textResponse: true
+		route: "teams",
+		params: { projectId: projectId ?? "" }
 	})
 
 	if (response.status === "error") {
@@ -114,10 +109,10 @@ export const deleteAllTeams = async(projectId: string | null): Promise<void> => 
 }
 
 export const getTeamByLeaderId = async(leaderId: string | null, projectId: string | null): Promise<Team> => {
-	const response = await apiQuery({
-		route: `teams/leader/${leaderId}?projectId=${projectId}`,
-		responseSchema: TeamSchema,
-		method: "GET"
+	const response = await queryAndValidate({
+		route: `teams/leader/${leaderId}`,
+		params: { projectId: projectId ?? "" },
+		responseSchema: TeamSchema
 	})
 
 	if (response.status === "error") {

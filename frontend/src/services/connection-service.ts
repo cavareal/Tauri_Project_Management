@@ -1,6 +1,6 @@
 import type { RoleType } from "@/types/role"
 import { UserSchema } from "@/types/user"
-import { apiQuery } from "@/utils/api"
+import { queryAndValidate } from "@/utils/api"
 import { setCookie } from "@/utils/cookie"
 
 export const login = async(role: RoleType) => {
@@ -8,10 +8,9 @@ export const login = async(role: RoleType) => {
 	setCookie("token", "bonamyRule34")
 	setCookie("currentProject", "1")
 
-	const response = await apiQuery({
+	const response = await queryAndValidate({
 		route: `roles/${role}/users`,
-		responseSchema: UserSchema.array(),
-		method: "GET"
+		responseSchema: UserSchema.array()
 	})
 
 	if (response.status === "error") {
