@@ -208,4 +208,16 @@ public class GradeService {
         Team team = teamRepository.findTeamByStudentId(userId);
         return gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType);
     }
+
+	// TODO: Refactor this method
+	public Float getGradeByStudentAndGradeType(Student student, GradeType gradeType) {
+		try {
+			Float grade = gradeRepository.findValueByStudentAndGradeType(student, gradeType);
+			CustomLogger.logInfo("Getting grade for student " + student.name() + " and grade type " + gradeType.name() + ": " + grade);
+			return grade;
+		} catch (NullPointerException e) {
+			CustomLogger.logInfo("No grade found for student " + student.name() + " and grade type " + gradeType.name());
+			return null;
+		}
+	}
 }

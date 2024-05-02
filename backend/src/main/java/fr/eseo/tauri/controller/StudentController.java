@@ -7,6 +7,7 @@ import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -80,6 +81,19 @@ public class StudentController {
 	public ResponseEntity<String> handleFileUpload(@RequestHeader("Authorization") String token, @RequestParam("file-upload") MultipartFile file, @RequestParam Integer projectId) throws IOException, CsvValidationException {
 		studentService.populateDatabaseFromCSV(token, file, projectId);
 		return ResponseEntity.ok("File uploaded successfully");
+	}
+
+	@GetMapping("/download-students-csv")
+	public ResponseEntity<byte[]> downloadStudentsCSV() {
+		try{
+			CustomLogger.logInfo("Downloading students CSV");
+			return ResponseEntity.ok(studentService.createStudentsCSV());
+		}
+		catch (Exception e){
+			CustomLogger.logError("Error downloading students CSV", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+
 	}
 
 }

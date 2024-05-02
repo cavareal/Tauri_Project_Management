@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface FlagRepository extends JpaRepository<Flag, Integer> {
+
     @Query("SELECT f FROM Flag f WHERE f.project.id = :projectId")
     List<Flag> findAllByProject(Integer projectId);
 
@@ -17,4 +18,7 @@ public interface FlagRepository extends JpaRepository<Flag, Integer> {
     @Modifying
     @Query(value = "DELETE FROM flags WHERE project_id = :projectId", nativeQuery = true)
     void deleteAllByProject(Integer projectId);
+
+    List<Flag> findByAuthorIdAndDescription(Integer authorId, String description);
+
 }

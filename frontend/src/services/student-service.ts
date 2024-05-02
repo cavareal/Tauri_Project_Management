@@ -85,6 +85,7 @@ export const updateStudent = async(id: string | null, gender: string | null, bac
 	}
 }
 
+// TODO: Check if this method is used
 export const changeStudentTeam = async(studentId: number, teamId: number): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "PATCH",

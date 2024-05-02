@@ -6,10 +6,16 @@ import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Create;
 import fr.eseo.tauri.util.valid.Update;
+import fr.eseo.tauri.repository.FlagRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.FlagService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +28,7 @@ public class FlagController {
 
     private final FlagService flagService;
     private final ResponseMessage responseMessage = new ResponseMessage("flag");
+	private final AuthService authService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Flag> getFlagById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -62,4 +69,19 @@ public class FlagController {
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
+
+	// TODO: Refactor this method
+	@GetMapping("/author/{authorId}/description/{description}")
+	public ResponseEntity<List<Flag>> getFlagsByAuthorAndDescription(@PathVariable Integer authorId, @PathVariable String description, @RequestHeader("Authorization") String token){
+		String permission = "read Flag";
+		if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
+			try{
+				return ResponseEntity.status(HttpStatus.OK).body(flagService.getFlagsByAuthorAndDescription(authorId, description));
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			}
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		}
+	}
 }

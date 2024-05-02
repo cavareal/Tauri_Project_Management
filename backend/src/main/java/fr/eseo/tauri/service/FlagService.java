@@ -77,4 +77,9 @@ public class FlagService {
         }
         flagRepository.deleteAllByProject(projectId);
     }
+
+	// TODO: Refactor this method
+	public List<Flag> getFlagsByAuthorAndDescription(Integer authorId , String description) {
+		return flagRepository.findByAuthorIdAndDescription(authorId, description);
+	}
 }

@@ -168,7 +168,6 @@ public class GradeTypeService {
         } catch (IOException | CsvValidationException e) {
            CustomLogger.error("Error occurred while extracting coefficient rating and value", e);
         }
-
         return createGradeTypes(coefficients, ratings, false, true);
     }
 
@@ -185,7 +184,7 @@ public class GradeTypeService {
         for (String part : nextLine) {
             String trimmedPart = part.trim();
             try {
-                Integer.parseInt(trimmedPart); // Check if it's a coefficient
+                Float.parseFloat(trimmedPart); // Check if it's a coefficient
                 coefficients.add(trimmedPart);
             } catch (NumberFormatException ignored) {
                 startingCoefficients++;
@@ -222,6 +221,10 @@ public class GradeTypeService {
         } catch (Exception e) {
             CustomLogger.error("Error occurred while deleting all imported GradeType objects", e);
         }
+    }
+
+    public List<GradeType> getImportedGradeTypes() {
+        return gradeTypeRepository.findAllImported();
     }
 }
 

@@ -1,6 +1,7 @@
 package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyFileException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
@@ -14,9 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 @Service
@@ -91,6 +90,7 @@ public class StudentService {
         studentRepository.deleteAllByProject(projectId);
         gradeTypeService.deleteAllImportedGradeTypes();
     }
+
 
     /**
      * <b>HELPER METHOD</b>
@@ -223,6 +223,141 @@ public class StudentService {
         }
 
         CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
+    }
+
+	// TODO: Refactor all these methods below
+
+    /**
+     * This method is used to create a CSV file containing student data.
+     * The CSV file includes the following data for each student:
+     * - Name
+     * - Gender
+     * - Bachelor status
+     * - Grades
+     *
+     * @return A byte array representing the CSV file.
+     * @throws RuntimeException if an IOException occurs while creating the CSV file.
+     */
+    public byte[] createStudentsCSV() {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
+        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes();
+        List<Student> students = getStudents();
+
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
+            writeHeaders(csvWriter, importedGrades);
+            writeStudentData(csvWriter, students, importedGrades);
+            writeSummaryData(csvWriter, importedGrades.size());
+            writer.flush();
+        } catch (IOException e) {
+            CustomLogger.error("An error occurred while creating the CSV file", e);
+            throw new RuntimeException(e);
+        }
+        return byteArrayOutputStream.toByteArray();
+    }
+
+    /**
+     * <b>HELPER METHOD</b>
+     * This method is used to write headers to the CSV file.
+     *
+     * @param csvWriter The CSVWriter object that is used to write to the CSV file.
+     * @param importedGrades The list of imported grade types.
+     */
+    void writeHeaders(CSVWriter csvWriter, List<GradeType> importedGrades) {
+        String[] factors = new String[importedGrades.size() + 4];
+        String[] headers = new String[importedGrades.size() + 4];
+        Arrays.fill(headers, "");
+        Arrays.fill(factors, "");
+        headers[2] = "sexe M / F";
+        int index = 5;
+        for (GradeType gradeType : importedGrades) {
+            if(gradeType.name().equals("AVERAGE")){
+                continue;
+            }
+            headers[index] = gradeType.name();
+            factors[index++] = gradeType.factor().toString();
+        }
+        csvWriter.writeNext(factors);
+        csvWriter.writeNext(headers);
+    }
+
+    /**
+     * <b>HELPER METHOD</b>
+     * This method is used to write student data to the CSV file.
+     *
+     * @param csvWriter The CSVWriter object that is used to write to the CSV file.
+     * @param students  The list of students whose data is to be written to the CSV file.
+     * @param importedGrades The list of imported grade types.
+     */
+    void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGrades) {
+        int studentIndex = 1;
+        for (Student student : students) {
+            String[] studentInfo = new String[importedGrades.size() + 4];
+            Arrays.fill(studentInfo, "");
+            studentInfo[0] = String.valueOf(studentIndex++);
+            studentInfo[1] = student.name();
+            studentInfo[2] = student.gender().toString().equals("MAN") ? "M" : "F";
+            studentInfo[3] = student.bachelor() ? "B" : "";
+
+            int gradeIndex = 4;
+            for (GradeType gradeType : importedGrades) {
+                Float grade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
+                studentInfo[gradeIndex++] = grade != null ? String.valueOf(grade) : "";
+            }
+            csvWriter.writeNext(studentInfo);
+        }
+    }
+
+    /**
+     * <b>HELPER METHOD</b>
+     *  This method is used to write summary data to the CSV file.
+     * @param csvWriter The CSVWriter object that is used to write to the CSV file.
+     * @param numberOfGrades The number of imported grade types.
+     */
+    void writeSummaryData(CSVWriter csvWriter, int numberOfGrades) {
+        writeEmptyRows(csvWriter, 4, numberOfGrades + 4);
+        writeCountRow(csvWriter, "Nombre F", getNumberWomen(), numberOfGrades + 4);
+        writeCountRow(csvWriter, "Nombre M", getNumberStudents() - getNumberWomen(), numberOfGrades + 4);
+        String[] row = new String[numberOfGrades + 4];
+        Arrays.fill(row, "");
+        row[1] = "Nombre B";
+        row[3] = String.valueOf(getNumberBachelor());
+        csvWriter.writeNext(row);
+    }
+
+    /**
+     * <b>HELPER METHOD</b>
+     * This method is used to write empty rows in the CSV file.
+     *
+     * @param csvWriter The CSVWriter object that is used to write to the CSV file.
+     * @param numRows The number of empty rows to write. This is an integer.
+     * @param rowLength The length of the row in the CSV file. This is an integer.
+     */
+    void writeEmptyRows(CSVWriter csvWriter, int numRows, int rowLength) {
+        String[] emptyRow = new String[rowLength];
+        Arrays.fill(emptyRow, "");
+        for (int i = 0; i < numRows; i++) {
+            csvWriter.writeNext(emptyRow);
+        }
+    }
+
+    /**
+     * <b>HELPER METHOD</b>
+     * This method is used to write a row in the CSV file that represents a count of a specific category of students.
+     *
+     * @param csvWriter The CSVWriter object that is used to write to the CSV file.
+     * @param label The label for the count. This is a string that describes the category of students that are being counted.
+     *              For example, "Nombre F" for the count of female students, "Nombre M" for the count of male students,
+     *              or "Nombre B" for the count of bachelor students.
+     * @param count The count of students in the specified category. This is an integer.
+     * @param rowLength The length of the row in the CSV file. This is an integer.
+     */
+    void writeCountRow(CSVWriter csvWriter, String label, int count, int rowLength) {
+        String[] row = new String[rowLength];
+        Arrays.fill(row, "");
+        row[1] = label;
+        row[2] = String.valueOf(count);
+        csvWriter.writeNext(row);
     }
 
 }

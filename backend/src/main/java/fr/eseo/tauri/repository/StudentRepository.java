@@ -39,4 +39,13 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     @Query("UPDATE Student s SET s.team = null WHERE s.project.id = :projectId")
     void removeAllStudentsFromTeams(Integer projectId);
 
+	@Query("SELECT COUNT(s) FROM Student s WHERE s.gender = 'WOMAN'")
+	int countWomen();
+
+	@Query("SELECT COUNT(s) FROM Student s")
+	int countTotal();
+
+	@Query("SELECT COUNT(s) FROM Student s WHERE s.bachelor = true")
+	int countBachelor();
+
 }
