@@ -67,6 +67,7 @@ public class GradeTypeService {
         if (updatedGradeType.scaleUrl() != null) gradeType.scaleUrl(updatedGradeType.scaleUrl());
 
         gradeTypeRepository.save(gradeType);
+        gradeService.updateImportedMean();
     }
 
     public void deleteGradeTypeById(String token, Integer id) {

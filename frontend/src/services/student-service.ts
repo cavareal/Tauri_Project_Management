@@ -8,7 +8,6 @@ export const getAllStudents = async(): Promise<Student[]> => {
 		responseSchema: StudentSchema.array(),
 		route: "students"
 	})
-	console.log(response)
 
 	if (response.status === "error") {
 		throw new Error(response.error)

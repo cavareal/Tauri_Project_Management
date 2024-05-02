@@ -23,7 +23,7 @@ const { data: students, refetch: refetchStudents, error: studentsError } = useQu
 const { data: gradeTypes, refetch: refetchGradeTypes, error: gradeTypesError } = useQuery(
 	{ queryKey: ["gradeTypes"], queryFn: getAllImportedGradeTypes }
 )
-const { data: grades, refetch: refetchGrades, error: gradesError } = useQuery({ queryKey: ["grades"], queryFn: async() => await (getAllImportedGrades(currentProjectId)) })
+const { data: grades, refetch: refetchGrades, error: gradesError } = useQuery({ queryKey: ["grades"], queryFn: () =>  getAllImportedGrades() })
 
 const error = computed(() => gradeTypesError.value || studentsError.value || gradesError.value)
 const refetch = async() => {
