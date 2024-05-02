@@ -62,7 +62,7 @@ public class GradeService {
         grade.author(userService.getUserById(token, grade.authorId()));
         grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
         grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
-        if (grade.gradeType().forGroup()) {
+        if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
             grade.team(teamService.getTeamById(token, grade.teamId()));
         } else {
             grade.student(studentService.getStudentById(token, grade.studentId()));

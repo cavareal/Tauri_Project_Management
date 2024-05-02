@@ -6,7 +6,6 @@ import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.SprintRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;

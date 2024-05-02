@@ -11,7 +11,6 @@ import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.util.ListUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 

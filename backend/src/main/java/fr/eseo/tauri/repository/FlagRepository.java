@@ -1,6 +1,5 @@
 package fr.eseo.tauri.repository;
 
-import fr.eseo.tauri.model.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import fr.eseo.tauri.model.Flag;
 import org.springframework.data.jpa.repository.Modifying;

@@ -293,7 +293,7 @@ public class StudentService {
             studentInfo[0] = String.valueOf(studentIndex++);
             studentInfo[1] = student.name();
             studentInfo[2] = student.gender().toString().equals("MAN") ? "M" : "F";
-            studentInfo[3] = student.bachelor() ? "B" : "";
+            studentInfo[3] = Boolean.TRUE.equals(student.bachelor()) ? "B" : "";
 
             int gradeIndex = 4;
             for (GradeType gradeType : importedGrades) {

@@ -4,7 +4,6 @@ import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.service.RoleService;
 import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;

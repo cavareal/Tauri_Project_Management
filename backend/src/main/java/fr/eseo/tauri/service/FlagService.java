@@ -1,7 +1,6 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
-import fr.eseo.tauri.model.Comment;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.repository.FlagRepository;

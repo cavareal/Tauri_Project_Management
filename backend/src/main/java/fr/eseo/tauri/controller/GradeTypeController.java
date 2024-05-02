@@ -1,7 +1,6 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.GradeType;
-import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.service.GradeTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

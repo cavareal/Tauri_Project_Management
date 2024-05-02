@@ -1,6 +1,5 @@
 package fr.eseo.tauri.repository;
 
-import ch.qos.logback.classic.spi.ConfiguratorRank;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
@@ -10,7 +9,6 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
