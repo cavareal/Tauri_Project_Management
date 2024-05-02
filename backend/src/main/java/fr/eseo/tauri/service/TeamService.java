@@ -6,6 +6,7 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
@@ -24,6 +25,7 @@ public class TeamService {
     private final ProjectService projectService;
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
+    @Lazy private final StudentService studentService;
 
     public Team getTeamById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
