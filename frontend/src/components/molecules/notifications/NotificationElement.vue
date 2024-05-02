@@ -6,6 +6,8 @@ import Subtitle from "../../atoms/texts/Subtitle.vue"
 import { Check, ExternalLink } from "lucide-vue-next"
 import { Button } from "@/components/ui/button"
 
+const emits = defineEmits(["read:notifications"])
+
 defineProps<{
   title: string
   description: string

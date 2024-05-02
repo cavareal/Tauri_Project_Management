@@ -7,10 +7,15 @@ import {
 	SheetTrigger
 } from "@/components/ui/sheet"
 import { Header } from "@/components/molecules/header"
-import NotificationElement from "@/components/molecules/notifications/NotificationElement.vue"
+import { useQuery } from "@tanstack/vue-query"
+import { getAllNotifications } from "@/services/notification-service"
+import NotificationTable from "@/components/organisms/notifications/NotificationTable.vue"
+import { Row } from "@/components/atoms/containers"
 
-const ACTION_TITLE = "R. Woodward"
-const ACTION_DESCRIPTION = "La composition des équipes a été prépubliée."
+const { data: notifications }
+    = useQuery({ queryKey: ["notifications"], queryFn: getAllNotifications })
+
+console.log(getAllNotifications())
 
 </script>
 
@@ -27,12 +32,13 @@ const ACTION_DESCRIPTION = "La composition des équipes a été prépubliée."
           </Header>
         </SheetTitle>
       </SheetHeader>
-      <NotificationElement :title="ACTION_TITLE" :description="ACTION_DESCRIPTION" />
-    </SheetContent>
-  </Sheet>
+      <Row v-if="!notifications" class="mt-5">Vous n'avez aucune notification pour le moment</Row>
+      <NotificationTable v-else :notifications="notifications ?? null"/>
+     </SheetContent>
+   </Sheet>
 
-</template>
+ </template>
 
-<style scoped>
+ <style scoped>
 
-</style>
+ </style>

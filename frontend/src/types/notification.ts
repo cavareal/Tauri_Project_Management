@@ -3,11 +3,11 @@ import { UserSchema } from "@/types/user"
 
 export const NotificationSchema = z.object({
 	id: z.number(),
-	message: z.string(),
+	message: z.string().optional().nullable(),
 	bachelor: z.boolean().optional().nullable(),
 	type: z.string().optional().nullable(),
-	userTo: UserSchema.optional().nullable(),
-	userFrom: UserSchema.optional().nullable()
+	userTo: UserSchema,
+	userFrom: UserSchema
 })
 
 export type Notification = z.infer<typeof NotificationSchema>

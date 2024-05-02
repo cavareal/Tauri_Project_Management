@@ -3,9 +3,9 @@ import { apiQuery } from "@/utils/api"
 import { NotificationSchema } from "@/types/notification"
 import type { Notification } from "@/types/notification"
 
-export const getNotifications = async(): Promise< Notification []> => {
+export const getAllNotifications = async(): Promise<Notification[]> => {
 	const response = await apiQuery({
-		route: "notifications",
+		route: "notifications/",
 		responseSchema: NotificationSchema.array(),
 		method: "GET"
 	})
@@ -16,4 +16,3 @@ export const getNotifications = async(): Promise< Notification []> => {
 
 	return response.data
 }
-
