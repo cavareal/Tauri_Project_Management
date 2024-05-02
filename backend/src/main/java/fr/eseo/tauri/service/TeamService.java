@@ -41,14 +41,38 @@ public class TeamService {
         return teamRepository.findAllByProject(projectId);
     }
 
-    public void createTeam(String token, Team team) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addTeam"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+    /**
+     * Delete already existing teams in te project and then create teams with the given number of teams.
+     * // TODO : check nbTeams to be sure it is correct
+     * @param nbTeams the number of teams to create
+     * @return a List<Teams> if teams are created, otherwise null
+     */
+    private List<Team> createTeams(String token, Integer projectId, Integer nbTeams) {
+        if (nbTeams < 1) {
+            CustomLogger.error("TeamService.createTeams : The number of teams to create must be greater than 0");
+            throw new IllegalArgumentException("The number of teams to create must be greater than 0");
         }
-        team.leader(userService.getUserById(token, team.leaderId()));
-        team.project(projectService.getProjectById(token, team.projectId()));
 
-        teamRepository.save(team);
+        Project project = projectService.getProjectById(token, projectId);
+
+        // Delete all previous teams
+        // TODO FUTURE : delete teams only when nbTeams is different from the number of teams in the project
+        if(!getAllTeamsByProject(token, projectId).isEmpty()){
+            deleteAllTeamsByProject(token, projectId);
+        }
+
+        ArrayList<Team> teams = new ArrayList<>();
+
+        // Create the teams
+        for (int i = 0; i < nbTeams; i++) {
+            Team team = new Team();
+            team.name("Team " + (i + 1));
+            team.project(project);
+            this.teamRepository.save(team);
+            teams.add(team);
+        }
+
+        return teams;
     }
 
     public void updateTeam(String token, Integer id, Team updatedTeam) {
@@ -71,14 +95,6 @@ public class TeamService {
         }
         studentRepository.removeAllStudentsFromTeams(projectId);
         teamRepository.deleteAllByProject(projectId);
-    }
-
-    public Team getTeamByLeaderId(String token, Integer leaderId, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        getTeamById(token, leaderId);
-        return teamRepository.findByLeaderId(leaderId, projectId);
     }
 
     /**
@@ -157,40 +173,6 @@ public class TeamService {
         projectService.updateProject(token, projectId, projectDetails);
         List<Team> teams = this.createTeams(token, projectId, nbTeams);
         this.fillTeams(teams, women, men, womenPerTeam, nbStudent);
-    }
-
-    /**
-     * Delete already existing teams in te project and then create teams with the given number of teams.
-     * // TODO : check nbTeams to be sure it is correct
-     * @param nbTeams the number of teams to create
-     * @return a List<Teams> if teams are created, otherwise null
-     */
-    private List<Team> createTeams(String token, Integer projectId, Integer nbTeams) {
-        if (nbTeams < 1) {
-            CustomLogger.error("TeamService.createTeams : The number of teams to create must be greater than 0");
-            throw new IllegalArgumentException("The number of teams to create must be greater than 0");
-        }
-
-        Project project = projectService.getProjectById(token, projectId);
-
-        // Delete all previous teams
-        // TODO FUTURE : delete teams only when nbTeams is different from the number of teams in the project
-        if(!getAllTeamsByProject(token, projectId).isEmpty()){
-            deleteAllTeamsByProject(token, projectId);
-        }
-
-        ArrayList<Team> teams = new ArrayList<>();
-
-        // Create the teams
-        for (int i = 0; i < nbTeams; i++) {
-            Team team = new Team();
-            team.name("Team " + (i + 1));
-            team.project(project);
-            this.teamRepository.save(team);
-            teams.add(team);
-        }
-
-        return teams;
     }
 
     /**

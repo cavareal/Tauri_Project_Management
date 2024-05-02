@@ -1,5 +1,6 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
@@ -71,5 +72,11 @@ public class UserController {
 		var hasPermission = userService.hasPermission(token, id, permissionType);
 		return ResponseEntity.ok(hasPermission);
 	}
+
+	/*@GetMapping("{id}/team")
+	public ResponseEntity<Team> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam Integer projectId) {
+		Team team = userService.getTeamByMemberId(token, id, projectId);
+		return ResponseEntity.ok(team);
+	}*/
 
 }

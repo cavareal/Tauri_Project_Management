@@ -8,6 +8,8 @@ import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,9 +21,61 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GradeTypeService {
 
-    private final GradeService gradeService;
+    private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
+    private final GradeService gradeService;
 
+    public GradeType getGradeTypeById(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("gradeType", id));
+    }
+
+    public List<GradeType> getAllGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findAll();
+    }
+
+    public void createGradeType(String token, GradeType gradeType) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        gradeTypeRepository.save(gradeType);
+    }
+
+    public void updateGradeType(String token, Integer id, GradeType updatedGradeType) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        GradeType gradeType = getGradeTypeById(token, id);
+
+        if (updatedGradeType.name() != null) gradeType.name(updatedGradeType.name());
+        if (updatedGradeType.factor() != null) gradeType.factor(updatedGradeType.factor());
+        if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
+        if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
+        if (updatedGradeType.scaleUrl() != null) gradeType.scaleUrl(updatedGradeType.scaleUrl());
+
+        gradeTypeRepository.save(gradeType);
+    }
+
+    public void deleteGradeTypeById(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getGradeTypeById(token, id);
+        gradeTypeRepository.deleteById(id);
+    }
+
+    public void deleteAllGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        gradeTypeRepository.deleteAll();
+    }
 
     /**
      * This method is used to update the factor of a GradeType object and save it to the database.

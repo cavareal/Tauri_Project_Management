@@ -13,7 +13,7 @@ import { PageSkeleton } from "@/components/atoms/skeletons"
 import type { ProjectPhase } from "@/types/project"
 import { ref } from "vue"
 import { StudentSchema, type Student } from "@/types/student"
-import { changeStudentTeam, getStudentsByTeamId } from "@/services/student-service"
+import { updateStudent, getStudentsByTeamId } from "@/services/student-service"
 import { cn } from "@/utils/style"
 
 const role = getCookie("role")
@@ -59,7 +59,7 @@ const handleDrop = async(event: DragEvent, teamId: number) => {
 		[originTeam.id]: students.value[originTeam.id].filter(s => s.id !== student.id),
 		[teamId]: [...(students.value[teamId] ?? []), student].sort((a, b) => a.id - b.id)
 	}
-	await changeStudentTeam(student.id, teamId)
+	await updateStudent(student.id.toString(), null, null, null, teamId)
 		.then(() => queryClient.invalidateQueries({ queryKey: ["criteria", teamId] }))
 		.then(() => queryClient.invalidateQueries({ queryKey: ["criteria", originTeam.id] }))
 		.then(() => queryClient.invalidateQueries({ queryKey: ["average", teamId] }))

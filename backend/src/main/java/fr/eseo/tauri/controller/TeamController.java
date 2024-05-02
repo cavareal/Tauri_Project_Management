@@ -42,13 +42,6 @@ public class TeamController {
         return ResponseEntity.ok(teams);
     }
 
-    /*@PostMapping
-    public ResponseEntity<String> createTeam(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Team team) {
-        teamService.createTeam(token, team);
-        CustomLogger.info(responseMessage.create());
-        return ResponseEntity.ok(responseMessage.create());
-    }*/
-
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateTeam(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Team updatedTeam) {
         teamService.updateTeam(token, id, updatedTeam);
@@ -61,12 +54,6 @@ public class TeamController {
         teamService.deleteAllTeamsByProject(token, projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
-    }
-
-    @GetMapping("/leader/{leaderId}")
-    public ResponseEntity<Team> getTeamByLeaderId(@RequestHeader("Authorization") String token, @PathVariable Integer leaderId, @RequestParam Integer projectId) {
-        Team team = teamService.getTeamByLeaderId(token, leaderId, projectId);
-        return ResponseEntity.ok(team);
     }
 
     @GetMapping("/{id}/students")

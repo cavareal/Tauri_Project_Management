@@ -2,6 +2,8 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.Role;
+import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.repository.RoleRepository;
@@ -86,6 +88,15 @@ public class UserService {
 
 		userRepository.deleteAll();
 	}
+
+	/*public Team getTeamByMemberId(String token, Integer userId, Integer projectId) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+		/*User user = getUserById(token, userId);
+		Role role = roleService.getRoleById(token, user.id());
+		return teamRepository.findByMemberId(leaderId, projectId);
+	}*/
 
 	public List<PermissionType> getPermissions(String token, Integer id) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {

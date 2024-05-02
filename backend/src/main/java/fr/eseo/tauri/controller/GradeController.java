@@ -15,6 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,25 +31,62 @@ import java.util.Map;
 @Tag(name = "grades")
 public class GradeController {
 
-    private final GradeRepository gradeRepository;
     private final GradeService gradeService;
-
+    private final ResponseMessage responseMessage = new ResponseMessage("grade");
+    private final GradeRepository gradeRepository;
     private final GradeTypeRepository gradeTypeRepository;
 
-    @GetMapping
-    public ResponseEntity<Iterable<Grade>> getAllGrades() {
-        return ResponseEntity.ok(gradeRepository.findAll());
+    @GetMapping("/{id}")
+    public ResponseEntity<Grade> getGradeById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        Grade grade = gradeService.getGradeById(token, id);
+        return ResponseEntity.ok(grade);
     }
+
+    @GetMapping
+    public ResponseEntity<List<Grade>> getAllGradesByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+        List<Grade> grades = gradeService.getAllGradesByProject(token, projectId);
+        return ResponseEntity.ok(grades);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createGrade(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Grade grade) {
+        gradeService.createGrade(token, grade);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class)@RequestBody Grade updatedGrade) {
+        gradeService.updateGrade(token, id, updatedGrade);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        gradeService.deleteGrade(token, id);
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllGradesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        gradeService.deleteAllGradesByProject(token, projectId);
+        CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+        return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
+    }
+
+
 
     @PostMapping("/")
     public Grade addGrade(@RequestBody Grade grade) {
         return gradeRepository.save(grade);
     }
 
-    @GetMapping("/{id}")
+    /*@GetMapping("/{id}")
     public @Valid Grade getGradeById(@PathVariable Integer id) {
         return gradeRepository.findById(id).orElse(null);
-    }
+    }*/
 
     @PutMapping("/{id}")
     public Grade updateGrade(@PathVariable Integer id, @RequestBody Grade gradeDetails) {
@@ -57,11 +99,11 @@ public class GradeController {
         return null;
     }
 
-    @DeleteMapping("/{id}")
+    /*@DeleteMapping("/{id}")
     public String deleteGrade(@PathVariable Integer id) {
         gradeRepository.deleteById(id);
         return "Grade deleted";
-    }
+    }*/
 
     /**
      * This method is a POST endpoint that accepts a JSON string representing a map of evaluations.
@@ -166,6 +208,9 @@ public class GradeController {
      *  DELETE
      *      Delete Grade By Id
      */
+
+
+
 
 
 }

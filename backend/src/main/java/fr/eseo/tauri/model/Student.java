@@ -55,5 +55,4 @@ public class Student extends User {
     @JsonDeserialize
     private Integer projectId;
 
-
 }

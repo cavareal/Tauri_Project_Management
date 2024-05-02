@@ -2,6 +2,7 @@ package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.exception.EmptyFileException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
@@ -52,9 +53,6 @@ public class StudentService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        student.team(teamService.getTeamById(token, student.teamId()));
-        student.project(projectService.getProjectById(token, student.projectId()));
-
         studentRepository.save(student);
     }
 
@@ -95,29 +93,6 @@ public class StudentService {
     }
 
     /**
-     * This method is used to create a new student and save it to the repository.
-     *
-     * @param student the Student object to be saved
-     * @throws IllegalArgumentException if the student's name is null or empty
-     */
-    public void createStudent(Student student) {
-        if (student.name() == null || student.name().trim().isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        studentRepository.save(student);
-    }
-
-    /**
-     * Retrieves students form a team.
-     * @param teamId The id of the team
-     * @return a list of students
-     */
-    /*public List<Student> getStudentsByTeamId(Integer teamId) {
-        Team team = teamService.getTeamById(teamId);
-        return studentRepository.findStudentsByTeam(team);
-    }*/
-
-    /**
      * <b>HELPER METHOD</b>
      * This method is used to extract student data from a CSV file.
      * The data includes the student's name, gender, bachelor status, and grades.
@@ -125,7 +100,7 @@ public class StudentService {
      * @param inputStream The input stream of the CSV file.
      * @return A map containing lists of names, genders, bachelor statuses, and grades.
      */
-    public Map<String, Object> extractNamesGenderBachelorAndGrades(InputStream inputStream) {
+    public Map<String, Object> extractNamesGenderBachelorAndGrades(InputStream inputStream) throws CsvValidationException, IOException {
         Map<String, Object> result = new HashMap<>();
         List<String> names = new ArrayList<>();
         List<String> genders = new ArrayList<>();
@@ -134,24 +109,21 @@ public class StudentService {
 
         boolean namesStarted = false;
 
-        try (CSVReader reader = new CSVReader(new InputStreamReader(inputStream))) {
-            String[] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
-                if (!namesStarted && hasNonEmptyValue(nextLine, 1)) {
-                    namesStarted = true;
-                }
-                if (namesStarted && !names.isEmpty() && !hasNonEmptyValue(nextLine, 1)) {
-                    break;
-                }
-                if (namesStarted && hasNonEmptyValue(nextLine, 1)) {
-                    names.add(nextLine[1]);
-                    genders.add(nextLine[2]);
-                    bachelors.add(nextLine.length > 3 ? nextLine[3] : "");
-                    grades.add(Arrays.asList(Arrays.copyOfRange(nextLine, 4, nextLine.length)));
-                }
+        CSVReader reader = new CSVReader(new InputStreamReader(inputStream));
+        String[] nextLine;
+        while ((nextLine = reader.readNext()) != null) {
+            if (!namesStarted && hasNonEmptyValue(nextLine, 1)) {
+                namesStarted = true;
             }
-        } catch (IOException | CsvValidationException e) {
-            CustomLogger.error("An error occurred in extractNamesGenderAndBachelor", e);
+            if (namesStarted && !names.isEmpty() && !hasNonEmptyValue(nextLine, 1)) {
+                break;
+            }
+            if (namesStarted && hasNonEmptyValue(nextLine, 1)) {
+                names.add(nextLine[1]);
+                genders.add(nextLine[2]);
+                bachelors.add(nextLine.length > 3 ? nextLine[3] : "");
+                grades.add(Arrays.asList(Arrays.copyOfRange(nextLine, 4, nextLine.length)));
+            }
         }
 
         CustomLogger.info("Successfully extracted student data (names, genders, bachelors and grades ) from the CSV file.");
@@ -189,7 +161,7 @@ public class StudentService {
      * @return the created Student object
      * @throws IllegalArgumentException if the name or gender is null or empty, or if the bachelor status is null
      */
-    Student createStudentFromData(String token, String name, String gender, String bachelor, Integer projectId) {
+    public Student createStudentFromData(String token, String name, String gender, String bachelor, Integer projectId) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
@@ -225,37 +197,32 @@ public class StudentService {
      * @param file The CSV file containing the student data.
      */
     @SuppressWarnings("unchecked")
-    public void populateDatabaseFromCSV(String token, MultipartFile file, Integer projectId) {
+    public void populateDatabaseFromCSV(String token, MultipartFile file, Integer projectId) throws IOException, CsvValidationException {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
         if (file.isEmpty()) {
             CustomLogger.info("Uploaded file is empty");
-            return;
+            throw new EmptyFileException();
         }
 
-        try {
-            List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
-            CustomLogger.info("Successfully created GradeType objects from the CSV file.");
-            Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
+        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
+        CustomLogger.info("Successfully created GradeType objects from the CSV file.");
+        Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
 
-            List<String> names = (List<String>) extractedData.get(MAP_KEY_NAMES);
-            List<String> genders = (List<String>) extractedData.get(MAP_KEY_GENDERS);
-            List<String> bachelors = (List<String>) extractedData.get(MAP_KEY_BACHELORS);
-            List<List<String>> gradesList = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
+        List<String> names = (List<String>) extractedData.get(MAP_KEY_NAMES);
+        List<String> genders = (List<String>) extractedData.get(MAP_KEY_GENDERS);
+        List<String> bachelors = (List<String>) extractedData.get(MAP_KEY_BACHELORS);
+        List<List<String>> gradesList = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
 
-            for (int i = 0; i < names.size(); i++) {
-                Student student = createStudentFromData(token, names.get(i), genders.get(i), bachelors.get(i), projectId);
-                createStudent(student);
-                gradeService.createGradesFromGradeTypesAndValues(student, gradesList.get(i), gradeTypes, "Imported grades");
-            }
-
-            CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
-        } catch (Exception e) {
-            CustomLogger.error("An error occurred while handling the uploaded file", e);
-            throw new RuntimeException("An unexpected error occurred: " + e.getMessage());
+        for (int i = 0; i < names.size(); i++) {
+            Student student = createStudentFromData(token, names.get(i), genders.get(i), bachelors.get(i), projectId);
+            createStudent(token, student);
+            gradeService.createGradesFromGradeTypesAndValues(student, gradesList.get(i), gradeTypes, "Imported grades");
         }
+
+        CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
     }
 
 }

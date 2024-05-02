@@ -74,11 +74,11 @@ export const deleteAllStudents = async(projectId: string | null): Promise<void> 
 	}
 }
 
-export const updateStudent = async(id: string | null, gender: string | null, bachelor: boolean | null, teamRole: string | null, team: Team | null): Promise<void> => {
+export const updateStudent = async(id: string | null, gender: string | null, bachelor: boolean | null, teamRole: string | null, teamId: number | null): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "PATCH",
 		route: `students/${id}`,
-		body: { gender, bachelor, teamRole, team },
+		body: { gender, bachelor, teamRole, teamId },
 		bodySchema: z.any()
 	})
 

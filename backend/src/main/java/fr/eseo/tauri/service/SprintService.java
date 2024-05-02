@@ -6,8 +6,10 @@ import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.SprintRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +20,12 @@ public class SprintService {
 
     private final AuthService authService;
     private final SprintRepository sprintRepository;
-    //private final BonusService bonusService;
     private final ProjectService projectService;
     private final StudentService studentService;
     private final PresentationOrderService presentationOrderService;
+
+    @Lazy
+    private final BonusService bonusService;
 
     public Sprint getSprintById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readSprint"))) {
@@ -42,7 +46,7 @@ public class SprintService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         //TODO : à remettre quand on aura le studentservice de pret
-        /*sprint.project(projectService.getProjectById(token, sprint.projectId()));
+        sprint.project(projectService.getProjectById(token, sprint.projectId()));
         List<Student> students = studentService.getAllStudentsByProject(token, sprint.projectId());
         Bonus bonus = new Bonus();
         bonus.value((float) 0);
@@ -52,7 +56,7 @@ public class SprintService {
             bonus.sprint(sprint);
             bonus.student(student);
             bonusService.createBonus(token, bonus);
-        }*/
+        }
         sprintRepository.save(sprint);
     }
 
