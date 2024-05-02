@@ -19,6 +19,7 @@ public interface FlagRepository extends JpaRepository<Flag, Integer> {
     @Query(value = "DELETE FROM flags WHERE project_id = :projectId", nativeQuery = true)
     void deleteAllByProject(Integer projectId);
 
+    @Query("SELECT f FROM Flag f WHERE f.author.id = :authorId AND f.description = :description")
     List<Flag> findByAuthorIdAndDescription(Integer authorId, String description);
 
 }
