@@ -100,9 +100,9 @@ export const getTeamAverage = async(teamId: number): Promise<number> => {
 	return response.data
 }
 
-export const deleteAllTeams = async(): Promise<void> => {
+export const deleteAllTeams = async(projectId: string | null): Promise<void> => {
 	const response = await apiQuery({
-		route: "teams",
+		route: `teams?projectId=${projectId}`,
 		responseSchema: z.string(),
 		method: "DELETE",
 		textResponse: true
@@ -125,16 +125,4 @@ export const getTeamByLeaderId = async(leaderId: string | null, projectId: strin
 	}
 
 	return response.data
-}
-
-export const moveTeamStudent = async(teamId: number, studentId: number): Promise<void> => {
-	const response = await apiQuery({
-		route: `teams/${teamId}/move-student?studentId=${studentId}`,
-		responseSchema: TeamSchema,
-		method: "PUT"
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
 }

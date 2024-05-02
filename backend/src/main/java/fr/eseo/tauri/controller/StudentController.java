@@ -1,7 +1,6 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.StudentService;
 import fr.eseo.tauri.service.TeamService;
@@ -9,7 +8,6 @@ import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -26,10 +24,8 @@ import java.util.List;
 @Tag(name = "students")
 public class StudentController {
 
-	private final AuthService authService;
 	private final StudentService studentService;
 	private final ResponseMessage responseMessage = new ResponseMessage("student");
-	private final TeamService teamService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Student> getStudentById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -81,15 +77,15 @@ public class StudentController {
 	 * If the file is processed successfully, it returns an OK response with a message "File uploaded successfully".
 	 * If an error occurs during the processing of the file, it returns an internal server error response with a message indicating the error.
 	 */
-	@PostMapping("/uploadCSV")
-	public ResponseEntity<String> handleFileUpload(@RequestParam("file-upload") MultipartFile file) {
+	@PostMapping("/upload")
+	public ResponseEntity<String> handleFileUpload(@RequestHeader("Authorization") String token, @RequestParam("file-upload") MultipartFile file, @RequestParam Integer projectId) {
 		if (file.isEmpty()) {
 			return ResponseEntity.badRequest().body("Uploaded file is empty");
 		}
 
 		try {
 			// Pass the uploaded file to the service method for further processing
-			studentService.populateDatabaseFromCSV(file);
+			studentService.populateDatabaseFromCSV(token, file, projectId);
 			return ResponseEntity.ok("File uploaded successfully");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred: " + e.getMessage());

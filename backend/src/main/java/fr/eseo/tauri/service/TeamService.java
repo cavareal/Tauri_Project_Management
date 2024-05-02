@@ -67,11 +67,7 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteTeam"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        /*List<Student> students = studentService.getAllStudentsByProject(token, projectId);
-        for (Student student : students) {
-            student.team(null);
-            studentRepository.save(student);
-        }*/
+        studentRepository.removeAllStudentsFromTeams(projectId);
         teamRepository.deleteAllByProject(projectId);
     }
 
@@ -137,9 +133,8 @@ public class TeamService {
     /**
      * Auto generate teams with students according to the given number of teams and the number of women per team.
      * FUTURE :  create teams with the same average grade
-     * @return a List<Teams> if teams are created, otherwise null
      */
-    public List<Team> generateTeams(String token, Integer projectId, Project projectDetails) {
+    public void generateTeams(String token, Integer projectId, Project projectDetails) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "createTeam"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
@@ -160,7 +155,6 @@ public class TeamService {
         projectService.updateProject(token, projectId, projectDetails);
         List<Team> teams = this.createTeams(token, projectId, nbTeams);
         this.fillTeams(teams, women, men, womenPerTeam, nbStudent);
-        return teams;
     }
 
     /**

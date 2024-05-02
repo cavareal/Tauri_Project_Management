@@ -9,7 +9,7 @@ export const login = async(role: RoleType) => {
 	setCookie("currentProject", "1")
 
 	const response = await apiQuery({
-		route: `users/roles/${role}`,
+		route: `roles/${role}/users`,
 		responseSchema: UserSchema.array(),
 		method: "GET"
 	})

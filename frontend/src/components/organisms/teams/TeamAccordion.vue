@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { getTeams, moveTeamStudent } from "@/services/team-service"
+import { getTeams } from "@/services/team-service"
 import TeamAccordionContent from "@/components/organisms/teams/TeamAccordionContent.vue"
 import { getCookie } from "@/utils/cookie"
 import { Button } from "@/components/ui/button"
@@ -13,7 +13,7 @@ import { PageSkeleton } from "@/components/atoms/skeletons"
 import type { ProjectPhase } from "@/types/project"
 import { ref } from "vue"
 import { StudentSchema, type Student } from "@/types/student"
-import { getStudentsByTeamId } from "@/services/student-service"
+import { changeStudentTeam, getStudentsByTeamId } from "@/services/student-service"
 import { cn } from "@/utils/style"
 
 const role = getCookie("role")
@@ -59,7 +59,7 @@ const handleDrop = async(event: DragEvent, teamId: number) => {
 		[originTeam.id]: students.value[originTeam.id].filter(s => s.id !== student.id),
 		[teamId]: [...(students.value[teamId] ?? []), student].sort((a, b) => a.id - b.id)
 	}
-	await moveTeamStudent(teamId, student.id)
+	await changeStudentTeam(student.id, teamId)
 		.then(() => queryClient.invalidateQueries({ queryKey: ["criteria", teamId] }))
 		.then(() => queryClient.invalidateQueries({ queryKey: ["criteria", originTeam.id] }))
 		.then(() => queryClient.invalidateQueries({ queryKey: ["average", teamId] }))

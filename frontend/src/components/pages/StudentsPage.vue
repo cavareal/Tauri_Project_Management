@@ -18,7 +18,9 @@ const role = getCookie<RoleType>("role")
 const currentProjectId = getCookie("currentProject")
 const hasPermission = role === "PROJECT_LEADER" || role === "OPTION_LEADER"
 
-const { data: students, refetch: refetchStudents, error: studentsError } = useQuery({ queryKey: ["students"], queryFn: async() => (await (getAllStudents(currentProjectId))) })
+const { data: students, refetch: refetchStudents, error: studentsError } = useQuery({
+	queryKey: ["students"], queryFn: async() => await (getAllStudents(currentProjectId))
+})
 const { data: gradeTypes, refetch: refetchGradeTypes, error: gradeTypesError } = useQuery(
 	{ queryKey: ["gradeTypes"], queryFn: getAllImportedGradeTypes }
 )

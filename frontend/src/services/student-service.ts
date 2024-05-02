@@ -33,9 +33,9 @@ export const getQuantityOfStudents = async(): Promise<number> => {
 	return response.data
 }
 
-export const getStudentsByTeamId = async(id: number): Promise<Student[]> => {
+export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => {
 	const response = await apiQuery({
-		route: `team/${id}/students`,
+		route: `teams/${teamId}/students`,
 		responseSchema: StudentSchema.array(),
 		method: "GET"
 	})
@@ -47,10 +47,10 @@ export const getStudentsByTeamId = async(id: number): Promise<Student[]> => {
 	return response.data
 }
 
-export const importStudentFile = async(file: File): Promise<void> => {
+export const importStudentFile = async(file: File, projectId: string | null): Promise<void> => {
 	const response = await uploadFile({
 		file,
-		route: "students/uploadCSV"
+		route: `students/upload?projectId=${projectId}`
 	})
 
 	if (response.status === "error") {
@@ -79,6 +79,20 @@ export const updateStudent = async(id: string | null, gender: string | null, bac
 		method: "PUT",
 		route: `students/${id}`,
 		body: { gender, bachelor, teamRole, team },
+		responseSchema: z.string(),
+		textResponse: true
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const changeStudentTeam = async(studentId: number, teamId: number): Promise<void> => {
+	const response = await apiQuery({
+		method: "PATCH",
+		route: `students/${studentId}`,
+		body: { teamId },
 		responseSchema: z.string(),
 		textResponse: true
 	})

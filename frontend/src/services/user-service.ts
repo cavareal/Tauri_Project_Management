@@ -6,7 +6,7 @@ import { z } from "zod"
 
 export const getUsersByRole = async(role: RoleType): Promise<User[]> => {
 	const response = await apiQuery({
-		route: `users/roles/${role}`,
+		route: `roles/${role}/users`,
 		responseSchema: z.array(UserSchema),
 		method: "GET"
 	})
@@ -20,7 +20,7 @@ export const getUsersByRole = async(role: RoleType): Promise<User[]> => {
 
 export const hasPermission = async(user: User, permission: PermissionType): Promise<boolean> => {
 	const response = await apiQuery({
-		route: `users/${user.id}/hasPermission?permissionRequired=${permission}`,
+		route: `users/${user.id}/permissions/${permission}`,
 		responseSchema: z.boolean(),
 		method: "GET"
 	})

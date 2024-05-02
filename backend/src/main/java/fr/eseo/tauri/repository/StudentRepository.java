@@ -1,19 +1,17 @@
 package fr.eseo.tauri.repository;
 
-import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.Gender;
 import org.springframework.data.jpa.repository.JpaRepository;
 import fr.eseo.tauri.model.Student;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
 
-    @Query("SELECT s FROM Student s JOIN s.project p WHERE p.id = :projectId")
+    @Query("SELECT s FROM Student s WHERE s.project.id = :projectId")
     List<Student> findAllByProject(Integer projectId);
 
     @Transactional
@@ -35,5 +33,10 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     // TODO: change the average grade name to the correct one
     @Query("SELECT s FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gt.name = 'AVERAGE' AND s.gender = ?1 ORDER BY s.bachelor, gr.value DESC")
     List<Student> findByGenderOrderByBachelorAndImportedAvgDesc(Gender gender);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE Student s SET s.team = null WHERE s.project.id = :projectId")
+    void removeAllStudentsFromTeams(Integer projectId);
 
 }

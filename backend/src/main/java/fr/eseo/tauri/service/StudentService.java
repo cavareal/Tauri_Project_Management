@@ -24,7 +24,6 @@ public class StudentService {
 
     private final AuthService authService;
     private final StudentRepository studentRepository;
-    private final UserService userService;
     private final ProjectService projectService;
     private final TeamService teamService;
     private final GradeTypeService gradeTypeService;
@@ -190,7 +189,7 @@ public class StudentService {
      * @return the created Student object
      * @throws IllegalArgumentException if the name or gender is null or empty, or if the bachelor status is null
      */
-    Student createStudentFromData(String name, String gender, String bachelor) {
+    Student createStudentFromData(String token, String name, String gender, String bachelor, Integer projectId) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
@@ -206,7 +205,7 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.teamRole("Not assigned");
-        student.project(null);
+        student.project(projectService.getProjectById(token, projectId));
         student.team(null); // Team is not assigned yet
         student.password("password");
         student.privateKey("privateKey");
@@ -226,7 +225,11 @@ public class StudentService {
      * @param file The CSV file containing the student data.
      */
     @SuppressWarnings("unchecked")
-    public void populateDatabaseFromCSV(MultipartFile file) {
+    public void populateDatabaseFromCSV(String token, MultipartFile file, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
         if (file.isEmpty()) {
             CustomLogger.info("Uploaded file is empty");
             return;
@@ -243,7 +246,7 @@ public class StudentService {
             List<List<String>> gradesList = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
 
             for (int i = 0; i < names.size(); i++) {
-                Student student = createStudentFromData(names.get(i), genders.get(i), bachelors.get(i));
+                Student student = createStudentFromData(token, names.get(i), genders.get(i), bachelors.get(i), projectId);
                 createStudent(student);
                 gradeService.createGradesFromGradeTypesAndValues(student, gradesList.get(i), gradeTypes, "Imported grades");
             }
