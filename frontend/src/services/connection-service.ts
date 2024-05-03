@@ -18,4 +18,5 @@ export const login = async(role: RoleType) => {
 	}
 
 	setCookie("user", response.data[0].id.toString())
+	console.log(response.data)
 }

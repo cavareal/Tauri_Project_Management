@@ -42,7 +42,7 @@ const displayTeams = computed(() => (role === "PROJECT_LEADER" || (role === "SUP
 	|| role === "OPTION_LEADER" || (role === "OPTION_STUDENT" && currentPhase.value !== "COMPOSING")))
 
 const handleValidTeams = async() => {
-	hasValidateTeams.value = await userHasValidateTeams(currentUserId, validateTeamDescription)
+	hasValidateTeams.value = await userHasValidateTeams(currentUserId!, validateTeamDescription)
 }
 
 onMounted(async() => {

@@ -1,6 +1,6 @@
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
-import { TeamSchema } from "@/types/team"
 import type { Team } from "@/types/team"
+import { TeamSchema } from "@/types/team"
 import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
@@ -121,16 +121,16 @@ export const deleteAllTeams = async(projectId: string | null): Promise<void> => 
 	}
 }
 
-export const getTeamByLeaderId = async(leaderId: string | null, projectId: string | null): Promise<Team> => {
+export const getTeamByUserId = async(userId: string | null, projectId: string | null): Promise<Team> => {
 	const response = await queryAndValidate({
-		route: `teams/leader/${leaderId}`,
+		route: `users/${userId}/team`,
 		params: { projectId: projectId ?? "" },
-		responseSchema: TeamSchema
+		responseSchema: z.array(TeamSchema)
 	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
 
-	return response.data
+	return response.data.find((team: Team) => team.project.id.toString() === projectId) as Team
 }

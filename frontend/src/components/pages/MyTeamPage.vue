@@ -1,28 +1,27 @@
 <script setup lang="ts">
 import { getCookie } from "@/utils/cookie"
-import { onMounted, ref, watch } from "vue"
-import type { ProjectPhase } from "@/types/project"
+import { onMounted, ref } from "vue"
 import type { Team } from "@/types/team"
 import { SidebarTemplate } from "@/components/templates"
-import MyTeamCreated from "@/components/organisms/my-team/MyTeamCreated.vue"
 import { NotAuthorized, NotFound } from "@/components/organisms/errors"
-import { getTeamByLeaderId } from "@/services/team-service"
-import { getCurrentPhase } from "@/services/project-service"
+import { getTeamByUserId } from "@/services/team-service"
+import { getProjectById } from "@/services/project-service"
 import { Header } from "@/components/molecules/header"
+import { useQuery } from "@tanstack/vue-query"
+import MyTeamAccordion from "@/components/organisms/my-team/MyTeamAccordion.vue"
 
 const token = getCookie("token")
 const role = getCookie("role")
-const projectId = getCookie("currentProject")
+const currentProjectId = getCookie("currentProject")
 const currentUser = getCookie("user")
-const currentPhase = ref<ProjectPhase>("COMPOSING")
 const team = ref<Team>()
 
-watch(() => { }, async() => {
-	currentPhase.value = await getCurrentPhase(projectId)
-}, { immediate: true })
+const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
+	queryKey: ["project"], queryFn: async() => (await (getProjectById(currentProjectId))).phase
+})
 
 onMounted(async() => {
-	const data = await getTeamByLeaderId(currentUser, projectId)
+	const data = await getTeamByUserId(currentUser, currentProjectId)
 	team.value = data
 })
 </script>
@@ -31,8 +30,9 @@ onMounted(async() => {
 	<SidebarTemplate>
 		<Header title="Mon équipe" />
 		<NotAuthorized v-if="!token || !role" />
-		<MyTeamCreated v-else-if="role === 'SUPERVISING_STAFF' && currentPhase !== 'COMPOSING' && team" :team="team"
-			:phase="currentPhase" />
+    <MyTeamAccordion v-else-if="role === 'SUPERVISING_STAFF' && currentPhase !== 'COMPOSING' && team"
+                     :phase="currentPhase"
+                     :team="team"/>
 		<NotFound v-else />
 	</SidebarTemplate>
 </template>
