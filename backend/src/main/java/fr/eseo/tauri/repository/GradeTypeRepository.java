@@ -13,21 +13,23 @@ public interface GradeTypeRepository extends JpaRepository<GradeType, Integer> {
 	@Query("SELECT g FROM GradeType g WHERE g.forGroup")
 	List<GradeType> findAllForGroup();
 
-	@Query("SELECT g FROM GradeType g WHERE g.imported = true")
+	@Query("SELECT gt FROM GradeType gt WHERE gt.imported = true")
 	List<GradeType> findAllImported();
 
-	@Query("SELECT g FROM GradeType g WHERE g.imported = false")
+	@Query("SELECT gt FROM GradeType gt WHERE gt.imported = false")
 	List<GradeType> findAllUnimported();
 
-	@Query("SELECT g FROM GradeType g WHERE g.name = :name")
+	@Query("SELECT gt FROM GradeType gt WHERE gt.name = :name")
 	GradeType findByName(String name);
 
 	@Modifying
 	@Transactional
-	@Query("DELETE FROM GradeType g WHERE g.imported")
+	@Query("DELETE FROM GradeType gt WHERE gt.imported = true")
 	void deleteAllImported();
 
-	@Query("SELECT g FROM GradeType g WHERE g.forGroup AND NOT g.imported")
-	List<GradeType> findAllNotImportedTeamGrades();
+	@Modifying
+	@Transactional
+	@Query("DELETE FROM GradeType gt WHERE gt.imported = false")
+	void deleteAllUnimported();
 
 }

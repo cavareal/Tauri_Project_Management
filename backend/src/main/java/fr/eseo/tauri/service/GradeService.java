@@ -79,8 +79,7 @@ public class GradeService {
         if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
         if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, updatedGrade.sprintId()));
         if (updatedGrade.authorId() != null) grade.author(userService.getUserById(token, updatedGrade.authorId()));
-        if (updatedGrade.studentId() != null)
-            grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
+        if (updatedGrade.studentId() != null) grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
         if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(token, updatedGrade.teamId()));
         gradeRepository.save(grade);
     }

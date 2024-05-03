@@ -7,7 +7,6 @@ import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -83,17 +82,10 @@ public class StudentController {
 		return ResponseEntity.ok("File uploaded successfully");
 	}
 
-	@GetMapping("/download-students-csv")
-	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
-		try{
-			CustomLogger.info("Downloading students CSV");
-			return ResponseEntity.ok(studentService.createStudentsCSV(token, projectId));
-		}
-		catch (Exception e){
-			CustomLogger.error("Error downloading students CSV", e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
-
+	@GetMapping("/download")
+	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) throws IOException {
+		byte[] studentsCSV = studentService.createStudentsCSV(token, projectId);
+		return ResponseEntity.ok(studentsCSV);
 	}
 
 }

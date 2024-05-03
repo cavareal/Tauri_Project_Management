@@ -32,6 +32,19 @@ export const getTeamById = async(id: number): Promise<Team> => {
 	return response.data
 }
 
+export const updateTeam = async(id: number, name: string | null, leaderId: string | null): Promise<void> => {
+	const response = await mutateAndValidate({
+		route: `teams/${id}`,
+		method: "PATCH",
+		body: { name, leaderId },
+		bodySchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
 export const setTeamName = async(id: number, value: string): Promise<void> => {
 	const response = await mutateAndValidate({
 		route: `teams/update-name-team/${id}`,
@@ -120,16 +133,4 @@ export const getTeamByLeaderId = async(leaderId: string | null, projectId: strin
 	}
 
 	return response.data
-}
-
-export const moveTeamStudent = async(teamId: number, studentId: number): Promise<void> => {
-	const response = await apiQuery({
-		route: `teams/${teamId}/move-student?studentId=${studentId}`,
-		responseSchema: TeamSchema,
-		method: "PUT"
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
 }

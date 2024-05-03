@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 	// Handle the exceptions related to bad parameters for the requests
 	@ExceptionHandler(value = { IllegalArgumentException.class, NumberFormatException.class, ArrayIndexOutOfBoundsException.class,
 			ServletRequestBindingException.class, HttpMessageNotReadableException.class, TypeMismatchException.class,
-			HandlerMethodValidationException.class, EmptyFileException.class })
+			HandlerMethodValidationException.class, EmptyResourceException.class })
 	public ResponseEntity<ExceptionResponse> handleBadRequestException(Exception exception, HttpServletRequest request) {
 		return handleException(exception, request, HttpStatus.BAD_REQUEST);
 	}

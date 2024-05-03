@@ -3,7 +3,7 @@ package fr.eseo.tauri.service;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
-import fr.eseo.tauri.exception.EmptyFileException;
+import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
@@ -88,7 +88,7 @@ public class StudentService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         studentRepository.deleteAllByProject(projectId);
-        gradeTypeService.deleteAllImportedGradeTypes();
+        gradeTypeService.deleteAllImportedGradeTypes(token);
     }
 
 
@@ -204,10 +204,10 @@ public class StudentService {
 
         if (file.isEmpty()) {
             CustomLogger.info("Uploaded file is empty");
-            throw new EmptyFileException();
+            throw new EmptyResourceException("uploaded file");
         }
 
-        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
+        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(token, file.getInputStream());
         CustomLogger.info("Successfully created GradeType objects from the CSV file.");
         Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
 
@@ -225,8 +225,6 @@ public class StudentService {
         CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
     }
 
-	// TODO: Refactor all these methods below
-
     /**
      * This method is used to create a CSV file containing student data.
      * The CSV file includes the following data for each student:
@@ -239,6 +237,12 @@ public class StudentService {
      * @throws RuntimeException if an IOException occurs while creating the CSV file.
      */
     public byte[] createStudentsCSV(String token, Integer projectId) throws IOException {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "exportStudents"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        CustomLogger.info("Downloading students CSV");
+
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
         List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(token);
@@ -259,7 +263,7 @@ public class StudentService {
      * @param csvWriter The CSVWriter object that is used to write to the CSV file.
      * @param importedGrades The list of imported grade types.
      */
-    void writeHeaders(CSVWriter csvWriter, List<GradeType> importedGrades) {
+    private void writeHeaders(CSVWriter csvWriter, List<GradeType> importedGrades) {
         String[] factors = new String[importedGrades.size() + 4];
         String[] headers = new String[importedGrades.size() + 4];
         Arrays.fill(headers, "");
@@ -285,7 +289,7 @@ public class StudentService {
      * @param students  The list of students whose data is to be written to the CSV file.
      * @param importedGrades The list of imported grade types.
      */
-    void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGrades) {
+    private void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGrades) {
         int studentIndex = 1;
         for (Student student : students) {
             String[] studentInfo = new String[importedGrades.size() + 4];
@@ -310,7 +314,7 @@ public class StudentService {
      * @param csvWriter The CSVWriter object that is used to write to the CSV file.
      * @param numberOfGrades The number of imported grade types.
      */
-    void writeSummaryData(CSVWriter csvWriter, int numberOfGrades) {
+    private void writeSummaryData(CSVWriter csvWriter, int numberOfGrades) {
         writeEmptyRows(csvWriter, 4, numberOfGrades + 4);
         writeCountRow(csvWriter, "Nombre F", studentRepository.countWomen(), numberOfGrades + 4);
         writeCountRow(csvWriter, "Nombre M", studentRepository.countTotal() - studentRepository.countWomen(), numberOfGrades + 4);
@@ -329,7 +333,7 @@ public class StudentService {
      * @param numRows The number of empty rows to write. This is an integer.
      * @param rowLength The length of the row in the CSV file. This is an integer.
      */
-    void writeEmptyRows(CSVWriter csvWriter, int numRows, int rowLength) {
+    private void writeEmptyRows(CSVWriter csvWriter, int numRows, int rowLength) {
         String[] emptyRow = new String[rowLength];
         Arrays.fill(emptyRow, "");
         for (int i = 0; i < numRows; i++) {
@@ -348,7 +352,7 @@ public class StudentService {
      * @param count The count of students in the specified category. This is an integer.
      * @param rowLength The length of the row in the CSV file. This is an integer.
      */
-    void writeCountRow(CSVWriter csvWriter, String label, int count, int rowLength) {
+    private void writeCountRow(CSVWriter csvWriter, String label, int count, int rowLength) {
         String[] row = new String[rowLength];
         Arrays.fill(row, "");
         row[1] = label;

@@ -2,6 +2,7 @@ package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.service.GradeTypeService;
+import fr.eseo.tauri.util.ResponseMessage;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import java.util.List;
 public class GradeTypeController {
 
     private final GradeTypeService gradeTypeService;
+    private final ResponseMessage responseMessage = new ResponseMessage("gradetype");
 
     @GetMapping("/{id}")
     public ResponseEntity<GradeType> getGradeTypeById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -39,25 +41,31 @@ public class GradeTypeController {
     @PostMapping
     public ResponseEntity<String> createGradeType(@RequestHeader("Authorization") String token, @RequestBody GradeType gradeType) {
         gradeTypeService.createGradeType(token, gradeType);
-        return ResponseEntity.ok("GradeType created successfully.");
+        return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateGradeType(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody GradeType updatedGradeType) {
         gradeTypeService.updateGradeType(token, id, updatedGradeType);
-        return ResponseEntity.ok("GradeType updated successfully.");
+        return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteGradeTypeById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         gradeTypeService.deleteGradeTypeById(token, id);
-        return ResponseEntity.ok("GradeType deleted successfully.");
+        return ResponseEntity.ok(responseMessage.delete());
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> deleteAllGradeTypes(@RequestHeader("Authorization") String token) {
-        gradeTypeService.deleteAllGradeTypes(token);
-        return ResponseEntity.ok("All GradeTypes deleted successfully.");
+    @DeleteMapping("/imported")
+    public ResponseEntity<String> deleteAllImportedGradeTypes(@RequestHeader("Authorization") String token) {
+        gradeTypeService.deleteAllImportedGradeTypes(token);
+        return ResponseEntity.ok(responseMessage.deleteAll());
+    }
+
+    @DeleteMapping("/unimported")
+    public ResponseEntity<String> deleteAllUnimportedGradeTypes(@RequestHeader("Authorization") String token) {
+        gradeTypeService.deleteAllUnimportedGradeTypes(token);
+        return ResponseEntity.ok(responseMessage.deleteAll());
     }
 
 }
