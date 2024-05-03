@@ -10,6 +10,13 @@ import { Header } from "@/components/molecules/header"
 
 const token = getCookie("token")
 const role = getCookie<RoleType>("role")
+// TODO
+// Check si déjà sprint en place
+// Si oui, on affiche addSPrint avec une certaine phrase, et edit avec ceux actuel
+// Sinon, on affiche seulement addSprint, avec une phrase différente
+
+// TODO
+// Add and edit : same or 2 different components ??
 
 </script>
 

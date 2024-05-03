@@ -16,19 +16,14 @@ public class SprintController {
         this.sprintRepository = sprintRepository;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/")
     public Sprint addSprint(@RequestBody Sprint sprint) {
         return sprintRepository.save(sprint);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public Iterable<Sprint> getAllSprints() {
         return sprintRepository.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public Sprint getSprintById(@PathVariable Integer id) {
-        return sprintRepository.findById(id).orElse(null);
     }
 
     @PutMapping("/update/{id}")
