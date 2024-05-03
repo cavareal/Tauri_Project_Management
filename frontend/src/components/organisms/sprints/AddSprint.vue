@@ -3,35 +3,12 @@ import { ref, reactive } from "vue"
 import AddSprintDialog from "./AddSprintDialog.vue"
 import { CalendarPlus } from "lucide-vue-next"
 
-
-import { ActionSection } from "@/components/molecules/action-section"
-import { Button } from "@/components/ui/button"
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { getCookie } from "@/utils/cookie"
-import { Loader2 } from "lucide-vue-next"
-
-
 const nbSprints = ref(0)
 const IS_SPRINT = "Cliquez-ici pour ajouter un sprint"
 const ISNT_SPRINT = "Vous n'avez pas encore crée de sprint, cliquez-ici pour ajouter le premier"
     
 const emitAdd = defineEmits(["add:sprint"])
 
-
-// Récupérer les sprints (getALlSPrints)
-
-
-    
 </script>
 
 <template>
