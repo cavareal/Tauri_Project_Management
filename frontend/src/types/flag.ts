@@ -2,14 +2,9 @@ import { z } from "zod"
 import { StudentSchema } from "./student"
 import { UserSchema } from "./user"
 
-export enum FlagType {
-	REPORTING = "REPORTING",
-	VALIDATION = "VALIDATION"
-}
-
 export const FlagTypeSchema = z.enum([
-	FlagType.REPORTING,
-	FlagType.VALIDATION
+	"REPORTING",
+	"VALIDATION"
 ])
 
 export const FlagSchema = z.object({

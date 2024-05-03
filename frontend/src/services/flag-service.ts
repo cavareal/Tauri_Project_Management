@@ -1,5 +1,5 @@
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
-import { FlagWithoutIdSchema, type FlagWithoutId, FlagType, FlagSchema } from "@/types/flag"
+import { FlagWithoutIdSchema, type FlagWithoutId, FlagSchema } from "@/types/flag"
 import type { User } from "@/types/user"
 import { z } from "zod"
 
@@ -20,7 +20,7 @@ export const addFlag = async(flag: FlagWithoutId): Promise<void> => {
 export const createValidationFlag = async(author: User): Promise<void> => {
 	const flag: FlagWithoutId = {
 		description: "Validation des équipes prépubliées",
-		type: FlagType.VALIDATION,
+		type: "VALIDATION",
 		firstStudent: null,
 		secondStudent: null,
 		author
@@ -31,7 +31,7 @@ export const createValidationFlag = async(author: User): Promise<void> => {
 export const createReportingFlag = async(author: User,  description: string): Promise<void> => {
 	const flag: FlagWithoutId = {
 		description,
-		type: FlagType.REPORTING,
+		type: "REPORTING",
 		firstStudent: null,
 		secondStudent: null,
 		author

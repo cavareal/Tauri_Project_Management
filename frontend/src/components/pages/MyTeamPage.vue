@@ -16,13 +16,13 @@ const currentProjectId = getCookie("currentProject")
 const currentUser = getCookie("user")
 const team = ref<Team>()
 
+
 const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
 	queryKey: ["project"], queryFn: async() => (await (getProjectById(currentProjectId))).phase
 })
 
 onMounted(async() => {
-	const data = await getTeamByUserId(currentUser, currentProjectId)
-	team.value = data
+	team.value = await getTeamByUserId(currentUser, currentProjectId)
 })
 </script>
 
