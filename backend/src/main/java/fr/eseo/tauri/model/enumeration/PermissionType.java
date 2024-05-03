@@ -1,9 +1,12 @@
 package fr.eseo.tauri.model.enumeration;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public enum PermissionType {
+
     LOGIN_OUT("Login/Logout"),
     LDAP("LDAP"),
     IMPORT_GENERATED_KEY("Import Generated Key"),
@@ -56,12 +59,15 @@ public enum PermissionType {
     ADD_ALL_TEAMS_FEEDBACK("Add All Teams Feedback"),
     ADD_ALL_TEAMS_COMMENT("Add All Teams Comment"),
     VIEW_FEEDBACK("View Feedback"),
-    VIEW_COMMENT("View Comment");
+    VIEW_COMMENT("View Comment"),
+    STUDENTS_PAGE("Students Page"),
+    TEAMS_PAGE("Teams Page"),
+    MY_TEAM_PAGE("My Team Page"),
+    SPRINTS_PAGE("Sprints Page"),
+    GRADES_PAGE("Grades Page"),
+    RATING_PAGE("Rating Page"),
+    GRADE_SCALES_PAGE("Grade Scales Page");
 
     private final String displayName;
-
-    PermissionType(String displayName) {
-        this.displayName = displayName;
-    }
 
 }

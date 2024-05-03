@@ -1,50 +1,52 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.ValidationBonus;
-import fr.eseo.tauri.repository.ValidationBonusRepository;
+import fr.eseo.tauri.service.ValidationBonusService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/validation_bonuses")
-@Tag(name = "validation-bonuses")
+@RequiredArgsConstructor
+@RequestMapping("/api/bonuses/{bonusId}/validated")
+@Tag(name = "validationBonuses")
 public class ValidationBonusController {
 
-    private final ValidationBonusRepository validationBonusRepository;
+    private final ValidationBonusService validationBonusService;
+    private final ResponseMessage responseMessage = new ResponseMessage("validationBonus");
 
-    @Autowired
-    public ValidationBonusController(ValidationBonusRepository validationBonusRepository) {
-        this.validationBonusRepository = validationBonusRepository;
-    }
-    @PostMapping("/")
-    public ValidationBonus addValidationBonus(@RequestBody ValidationBonus validationBonus) {
-        return validationBonusRepository.save(validationBonus);
+    @GetMapping("/{authorId}")
+    public ResponseEntity<Boolean> checkUserValidatedById(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId, @PathVariable Integer authorId) {
+        var userValidated = validationBonusService.checkUserValidatedById(token, bonusId, authorId);
+        return ResponseEntity.ok(userValidated);
     }
 
-    @GetMapping("/")
-    public Iterable<ValidationBonus> getAllValidationBonuses() {
-        return validationBonusRepository.findAll();
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsersValidated(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId) {
+        var usersValidated = validationBonusService.getAllUsersValidated(token, bonusId);
+        return ResponseEntity.ok(usersValidated);
     }
 
-    @GetMapping("/{id}")
-    public ValidationBonus getValidationBonusById(@PathVariable Integer id) {
-        return validationBonusRepository.findById(id).orElse(null);
+    @PostMapping
+    public ResponseEntity<String> createValidationBonus(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody ValidationBonus validationBonus) {
+        validationBonusService.createValidationBonus(token, validationBonus);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
-    @PutMapping("/{id}")
-    public ValidationBonus updateValidationBonus(@PathVariable Integer id, @RequestBody ValidationBonus validationBonusDetails) {
-        ValidationBonus validationBonus = validationBonusRepository.findById(id).orElse(null);
-        if (validationBonus != null) {
-            validationBonus.confirmed(validationBonusDetails.confirmed());
-            return validationBonusRepository.save(validationBonus);
-        }
-        return null;
+    @DeleteMapping("/{authorId}")
+    public ResponseEntity<String> deleteValidationBonusByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId, @PathVariable Integer authorId) {
+        validationBonusService.deleteValidationBonusByAuthorId(token, bonusId, authorId);
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
     }
 
-    @DeleteMapping("/{id}")
-    public String deleteValidationBonus(@PathVariable Integer id) {
-        validationBonusRepository.deleteById(id);
-        return "ValidationBonus deleted";
-    }
 }

@@ -1,28 +1,30 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.eseo.tauri.model.id_class.ValidationBonusId;
+import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "validation_bonuses")
 @IdClass(ValidationBonusId.class)
-@Getter
-@Setter
+@Data
 public class ValidationBonus {
 
-    private Boolean confirmed;
+    @JsonProperty
+    private Boolean confirmed = false;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
-    private User user;
+    private User author;
 
     @Id
     @ManyToOne
@@ -30,4 +32,14 @@ public class ValidationBonus {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Bonus bonus;
+
+    @NotNull(groups = { Create.class }, message = "The authorId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer authorId;
+
+    @Transient
+    @JsonDeserialize
+    private Integer bonusId;
+
 }

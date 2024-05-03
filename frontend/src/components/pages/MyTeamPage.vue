@@ -4,35 +4,32 @@ import { onMounted, ref, watch } from "vue"
 import type { ProjectPhase } from "@/types/project"
 import type { Team } from "@/types/team"
 import { SidebarTemplate } from "@/components/templates"
-import { Row } from "@/components/atoms/containers"
-import { Separator } from "@/components/ui/separator"
 import MyTeamCreated from "@/components/organisms/my-team/MyTeamCreated.vue"
 import { NotAuthorized, NotFound } from "@/components/organisms/errors"
-import { getTeamBySSId } from "@/services/team-service"
+import { getTeamByLeaderId } from "@/services/team-service"
 import { getCurrentPhase } from "@/services/project-service"
+import { Header } from "@/components/molecules/header"
 
 const token = getCookie("token")
 const role = getCookie("role")
+const projectId = getCookie("currentProject")
 const currentUser = getCookie("user")
 const currentPhase = ref<ProjectPhase>("COMPOSING")
 const team = ref<Team>()
 
 watch(() => { }, async() => {
-	currentPhase.value = await getCurrentPhase()
+	currentPhase.value = await getCurrentPhase(projectId)
 }, { immediate: true })
 
 onMounted(async() => {
-	const data = await getTeamBySSId(currentUser)
+	const data = await getTeamByLeaderId(currentUser, projectId)
 	team.value = data
 })
 </script>
 
 <template>
 	<SidebarTemplate>
-		<Row class="items-center justify-between">
-			<h1 class="text-3xl font-title-bold">Équipes</h1>
-		</Row>
-		<Separator />
+		<Header title="Mon équipe" />
 		<NotAuthorized v-if="!token || !role" />
 		<MyTeamCreated v-else-if="role === 'SUPERVISING_STAFF' && currentPhase !== 'COMPOSING' && team" :team="team"
 			:phase="currentPhase" />

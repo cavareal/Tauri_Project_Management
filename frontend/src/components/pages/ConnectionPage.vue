@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import { RadioGroup } from "@/components/ui/radio-group"
-import { Button } from "@/components/ui/button"
 import { ref } from "vue"
 import { Logo } from "@/components/atoms/logo"
 import { redirect } from "@/utils/router"

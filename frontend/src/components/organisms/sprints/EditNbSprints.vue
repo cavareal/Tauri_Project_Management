@@ -19,11 +19,12 @@ import { Loader2 } from "lucide-vue-next"
 const nbSprints = ref("6")
 const errorMessage = ref("")
 const token = getCookie("token")
+const currentProject = getCookie("currentProject")
 
 // État pour contrôler l'affichage des boutons
 const buttonsState = reactive({
 	updateNbSprints: true,
-	loading: false,
+	loading: false
 })
 
 /* GET number of sprints of this project */
@@ -36,7 +37,7 @@ const requestOptionsStudents = {
 }
 const fetchNumberSprints = async() => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints-number", requestOptionsStudents)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + currentProject, requestOptionsStudents)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}
@@ -52,7 +53,7 @@ fetchNumberSprints()
 const updateNbSprints = async() => {
 	buttonsState.updateNbSprints = false
 	buttonsState.loading = true
-    errorMessage.value = ""
+	errorMessage.value = ""
 
 	const requestOptions = {
 		method: "PUT",
@@ -64,7 +65,7 @@ const updateNbSprints = async() => {
 	}
 
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/update-sprints-number/1", requestOptions)
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "projects/sprints/" + currentProject, requestOptions)
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`)
 		}

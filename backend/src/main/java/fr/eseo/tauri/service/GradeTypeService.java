@@ -2,12 +2,14 @@ package fr.eseo.tauri.service;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,116 +21,149 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GradeTypeService {
 
-    private final GradeService gradeService;
+    private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
+    private final GradeService gradeService;
 
-
-    /**
-     * This method is used to update the factor of a GradeType object and save it to the database.
-     *
-     * @param id the ID of the GradeType object to be updated
-     * @param factor the new factor for the GradeType object
-     *
-     * @return the updated GradeType object, or null if no GradeType object with the provided ID exists
-     */
-    public GradeType updateFactor(int id, float factor) {
-        var gradeType = gradeTypeRepository.findById(id).orElse(null);
-        if (gradeType == null) return null;
-
-        gradeType.factor(factor);
-        gradeTypeRepository.save(gradeType);
-
-        gradeService.updateImportedMean();
-        CustomLogger.logInfo("Successfully updated factor for GradeType object with ID " + id);
-
-        return gradeType;
+    public GradeType getGradeTypeById(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("gradeType", id));
     }
 
-    /**
-     * This method is used to create a new GradeType object and save it to the database.
-     *
-     * @param gradeType the GradeType object to be saved
-     * @return the saved GradeType object
-     * @throws IllegalArgumentException if the name of the GradeType object is null or empty
-     */
-    public GradeType createGradeType(GradeType gradeType) {
-        if (StringUtils.isBlank(gradeType.name())) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
+    public List<GradeType> getAllImportedGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findAllImported();
+    }
+
+    public List<GradeType> getAllUnimportedGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findAllUnimported();
+    }
+
+    public void createGradeType(String token, GradeType gradeType) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         gradeTypeRepository.save(gradeType);
-        return gradeType;
+    }
+
+    public void updateGradeType(String token, Integer id, GradeType updatedGradeType) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        GradeType gradeType = getGradeTypeById(token, id);
+
+        if (updatedGradeType.name() != null) gradeType.name(updatedGradeType.name());
+        if (updatedGradeType.factor() != null) gradeType.factor(updatedGradeType.factor());
+        if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
+        if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
+        if (updatedGradeType.scaleUrl() != null) gradeType.scaleUrl(updatedGradeType.scaleUrl());
+
+        gradeTypeRepository.save(gradeType);
+        gradeService.updateImportedMean();
+    }
+
+    public void deleteGradeTypeById(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getGradeTypeById(token, id);
+        gradeTypeRepository.deleteById(id);
+    }
+
+    public void deleteAllImportedGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        gradeTypeRepository.deleteAllImported();
+    }
+
+    public void deleteAllUnimportedGradeTypes(String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        gradeTypeRepository.deleteAllUnimported();
     }
 
     /**
-     * This method is used to create a new GradeType object and save it to the database.
-     *
-     * @param coefficient the coefficient for the GradeType object
-     * @param rating      the rating for the GradeType object
-     * @param forGroup    the forGroup value for the GradeType object
-     * @param imported    the imported value for the GradeType object
-     * @return the saved GradeType object
-     */
-    public GradeType createGradeType(float coefficient, String rating, Boolean forGroup, Boolean imported) {
-        GradeType gradeType = new GradeType();
-        gradeType.factor(coefficient);
-        gradeType.name(rating);
-        gradeType.forGroup(forGroup);
-        gradeType.imported(imported);
-        return createGradeType(gradeType);
-    }
-
-    /**
-     * This method is used to create a list of GradeType objects from the provided coefficients and ratings.
+     * This method is used to create a list of GradeType objects from the provided coefficients and names.
      *
      * @param coefficients the list of coefficients for the GradeType objects
-     * @param ratings      the list of ratings for the GradeType objects
+     * @param names      the list of names for the GradeType objects
      * @param forGroup     the forGroup value for the GradeType objects
      * @param imported     the imported value for the GradeType objects
-     * @return a list of GradeType objects created from the provided coefficients and ratings
+     * @return a list of GradeType objects created from the provided coefficients and names
      */
-    public List<GradeType> createGradeTypes(List<String> coefficients, List<String> ratings, Boolean forGroup, Boolean imported) {
-        if (coefficients == null || ratings == null || coefficients.isEmpty() || ratings.isEmpty()) {
-            CustomLogger.logWarn("Coefficients or ratings are null or empty");
-            return new ArrayList<>();
+    public List<GradeType> generateImportedGradeTypes(String token, List<String> coefficients, List<String> names, Boolean forGroup, Boolean imported) {
+
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        List<GradeType> gradeTypes = new ArrayList<>();
-        gradeTypes.add(createGradeType(0, "AVERAGE", forGroup, imported));
+
+        if (coefficients == null || coefficients.isEmpty()) {
+            CustomLogger.warn("The list of coefficients is null or empty");
+            throw new EmptyResourceException("list of coefficients");
+        }
+
+        if(names == null || names.isEmpty()){
+            CustomLogger.warn("The list of names is null or empty");
+            throw new EmptyResourceException("list of names");
+        }
+
+        List<GradeType> importedGradeTypes = new ArrayList<>();
+
+        importedGradeTypes.add(createImportedGradeType("AVERAGE", (float) 0, forGroup, imported));
+
         for (int i = 0; i < coefficients.size(); i++) {
-            gradeTypes.add(createGradeType(Float.parseFloat(coefficients.get(i)), ratings.get(i), forGroup, imported));
+            importedGradeTypes.add(createImportedGradeType(names.get(i), Float.parseFloat(coefficients.get(i)), forGroup, imported));
         }
-        CustomLogger.logInfo("Successfully created GradeType objects from the provided coefficients and ratings.");
-        return gradeTypes;
+
+        CustomLogger.info("Successfully created GradeType objects from the provided coefficients and names.");
+        return importedGradeTypes;
+    }
+
+    private GradeType createImportedGradeType(String name, Float factor, Boolean forGroup, Boolean imported) {
+        GradeType gradeType = new GradeType();
+        gradeType.name(name);
+        gradeType.factor(factor);
+        gradeType.forGroup(forGroup);
+        gradeType.imported(imported);
+        return(gradeTypeRepository.save(gradeType));
     }
 
     /**
      * This method is used to create a list of GradeType objects from a CSV file.
      *
      * @param inputStream the InputStream from which the CSV file is read
-     * @return a list of GradeType objects created from the coefficients and ratings in the CSV file
+     * @return a list of GradeType objects created from the coefficients and names in the CSV file
      */
-    public List<GradeType> createGradeTypesFromCSV(InputStream inputStream) {
+    public List<GradeType> createGradeTypesFromCSV(String token, InputStream inputStream) throws CsvValidationException, IOException {
         List<String> coefficients = new ArrayList<>();
-        List<String> ratings = new ArrayList<>();
+        List<String> names = new ArrayList<>();
         boolean coefficientsStarted = false;
         int startingCoefficients = 1;
         int lineBrowsed = 0;
 
-        try (CSVReader reader = new CSVReader(new InputStreamReader(inputStream))) {
-            String[] nextLine;
-            while ((nextLine = reader.readNext()) != null) {
-                lineBrowsed++;
-                if (!coefficientsStarted) {
-                    startingCoefficients = processLineForCoefficients(nextLine, coefficients);
-                    coefficientsStarted = true;
-                } else if (lineBrowsed == 2) {
-                    processLineForRatings(nextLine, ratings, startingCoefficients);
-                }
+        CSVReader reader = new CSVReader(new InputStreamReader(inputStream));
+        String[] nextLine;
+        while ((nextLine = reader.readNext()) != null) {
+            lineBrowsed++;
+            if (!coefficientsStarted) {
+                startingCoefficients = processLineForCoefficients(nextLine, coefficients);
+                coefficientsStarted = true;
+            } else if (lineBrowsed == 2) {
+                processLineForNames(nextLine, names, startingCoefficients);
             }
-        } catch (IOException | CsvValidationException e) {
-           CustomLogger.logError("Error occurred while extracting coefficient rating and value", e);
         }
 
-        return createGradeTypes(coefficients, ratings, false, true);
+        return generateImportedGradeTypes(token, coefficients, names, false, true);
     }
 
     /**
@@ -144,7 +179,7 @@ public class GradeTypeService {
         for (String part : nextLine) {
             String trimmedPart = part.trim();
             try {
-                Integer.parseInt(trimmedPart); // Check if it's a coefficient
+                Float.parseFloat(trimmedPart); // Check if it's a coefficient
                 coefficients.add(trimmedPart);
             } catch (NumberFormatException ignored) {
                 startingCoefficients++;
@@ -155,33 +190,23 @@ public class GradeTypeService {
 
     /**
      * <b>HELPER METHOD</b>
-     * This method is used to process a line from a CSV file and extract the ratings.
+     * This method is used to process a line from a CSV file and extract the names.
      *
      * @param nextLine             the line from the CSV file as an array of strings
-     * @param ratings              the list of ratings to which the extracted ratings are added
+     * @param names              the list of names to which the extracted names are added
      * @param startingCoefficients the starting index of the coefficients in the line
      */
-    private void processLineForRatings(String[] nextLine, List<String> ratings, int startingCoefficients) {
+    private void processLineForNames(String[] nextLine, List<String> names, int startingCoefficients) {
         int index = 0;
         for (String part : nextLine) {
             index++;
             if (index >= startingCoefficients) {
                 String trimmedPart = part.trim();
-                ratings.add(trimmedPart);
+                names.add(trimmedPart);
             }
         }
     }
-
-    /**
-     * This method is used to delete all imported GradeType objects from the database.
-     */
-    public void deleteAllImportedGradeTypes() {
-        try {
-            gradeTypeRepository.deleteAllImported();
-        } catch (Exception e) {
-            CustomLogger.logError("Error occurred while deleting all imported GradeType objects", e);
-        }
-    }
+    
 }
 
 

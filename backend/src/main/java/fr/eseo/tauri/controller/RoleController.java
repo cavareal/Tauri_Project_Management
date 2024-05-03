@@ -1,59 +1,74 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.Role;
+import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.repository.RoleRepository;
+import fr.eseo.tauri.service.RoleService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/roles")
 @Tag(name = "roles")
 public class RoleController {
 
-    private final RoleRepository roleRepository;
-
-    @Autowired
-    public RoleController(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
-
-    @PostMapping("/")
-    public Role addRole(@RequestBody Role role) {
-        return roleRepository.save(role);
-    }
-
-    @GetMapping("/")
-    public Iterable<Role> getAllRoles() {
-        return roleRepository.findAll();
-    }
+    private final RoleService roleService;
+    private final ResponseMessage responseMessage = new ResponseMessage("role");
 
     @GetMapping("/{id}")
-    public Role getRoleById(@PathVariable Integer id) {
-        return roleRepository.findById(id).orElse(null);
+    public ResponseEntity<Role> getRoleById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        Role role = roleService.getRoleById(token, id);
+        return ResponseEntity.ok(role);
     }
 
-    @PutMapping("/{id}")
-    public Role updateRole(@PathVariable Integer id, @RequestBody Role roleDetails) {
-        Role role = roleRepository.findById(id).orElse(null);
-        if (role != null) {
-            role.type(roleDetails.type());
-            // If you have a User field, you can also update it here
-            return roleRepository.save(role);
-        }
-        return null;
+    @GetMapping
+    public ResponseEntity<List<Role>> getAllRoles(@RequestHeader("Authorization") String token) {
+        List<Role> roles = roleService.getAllRoles(token);
+        return ResponseEntity.ok(roles);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createRole(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Role role) {
+        roleService.createRole(token, role);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateRole(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Role updatedRole) {
+        roleService.updateRole(token, id, updatedRole);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public String deleteRole(@PathVariable Integer id) {
-        roleRepository.deleteById(id);
-        return "Role deleted";
+    public ResponseEntity<String> deleteRoleById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        roleService.deleteRoleById(token, id);
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
     }
 
-    @GetMapping("/type/{type}")
-    public User getFirstUserByRoleType(@PathVariable RoleType type) {
-        return roleRepository.findFirstByType(type).user();
+    @GetMapping("/{roleType}/users")
+    public ResponseEntity<List<User>> getUsersByRole(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType) {
+        var users = roleService.getUsersByRoleType(token, roleType);
+        return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/{roleType}/permissions/{permissionType}")
+    public ResponseEntity<Boolean> hasPermission(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType, @PathVariable PermissionType permissionType) {
+        var hasPermission = roleService.hasPermission(token, roleType, permissionType);
+        return ResponseEntity.ok(hasPermission);
+    }
+
 }

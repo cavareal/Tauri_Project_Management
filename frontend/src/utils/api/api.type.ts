@@ -17,7 +17,35 @@ export type ApiQueryResponse<T> = {
     error: string
 }
 
-export type UploadFileRequest = {
-	file: File
+export type QueryAndValidateRequest<T> = {
 	route: string
+	params?: Record<string, string>
+	jsonContent?: boolean
+	delay?: number
+	responseSchema: z.ZodType<T>
+}
+
+export type QueryAndValidateResponse<T> = {
+	status: "success"
+	data: T
+} | {
+	status: "error"
+	error: string
+}
+
+export type MutateAndValidateRequest<T> = {
+	method: "POST" | "PUT" | "PATCH" | "DELETE"
+	route: string
+	params?: Record<string, string>
+	jsonContent?: boolean
+	delay?: number
+	bodySchema?: z.ZodType<T>
+	body?: T
+}
+
+export type MutateAndValidateResponse = {
+	status: "success"
+} | {
+	status: "error"
+	error: string
 }

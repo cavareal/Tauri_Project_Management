@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { CustomDialog } from "@/components/molecules/dialog"
 import { LoadingButton } from "@/components/molecules/buttons"
-import { updateGradeTypeFactor } from "@/services/grade-type-service"
+import { updateGradeType } from "@/services/grade-type-service"
 import { ErrorText } from "@/components/atoms/texts"
 import type { GradeType } from "@/types/grade-type"
 import { computed, ref } from "vue"
@@ -39,12 +39,13 @@ const onInputValueChange = (e: Event, gradeTypeId: number) => {
 
 const emits = defineEmits(["update:factors"])
 
-const { isPending, error, mutate: upgrade } = useMutation({ mutationKey: ["update-grade-factors"], mutationFn: async() => {
-		if (!filteredGradeTypes.value) return
-		await Promise.all(filteredGradeTypes.value.map(gradeType => updateGradeTypeFactor(gradeType.id, gradeType.factor)))
-			.then(() => open.value = false)
-			.then(() => emits("update:factors"))
-	} })
+//TODO Pour optimiser le code : Envoyer une requête d'update du coeff SEULEMENT s'il a changé (système de old coeff / new coeff ?)
+const { isPending, error, mutate: update } = useMutation({ mutationKey: ["update-grade-factors"], mutationFn: async() => {
+	if (!filteredGradeTypes.value) return
+	await Promise.all(filteredGradeTypes.value.map(gradeType => updateGradeType(gradeType.id, null, gradeType.factor, null, null, null)))
+		.then(() => open.value = false)
+		.then(() => emits("update:factors"))
+} })
 
 </script>
 
@@ -70,7 +71,7 @@ const { isPending, error, mutate: upgrade } = useMutation({ mutationKey: ["updat
 			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" @click="upgrade" :loading="isPending">
+			<LoadingButton type="submit" @click="update" :loading="isPending">
 				Mettre à jour
 			</LoadingButton>
 		</template>

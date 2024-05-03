@@ -1,52 +1,65 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Permission;
-import fr.eseo.tauri.repository.PermissionRepository;
+import fr.eseo.tauri.service.PermissionService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/permissions")
 @Tag(name = "permissions")
 public class PermissionController {
 
-    private final PermissionRepository permissionRepository;
-
-    @Autowired
-    public PermissionController(PermissionRepository permissionRepository) {
-        this.permissionRepository = permissionRepository;
-    }
-
-    @PostMapping("/")
-    public Permission addPermission(@RequestBody Permission permission) {
-        return permissionRepository.save(permission);
-    }
-
-    @GetMapping("/")
-    public Iterable<Permission> getAllPermissions() {
-        return permissionRepository.findAll();
-    }
+    private final PermissionService permissionService;
+    private final ResponseMessage responseMessage = new ResponseMessage("permission");
 
     @GetMapping("/{id}")
-    public Permission getPermissionById(@PathVariable Integer id) {
-        return permissionRepository.findById(id).orElse(null);
+    public ResponseEntity<Permission> getPermissionById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        Permission permission = permissionService.getPermissionById(token, id);
+        return ResponseEntity.ok(permission);
     }
 
-    @PutMapping("/{id}")
-    public Permission updatePermission(@PathVariable Integer id, @RequestBody Permission permissionDetails) {
-        Permission permission = permissionRepository.findById(id).orElse(null);
-        if (permission != null) {
-            permission.type (permissionDetails.type());
-            // Si vous avez un champ Role, vous pouvez également mettre à jour ici
-            return permissionRepository.save(permission);
-        }
-        return null;
+    @GetMapping
+    public ResponseEntity<List<Permission>> getAllPermissionsByProject(@RequestHeader("Authorization") String token) {
+        List<Permission> permissions = permissionService.getAllPermissions(token);
+        return ResponseEntity.ok(permissions);
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createPermission(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Permission permission) {
+        permissionService.createPermission(token, permission);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updatePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Permission updatedPermission) {
+        permissionService.updatePermission(token, id, updatedPermission);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public String deletePermission(@PathVariable Integer id) {
-        permissionRepository.deleteById(id);
-        return "Permission deleted";
+    public ResponseEntity<String> deletePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        permissionService.deletePermission(token, id);
+        CustomLogger.info(responseMessage.delete());
+        return ResponseEntity.ok(responseMessage.delete());
+    }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllPermissionsByProject(@RequestHeader("Authorization") String token) {
+        permissionService.deleteAllPermissions(token);
+        CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+        return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 }

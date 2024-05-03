@@ -11,17 +11,19 @@ import { Header } from "@/components/molecules/header"
 import type { RoleType } from "@/types/role"
 import { computed } from "vue"
 import { getAllImportedGradeTypes } from "@/services/grade-type-service"
-import { getAllGrades } from "@/services/grade-service"
+import { getAllImportedGrades } from "@/services/grade-service"
 import { useQuery } from "@tanstack/vue-query"
 
 const role = getCookie<RoleType>("role")
 const hasPermission = role === "PROJECT_LEADER" || role === "OPTION_LEADER"
 
-const { data: students, refetch: refetchStudents, error: studentsError } = useQuery({ queryKey: ["students"], queryFn: getAllStudents })
+const { data: students, refetch: refetchStudents, error: studentsError } = useQuery({
+	queryKey: ["students"], queryFn: () => getAllStudents()
+})
 const { data: gradeTypes, refetch: refetchGradeTypes, error: gradeTypesError } = useQuery(
 	{ queryKey: ["gradeTypes"], queryFn: getAllImportedGradeTypes }
 )
-const { data: grades, refetch: refetchGrades, error: gradesError } = useQuery({ queryKey: ["grades"], queryFn: getAllGrades })
+const { data: grades, refetch: refetchGrades, error: gradesError } = useQuery({ queryKey: ["grades"], queryFn: () =>  getAllImportedGrades() })
 
 const error = computed(() => gradeTypesError.value || studentsError.value || gradesError.value)
 const refetch = async() => {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Column, Row } from "@/components/atoms/containers"
 import Input from "@/components/ui/input/Input.vue"
 import Label from "@/components/ui/label/Label.vue"
-import { setTeamLeader, setTeamName } from "@/services/team-service"
+import { updateTeam } from "@/services/team-service"
 import { ref } from "vue"
 import type { Team } from "@/types/team"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -29,8 +29,7 @@ const { data: supervisors } = useQuery({ queryKey: ["supervisors"], queryFn: () 
 
 const { mutate, error, isPending } = useMutation({ mutationKey: ["edit-team"], mutationFn: async() => {
 	await (async() => {
-		await setTeamName(props.team.id, teamName.value)
-		teamLeaderId.value && await setTeamLeader(props.team.id, teamLeaderId.value)
+		teamLeaderId.value && await updateTeam(props.team.id, teamName.value, teamLeaderId.value)
 	})()
 		.then(() => open.value = false)
 		.then(() => emits("edit:team"))

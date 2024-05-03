@@ -5,23 +5,23 @@ import fr.eseo.tauri.model.LoginResponse;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.HtmlUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @Tag(name = "auth")
 public class AuthController {
 
     @PostMapping("/login")
-        public ResponseEntity<String> login(@RequestBody Map<String, String> request) {
-        try {
-            System.out.println(request.get("username"));
-            System.out.println(request.get("password"));
+    public Boolean login(@RequestBody User user) {
+        CustomLogger.info(user.email() + " is trying to log in");
 
             // Prevent XSS faille
             String loginSecure = HtmlUtils.htmlEscape(request.get("username"));
@@ -40,16 +40,14 @@ public class AuthController {
 
     @PostMapping("/logon")
     public Boolean logon(@RequestBody User user) {
-        CustomLogger.logInfo(user.email() + " is trying to log on");
-
+        CustomLogger.info(user.email() + " is trying to log on");
 
         return true;
     }
 
     @PostMapping("/logout")
     public Boolean logout(@RequestBody User user) {
-        CustomLogger.logInfo(user.email() + " is trying to log out");
-
+        CustomLogger.info(user.email() + " is trying to log out");
 
         return true;
     }
