@@ -45,7 +45,7 @@ public class TeamService {
      * @param nbTeams the number of teams to create
      * @return a List<Teams> if teams are created, otherwise null
      */
-    private List<Team> createTeams(String token, Integer projectId, Integer nbTeams) {
+    public List<Team> createTeams(String token, Integer projectId, Integer nbTeams) {
         if (nbTeams < 1) {
             CustomLogger.error("TeamService.createTeams : The number of teams to create must be greater than 0");
             throw new IllegalArgumentException("The number of teams to create must be greater than 0");
@@ -180,7 +180,7 @@ public class TeamService {
      * @param men the list of men students
      * @param womenPerTeam the number of women per team
      */
-    private void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent) {
+    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent) {
         int nbTeams = teams.size();
         int nbWomen = women.size();
 

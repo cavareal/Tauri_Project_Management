@@ -129,7 +129,7 @@ public class GradeTypeService {
         return importedGradeTypes;
     }
 
-    private GradeType createImportedGradeType(String name, Float factor, Boolean forGroup, Boolean imported) {
+    public GradeType createImportedGradeType(String name, Float factor, Boolean forGroup, Boolean imported) {
         GradeType gradeType = new GradeType();
         gradeType.name(name);
         gradeType.factor(factor);
@@ -174,7 +174,7 @@ public class GradeTypeService {
      * @param coefficients the list of coefficients to which the extracted coefficients are added
      * @return the starting index of the coefficients in the line
      */
-    private int processLineForCoefficients(String[] nextLine, List<String> coefficients) {
+    public int processLineForCoefficients(String[] nextLine, List<String> coefficients) {
         int startingCoefficients = 1;
         for (String part : nextLine) {
             String trimmedPart = part.trim();
@@ -196,7 +196,7 @@ public class GradeTypeService {
      * @param names              the list of names to which the extracted names are added
      * @param startingCoefficients the starting index of the coefficients in the line
      */
-    private void processLineForNames(String[] nextLine, List<String> names, int startingCoefficients) {
+    public void processLineForNames(String[] nextLine, List<String> names, int startingCoefficients) {
         int index = 0;
         for (String part : nextLine) {
             index++;

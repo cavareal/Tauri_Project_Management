@@ -263,7 +263,7 @@ public class StudentService {
      * @param csvWriter The CSVWriter object that is used to write to the CSV file.
      * @param importedGrades The list of imported grade types.
      */
-    private void writeHeaders(CSVWriter csvWriter, List<GradeType> importedGrades) {
+    public void writeHeaders(CSVWriter csvWriter, List<GradeType> importedGrades) {
         String[] factors = new String[importedGrades.size() + 4];
         String[] headers = new String[importedGrades.size() + 4];
         Arrays.fill(headers, "");
@@ -289,7 +289,7 @@ public class StudentService {
      * @param students  The list of students whose data is to be written to the CSV file.
      * @param importedGrades The list of imported grade types.
      */
-    private void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGrades) {
+    public void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGrades) {
         int studentIndex = 1;
         for (Student student : students) {
             String[] studentInfo = new String[importedGrades.size() + 4];
@@ -314,7 +314,7 @@ public class StudentService {
      * @param csvWriter The CSVWriter object that is used to write to the CSV file.
      * @param numberOfGrades The number of imported grade types.
      */
-    private void writeSummaryData(CSVWriter csvWriter, int numberOfGrades) {
+    public void writeSummaryData(CSVWriter csvWriter, int numberOfGrades) {
         writeEmptyRows(csvWriter, 4, numberOfGrades + 4);
         writeCountRow(csvWriter, "Nombre F", studentRepository.countWomen(), numberOfGrades + 4);
         writeCountRow(csvWriter, "Nombre M", studentRepository.countTotal() - studentRepository.countWomen(), numberOfGrades + 4);
@@ -333,7 +333,7 @@ public class StudentService {
      * @param numRows The number of empty rows to write. This is an integer.
      * @param rowLength The length of the row in the CSV file. This is an integer.
      */
-    private void writeEmptyRows(CSVWriter csvWriter, int numRows, int rowLength) {
+    public void writeEmptyRows(CSVWriter csvWriter, int numRows, int rowLength) {
         String[] emptyRow = new String[rowLength];
         Arrays.fill(emptyRow, "");
         for (int i = 0; i < numRows; i++) {
@@ -352,7 +352,7 @@ public class StudentService {
      * @param count The count of students in the specified category. This is an integer.
      * @param rowLength The length of the row in the CSV file. This is an integer.
      */
-    private void writeCountRow(CSVWriter csvWriter, String label, int count, int rowLength) {
+    public void writeCountRow(CSVWriter csvWriter, String label, int count, int rowLength) {
         String[] row = new String[rowLength];
         Arrays.fill(row, "");
         row[1] = label;

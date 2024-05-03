@@ -16,19 +16,6 @@ export const getAllStudents = async(): Promise<Student[]> => {
 	return response.data
 }
 
-export const getQuantityOfStudents = async(): Promise<number> => {
-	const response = await queryAndValidate({
-		route: "students/quantity-all",
-		responseSchema: z.number()
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
-
-	return response.data
-}
-
 export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/students`,
