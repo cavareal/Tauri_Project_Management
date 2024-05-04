@@ -19,7 +19,8 @@ const currentProject = getCookie("currentProject")
 const props = defineProps<{
 	teamId: number
 	phase: ProjectPhase
-	students: Student[] | null
+	students: Student[] | null,
+  isDraggable: boolean
 }>()
 
 const { data: criteria } = useQuery({ queryKey: ["criteria", props.teamId], queryFn: () => getCriteria(currentProject, props.teamId) })
@@ -54,9 +55,9 @@ const handleDragStart = (event: DragEvent, itemData: Student) => {
 			>
 				<TableRow
 					v-for="student in students" :key="student.id"
-					draggable="true" v-on:dragstart="(e: DragEvent) => handleDragStart(e, student)"
+					:draggable="props.isDraggable" v-on:dragstart="(e: DragEvent) => handleDragStart(e, student)"
 				>
-					<TableCell :class="rowClass">
+					<TableCell v-if="props.isDraggable" :class="rowClass">
 						<GripVertical class="h-4 cursor-move" />
 					</TableCell>
 					<TableCell :class="rowClass">{{ extractNames(student.name).lastName }}</TableCell>

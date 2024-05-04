@@ -11,7 +11,7 @@ import { Row } from "@/components/atoms/containers"
 import { useQuery, useQueryClient } from "@tanstack/vue-query"
 import { PageSkeleton } from "@/components/atoms/skeletons"
 import type { ProjectPhase } from "@/types/project"
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { StudentSchema, type Student } from "@/types/student"
 import { updateStudent, getStudentsByTeamId } from "@/services/student-service"
 import { cn } from "@/utils/style"
@@ -24,6 +24,8 @@ const props = defineProps<{
 }>()
 
 const queryClient = useQueryClient()
+
+const isDraggable = computed(() => role === "PROJECT_LEADER" && (props.phase === "COMPOSING" || "PREPUBLISHED"))
 
 const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()
@@ -105,7 +107,10 @@ const style = (teamId: number) => cn(
 					{{ team.name }}
 					{{ team.leader?.name ? `(${team.leader.name})` : "" }}
 				</AccordionTrigger>
-				<TeamAccordionContent :team-id="team.id" :phase="props.phase" :students="(students && students[team.id]) ?? null" />
+				<TeamAccordionContent :team-id="team.id"
+                              :phase="props.phase"
+                              :students="(students && students[team.id]) ?? null"
+                              :isDraggable="isDraggable" />
 			</AccordionItem>
 
 			<EditTeamDialog v-if="role === 'PROJECT_LEADER'" :team="team" @edit:team="refetchTeams">
