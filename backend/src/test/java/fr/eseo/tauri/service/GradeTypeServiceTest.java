@@ -1,5 +1,6 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
@@ -8,15 +9,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,19 +23,203 @@ import static org.mockito.Mockito.*;
 @Nested
 class GradeTypeServiceTest {
 
+    @InjectMocks
+    private GradeTypeService gradeTypeService;
+
+    @Mock
+    private AuthService authService;
+
     @Mock
     private GradeTypeRepository gradeTypeRepository;
 
-    private GradeTypeService gradeTypeService;
+    @Mock
     private GradeService gradeService;
 
-    /**
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        gradeTypeService = new GradeTypeService(gradeService, gradeTypeRepository);
     }
 
+    @Test
+    void getGradeTypeByIdShouldReturnGradeTypeWhenIdExists() {
+        GradeType gradeType = new GradeType();
+        gradeType.id(1);
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.of(gradeType));
+
+        GradeType result = gradeTypeService.getGradeTypeById("token", 1);
+
+        assertEquals(gradeType, result);
+    }
+
+    @Test
+    void getGradeTypeByIdShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.getGradeTypeById("token", 1));
+    }
+
+    @Test
+    void getGradeTypeByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> gradeTypeService.getGradeTypeById("token", 1));
+    }
+
+    @Test
+    void getAllImportedGradeTypesShouldReturnGradeTypesWhenAuthorized() {
+        List<GradeType> gradeTypes = new ArrayList<>();
+        gradeTypes.add(new GradeType());
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findAllImported()).thenReturn(gradeTypes);
+
+        List<GradeType> result = gradeTypeService.getAllImportedGradeTypes("token");
+
+        assertEquals(gradeTypes, result);
+    }
+
+    @Test
+    void getAllImportedGradeTypesShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.getAllImportedGradeTypes("token"));
+    }
+
+    @Test
+    void getAllImportedGradeTypesShouldReturnEmptyListWhenNoGradeTypes() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findAllImported()).thenReturn(new ArrayList<>());
+
+        List<GradeType> result = gradeTypeService.getAllImportedGradeTypes("token");
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllUnimportedGradeTypesShouldReturnGradeTypesWhenAuthorized() {
+        List<GradeType> gradeTypes = new ArrayList<>();
+        gradeTypes.add(new GradeType());
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findAllUnimported()).thenReturn(gradeTypes);
+
+        List<GradeType> result = gradeTypeService.getAllUnimportedGradeTypes("token");
+
+        assertEquals(gradeTypes, result);
+    }
+
+    @Test
+    void getAllUnimportedGradeTypesShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.getAllUnimportedGradeTypes("token"));
+    }
+
+    @Test
+    void getAllUnimportedGradeTypesShouldReturnEmptyListWhenNoGradeTypes() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findAllUnimported()).thenReturn(new ArrayList<>());
+
+        List<GradeType> result = gradeTypeService.getAllUnimportedGradeTypes("token");
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void createGradeTypeShouldSaveGradeTypeWhenAuthorized() {
+        GradeType gradeType = new GradeType();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+
+        gradeTypeService.createGradeType("token", gradeType);
+
+        verify(gradeTypeRepository, times(1)).save(gradeType);
+    }
+
+    @Test
+    void createGradeTypeShouldThrowSecurityExceptionWhenUnauthorized() {
+        GradeType gradeType = new GradeType();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.createGradeType("token", gradeType));
+    }
+
+    @Test
+    void updateGradeTypeShouldUpdateWhenAuthorizedAndIdExists() {
+        GradeType updatedGradeType = new GradeType();
+        updatedGradeType.name("UpdatedName");
+        GradeType existingGradeType = new GradeType();
+        existingGradeType.id(1);
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.of(existingGradeType));
+
+        gradeTypeService.updateGradeType("token", 1, updatedGradeType);
+
+        assertEquals("UpdatedName", existingGradeType.name());
+        verify(gradeTypeRepository, times(1)).save(existingGradeType);
+    }
+
+    @Test
+    void updateGradeTypeShouldThrowSecurityExceptionWhenUnauthorized() {
+        GradeType updatedGradeType = new GradeType();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.updateGradeType("token", 1, updatedGradeType));
+    }
+
+    @Test
+    void updateGradeTypeShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        GradeType updatedGradeType = new GradeType();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> gradeTypeService.updateGradeType("token", 1, updatedGradeType));
+    }
+
+    @Test
+    void deleteGradeTypeByIdShouldDeleteWhenAuthorizedAndIdExists() {
+        GradeType gradeType = new GradeType();
+        gradeType.id(1);
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.of(gradeType));
+
+        gradeTypeService.deleteGradeTypeById("token", 1);
+
+        verify(gradeTypeRepository, times(1)).deleteById(1);
+    }
+
+    @Test
+    void deleteGradeTypeByIdShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.deleteGradeTypeById("token", 1));
+    }
+
+    @Test
+    void deleteGradeTypeByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> gradeTypeService.deleteGradeTypeById("token", 1));
+    }
+
+    @Test
+    void deleteAllImportedGradeTypesShouldDeleteWhenAuthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+
+        gradeTypeService.deleteAllImportedGradeTypes("token");
+
+        verify(gradeTypeRepository, times(1)).deleteAllImported();
+    }
+
+    @Test
+    void deleteAllImportedGradeTypesShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.deleteAllImportedGradeTypes("token"));
+    }
+
+
+    /**
     @Test
     void createGradeType_withValidInput_savesGradeType() {
         GradeType gradeType = new GradeType();
