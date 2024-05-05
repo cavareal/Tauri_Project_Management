@@ -5,52 +5,53 @@ import { StudentsTable, DeleteStudentsDialog, ImportStudents, ExportStudents } f
 import { Error, NotAuthorized } from "@/components/organisms/errors"
 import { Button } from "@/components/ui/button"
 import { GradeFactorsDialog } from "@/components/organisms/students"
-import { Cookies } from "@/utils/cookie"
 import { getAllStudents } from "@/services/student-service"
 import { Header } from "@/components/molecules/header"
-import type { RoleType } from "@/types/role"
 import { computed } from "vue"
 import { getAllImportedGradeTypes } from "@/services/grade-type-service"
 import { getAllImportedGrades } from "@/services/grade-service"
 import { useQuery } from "@tanstack/vue-query"
+import { hasPermission } from "@/services/user-service"
+import { getCurrentPhase } from "@/services/project-service"
 
-const role = Cookies.getRole()
-const hasPermission = role === "PROJECT_LEADER" || role === "OPTION_LEADER"
+const { data: currentPhase } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
+const { data: students, ...studentsQuery } = useQuery({ queryKey: ["students"], queryFn: getAllStudents })
+const { data: gradeTypes, ...gradeTypesQuery } = useQuery({ queryKey: ["gradeTypes"], queryFn: getAllImportedGradeTypes })
+const { data: grades, ...gradesQuery } = useQuery({ queryKey: ["grades"], queryFn: getAllImportedGrades })
 
-const { data: students, refetch: refetchStudents, error: studentsError } = useQuery({
-	queryKey: ["students"], queryFn: () => getAllStudents()
-})
-const { data: gradeTypes, refetch: refetchGradeTypes, error: gradeTypesError } = useQuery(
-	{ queryKey: ["gradeTypes"], queryFn: getAllImportedGradeTypes }
-)
-const { data: grades, refetch: refetchGrades, error: gradesError } = useQuery({ queryKey: ["grades"], queryFn: () =>  getAllImportedGrades() })
-
-const error = computed(() => gradeTypesError.value || studentsError.value || gradesError.value)
 const refetch = async() => {
-	await refetchStudents()
-	await refetchGradeTypes()
-	await refetchGrades()
+	await studentsQuery.refetch()
+	await gradeTypesQuery.refetch()
+	await gradesQuery.refetch()
 }
+
+const authorized = hasPermission("STUDENTS_PAGE")
+const displayButtons = computed(() => authorized && students.value && students.value.length > 0)
+const canEdit = hasPermission("EDIT_IMPORTED_GRADE_TYPES")
+const canExport = hasPermission("EXPORT_STUDENT_LIST") && hasPermission("EXPORT_INDIVIDUAL_GRADES")
 
 </script>
 
 <template>
 	<SidebarTemplate>
 		<Header title="Étudiants">
-			<DeleteStudentsDialog v-if="hasPermission && students && students?.length > 0" @delete:students="refetch">
+			<DeleteStudentsDialog v-if="displayButtons && currentPhase === 'COMPOSING'" @delete:students="refetch">
 				<Button variant="outline">Supprimer les étudiants</Button>
 			</DeleteStudentsDialog>
-			<GradeFactorsDialog v-if="hasPermission && gradeTypes" :grade-types="gradeTypes" @update:factors="refetch">
+			<GradeFactorsDialog
+				v-if="displayButtons && gradeTypes && currentPhase === 'COMPOSING' && canEdit"
+				:grade-types="gradeTypes" @update:factors="refetch"
+			>
 				<Button variant="outline">Modifier les coefficients</Button>
 			</GradeFactorsDialog>
-			<ExportStudents>
-				<Button variant="default" v-if="hasPermission">Exporter</Button>
+			<ExportStudents v-if="displayButtons && canExport">
+				<Button variant="default">Exporter</Button>
 			</ExportStudents>
 		</Header>
 
-		<Error v-if="error" />
-		<ImportStudents v-else-if="students?.length === 0 && hasPermission" @import:students="refetch" />
-		<StudentsTable v-else-if="hasPermission" :students="students ?? null" :grade-types="gradeTypes ?? null" :grades="grades ?? null" />
-		<NotAuthorized v-else />
+		<NotAuthorized v-if="!authorized" />
+		<ImportStudents v-else-if="authorized && students && students.length === 0" @import:students="refetch" />
+		<StudentsTable v-else-if="authorized" :students="students ?? null" :grade-types="gradeTypes ?? null" :grades="grades ?? null" />
+		<Error v-else />
 	</SidebarTemplate>
 </template>

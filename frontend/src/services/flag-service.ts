@@ -1,42 +1,31 @@
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
-import { FlagWithoutIdSchema, type FlagWithoutId, FlagSchema } from "@/types/flag"
-import type { User } from "@/types/user"
+import { FlagSchema, type CreateFlag, CreateFlagSchema } from "@/types/flag"
 import { z } from "zod"
+import { getConnectedUser } from "@/services/user-service"
+import { Cookies } from "@/utils/cookie"
 
-export const addFlag = async(flag: FlagWithoutId): Promise<void> => {
+export const createFlag = async(body: Omit<CreateFlag, "authorId" | "projectId">): Promise<void> => {
+	const user = await getConnectedUser()
+	const projectId = Cookies.getProjectId()
+
 	const response = await mutateAndValidate({
 		method: "POST",
-		body: flag,
 		route: "flags",
-		bodySchema: FlagWithoutIdSchema
+		body: { ...body, authorId: user.id, projectId },
+		bodySchema: CreateFlagSchema
 	})
-	console.log(response)
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
 }
 
-export const createValidationFlag = async(author: User): Promise<void> => {
-	const flag: FlagWithoutId = {
-		description: "Validation des équipes prépubliées",
-		type: "VALIDATION",
-		firstStudent: null,
-		secondStudent: null,
-		author
-	}
-	await addFlag(flag)
+export const createValidationFlag = async(): Promise<void> => {
+	await createFlag({ type: "VALIDATION" })
 }
 
-export const createReportingFlag = async(author: User,  description: string): Promise<void> => {
-	const flag: FlagWithoutId = {
-		description,
-		type: "REPORTING",
-		firstStudent: null,
-		secondStudent: null,
-		author
-	}
-	await addFlag(flag)
+export const createReportingFlag = async(description: string): Promise<void> => {
+	await createFlag({ description, type: "REPORTING" })
 }
 
 export const userHasValidateTeams = async(authorId: number, description: string): Promise<boolean> => {

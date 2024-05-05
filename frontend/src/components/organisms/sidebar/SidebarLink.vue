@@ -5,11 +5,8 @@ import { cn } from "@/utils/style"
 import { useRoute } from "vue-router"
 import { LinkButton } from "@/components/molecules/buttons"
 import type { PermissionType } from "@/types/permission"
-import { Cookies } from "@/utils/cookie"
-import { useQuery } from "@tanstack/vue-query"
 import { hasPermission } from "@/services/user-service"
 
-const role = Cookies.getRole()
 const route = useRoute()
 
 const props = defineProps<{
@@ -17,12 +14,6 @@ const props = defineProps<{
 	permission?: PermissionType
 	class?: string
 }>()
-
-const { data: display, isFetching, isLoading } = useQuery({ queryKey: ["has-permission", role, props.permission], queryFn: async() => {
-	if (!role) return false
-	if (!props.permission) return true
-	return await hasPermission(props.permission)
-} })
 
 const selected = computed(() => props.link && route.path === props.link)
 
@@ -38,7 +29,7 @@ const style = cn(
 </script>
 
 <template>
-	<LinkButton :link="link" :class="style" variant="ghost" v-if="!isFetching && !isLoading && display">
+	<LinkButton :link="link" :class="style" variant="ghost" v-if="!permission || hasPermission(permission)">
 		<slot />
 	</LinkButton>
 </template>

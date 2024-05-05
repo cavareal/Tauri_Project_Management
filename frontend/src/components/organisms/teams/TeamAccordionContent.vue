@@ -5,7 +5,6 @@ import { AccordionContent } from "@/components/ui/accordion"
 import { getCriteria, getTeamAverage } from "@/services/team-service"
 import { extractNames } from "@/utils/string"
 import { CheckIcon, GenderIcon } from "@/components/atoms/icons"
-import type { ProjectPhase } from "@/types/project"
 import { useQuery } from "@tanstack/vue-query"
 import { PageSkeleton } from "@/components/atoms/skeletons"
 import { Column, Row } from "@/components/atoms/containers"
@@ -13,10 +12,10 @@ import { Subtitle, Text } from "@/components/atoms/texts"
 import { cn } from "@/utils/style"
 import type { Student } from "@/types/student"
 import { GripVertical } from "lucide-vue-next"
+import { hasPermission } from "@/services/user-service"
 
 const props = defineProps<{
 	teamId: number
-	phase: ProjectPhase
 	students: Student[] | null
 }>()
 
@@ -30,6 +29,8 @@ const handleDragStart = (event: DragEvent, itemData: Student) => {
 	if (event.dataTransfer) event.dataTransfer.dropEffect = "move"
 }
 
+const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
+
 </script>
 
 <template>
@@ -38,10 +39,9 @@ const handleDragStart = (event: DragEvent, itemData: Student) => {
 		<Table class="flex-1">
 			<TableHeader>
 				<TableRow>
-					<TableHead :class="rowClass" class="w-1"></TableHead>
+					<TableHead :class="rowClass" class="w-1" v-if="canDragAndDrop"></TableHead>
 					<TableHead :class="rowClass" class="min-w-28">Nom</TableHead>
 					<TableHead :class="rowClass" class="min-w-28">Prénom</TableHead>
-					<!-- <TableHead :class="rowClass" class="min-w-28">Rôle</TableHead> -->
 					<TableHead :class="rowClass" class="min-w-16">Genre</TableHead>
 					<TableHead :class="rowClass" class="min-w-16">Bachelor</TableHead>
 				</TableRow>
@@ -52,14 +52,13 @@ const handleDragStart = (event: DragEvent, itemData: Student) => {
 			>
 				<TableRow
 					v-for="student in students" :key="student.id"
-					draggable="true" v-on:dragstart="(e: DragEvent) => handleDragStart(e, student)"
+					:draggable="canDragAndDrop" v-on:dragstart="(e: DragEvent) => handleDragStart(e, student)"
 				>
-					<TableCell :class="rowClass">
+					<TableCell :class="rowClass" v-if="canDragAndDrop">
 						<GripVertical class="h-4 cursor-move" />
 					</TableCell>
 					<TableCell :class="rowClass">{{ extractNames(student.name).lastName }}</TableCell>
 					<TableCell :class="rowClass">{{ extractNames(student.name).firstName }}</TableCell>
-					<!-- <TableCell :class="rowClass">{{ student.teamRole }}</TableCell> -->
 					<TableCell :class="rowClass">
 						<GenderIcon :gender="student.gender" />
 					</TableCell>

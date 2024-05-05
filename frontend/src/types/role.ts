@@ -14,7 +14,7 @@ export const RoleTypeSchema = z.enum([
 ])
 export type RoleType = z.infer<typeof RoleTypeSchema>
 
-export const formatRole = (role: string) => {
+export const formatRole = (role: RoleType) => {
 	switch (role) {
 	case "SUPERVISING_STAFF":
 		return "Professeur référent"

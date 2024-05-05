@@ -139,7 +139,7 @@ public class TeamService {
         return members;
     }
 
-    public double getTeamAvgGrade(String token, Integer id) {
+    public Double getTeamAvgGrade(String token, Integer id) {
         Team team = getTeamById(token, id);
         return teamRepository.findAvgGradeByTeam(team);
     }

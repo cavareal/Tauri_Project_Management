@@ -1,4 +1,4 @@
-import { ProjectPhaseSchema, type ProjectPhase, type Project, ProjectSchema, type UpdateProject, UpdateProjectSchema } from "@/types/project"
+import { type ProjectPhase, type Project, ProjectSchema, type UpdateProject, UpdateProjectSchema } from "@/types/project"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { Cookies } from "@/utils/cookie"
 
@@ -21,21 +21,7 @@ export const getCurrentProject = async(): Promise<Project> => {
 }
 
 export const getCurrentPhase = async(): Promise<ProjectPhase> => {
-	const id = Cookies.getProjectId()
-	if (id === null) {
-		throw new Error("No project selected")
-	}
-
-	const response = await queryAndValidate({
-		route: `projects/phase/${id}`,
-		responseSchema: ProjectPhaseSchema
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
-
-	return response.data
+	return getCurrentProject().then(project => project.phase)
 }
 
 export const updateProject = async(body: UpdateProject): Promise<void> => {

@@ -70,7 +70,7 @@ public class TeamController {
 
     @GetMapping("/{id}/average")
     public ResponseEntity<Double> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        double avgGrade = this.teamService.getTeamAvgGrade(token, id);
+        var avgGrade = this.teamService.getTeamAvgGrade(token, id);
         return ResponseEntity.ok(avgGrade);
     }
 

@@ -23,8 +23,8 @@ export const CreateStudentSchema = StudentSchema.omit({
 	team: true,
 	project: true
 }).extend({
-	teamId: z.number().optional(),
-	projectId: z.number()
+	teamId: z.coerce.number().optional(),
+	projectId: z.coerce.number()
 })
 export type CreateStudent = z.infer<typeof CreateStudentSchema>
 

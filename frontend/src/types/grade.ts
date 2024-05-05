@@ -7,7 +7,7 @@ import { z } from "zod"
 
 export const GradeSchema = z.object({
 	id: z.number(),
-	value: z.number(),
+	value: z.coerce.number(),
 	comment: z.string().nullable(),
 	gradeType: GradeTypeSchema,
 	author: UserSchema.nullable(),
@@ -25,11 +25,11 @@ export const CreateGradeSchema = GradeSchema.omit({
 	team: true,
 	sprint: true
 }).extend({
-	gradeTypeId: z.number(),
-	authorId: z.number(),
-	studentId: z.number().nullable(),
-	teamId: z.number().nullable(),
-	sprintId: z.number()
+	gradeTypeId: z.coerce.number(),
+	authorId: z.coerce.number(),
+	studentId: z.coerce.number().nullable(),
+	teamId: z.coerce.number().nullable(),
+	sprintId: z.coerce.number()
 })
 export type CreateGrade = z.infer<typeof CreateGradeSchema>
 

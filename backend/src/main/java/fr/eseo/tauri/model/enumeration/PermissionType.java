@@ -12,6 +12,7 @@ public enum PermissionType {
     IMPORT_GENERATED_KEY("Import Generated Key"),
     IMPORT("Import"),
     MODIFICATION_STUDENT_LIST("Modification Student List"),
+    EDIT_IMPORTED_GRADE_TYPES("Edit Imported Grade Types"),
     EXPORT_STUDENT_LIST("Export Student List"),
     TEAM_CREATION("Team Creation"),
     PREVIEW_TEAM("Preview Team"),

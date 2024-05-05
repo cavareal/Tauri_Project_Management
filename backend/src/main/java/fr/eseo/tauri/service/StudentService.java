@@ -111,6 +111,7 @@ public class StudentService {
         }
         studentRepository.deleteAllByProject(projectId);
         gradeTypeService.deleteAllImportedGradeTypes(token);
+        teamService.deleteAllTeamsByProject(token, projectId);
     }
 
 

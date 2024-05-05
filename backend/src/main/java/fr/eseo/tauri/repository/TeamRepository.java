@@ -43,7 +43,7 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     List<Team> findAllOrderByAvgGradeOrderByAsc();
 
     @Query("SELECT AVG(gr.value) FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE s.team = ?1 AND gt.name = 'AVERAGE'")
-    double findAvgGradeByTeam(Team team);
+    Double findAvgGradeByTeam(Team team);
 
     @Query("SELECT s.team FROM Student s WHERE s.id = :studentId")
     Team findTeamByStudentId(int studentId);

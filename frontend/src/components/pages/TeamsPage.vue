@@ -9,38 +9,26 @@ import { Button } from "@/components/ui/button"
 import { getAllStudents } from "@/services/student-service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import { getTeams } from "@/services/team-service"
-import { getCurrentProject } from "@/services/project-service"
+import { getCurrentPhase } from "@/services/project-service"
 import { Header } from "@/components/molecules/header"
 import { computed, onMounted, ref } from "vue"
-import { PageSkeleton } from "@/components/atoms/skeletons"
 import { useQuery } from "@tanstack/vue-query"
 import SignalTeamDialog from "@/components/organisms/teams/SignalTeamDialog.vue"
 import ValidTeamDialog from "@/components/organisms/teams/ValidTeamDialog.vue"
 import { userHasValidateTeams } from "@/services/flag-service"
+import { hasPermission } from "@/services/user-service"
+import { Loading } from "@/components/organisms/loading"
 
 const validateTeamDescription = "Validation des équipes prépubliées"
-const token = Cookies.getToken()
-const role = Cookies.getRole()
 const currentUserId = Cookies.getUserId()
 const hasValidateTeams = ref(true)
 
-const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
-	queryKey: ["project"], queryFn: async() => (await getCurrentProject()).phase
-})
-const { data: nbStudents } = useQuery({ queryKey: ["nb-students"], queryFn: async() => (await getAllStudents()).length })
-const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams()).length })
-
-const displayButtons = computed(() => role === "PROJECT_LEADER" && nbStudents.value && nbStudents.value > 0
-	&& nbTeams.value && nbTeams.value > 0 && currentPhase.value && currentPhase.value === "COMPOSING")
-
-const displayPrepublishedButton = computed(() => role === "SUPERVISING_STAFF" && currentPhase.value === "PREPUBLISHED" && !hasValidateTeams.value)
-
-const generateTeams = computed(() => role === "PROJECT_LEADER" && currentPhase.value === "COMPOSING")
-const displayTeams = computed(() => (role === "PROJECT_LEADER" || (role === "SUPERVISING_STAFF" && currentPhase.value !== "COMPOSING")
-	|| role === "OPTION_LEADER" || (role === "OPTION_STUDENT" && currentPhase.value !== "COMPOSING")))
+const { data: currentPhase, refetch: refetchCurrentPhase, ...currentPhaseQuery } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
+const { data: nbStudents, ...nbStudentsQuery } = useQuery({ queryKey: ["nb-students"], queryFn: async() => (await getAllStudents()).length })
+const { data: nbTeams, refetch: refetchTeams, ...nbTeamsQuery } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams()).length })
 
 const handleValidTeams = async() => {
-	hasValidateTeams.value = await userHasValidateTeams(currentUserId!, validateTeamDescription)
+	hasValidateTeams.value = await userHasValidateTeams(currentUserId, validateTeamDescription)
 }
 
 onMounted(async() => {
@@ -49,31 +37,41 @@ onMounted(async() => {
 	}
 })
 
+const authorized = hasPermission("TEAMS_PAGE")
+const loading = computed(() => currentPhaseQuery.isLoading.value || nbStudentsQuery.isLoading.value || nbTeamsQuery.isLoading.value)
+const canCreate = hasPermission("TEAM_CREATION")
+const canPreview = hasPermission("PREVIEW_TEAM")
+const displayButtons = computed(() => nbTeams.value && nbTeams.value > 0 && currentPhase.value === "COMPOSING")
+
 </script>
 
 <template>
 	<SidebarTemplate>
 		<Header title="Équipes">
-			<DeleteTeamsDialog v-if="displayButtons" @delete:teams="refetchTeams">
+			<DeleteTeamsDialog v-if="canCreate && displayButtons" @delete:teams="refetchTeams">
 				<Button variant="outline">Supprimer les équipes</Button>
 			</DeleteTeamsDialog>
-			<PrepublishDialog v-if="displayButtons" @prepublish:teams="refetchCurrentPhase">
+			<PrepublishDialog v-if="canCreate && displayButtons" @prepublish:teams="refetchCurrentPhase">
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
-			<SignalTeamDialog v-if="displayPrepublishedButton" @signal:teams="refetchTeams" :currentUserId="currentUserId">
+
+			<SignalTeamDialog v-if="canPreview && displayButtons">
 				<Button variant="outline">Signaler</Button>
 			</SignalTeamDialog>
-			<ValidTeamDialog v-if="displayPrepublishedButton" @valid:teams="handleValidTeams" :currentUserId="currentUserId">
+			<ValidTeamDialog v-if="canPreview && displayButtons" @valid:teams="handleValidTeams">
 				<Button variant="default">Valider</Button>
 			</ValidTeamDialog>
 		</Header>
 
-		<NotAuthorized v-if="!token || !role" />
-		<PageSkeleton v-else-if="currentPhase === undefined || nbStudents === undefined || nbTeams === undefined" />
-		<RedirectImportStudents v-else-if="generateTeams && nbStudents === 0" />
-		<GenerateTeams v-else-if="generateTeams && nbStudents > 0 && nbTeams === 0" @generate:teams="refetchTeams" :nb-students="nbStudents" />
-		<TeamAccordion v-else-if="nbTeams > 0 && displayTeams" :phase="currentPhase" />
-		<TeamsNotCreated v-else-if="(role === 'SUPERVISING_STAFF' || role === 'OPTION_LEADER') && currentPhase === 'COMPOSING'" />
+		<NotAuthorized v-if="!authorized" />
+		<Loading v-else-if="loading" />
+		<RedirectImportStudents v-else-if="canCreate && nbStudents === 0" />
+		<GenerateTeams
+			v-else-if="canCreate && nbStudents && nbStudents > 0 && nbTeams === 0"
+			@generate:teams="refetchTeams" :nb-students="nbStudents"
+		/>
+		<TeamAccordion v-else-if="canCreate || (canPreview && nbTeams && nbTeams > 0) || currentPhase !== 'COMPOSING'" />
+		<TeamsNotCreated v-else-if="!canCreate && currentPhase === 'COMPOSING'" />
 		<NotAuthorized v-else />
 	</SidebarTemplate>
 </template>

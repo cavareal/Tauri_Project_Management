@@ -171,7 +171,6 @@ export const mutateAndValidate = async <T>({
 	let parsedBody: SafeParseReturnType<T, T> | null = null
 	if (body && bodySchema) {
 		parsedBody = bodySchema.safeParse(body)
-		console.log(parsedBody)
 		if (!parsedBody.success) return {
 			status: "error",
 			error: `Failed to validate ${method} ${route}: ${parsedBody.error.message}`

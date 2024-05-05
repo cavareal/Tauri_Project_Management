@@ -3,7 +3,7 @@ import { z } from "zod"
 export const GradeTypeSchema = z.object({
 	id: z.number(),
 	name: z.string(),
-	factor: z.number().nullable(),
+	factor: z.coerce.number().nullable(),
 	forGroup: z.boolean(),
 	imported: z.boolean(),
 	scaleUrl: z.string().nullable()

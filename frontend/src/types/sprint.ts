@@ -22,7 +22,7 @@ export const CreateSprintSchema = SprintSchema.omit({
 	startDate: true,
 	endDate: true
 }).extend({
-	projectId: z.number(),
+	projectId: z.coerce.number(),
 	startDate: z.string(),
 	endDate: z.string()
 })
