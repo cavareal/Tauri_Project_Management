@@ -8,6 +8,7 @@ import { updateProject } from "@/services/project-service"
 import { useMutation } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { getCookie } from "@/utils/cookie"
+import { createToast } from "@/utils/toast"
 
 const emits = defineEmits(["prepublish:teams"])
 const open = ref(false)
@@ -17,6 +18,7 @@ const { mutate, error, isPending } = useMutation({ mutationKey: ["prepublish-tea
 	await updateProject(currentProject, { phase: "PREPUBLISHED" })
 		.then(() => open.value = false)
 		.then(() => emits("prepublish:teams"))
+		.then(() => createToast("La composition des équipes a été prépubliée."))
 } })
 
 const DIALOG_TITLE = "Prépublier les équipes"

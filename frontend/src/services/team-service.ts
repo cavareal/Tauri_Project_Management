@@ -1,5 +1,5 @@
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
-import type { Team } from "@/types/team"
+import type { Team, UpdateTeam } from "@/types/team"
 import { TeamSchema } from "@/types/team"
 import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
@@ -32,11 +32,11 @@ export const getTeamById = async(id: number): Promise<Team> => {
 	return response.data
 }
 
-export const updateTeam = async(id: number, name: string | null, leaderId: string | null): Promise<void> => {
+export const updateTeam = async(id: number, body: UpdateTeam): Promise<void> => {
 	const response = await mutateAndValidate({
 		route: `teams/${id}`,
 		method: "PATCH",
-		body: { name, leaderId },
+		body,
 		bodySchema: z.any()
 	})
 

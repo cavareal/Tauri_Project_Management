@@ -11,6 +11,7 @@ import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { Column, Row } from "@/components/atoms/containers"
 import { getCookie } from "@/utils/cookie"
+import { createToast } from "@/utils/toast"
 
 const nbTeams = ref("6")
 const womenPerTeam = ref("1")
@@ -28,6 +29,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["generate-teams
 	await generateTeams(currentProject, nbTeams.value, womenPerTeam.value)
 		.then(() => open.value = false)
 		.then(() => emits("generate:teams"))
+		.then(() => createToast("Les équipes ont été générées."))
 } })
 
 const DIALOG_TITLE = "Générer les équipes"

@@ -9,6 +9,7 @@ import { LoadingButton } from "@/components/molecules/buttons"
 import { createValidationFlag } from "@/services/flag-service"
 import { getUserById } from "@/services/user-service"
 import type { User } from "@/types/user"
+import { createToast } from "@/utils/toast"
 
 const props = defineProps<{
   currentUserId: string,
@@ -23,6 +24,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["validate-teams
 	await createValidationFlag(currentUser.value)
 		.then(() => open.value = false)
 		.then(() => emits("valid:teams"))
+		.then(() => createToast("La composition des équipes a été validée."))
 } })
 
 const DIALOG_TITLE = "Valider la composition des équipes"

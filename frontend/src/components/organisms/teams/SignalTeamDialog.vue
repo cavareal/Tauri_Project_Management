@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import type { User } from "@/types/user"
 import { getUserById } from "@/services/user-service"
 import { createReportingFlag } from "@/services/flag-service"
+import { createToast } from "@/utils/toast"
 
 const props = defineProps<{
   currentUserId: string
@@ -26,6 +27,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"]
 	await createReportingFlag(currentUser.value, description)
 		.then(() => open.value = false)
 		.then(() => emits("signal:teams"))
+		.then(() => createToast("Le signalement a été envoyé."))
 } })
 
 const DIALOG_TITLE = "Signaler la composition des équipes"
