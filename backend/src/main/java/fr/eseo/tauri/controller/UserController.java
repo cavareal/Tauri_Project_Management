@@ -73,6 +73,12 @@ public class UserController {
 		return ResponseEntity.ok(hasPermission);
 	}
 
+	@GetMapping(path = "/{id}/permissions")
+	public ResponseEntity<List<PermissionType>> getAllPermissions(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		var permissions = userService.getPermissionsByUser(token, id);
+		return ResponseEntity.ok(permissions);
+	}
+
 	@GetMapping("{id}/team")
 	public ResponseEntity<List<Team>> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam Integer projectId) {
 		List<Team> teams = userService.getTeamByMemberId(token, id, projectId);

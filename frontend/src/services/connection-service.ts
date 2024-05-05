@@ -1,21 +1,19 @@
+import { getAllPermissions, getUsersByRole } from "@/services/user-service"
 import type { RoleType } from "@/types/role"
-import { UserSchema } from "@/types/user"
-import { queryAndValidate } from "@/utils/api"
-import { setCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 
 export const login = async(role: RoleType) => {
-	setCookie("role", role)
-	setCookie("token", "bonamyRule34")
-	setCookie("currentProject", "1")
+	Cookies.setRole(role)
+	Cookies.setToken("bonamyRule34")
+	Cookies.setProjectId(1)
 
-	const response = await queryAndValidate({
-		route: `roles/${role}/users`,
-		responseSchema: UserSchema.array()
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
+	const users = await getUsersByRole(role)
+	if (users.length === 0) {
+		throw new Error("No users found with the given role")
 	}
+	const user = users[0]
+	Cookies.setUserId(user.id)
 
-	setCookie("user", response.data[0].id.toString())
+	const permissions = await getAllPermissions(user.id)
+	Cookies.setPermissions(permissions)
 }

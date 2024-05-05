@@ -1,5 +1,5 @@
 import type { ApiQueryRequest, ApiQueryResponse } from "."
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import type {
 	MutateAndValidateRequest, MutateAndValidateResponse, QueryAndValidateRequest, QueryAndValidateResponse
 } from "./api.type"
@@ -25,7 +25,7 @@ export const apiQuery = async <T>(
 
 	if (delay) await new Promise(resolve => setTimeout(resolve, delay))
 
-	const token = getCookie("token")
+	const token = Cookies.getToken()
 
 	const headers = {
 		"Authorization": token || "null",
@@ -93,7 +93,7 @@ const buildUrl = (route: string, params?: Record<string, string>) => {
 }
 
 const getHeaders = (jsonContent: boolean = true) => {
-	const token = getCookie("token")
+	const token = Cookies.getToken()
 
 	const headers = {
 		"Authorization": token || "null"
@@ -121,9 +121,9 @@ export const queryAndValidate = async <T>({
 }: QueryAndValidateRequest<T>): Promise<QueryAndValidateResponse<T>> => {
 	if (delay) await wait(delay)
 
-	const currentProjectId = getCookie("currentProject")
+	const currentProjectId = Cookies.getProjectId()
 
-	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId ?? "" }), {
+	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId?.toString() ?? "" }), {
 		headers: getHeaders(jsonContent)
 	})
 	if (!response.ok) return {
@@ -171,6 +171,7 @@ export const mutateAndValidate = async <T>({
 	let parsedBody: SafeParseReturnType<T, T> | null = null
 	if (body && bodySchema) {
 		parsedBody = bodySchema.safeParse(body)
+		console.log(parsedBody)
 		if (!parsedBody.success) return {
 			status: "error",
 			error: `Failed to validate ${method} ${route}: ${parsedBody.error.message}`
@@ -181,9 +182,9 @@ export const mutateAndValidate = async <T>({
 	if (body) bodyData = parsedBody?.data as BodyInit
 	if (jsonContent) bodyData = JSON.stringify(bodyData)
 
-	const currentProjectId = getCookie("currentProject")
+	const currentProjectId = Cookies.getProjectId()
 
-	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId ?? "" }), {
+	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId?.toString() ?? "" }), {
 		method,
 		body: bodyData,
 		headers: getHeaders(jsonContent)

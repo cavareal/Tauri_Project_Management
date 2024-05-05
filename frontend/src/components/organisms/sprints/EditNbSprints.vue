@@ -12,14 +12,14 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { Loader2 } from "lucide-vue-next"
 
 // Définir les références pour les valeurs des inputs
 const nbSprints = ref("6")
 const errorMessage = ref("")
-const token = getCookie("token")
-const currentProject = getCookie("currentProject")
+const token = Cookies.getToken()
+const currentProject = Cookies.getProjectId()
 
 // État pour contrôler l'affichage des boutons
 const buttonsState = reactive({
@@ -59,7 +59,7 @@ const updateNbSprints = async() => {
 		method: "PUT",
 		headers: {
 			"Content-Type": "application/json",
-			Authorization: getCookie("token") || "null"
+			Authorization: Cookies.getToken() || "null"
 		},
 		body: JSON.stringify({ nbSprints: nbSprints.value })
 	}

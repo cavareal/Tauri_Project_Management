@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@/components/ui/table"
 import { cn } from "@/utils/style"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { ref } from "vue"
 
 const rowClass = cn("py-2 h-auto")
-//const user = getCookie("user")
-const userId = getCookie("user")
-const token = getCookie("token")
+const userId = Cookies.getUserId()
+const token = Cookies.getToken()
 const grades = ref()
 
 const request = {

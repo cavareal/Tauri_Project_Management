@@ -29,14 +29,13 @@ export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => 
 	return response.data
 }
 
-export const importStudentFile = async(file: File, projectId: string | null): Promise<void> => {
+export const importStudentFile = async(file: File): Promise<void> => {
 	const formData = new FormData()
 	formData.append("file-upload", file)
 
 	const response = await mutateAndValidate({
 		method: "POST",
 		route: "students/upload",
-		params: { projectId: projectId ?? "" },
 		body: formData,
 		bodySchema: z.instanceof(FormData),
 		jsonContent: false
@@ -47,11 +46,10 @@ export const importStudentFile = async(file: File, projectId: string | null): Pr
 	}
 }
 
-export const deleteAllStudents = async(projectId: string | null): Promise<void> => {
+export const deleteAllStudents = async(): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "DELETE",
-		route: "students",
-		params: { projectId: projectId ?? "" }
+		route: "students"
 	})
 
 	if (response.status === "error") {

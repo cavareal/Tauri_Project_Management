@@ -3,7 +3,7 @@
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { getTeams } from "@/services/team-service"
 import TeamAccordionContent from "@/components/organisms/teams/TeamAccordionContent.vue"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { Button } from "@/components/ui/button"
 import { Pencil } from "lucide-vue-next"
 import EditTeamDialog from "./EditTeamDialog.vue"
@@ -16,8 +16,7 @@ import { StudentSchema, type Student } from "@/types/student"
 import { updateStudent, getStudentsByTeamId } from "@/services/student-service"
 import { cn } from "@/utils/style"
 
-const role = getCookie("role")
-const currentProject = getCookie("currentProject")
+const role = Cookies.getRole()
 
 const props = defineProps<{
 	phase: ProjectPhase
@@ -29,7 +28,7 @@ const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()
 
 const { data: teams, refetch: refetchTeams, isLoading, isFetching } = useQuery({ queryKey: ["teams"], queryFn: async() => {
-	const teams = await getTeams(currentProject)
+	const teams = await getTeams()
 
 	students.value = {}
 	await Promise.all(teams.map(async(team) => {

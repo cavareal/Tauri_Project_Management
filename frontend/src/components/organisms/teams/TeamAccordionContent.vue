@@ -13,16 +13,14 @@ import { Subtitle, Text } from "@/components/atoms/texts"
 import { cn } from "@/utils/style"
 import type { Student } from "@/types/student"
 import { GripVertical } from "lucide-vue-next"
-import { getCookie } from "@/utils/cookie"
 
-const currentProject = getCookie("currentProject")
 const props = defineProps<{
 	teamId: number
 	phase: ProjectPhase
 	students: Student[] | null
 }>()
 
-const { data: criteria } = useQuery({ queryKey: ["criteria", props.teamId], queryFn: () => getCriteria(currentProject, props.teamId) })
+const { data: criteria } = useQuery({ queryKey: ["criteria", props.teamId], queryFn: () => getCriteria(props.teamId) })
 const { data: average } = useQuery({ queryKey: ["average", props.teamId], queryFn: () => getTeamAverage(props.teamId) })
 
 const rowClass = cn("py-2 h-auto")

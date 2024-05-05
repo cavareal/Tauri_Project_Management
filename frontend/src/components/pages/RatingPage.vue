@@ -3,7 +3,7 @@ import { ref } from "vue"
 import { SidebarTemplate } from "@/components/templates"
 import NotAutorized from "@/components/organisms/errors/NotAuthorized.vue"
 import TMRateView from "@/components/organisms/Rate/TMRateView.vue"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import SSTCRateView from "@/components/organisms/Rate/SSTCRateView.vue"
 import { Header } from "@/components/molecules/header"
 import {
@@ -17,9 +17,9 @@ import {
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
 
-const token = getCookie("token")
-const role = getCookie("role")
-const currentProject = getCookie("currentProject")
+const token = Cookies.getToken()
+const role = Cookies.getRole()
+const currentProject = Cookies.getProjectId()
 let nbSprints = ref("3")
 
 /* GET number of sprints of this project */

@@ -2,14 +2,14 @@
 
 import { SidebarTemplate } from "@/components/templates"
 import { ref } from "vue"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { Header } from "@/components/molecules/header"
 import { Text } from "@/components/atoms/texts"
 import { formatRole } from "@/types/role"
 
 const message = ref("")
 
-const role = getCookie("role") || "Aucun rôle"
+const role = Cookies.getRole() || "Aucun rôle"
 message.value = formatRole(role)
 
 </script>

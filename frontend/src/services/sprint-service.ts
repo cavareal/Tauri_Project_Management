@@ -1,16 +1,15 @@
-import { mutateAndValidate, queryAndValidate } from "@/utils/api"
-import { z } from "zod"
-import { SprintSchema } from "@/types/sprint"
+import { mutateAndValidate } from "@/utils/api"
+import { CreateSprintSchema, type CreateSprint } from "@/types/sprint"
+import { Cookies } from "@/utils/cookie"
 
+export const createSprint = async(body: Omit<CreateSprint, "projectId">): Promise<void> => {
+	const projectId = Cookies.getProjectId()
 
-
-export const addSprint = async(sprint: unknown): Promise<void> => {
-	
-    const response = await mutateAndValidate({
+	const response = await mutateAndValidate({
 		method: "POST",
-		route: `sprints/`,
-		body: sprint,
-		bodySchema: z.unknown()
+		route: "sprints",
+		body: { ...body, projectId },
+		bodySchema: CreateSprintSchema
 	})
 
 	if (response.status === "error") {

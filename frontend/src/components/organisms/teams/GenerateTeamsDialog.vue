@@ -10,13 +10,10 @@ import { LoadingButton } from "@/components/molecules/buttons"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { Column, Row } from "@/components/atoms/containers"
-import { getCookie } from "@/utils/cookie"
 import { createToast } from "@/utils/toast"
 
 const nbTeams = ref("6")
 const womenPerTeam = ref("1")
-const currentProject = getCookie("currentProject")
-
 const open = ref(false)
 
 const emits = defineEmits(["generate:teams"])
@@ -26,7 +23,7 @@ defineProps<{
 }>()
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["generate-teams"], mutationFn: async() => {
-	await generateTeams(currentProject, nbTeams.value, womenPerTeam.value)
+	await generateTeams(nbTeams.value, womenPerTeam.value)
 		.then(() => open.value = false)
 		.then(() => emits("generate:teams"))
 		.then(() => createToast("Les équipes ont été générées."))

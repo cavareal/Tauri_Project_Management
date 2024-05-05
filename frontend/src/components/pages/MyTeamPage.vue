@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { onMounted, ref } from "vue"
 import type { Team } from "@/types/team"
 import { SidebarTemplate } from "@/components/templates"
 import { NotAuthorized, NotFound } from "@/components/organisms/errors"
 import { getTeamByUserId } from "@/services/team-service"
-import { getProjectById } from "@/services/project-service"
+import { getCurrentProject } from "@/services/project-service"
 import { Header } from "@/components/molecules/header"
 import { useQuery } from "@tanstack/vue-query"
 import MyTeamAccordion from "@/components/organisms/my-team/MyTeamAccordion.vue"
 
-const token = getCookie("token")
-const role = getCookie("role")
-const currentProjectId = getCookie("currentProject")
-const currentUser = getCookie("user")
+const token = Cookies.getToken()
+const role = Cookies.getRole()
+const currentUser = Cookies.getUserId()
 const team = ref<Team>()
 
 
 const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
-	queryKey: ["project"], queryFn: async() => (await (getProjectById(currentProjectId))).phase
+	queryKey: ["project"], queryFn: async() => (await getCurrentProject()).phase
 })
 
 onMounted(async() => {
-	team.value = await getTeamByUserId(currentUser, currentProjectId)
+	if (!currentUser) return
+	team.value = await getTeamByUserId(currentUser)
 })
 </script>
 

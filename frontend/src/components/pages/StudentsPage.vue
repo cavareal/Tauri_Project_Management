@@ -5,7 +5,7 @@ import { StudentsTable, DeleteStudentsDialog, ImportStudents, ExportStudents } f
 import { Error, NotAuthorized } from "@/components/organisms/errors"
 import { Button } from "@/components/ui/button"
 import { GradeFactorsDialog } from "@/components/organisms/students"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { getAllStudents } from "@/services/student-service"
 import { Header } from "@/components/molecules/header"
 import type { RoleType } from "@/types/role"
@@ -14,7 +14,7 @@ import { getAllImportedGradeTypes } from "@/services/grade-type-service"
 import { getAllImportedGrades } from "@/services/grade-service"
 import { useQuery } from "@tanstack/vue-query"
 
-const role = getCookie<RoleType>("role")
+const role = Cookies.getRole()
 const hasPermission = role === "PROJECT_LEADER" || role === "OPTION_LEADER"
 
 const { data: students, refetch: refetchStudents, error: studentsError } = useQuery({

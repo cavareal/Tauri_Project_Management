@@ -5,12 +5,11 @@ import { cn } from "@/utils/style"
 import { useRoute } from "vue-router"
 import { LinkButton } from "@/components/molecules/buttons"
 import type { PermissionType } from "@/types/permission"
-import { getCookie } from "@/utils/cookie"
-import type { RoleType } from "@/types/role"
+import { Cookies } from "@/utils/cookie"
 import { useQuery } from "@tanstack/vue-query"
-import { hasPermission } from "@/services/role-service"
+import { hasPermission } from "@/services/user-service"
 
-const role = getCookie<RoleType>("role")
+const role = Cookies.getRole()
 const route = useRoute()
 
 const props = defineProps<{
@@ -22,7 +21,7 @@ const props = defineProps<{
 const { data: display, isFetching, isLoading } = useQuery({ queryKey: ["has-permission", role, props.permission], queryFn: async() => {
 	if (!role) return false
 	if (!props.permission) return true
-	return await hasPermission(role, props.permission)
+	return await hasPermission(props.permission)
 } })
 
 const selected = computed(() => props.link && route.path === props.link)

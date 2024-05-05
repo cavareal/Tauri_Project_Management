@@ -4,14 +4,13 @@ import { SidebarTemplate } from "@/components/templates"
 import {
 	RedirectImportStudents, GenerateTeams, PrepublishDialog, DeleteTeamsDialog, TeamAccordion, TeamsNotCreated
 } from "@/components/organisms/teams"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { Button } from "@/components/ui/button"
 import { getAllStudents } from "@/services/student-service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import { getTeams } from "@/services/team-service"
-import { getProjectById } from "@/services/project-service"
+import { getCurrentProject } from "@/services/project-service"
 import { Header } from "@/components/molecules/header"
-import type { RoleType } from "@/types/role"
 import { computed, onMounted, ref } from "vue"
 import { PageSkeleton } from "@/components/atoms/skeletons"
 import { useQuery } from "@tanstack/vue-query"
@@ -20,17 +19,16 @@ import ValidTeamDialog from "@/components/organisms/teams/ValidTeamDialog.vue"
 import { userHasValidateTeams } from "@/services/flag-service"
 
 const validateTeamDescription = "Validation des équipes prépubliées"
-const token = getCookie("token")
-const role = getCookie<RoleType>("role")
-const currentProjectId = getCookie("currentProject")
-const currentUserId = getCookie("user")
+const token = Cookies.getToken()
+const role = Cookies.getRole()
+const currentUserId = Cookies.getUserId()
 const hasValidateTeams = ref(true)
 
 const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
-	queryKey: ["project"], queryFn: async() => (await (getProjectById(currentProjectId))).phase
+	queryKey: ["project"], queryFn: async() => (await getCurrentProject()).phase
 })
 const { data: nbStudents } = useQuery({ queryKey: ["nb-students"], queryFn: async() => (await getAllStudents()).length })
-const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams(currentProjectId)).length })
+const { data: nbTeams, refetch: refetchTeams } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams()).length })
 
 const displayButtons = computed(() => role === "PROJECT_LEADER" && nbStudents.value && nbStudents.value > 0
 	&& nbTeams.value && nbTeams.value > 0 && currentPhase.value && currentPhase.value === "COMPOSING")

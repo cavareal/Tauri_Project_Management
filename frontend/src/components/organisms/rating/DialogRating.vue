@@ -8,15 +8,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import LoadingButton from "../../molecules/buttons/LoadingButton.vue"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { type Ref, ref } from "vue"
 import { addGradeToTeam } from "@/services/grade-service"
 
-const userId = getCookie("user")
+const userId = Cookies.getUserId()
+const token = Cookies.getToken()
 const selectedTeam = ref("")
 let note = ref("")
-const token = getCookie("token")
-const currentProject = getCookie("currentProject")
 
 const props = defineProps<{
 	title: string,
@@ -26,7 +25,7 @@ const props = defineProps<{
 
 const evaluations: Ref<Record<string, { team: string, gradeType : string,  grade: number }[]>> = ref({})
 
-const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: () => getTeams(currentProject) })
+const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 
 const addEvaluation = () => {
 	if (!evaluations.value[selectedTeam.value]) {
@@ -54,7 +53,7 @@ const handleNoteInput = (event: InputEvent) => {
 const sendGrades = () => {
 	void addEvaluation(),
 	console.log(evaluations.value),
-	void addGradeToTeam(userId, evaluations, token)
+	userId && void addGradeToTeam(userId, evaluations, token)
 }
 
 </script>

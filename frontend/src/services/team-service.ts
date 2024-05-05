@@ -4,11 +4,11 @@ import { TeamSchema } from "@/types/team"
 import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
+import { Cookies } from "@/utils/cookie"
 
-export const getTeams = async(projectId: string | null): Promise<Team[]> => {
+export const getTeams = async(): Promise<Team[]> => {
 	const response = await queryAndValidate({
 		route: "teams",
-		params: { projectId: projectId ?? "" },
 		responseSchema: TeamSchema.array()
 	})
 
@@ -69,11 +69,10 @@ export const setTeamLeader = async(id: number, value: string): Promise<void> => 
 	}
 }
 
-export const generateTeams = async(projectId: string | null, nbTeams: string, nbWomen: string): Promise<void> => {
+export const generateTeams = async(nbTeams: string, nbWomen: string): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
 		route: "teams",
-		params: { projectId: projectId ?? "" },
 		body: { nbTeams, nbWomen },
 		bodySchema: z.any()
 	})
@@ -83,10 +82,9 @@ export const generateTeams = async(projectId: string | null, nbTeams: string, nb
 	}
 }
 
-export const getCriteria = async(projectId: string | null, teamId: number): Promise<Criteria> => {
+export const getCriteria = async(teamId: number): Promise<Criteria> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/criteria`,
-		params: { projectId: projectId ?? "" },
 		responseSchema: CriteriaSchema
 	})
 
@@ -109,11 +107,10 @@ export const getTeamAverage = async(teamId: number): Promise<number> => {
 	return response.data
 }
 
-export const deleteAllTeams = async(projectId: string | null): Promise<void> => {
+export const deleteAllTeams = async(): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "DELETE",
-		route: "teams",
-		params: { projectId: projectId ?? "" }
+		route: "teams"
 	})
 
 	if (response.status === "error") {
@@ -121,10 +118,9 @@ export const deleteAllTeams = async(projectId: string | null): Promise<void> => 
 	}
 }
 
-export const getTeamByUserId = async(userId: string | null, projectId: string | null): Promise<Team> => {
+export const getTeamByUserId = async(userId: number): Promise<Team> => {
 	const response = await queryAndValidate({
 		route: `users/${userId}/team`,
-		params: { projectId: projectId ?? "" },
 		responseSchema: z.array(TeamSchema)
 	})
 
@@ -132,5 +128,12 @@ export const getTeamByUserId = async(userId: string | null, projectId: string | 
 		throw new Error(response.error)
 	}
 
-	return response.data.find((team: Team) => team.project.id.toString() === projectId) as Team
+	const currentProjectId = Cookies.getProjectId()
+	const team = response.data.find((team: Team) => team.project.id === currentProjectId)
+
+	if (!team) {
+		throw new Error("User is not in a team")
+	}
+
+	return team
 }

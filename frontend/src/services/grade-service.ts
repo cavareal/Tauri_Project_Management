@@ -71,9 +71,9 @@ export const addGradesToTeam = async(userId: string | null, rate : any): Promise
 	}
 }
 
-export const addGradeToTeam = async(userId: string | null, evaluations : any, token : any) => {
+export const addGradeToTeam = async(userId: number, evaluations: any, token: any) => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/add-grade-to-team/" + userId, {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + `grades/add-grade-to-team/${userId}`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

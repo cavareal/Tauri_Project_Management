@@ -8,10 +8,7 @@ import { importStudentFile } from "@/services/student-service"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { useMutation } from "@tanstack/vue-query"
-import { getCookie } from "@/utils/cookie"
 import { createToast } from "@/utils/toast"
-
-const currentProjectId = getCookie("currentProject")
 
 const DIALOG_TITLE = "Importer les étudiants"
 const DIALOG_DESCRIPTION
@@ -25,7 +22,7 @@ const file = ref<File | null>(null)
 
 const { error, isPending, mutate: upload } = useMutation({ mutationKey: ["import-students"], mutationFn: async() => {
 	if (!file.value) return
-	await importStudentFile(file.value, currentProjectId)
+	await importStudentFile(file.value)
 		.then(() => open.value = false)
 		.then(() => emits("import:students"))
 		.then(() => createToast("Les étudiants ont été importés."))
