@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import { StudentsTable, DeleteStudentsDialog, ImportStudents } from "@/components/organisms/students"
+import { StudentsTable, DeleteStudentsDialog, ImportStudents, ExportStudents } from "@/components/organisms/students"
 import { Error, NotAuthorized } from "@/components/organisms/errors"
 import { Button } from "@/components/ui/button"
 import { GradeFactorsDialog } from "@/components/organisms/students"
@@ -43,7 +43,9 @@ const refetch = async() => {
 			<GradeFactorsDialog v-if="hasPermission && gradeTypes" :grade-types="gradeTypes" @update:factors="refetch">
 				<Button variant="outline">Modifier les coefficients</Button>
 			</GradeFactorsDialog>
-			<Button variant="default" v-if="hasPermission">Exporter</Button>
+			<ExportStudents>
+				<Button variant="default" v-if="hasPermission">Exporter</Button>
+			</ExportStudents>
 		</Header>
 
 		<Error v-if="error" />

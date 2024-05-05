@@ -1,4 +1,4 @@
-import type { Student } from "@/types/student"
+import type { Student, UpdateStudent } from "@/types/student"
 import { StudentSchema } from "@/types/student"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
@@ -59,11 +59,11 @@ export const deleteAllStudents = async(projectId: string | null): Promise<void> 
 	}
 }
 
-export const updateStudent = async(id: string | null, gender: string | null, bachelor: boolean | null, teamRole: string | null, teamId: number | null): Promise<void> => {
+export const updateStudent = async(id: string | null, body: UpdateStudent): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "PATCH",
 		route: `students/${id}`,
-		body: { gender, bachelor, teamRole, teamId },
+		body,
 		bodySchema: z.any()
 	})
 
@@ -72,16 +72,21 @@ export const updateStudent = async(id: string | null, gender: string | null, bac
 	}
 }
 
-// TODO: Check if this method is used
-export const changeStudentTeam = async(studentId: number, teamId: number): Promise<void> => {
-	const response = await mutateAndValidate({
-		method: "PATCH",
-		route: `students/${studentId}`,
-		body: { teamId },
-		bodySchema: z.object({ teamId: z.number() })
+export const downloadStudentFile = async(): Promise<void> => {
+	const response = await queryAndValidate({
+		route: "students/download",
+		responseSchema: z.string()
 	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+
+	const url = window.URL.createObjectURL(new Blob([response.data]))
+	const link = document.createElement("a")
+	link.href = url
+	link.setAttribute("download", "students.csv")
+	document.body.appendChild(link)
+	link.click()
+	document.body.removeChild(link)
 }

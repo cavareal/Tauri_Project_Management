@@ -59,7 +59,7 @@ const handleDrop = async(event: DragEvent, teamId: number) => {
 		[originTeam.id]: students.value[originTeam.id].filter(s => s.id !== student.id),
 		[teamId]: [...(students.value[teamId] ?? []), student].sort((a, b) => a.id - b.id)
 	}
-	await updateStudent(student.id.toString(), null, null, null, teamId)
+	await updateStudent(student.id.toString(), { teamId })
 		.then(() => queryClient.invalidateQueries({ queryKey: ["criteria", teamId] }))
 		.then(() => queryClient.invalidateQueries({ queryKey: ["criteria", originTeam.id] }))
 		.then(() => queryClient.invalidateQueries({ queryKey: ["average", teamId] }))
