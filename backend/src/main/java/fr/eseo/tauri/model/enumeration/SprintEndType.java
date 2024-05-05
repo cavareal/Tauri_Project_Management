@@ -7,9 +7,7 @@ import lombok.Getter;
 @Getter
 public enum SprintEndType {
 
-	NORMAL_SPRINT("Sprint Normal"),
-	FINAL_SPRINT("Sprint Final");
-
-	private final String endType;
+	NORMAL_SPRINT,
+	FINAL_SPRINT;
 
 }

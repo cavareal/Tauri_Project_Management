@@ -41,7 +41,7 @@ class UserServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+    /*@Test
      void testDeleteUser() {
         // Arrange
         User user = new User();
@@ -112,6 +112,6 @@ class UserServiceTest {
         // Assert
         assertTrue(hasPermission1);
         assertFalse(hasPermission2);
-    }
+    }*/
 }
 

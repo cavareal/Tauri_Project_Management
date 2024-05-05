@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.service.GradeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,7 +31,6 @@ public class GradeController {
 
 	private final GradeService gradeService;
 	private final ResponseMessage responseMessage = new ResponseMessage("grade");
-	private final GradeRepository gradeRepository;
 	private final GradeTypeRepository gradeTypeRepository;
 
 	@GetMapping("/{id}")
@@ -160,23 +158,5 @@ public class GradeController {
 			return -1.0;
 		}
 	}
-
-	/** GET
-	 *      All Grades
-	 *     Gradess by Student
-	 *     Gradess by Team
-	 *     Gradess by Author
-	 *     Gradess by Type (GradeType)
-	 *     Grade by Id
-	 *  POST
-	 *      Add grade(s)?
-	 *  PUT
-	 *      Value
-	 *      Comment
-	 *      //Faire en sorte que les PUT pour 1 table soient tous dans une seule requete (grâce au body)
-	 *  DELETE
-	 *      Delete Grade By Id
-	 */
-
-
+	
 }
