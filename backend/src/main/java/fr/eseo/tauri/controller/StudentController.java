@@ -77,7 +77,7 @@ public class StudentController {
 	 * If an error occurs during the processing of the file, it returns an internal server error response with a message indicating the error.
 	 */
 	@PostMapping("/upload")
-	public ResponseEntity<String> handleFileUpload(@RequestHeader("Authorization") String token, @RequestParam("file-upload") MultipartFile file, @RequestParam Integer projectId) throws IOException, CsvValidationException {
+	public ResponseEntity<String> handleFileUpload(@RequestHeader("Authorization") String token, @RequestParam("file-upload") MultipartFile file, @RequestParam("projectId") Integer projectId) throws IOException, CsvValidationException {
 		studentService.populateDatabaseFromCSV(token, file, projectId);
 		return ResponseEntity.ok("File uploaded successfully");
 	}

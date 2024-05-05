@@ -59,6 +59,8 @@ public class BonusService {
         bonus.sprint(sprintService.getSprintById(token, bonus.sprintId()));
 
         bonusRepository.save(bonus);
+
+        //TODO Create validation bonus if limited / unlimited
     }
 
     /**

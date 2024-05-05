@@ -40,8 +40,6 @@ public class ValidationBonusService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-
-        validationBonus.author(userService.getUserById(token, validationBonus.authorId()));
         validationBonusRepository.save(validationBonus);
     }
 

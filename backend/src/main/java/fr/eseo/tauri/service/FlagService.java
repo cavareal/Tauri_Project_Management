@@ -42,6 +42,8 @@ public class FlagService {
         flag.secondStudent(studentService.getStudentById(token, flag.secondStudentId()));
 
         flagRepository.save(flag);
+
+        //TODO : Creer les validation flags
     }
 
     public void updateFlag(String token, Integer id, Flag updatedFlag) {

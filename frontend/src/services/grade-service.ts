@@ -34,7 +34,7 @@ export const getAverageGrades = async(userId: number): Promise<z.infer<typeof Gr
 
 export const updateStudentGrade = async(id: string | null, value: number | null, comment: string | null, gradeType: GradeType | null, author: User | null, student: Student | null/*, sprint: Sprint | null*/): Promise<void> => {
 	const response = await mutateAndValidate({
-		method: "PUT",
+		method: "PATCH",
 		route: `grades/student/${id}`,
 		body: { value, comment, gradeType, author, student },
 		bodySchema: z.any()
@@ -47,7 +47,7 @@ export const updateStudentGrade = async(id: string | null, value: number | null,
 
 export const updateTeamGrade = async(id: string | null, value: number | null, comment: string | null, gradeType: GradeType | null, author: User | null, team: Team | null/*, sprint: Sprint | null*/): Promise<void> => {
 	const response = await mutateAndValidate({
-		method: "PUT",
+		method: "PATCH",
 		route: `grades/team/${id}`,
 		body: { value, comment, gradeType, author, team },
 		bodySchema: z.any()

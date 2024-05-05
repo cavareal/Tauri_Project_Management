@@ -114,7 +114,7 @@ public class UserService {
 		}
 	}
 
-	public List<PermissionType> getPermissions(String token, Integer id) {
+	public List<PermissionType> getPermissionsByUser(String token, Integer id) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
@@ -140,7 +140,7 @@ public class UserService {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 
-		var permissions = getPermissions(token, id);
+		var permissions = getPermissionsByUser(token, id);
 
 		return permissions.contains(permission);
 	}

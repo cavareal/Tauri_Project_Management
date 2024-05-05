@@ -36,9 +36,6 @@ public class ValidationFlagService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        validationFlag.author(userService.getUserById(token, validationFlag.authorId()));
-        validationFlag.flag(flagService.getFlagById(token, validationFlag.flagId()));
-
         validationFlagRepository.save(validationFlag);
     }
 

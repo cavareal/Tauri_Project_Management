@@ -5,12 +5,13 @@ import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
-import fr.eseo.tauri.model.GradeType;
-import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
@@ -28,6 +29,10 @@ public class StudentService {
     private final TeamService teamService;
     private final GradeTypeService gradeTypeService;
     private final GradeService gradeService;
+    private final RoleService roleService;
+    @Lazy
+    private final SprintService sprintService;
+    private final PresentationOrderService presentationOrderService;
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
@@ -52,7 +57,24 @@ public class StudentService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        if(student.projectId() != null) student.project(projectService.getProjectById(token, student.projectId()));
+        if(student.teamId() != null)student.team(teamService.getTeamById(token, student.teamId()));
         studentRepository.save(student);
+
+        Role role = new Role();
+        role.user(student);
+        role.type(RoleType.OPTION_STUDENT);
+        roleService.createRole(token, role);
+
+        List<Sprint> sprints = sprintService.getAllSprintsByProject(token, student.projectId());
+        if(!sprints.isEmpty()) {
+            for (Sprint sprint : sprints) {
+                PresentationOrder presentationOrder = new PresentationOrder();
+                presentationOrder.sprint(sprint);
+                presentationOrder.student(student);
+                presentationOrderService.createPresentationOrder(token, presentationOrder);
+            }
+        }
     }
 
     public void updateStudent(String token, Integer id, Student updatedStudent) {

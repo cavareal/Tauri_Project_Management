@@ -81,23 +81,6 @@ public class GradeController {
 		return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
 	}
 
-
-	@PostMapping("/")
-	public Grade addGrade(@RequestBody Grade grade) {
-		return gradeRepository.save(grade);
-	}
-
-	@PutMapping("/{id}")
-	public Grade updateGrade(@PathVariable Integer id, @RequestBody Grade gradeDetails) {
-		Grade grade = gradeRepository.findById(id).orElse(null);
-		if (grade != null) {
-			grade.value(gradeDetails.value());
-			grade.comment(gradeDetails.comment());
-			return gradeRepository.save(grade);
-		}
-		return null;
-	}
-
 	/**
 	 * This method is a POST endpoint that accepts a JSON string representing a map of evaluations.
 	 *

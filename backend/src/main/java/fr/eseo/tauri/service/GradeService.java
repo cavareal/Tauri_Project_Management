@@ -59,13 +59,15 @@ public class GradeService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGrade"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        grade.author(userService.getUserById(token, grade.authorId()));
-        grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
-        grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
+        if(grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
+        if(grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
+        if(grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
         if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
-            grade.team(teamService.getTeamById(token, grade.teamId()));
+            grade.student(null);
+            if(grade.teamId() != null) grade.team(teamService.getTeamById(token, grade.teamId()));
         } else {
-            grade.student(studentService.getStudentById(token, grade.studentId()));
+            grade.team(null);
+            if(grade.studentId() != null) grade.student(studentService.getStudentById(token, grade.studentId()));
         }
         gradeRepository.save(grade);
     }
