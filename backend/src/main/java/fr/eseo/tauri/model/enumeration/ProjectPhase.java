@@ -7,11 +7,9 @@ import lombok.Getter;
 @Getter
 public enum ProjectPhase {
 
-    COMPOSING("Composition"),
-    PREPUBLISHED("Prépublié"),
-    PUBLISHED("Publié"),
-    FINISHED("Terminé");
-
-    private final String displayName;
+    COMPOSING,
+    PREPUBLISHED,
+    PUBLISHED,
+    FINISHED;
 
 }

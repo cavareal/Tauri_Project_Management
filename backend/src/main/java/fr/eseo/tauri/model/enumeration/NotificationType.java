@@ -7,8 +7,6 @@ import lombok.Getter;
 @Getter
 public enum NotificationType {
 
-    BONUS_MALUS("Bonus Malus");
-
-    private final String type;
+    BONUS_MALUS
 
 }

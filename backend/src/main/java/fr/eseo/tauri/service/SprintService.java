@@ -7,7 +7,6 @@ import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.SprintRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +20,6 @@ public class SprintService {
     private final ProjectService projectService;
     private final StudentService studentService;
     private final PresentationOrderService presentationOrderService;
-
-    @Lazy
-    private final BonusService bonusService;
 
     public Sprint getSprintById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readSprint"))) {
