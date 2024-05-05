@@ -143,4 +143,29 @@ class ProjectServiceTest {
 
         assertThrows(SecurityException.class, () -> projectService.deleteAllProjects("token"));
     }
+
+    @Test
+    void deleteProjectByIdShouldDeleteWhenAuthorizedAndIdExists() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(projectRepository.findById(anyInt())).thenReturn(Optional.of(new Project()));
+
+        projectService.deleteProjectById("token", 1);
+
+        verify(projectRepository, times(1)).deleteById(1);
+    }
+
+    @Test
+    void deleteProjectByIdShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> projectService.deleteProjectById("token", 1));
+    }
+
+    @Test
+    void deleteProjectByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> projectService.deleteProjectById("token", 1));
+    }
 }
