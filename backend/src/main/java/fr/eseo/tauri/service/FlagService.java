@@ -18,6 +18,7 @@ public class FlagService {
     private final UserService userService;
     private final StudentService studentService;
     private final ProjectService projectService;
+    private final ValidationFlagService validationFlagService;
 
     public Flag getFlagById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readFlag"))) {
@@ -43,7 +44,7 @@ public class FlagService {
 
         flagRepository.save(flag);
 
-        //TODO : Creer les validation flags
+        validationFlagService.createValidationFlags(token, flag);
     }
 
     public void updateFlag(String token, Integer id, Flag updatedFlag) {

@@ -18,6 +18,7 @@ public class BonusService {
     private final UserService userService;
     private final StudentService studentService;
     private final SprintService sprintService;
+    private final ValidationBonusService validationBonusService;
 
     /**
      * Get a bonus by its id
@@ -60,7 +61,7 @@ public class BonusService {
 
         bonusRepository.save(bonus);
 
-        //TODO Create validation bonus if limited / unlimited
+        validationBonusService.createValidationBonuses(token, bonus);
     }
 
     /**

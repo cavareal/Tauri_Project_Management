@@ -130,6 +130,15 @@ public class TeamService {
         return studentRepository.findByTeam(id);
     }
 
+    public List<User> getMembersByTeamId(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        List<User> members = new ArrayList<>(getStudentsByTeamId(token, id));
+        members.add(getTeamById(token, id).leader());
+        return members;
+    }
+
     public double getTeamAvgGrade(String token, Integer id) {
         Team team = getTeamById(token, id);
         return teamRepository.findAvgGradeByTeam(team);
