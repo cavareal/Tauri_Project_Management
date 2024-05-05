@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public enum PermissionType {
 
+    //TODO Revérifier les permissions
     LOGIN_OUT,
     LDAP,
     IMPORT_GENERATED_KEY,
