@@ -21,11 +21,11 @@ public class ValidationFlagService {
     private final RoleService roleService;
     private final TeamService teamService;
 
-    public ValidationFlag getValidationFlagByAuthorId(String token, Integer flagid, Integer authorId) {
+    public ValidationFlag getValidationFlagByAuthorId(String token, Integer flagId, Integer authorId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationFlag"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return validationFlagRepository.findByAuthorIdAndFlagId(authorId, flagid);
+        return validationFlagRepository.findByAuthorIdAndFlagId(flagId, authorId);
     }
 
     public List<ValidationFlag> getAllValidationFlags(String token, Integer flagId) {

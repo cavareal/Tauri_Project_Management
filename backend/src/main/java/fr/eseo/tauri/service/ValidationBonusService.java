@@ -22,7 +22,7 @@ public class ValidationBonusService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return validationBonusRepository.findByAuthorIdAndBonusId(authorId, bonusId);
+        return validationBonusRepository.findByAuthorIdAndBonusId(bonusId, authorId);
     }
 
     public List<ValidationBonus> getAllValidationBonuses(String token, Integer projectId) {
