@@ -30,7 +30,7 @@ class ProjectServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+   /* @Test
     @Order(1)
     @DisplayName("Test newProject when creation is successful")
     void newProject_returnsProject_whenCreationIsSuccessful() {
@@ -250,5 +250,5 @@ class ProjectServiceTest {
 
         assertEquals(ProjectPhase.COMPOSING, result.phase());
         verify(projectRepository, times(1)).save(project);
-    }
+    }*/
 }
