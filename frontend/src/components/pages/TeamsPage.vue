@@ -42,6 +42,7 @@ const loading = computed(() => currentPhaseQuery.isLoading.value || nbStudentsQu
 const canCreate = hasPermission("TEAM_CREATION")
 const canPreview = hasPermission("PREVIEW_TEAM")
 const displayButtons = computed(() => nbTeams.value && nbTeams.value > 0 && currentPhase.value === "COMPOSING")
+const displayPrepublishedButtons = computed(() => currentPhase.value === "PREPUBLISHED" && !hasValidateTeams.value)
 
 </script>
 
@@ -55,10 +56,10 @@ const displayButtons = computed(() => nbTeams.value && nbTeams.value > 0 && curr
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
 
-			<SignalTeamDialog v-if="canPreview && displayButtons">
+			<SignalTeamDialog v-if="canPreview && displayPrepublishedButtons">
 				<Button variant="outline">Signaler</Button>
 			</SignalTeamDialog>
-			<ValidTeamDialog v-if="canPreview && displayButtons" @valid:teams="handleValidTeams">
+			<ValidTeamDialog v-if="canPreview && displayPrepublishedButtons" @valid:teams="handleValidTeams">
 				<Button variant="default">Valider</Button>
 			</ValidTeamDialog>
 		</Header>

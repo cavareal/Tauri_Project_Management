@@ -15,8 +15,7 @@ export const FlagSchema = z.object({
 	type: FlagTypeSchema,
 	firstStudent: StudentSchema.nullable(),
 	secondStudent: StudentSchema.nullable(),
-	author: UserSchema,
-	project: ProjectSchema
+	author: UserSchema
 })
 export type Flag = z.infer<typeof FlagSchema>
 

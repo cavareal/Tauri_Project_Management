@@ -18,16 +18,7 @@ import { cn } from "@/utils/style"
 import { Loading } from "@/components/organisms/loading"
 import { hasPermission } from "@/services/user-service"
 
-const role = getCookie("role")
-const currentProject = getCookie("currentProject")
-
-const props = defineProps<{
-	phase: ProjectPhase
-}>()
-
 const queryClient = useQueryClient()
-
-const isDraggable = computed(() => role === "PROJECT_LEADER" && props.phase === "COMPOSING")
 
 const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()
@@ -111,7 +102,7 @@ const canEdit = hasPermission("TEAM_MANAGEMENT")
 					{{ team.name }}
 					{{ team.leader?.name ? `(${team.leader.name})` : "" }}
 				</AccordionTrigger>
-				<TeamAccordionContent :team-id="team.id" :phase="props.phase" :students="(students && students[team.id]) ?? null" />
+				<TeamAccordionContent :team-id="team.id" :students="(students && students[team.id]) ?? null" />
 			</AccordionItem>
 
 			<EditTeamDialog v-if="canEdit" :team="team" @edit:team="refetchTeams">

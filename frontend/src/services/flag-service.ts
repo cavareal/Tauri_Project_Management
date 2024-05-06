@@ -28,9 +28,9 @@ export const createReportingFlag = async(description: string): Promise<void> => 
 	await createFlag({ description, type: "REPORTING" })
 }
 
-export const userHasValidateTeams = async(authorId: number, description: string): Promise<boolean> => {
+export const userHasValidateTeams = async(authorId: number): Promise<boolean> => {
 	const response = await queryAndValidate({
-		route: `flags/author/${authorId}/description/${description}`,
+		route: `flags/author/${authorId}/type/VALIDATION`,
 		responseSchema: z.array(FlagSchema)
 	})
 

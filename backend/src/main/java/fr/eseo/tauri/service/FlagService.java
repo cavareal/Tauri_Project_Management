@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Flag;
+import fr.eseo.tauri.model.enumeration.FlagType;
 import fr.eseo.tauri.repository.FlagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -80,10 +81,10 @@ public class FlagService {
         flagRepository.deleteAllByProject(projectId);
     }
 
-	public List<Flag> getFlagsByAuthorAndDescription(String token, Integer authorId , String description) {
+	public List<Flag> getFlagsByAuthorAndType(String token, Integer authorId , FlagType type) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readFlags"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return flagRepository.findByAuthorIdAndDescription(authorId, description);
+        return flagRepository.findByAuthor_IdAndType(authorId, type);
 	}
 }
