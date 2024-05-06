@@ -6,6 +6,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.repository.StudentRepository;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.enumeration.RoleType;
 
 import java.io.*;
 import java.util.*;
@@ -28,6 +30,7 @@ public class StudentService {
     private final TeamService teamService;
     private final GradeTypeService gradeTypeService;
     private final GradeService gradeService;
+    private final RoleService roleService;
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
@@ -53,6 +56,11 @@ public class StudentService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         studentRepository.save(student);
+        Role role = new Role();
+        role.type(RoleType.OPTION_STUDENT);
+        role.user(student);
+        role.userId(student.id());
+        roleService.createRole(token, role);
     }
 
     public void updateStudent(String token, Integer id, Student updatedStudent) {

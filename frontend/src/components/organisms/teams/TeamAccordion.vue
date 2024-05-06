@@ -25,7 +25,7 @@ const props = defineProps<{
 
 const queryClient = useQueryClient()
 
-const isDraggable = computed(() => role === "PROJECT_LEADER" && (props.phase === "COMPOSING" || "PREPUBLISHED"))
+const isDraggable = computed(() => role === "PROJECT_LEADER" && props.phase === "COMPOSING")
 
 const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()

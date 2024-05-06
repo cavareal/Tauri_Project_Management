@@ -41,7 +41,7 @@ const handleDragStart = (event: DragEvent, itemData: Student) => {
 		<Table class="flex-1">
 			<TableHeader>
 				<TableRow>
-					<TableHead :class="rowClass" class="w-1"></TableHead>
+					<TableHead v-if="props.isDraggable" :class="rowClass" class="w-1"></TableHead>
 					<TableHead :class="rowClass" class="min-w-28">Nom</TableHead>
 					<TableHead :class="rowClass" class="min-w-28">Prénom</TableHead>
 					<!-- <TableHead :class="rowClass" class="min-w-28">Rôle</TableHead> -->
