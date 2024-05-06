@@ -3,19 +3,31 @@
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { getTeams } from "@/services/team-service"
 import TeamAccordionContent from "@/components/organisms/teams/TeamAccordionContent.vue"
+import { getCookie } from "@/utils/cookie"
 import { Button } from "@/components/ui/button"
 import { Pencil } from "lucide-vue-next"
 import EditTeamDialog from "./EditTeamDialog.vue"
 import { Row } from "@/components/atoms/containers"
 import { useQuery, useQueryClient } from "@tanstack/vue-query"
-import { ref } from "vue"
+import { PageSkeleton } from "@/components/atoms/skeletons"
+import type { ProjectPhase } from "@/types/project"
+import { ref, computed } from "vue"
 import { StudentSchema, type Student } from "@/types/student"
 import { updateStudent, getStudentsByTeamId } from "@/services/student-service"
 import { cn } from "@/utils/style"
 import { Loading } from "@/components/organisms/loading"
 import { hasPermission } from "@/services/user-service"
 
+const role = getCookie("role")
+const currentProject = getCookie("currentProject")
+
+const props = defineProps<{
+	phase: ProjectPhase
+}>()
+
 const queryClient = useQueryClient()
+
+const isDraggable = computed(() => role === "PROJECT_LEADER" && props.phase === "COMPOSING")
 
 const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()
@@ -99,7 +111,7 @@ const canEdit = hasPermission("TEAM_MANAGEMENT")
 					{{ team.name }}
 					{{ team.leader?.name ? `(${team.leader.name})` : "" }}
 				</AccordionTrigger>
-				<TeamAccordionContent :team-id="team.id" :students="(students && students[team.id]) ?? null" />
+				<TeamAccordionContent :team-id="team.id" :phase="props.phase" :students="(students && students[team.id]) ?? null" />
 			</AccordionItem>
 
 			<EditTeamDialog v-if="canEdit" :team="team" @edit:team="refetchTeams">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Cookies } from "@/utils/cookie"
-import { onMounted, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import type { Team } from "@/types/team"
 import { SidebarTemplate } from "@/components/templates"
 import { NotAuthorized, NotFound } from "@/components/organisms/errors"
@@ -20,6 +20,9 @@ const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
 	queryKey: ["project"], queryFn: async() => (await getCurrentProject()).phase
 })
 
+const displayTeam = computed(() => (role === "SUPERVISING_STAFF" || role === "OPTION_STUDENT")
+    && currentPhase.value !== "COMPOSING")
+
 onMounted(async() => {
 	if (!currentUser) return
 	team.value = await getTeamByUserId(currentUser)
@@ -30,7 +33,7 @@ onMounted(async() => {
 	<SidebarTemplate>
 		<Header title="Mon équipe" />
 		<NotAuthorized v-if="!token || !role" />
-    <MyTeamAccordion v-else-if="role === 'SUPERVISING_STAFF' && currentPhase !== 'COMPOSING' && team"
+    <MyTeamAccordion v-else-if="displayTeam && team"
                      :phase="currentPhase"
                      :team="team"/>
 		<NotFound v-else />
