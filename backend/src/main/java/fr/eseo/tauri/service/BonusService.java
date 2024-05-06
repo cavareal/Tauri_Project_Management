@@ -55,6 +55,11 @@ public class BonusService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+
+        if(Boolean.TRUE.equals(bonus.limited()) && Math.abs(bonus.value()) > 4) {
+            throw new IllegalArgumentException("The value of a limited bonus must be between -4 and 4");
+        }
+
         bonus.author(userService.getUserById(token, bonus.authorId()));
         bonus.student(studentService.getStudentById(token, bonus.studentId()));
         bonus.sprint(sprintService.getSprintById(token, bonus.sprintId()));
@@ -73,6 +78,10 @@ public class BonusService {
     public void updateBonus(String token, Integer id, Bonus updatedBonus) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        if(Boolean.TRUE.equals(updatedBonus.limited()) && Math.abs(updatedBonus.value()) > 4) {
+            throw new IllegalArgumentException("The value of a limited bonus must be between -4 and 4");
         }
 
         Bonus bonus = getBonusById(token, id);

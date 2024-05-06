@@ -40,13 +40,13 @@ public class GradeController {
 	}
 
 	@GetMapping("/unimported")
-	public ResponseEntity<List<Grade>> getAllUnimportedGradesByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+	public ResponseEntity<List<Grade>> getAllUnimportedGradesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
 		List<Grade> grades = gradeService.getAllUnimportedGradesByProject(token, projectId);
 		return ResponseEntity.ok(grades);
 	}
 
 	@GetMapping("/imported")
-	public ResponseEntity<List<Grade>> getAllImportedGradesByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+	public ResponseEntity<List<Grade>> getAllImportedGradesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
 		List<Grade> importedGrades = gradeService.getAllImportedGradesByProject(token, projectId);
 		return ResponseEntity.ok(importedGrades);
 	}
@@ -127,6 +127,7 @@ public class GradeController {
 	}
 
 	//TODO : Handle the token
+	//@GetMapping("/unimported/averages") => On peut récup le user dans le token ?
 	@GetMapping("/average-grades-by-grade-type-by-role/{userId}")
 	public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
 		ArrayList<List<Double>> gradeByTypes = new ArrayList<>();

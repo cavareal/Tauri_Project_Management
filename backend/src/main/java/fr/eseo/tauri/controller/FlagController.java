@@ -33,7 +33,7 @@ public class FlagController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Flag>> getAllFlagsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+    public ResponseEntity<List<Flag>> getAllFlagsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
         List<Flag> flags = flagService.getAllFlagsByProject(token, projectId);
         return ResponseEntity.ok(flags);
     }
@@ -60,7 +60,7 @@ public class FlagController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllFlagsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+    public ResponseEntity<String> deleteAllFlagsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
         flagService.deleteAllFlagsByProject(token, projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());

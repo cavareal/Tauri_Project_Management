@@ -59,6 +59,7 @@ public class GradeService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGrade"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+
         if(grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
         if(grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
         if(grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
@@ -69,6 +70,11 @@ public class GradeService {
             grade.team(null);
             if(grade.studentId() != null) grade.student(studentService.getStudentById(token, grade.studentId()));
         }
+
+        if (grade.team() == null ^ grade.student() == null) {
+            throw new IllegalArgumentException("Both team and student attributes should be either null or not null");
+        }
+
         gradeRepository.save(grade);
     }
 

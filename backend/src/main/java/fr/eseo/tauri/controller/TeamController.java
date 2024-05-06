@@ -37,7 +37,7 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Team>> getAllTeamsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+    public ResponseEntity<List<Team>> getAllTeamsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
         List<Team> teams = teamService.getAllTeamsByProject(token, projectId);
         return ResponseEntity.ok(teams);
     }
@@ -50,7 +50,7 @@ public class TeamController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllTeamsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+    public ResponseEntity<String> deleteAllTeamsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
         teamService.deleteAllTeamsByProject(token, projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
@@ -63,7 +63,7 @@ public class TeamController {
     }
 
     @GetMapping("/{id}/criteria")
-    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam Integer projectId) {
+    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
         Criteria criteria = teamService.getCriteriaByTeamId(token, id, projectId);
         return ResponseEntity.ok(criteria);
     }
@@ -81,7 +81,7 @@ public class TeamController {
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
     @PostMapping
-    public ResponseEntity<String> generateTeams(@RequestHeader("Authorization") String token, @RequestParam Integer projectId, @Validated(Create.class) @RequestBody Project projectDetails) {
+    public ResponseEntity<String> generateTeams(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId, @Validated(Create.class) @RequestBody Project projectDetails) {
         teamService.generateTeams(token, projectId, projectDetails);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
