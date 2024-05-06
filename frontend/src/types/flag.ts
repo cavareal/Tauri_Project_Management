@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { StudentSchema } from "./student"
 import { UserSchema } from "./user"
-import { ProjectSchema } from "@/types/project"
 
 export const FlagTypeSchema = z.enum([
 	"REPORTING",
@@ -15,8 +14,7 @@ export const FlagSchema = z.object({
 	type: FlagTypeSchema,
 	firstStudent: StudentSchema.nullable(),
 	secondStudent: StudentSchema.nullable(),
-	author: UserSchema,
-	project: ProjectSchema
+	author: UserSchema
 })
 export type Flag = z.infer<typeof FlagSchema>
 

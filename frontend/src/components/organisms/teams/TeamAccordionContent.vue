@@ -16,7 +16,7 @@ import { hasPermission } from "@/services/user-service"
 
 const props = defineProps<{
 	teamId: number
-	students: Student[] | null
+	students: Student[] | null,
 }>()
 
 const { data: criteria } = useQuery({ queryKey: ["criteria", props.teamId], queryFn: () => getCriteria(props.teamId) })
@@ -42,6 +42,7 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 					<TableHead :class="rowClass" class="w-1" v-if="canDragAndDrop"></TableHead>
 					<TableHead :class="rowClass" class="min-w-28">Nom</TableHead>
 					<TableHead :class="rowClass" class="min-w-28">Prénom</TableHead>
+					<!-- <TableHead :class="rowClass" class="min-w-28">Rôle</TableHead> -->
 					<TableHead :class="rowClass" class="min-w-16">Genre</TableHead>
 					<TableHead :class="rowClass" class="min-w-16">Bachelor</TableHead>
 				</TableRow>
@@ -59,6 +60,7 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 					</TableCell>
 					<TableCell :class="rowClass">{{ extractNames(student.name).lastName }}</TableCell>
 					<TableCell :class="rowClass">{{ extractNames(student.name).firstName }}</TableCell>
+					<!-- <TableCell :class="rowClass">{{ student.teamRole }}</TableCell> -->
 					<TableCell :class="rowClass">
 						<GenderIcon :gender="student.gender" />
 					</TableCell>

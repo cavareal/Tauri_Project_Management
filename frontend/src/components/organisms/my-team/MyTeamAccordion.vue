@@ -31,7 +31,7 @@ onMounted(async() => {
         {{ props.team.name }}
         {{ props.team.leader?.name ? `(${props.team.leader.name})` : "" }}
       </AccordionTrigger>
-      <TeamAccordionContent :teamId="props.team.id" :leader="props.team.leader?.name" :phase="props.phase"  :students="students"/>
+      <TeamAccordionContent :teamId="props.team.id" :students="students"/>
     </AccordionItem>
   </Accordion>
 </template>

@@ -1,6 +1,7 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Flag;
+import fr.eseo.tauri.model.enumeration.FlagType;
 import fr.eseo.tauri.service.FlagService;
 import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
@@ -65,9 +66,9 @@ public class FlagController {
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 
-	@GetMapping("/author/{authorId}/description/{description}")
-	public ResponseEntity<List<Flag>> getFlagsByAuthorAndDescription(@RequestHeader("Authorization") String token, @PathVariable Integer authorId, @PathVariable String description){
-		List<Flag> flags = flagService.getFlagsByAuthorAndDescription(token, authorId, description);
+	@GetMapping("/author/{authorId}/type/{type}")
+	public ResponseEntity<List<Flag>> getFlagsByAuthorAndType(@RequestHeader("Authorization") String token, @PathVariable Integer authorId, @PathVariable FlagType type){
+		List<Flag> flags = flagService.getFlagsByAuthorAndType(token, authorId, type);
         return ResponseEntity.ok(flags);
 	}
 }

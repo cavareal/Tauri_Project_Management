@@ -99,14 +99,14 @@ public class UserService {
 		return roleRepository.findByUser(user);
 	}
 
-	public List<Team> getTeamByMemberId(String token, Integer userId, Integer projectId) {
+	public List<Team> getTeamByMemberId(String token, Integer userId) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 		List<RoleType> roles = getRolesByUserId(token, userId);
 
 		if (roles.contains(RoleType.SUPERVISING_STAFF)) {
-			return teamRepository.findByLeaderId(userId, projectId);
+			return teamRepository.findByLeaderId(userId);
 		} else if (roles.contains(RoleType.TEAM_MEMBER)) {
 			return teamRepository.findByStudentId(userId);
 		} else {
