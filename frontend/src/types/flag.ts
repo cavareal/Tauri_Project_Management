@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { StudentSchema } from "./student"
 import { UserSchema } from "./user"
-import { ProjectSchema } from "@/types/project"
 
 export const FlagTypeSchema = z.enum([
 	"REPORTING",
