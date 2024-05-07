@@ -12,8 +12,12 @@ import { getAllNotifications } from "@/services/notification-service"
 import NotificationTable from "@/components/organisms/notifications/NotificationTable.vue"
 import { Text } from "@/components/atoms/texts"
 
-const { data: notifications }
+const { data: notifications, refetch: refetchNotifications }
     = useQuery({ queryKey: ["notifications"], queryFn: getAllNotifications })
+
+const refetch = async() => {
+	await refetchNotifications()
+}
 
 console.log(getAllNotifications())
 
@@ -34,13 +38,9 @@ console.log(getAllNotifications())
       </SheetHeader>
       <div class="mt-5 h-5/6 overflow-y-auto">
         <Text v-if="!notifications">Vous n'avez aucune notification pour le moment</Text>
-        <NotificationTable v-else :notifications="notifications ?? null"/>
+        <NotificationTable v-else :notifications="notifications ?? null" @read:notifications="refetch"/>
       </div>
      </SheetContent>
    </Sheet>
 
  </template>
-
- <style scoped>
-
- </style>

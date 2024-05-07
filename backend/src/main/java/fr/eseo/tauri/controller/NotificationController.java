@@ -1,7 +1,6 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Notification;
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.service.NotificationService;
 import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
@@ -14,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,16 +37,16 @@ public class NotificationController {
     }
 
     //TODO
+    /*
     @GetMapping("/users/{userId}/notifications")
     public ResponseEntity<Iterable<Notification>> getAllNotificationsUser(@PathVariable Integer userId) {
         Optional<User> actualUser = userRepository.findById(userId);
         return ResponseEntity.ok(notificationRepository.findByUser(userId));
-    }
+    }*/
 
     /**
      * Get all notifications by project
      * @param token the token of the user
-     * @param projectId the id of the project
      * @return the list of notifications
      */
     @GetMapping
@@ -80,6 +78,19 @@ public class NotificationController {
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Notification updatedNotification) {
         notificationService.updateNotification(token, id, updatedNotification);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
+    }
+
+    /**
+     * Update a notification
+     * @param token the token of the user
+     * @param id the id of the notification
+     * @return a message
+     */
+    @PatchMapping("/{id}/changeStateChecked")
+    public ResponseEntity<String> changeStateChecked(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        notificationService.changeCheckedNotification(token, id);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }

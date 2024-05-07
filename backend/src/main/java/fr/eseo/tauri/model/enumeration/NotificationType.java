@@ -11,7 +11,4 @@ public enum NotificationType {
 
     private final String type;
 
-    NotificationType(String type) {
-        this.type = type;
-    }
 }

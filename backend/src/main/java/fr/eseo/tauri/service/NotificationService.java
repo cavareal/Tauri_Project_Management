@@ -81,6 +81,21 @@ public class NotificationService {
 		notificationRepository.save(notification);
 	}
 
+
+	/**
+	 * Change the checked state of a notification
+	 * @param token the token of the user
+	 * @param id the id of the notification
+	 */
+	public void changeCheckedNotification(String token, Integer id){
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateNotification"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+		var notification = getNotificationById(token, id);
+		notification.checked(!notification.checked());
+		notificationRepository.save(notification);
+	}
+
 	/**
 	 * Delete a notification by its id
 	 * @param token the token of the user

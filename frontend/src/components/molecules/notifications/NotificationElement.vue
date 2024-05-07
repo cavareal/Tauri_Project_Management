@@ -5,8 +5,7 @@ import InfoText from "../../atoms/texts/InfoText.vue"
 import { Column, Row } from "@/components/atoms/containers"
 import Subtitle from "../../atoms/texts/Subtitle.vue"
 import { Check, ExternalLink } from "lucide-vue-next"
-import { Button } from "@/components/ui/button"
-import { LinkButton } from "@/components/molecules/buttons"
+import { LinkButton, LoadingButton } from "@/components/molecules/buttons"
 
 const emits = defineEmits(["read:notifications"])
 
@@ -14,6 +13,10 @@ defineProps<{
   title: string
   description: string
 }>()
+
+const clickButton = () => {
+	emits("read:notifications")
+}
 
 </script>
 
@@ -31,13 +34,9 @@ defineProps<{
           <ExternalLink/>Voir
         </LinkButton>
       </SheetClose>
-      <Button class="ml-4" variant="outline">
+      <LoadingButton class="ml-4" variant="outline" @click="clickButton">
         <Check/>
-      </Button>
+      </LoadingButton>
     </Row>
   </Column>
 </template>
-
-<style scoped>
-
-</style>

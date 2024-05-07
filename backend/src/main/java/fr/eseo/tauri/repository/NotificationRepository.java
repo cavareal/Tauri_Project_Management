@@ -10,6 +10,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Inte
     @Query("SELECT n FROM Notification n WHERE n.userTo= :user")
     Iterable<Notification> findByUser(@Param("user") int id);
 
-    @Query("SELECT n FROM Notification n WHERE n.isRead = false")
-    Iterable<Notification> findIfNotRead();
+    @Query("SELECT n FROM Notification n WHERE n.checked = false")
+    Iterable<Notification> findIfNotChecked();
 }

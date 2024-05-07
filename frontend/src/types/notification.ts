@@ -4,7 +4,7 @@ import { UserSchema } from "@/types/user"
 export const NotificationSchema = z.object({
 	id: z.number(),
 	message: z.string().optional().nullable(),
-	bachelor: z.boolean().optional().nullable(),
+	checked: z.boolean().optional().nullable(),
 	type: z.string().optional().nullable(),
 	userTo: UserSchema,
 	userFrom: UserSchema

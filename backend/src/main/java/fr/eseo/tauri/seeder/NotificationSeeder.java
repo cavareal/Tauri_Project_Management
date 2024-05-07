@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.NotificationType;
 import fr.eseo.tauri.repository.NotificationRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,17 +14,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationSeeder {
 
     private final NotificationRepository notificationRepository;
 
     private final UserRepository userRepository;
 
-    @Autowired
-    public NotificationSeeder(NotificationRepository notificationRepository, UserRepository userRepository) {
-        this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
-    }
 
     public void seed(Faker faker) {
         List<User> users = userRepository.findAll();
@@ -41,7 +38,7 @@ public class NotificationSeeder {
             String MESSAGE = "La composition des équipes a été prépubliée.";
             notification.message(MESSAGE);
             notification.type(NotificationType.valueOf("CREATE_TEAMS"));
-            notification.isRead(false);
+            notification.checked(faker.bool().bool());
             notification.userTo(users.get(usersId.get(userId1)));
             notification.userFrom(users.get(usersId.get(userId2)));
 
