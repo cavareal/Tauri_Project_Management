@@ -3,7 +3,10 @@ package fr.eseo.tauri.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
@@ -20,6 +23,8 @@ public class Grade {
     private Integer id;
 
     @NotNull(groups = { Create.class }, message = "The value field is required")
+    @Max(value = 20, groups = { Create.class, Update.class }, message = "The value field must be less than or equal to 20")
+    @Min(value = 0, groups = { Create.class, Update.class }, message = "The value field must be greater than or equal to 0")
     @JsonProperty
     private Float value;
 

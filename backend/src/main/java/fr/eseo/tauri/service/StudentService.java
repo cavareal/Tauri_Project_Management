@@ -199,9 +199,7 @@ public class StudentService {
         student.name(name);
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
-        student.teamRole("Not assigned");
         student.project(projectService.getProjectById(token, projectId));
-        student.team(null); // Team is not assigned yet
         student.password("password");
         student.privateKey("privateKey");
         student.email(name.toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
@@ -237,14 +235,24 @@ public class StudentService {
         List<String> names = (List<String>) extractedData.get(MAP_KEY_NAMES);
         List<String> genders = (List<String>) extractedData.get(MAP_KEY_GENDERS);
         List<String> bachelors = (List<String>) extractedData.get(MAP_KEY_BACHELORS);
-        List<List<String>> gradesList = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
+        List<List<String>> grades = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
 
         for (int i = 0; i < names.size(); i++) {
             Student student = createStudentFromData(token, names.get(i), genders.get(i), bachelors.get(i), projectId);
             createStudent(token, student);
-            gradeService.createGradesFromGradeTypesAndValues(student, gradesList.get(i), gradeTypes, "Imported grades");
-        }
+            for (int j = 0; j < grades.get(i).size(); j++) {
 
+                if(grades.get(i).get(j).trim().isEmpty()) continue;
+
+                try {
+                    Grade grade = new Grade();
+                    grade.value(Float.parseFloat(grades.get(i).get(j).trim()));
+                    grade.student(student);
+                    grade.gradeType(gradeTypes.get(j));
+                    gradeService.createGrade(token, grade);
+                } catch (NumberFormatException ignored) {} // Do nothing // If the grade is not a number, it is ignored
+            }
+        }
         CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
     }
 
@@ -310,12 +318,12 @@ public class StudentService {
      *
      * @param csvWriter The CSVWriter object that is used to write to the CSV file.
      * @param students  The list of students whose data is to be written to the CSV file.
-     * @param importedGrades The list of imported grade types.
+     * @param importedGradeTypes The list of imported grade types.
      */
-    public void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGrades) {
+    public void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGradeTypes) {
         int studentIndex = 1;
         for (Student student : students) {
-            String[] studentInfo = new String[importedGrades.size() + 4];
+            String[] studentInfo = new String[importedGradeTypes.size() + 4];
             Arrays.fill(studentInfo, "");
             studentInfo[0] = String.valueOf(studentIndex++);
             studentInfo[1] = student.name();
@@ -323,7 +331,7 @@ public class StudentService {
             studentInfo[3] = Boolean.TRUE.equals(student.bachelor()) ? "B" : "";
 
             int gradeIndex = 4;
-            for (GradeType gradeType : importedGrades) {
+            for (GradeType gradeType : importedGradeTypes) {
                 Float grade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
                 studentInfo[gradeIndex++] = grade != null ? String.valueOf(grade) : "";
             }

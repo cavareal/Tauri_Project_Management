@@ -1,8 +1,5 @@
 package fr.eseo.tauri.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.enumeration.RoleType;
@@ -21,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -85,7 +81,7 @@ public class GradeController {
 	 * @param evaluations A JSON string representing a map of evaluations.
 	 * @return A ResponseEntity with either a success message or an error message.
 	 */
-	@PostMapping("/add-grade-to-team/{userId}")
+	/*@PostMapping("/add-grade-to-team/{userId}")
 	public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId) throws JsonProcessingException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<>() {
@@ -124,7 +120,7 @@ public class GradeController {
 			}
 		}
 		return ResponseEntity.ok(Map.of("message", "Grades added successfully."));
-	}
+	}*/
 
 	//TODO : Handle the token
 	//@GetMapping("/unimported/averages") => On peut récup le user dans le token ?
