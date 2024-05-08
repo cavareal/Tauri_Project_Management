@@ -43,19 +43,12 @@ const canGradeTechnicalSolution = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeSprintConformity = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
 
-const { data: gradeType } = useQuery<GradeType, Error>({
-	queryKey: ["grade-type"],
-	queryFn: () => getGradeTypeByName("Performance globale de l'équipe")
-})
 
 onMounted(async() => {
 	if (!currentUser) return
 	teamOfCurrentUser.value = await getTeamByUserId(currentUser)
 })
 
-// TODO
-// rajouter les bons noms de gratype dans les paramètres
-// afficher seulements les grades qui sont autorisés (SS -> , TM -> Bonus)
 
 </script>
 
@@ -65,8 +58,7 @@ onMounted(async() => {
 			<Users :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogRating title="Note de présentation" :description="`Veuillez noter la présentation de l équipe : ${props.teamId}`" :gradeType=gradeType :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance globale de l'équipe">
+			<DialogRating title="Note de présentation" :description="`Veuillez noter la présentation de l équipe : ${props.teamId}`" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance globale de l'équipe">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>
@@ -80,7 +72,7 @@ onMounted(async() => {
 		</template>
 		<template #dialog>
 			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogRating title="Note de la solution technique" description="Veuillez noter la solution technique mise en œuvre par l'équipe" gradeType="gradeTechnicalSolution">
+			<DialogRating title="Note de la solution technique" description="Veuillez noter la solution technique mise en œuvre par l'équipe" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Solution Technique">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>
@@ -93,8 +85,7 @@ onMounted(async() => {
 			<Play :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogRating title="Note de conformité du sprint" description="Veuillez noter la conformité du sprint" gradeType="gradeSprintConformity">
+			<DialogRating title="Note de conformité du sprint" description="Veuillez noter la conformité du sprint" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Conformité au sprint">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>
@@ -107,8 +98,7 @@ onMounted(async() => {
 			<SquareGanttChart :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogRating title="Note de la gestion du projet" description="Veuillez noter la gestion du projet" gradeType="gradeProjectManagement">
+			<DialogRating title="Note de la gestion du projet" description="Veuillez noter la gestion du projet" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Gestion de projet">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>
@@ -121,8 +111,7 @@ onMounted(async() => {
 			<Package :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogRating title="Note du contenu de la présentation" description="Veuillez noter le contenu de la présentation" gradeType="gradeContentPresentation">
+			<DialogRating title="Note du contenu de la présentation" description="Veuillez noter le contenu de la présentation" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Contenu de la présentation">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>
@@ -135,8 +124,7 @@ onMounted(async() => {
 			<Presentation :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogRating title="Note du support de présentation" description="Veuillez noter le support de présentation" gradeType="gradeMaterialSupport">
+			<DialogRating title="Note du support de présentation" description="Veuillez noter le support de présentation" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Support de présentation">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>
@@ -150,7 +138,7 @@ onMounted(async() => {
 		</template>
 		<template #dialog>
 			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogRating title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants">
+			<DialogRating title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance individuelle">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>

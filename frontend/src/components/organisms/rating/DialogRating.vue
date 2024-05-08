@@ -6,28 +6,32 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import LoadingButton from "../../molecules/buttons/LoadingButton.vue"
-import { useMutation } from "@tanstack/vue-query"
+import { useMutation, useQuery } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { createGrade } from "@/services/grade-service"
 import { createToast } from "@/utils/toast"
 import type { GradeType } from "@/types/grade-type"
+import { getGradeTypeByName } from "@/services/grade-type-service"
 
 let mark = ref("")
 const open = ref(false)
 const props = defineProps<{
 	title: string,
 	description : string,
-	gradeType : GradeType,
 	teamId : string,
 	sprintId : string,
 	gradeTypeString : string
 }>()
 
+const { data: gradeType } = useQuery<GradeType, Error>({
+	queryKey: ["grade-type"],
+	queryFn: () => getGradeTypeByName(props.gradeTypeString)
+})
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
 	await createGrade({
 	    value: Number(mark.value),
-		gradeTypeId: props.gradeType.id,
+		gradeTypeId: gradeType.value.id,
 		teamId: Number(props.teamId),
 		sprintId: Number(props.sprintId),
 		comment: null,
