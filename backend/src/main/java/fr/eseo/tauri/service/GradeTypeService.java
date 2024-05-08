@@ -207,6 +207,14 @@ public class GradeTypeService {
             }
         }
     }
+
+
+    public GradeType findByName(String name, String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findByName(name);
+    }
     
 }
 

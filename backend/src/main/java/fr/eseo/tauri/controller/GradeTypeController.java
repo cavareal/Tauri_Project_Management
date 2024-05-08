@@ -68,4 +68,9 @@ public class GradeTypeController {
         return ResponseEntity.ok(responseMessage.deleteAll());
     }
 
+    @GetMapping("/name")
+    public ResponseEntity<GradeType> getGradeTypeByName(@RequestHeader("Authorization") String token, @RequestParam("name") String name) {
+        GradeType gradeType = gradeTypeService.findByName(name, token);
+        return ResponseEntity.ok(gradeType);
+    }
 }
