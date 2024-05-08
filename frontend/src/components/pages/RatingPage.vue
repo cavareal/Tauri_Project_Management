@@ -17,11 +17,12 @@ import {
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
 import { getSprints } from "@/services/sprint-service"
+import { Column } from "@/components/atoms/containers"
+import { ListChecks } from "lucide-vue-next"
+
 
 const token = Cookies.getToken()
 const role = Cookies.getRole()
-const currentProject = Cookies.getProjectId()
-let nbSprints = ref("3")
 const selectedTeam = ref("")
 const selectedSprint = ref("")
 const componentKey = ref(0)
@@ -60,11 +61,15 @@ const forceRerender = () => {
 				</SelectContent>
 			</Select>
 		</Header>
-		<div v-if="selectedTeam !== ''">
+		<div v-if="selectedTeam !== '' && selectedSprint !== ''">
 			<NotAutorized v-if="!token || !role" />
 			<TMRateView v-else-if="role === 'TEAM_MEMBER'" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
 			<SSTCRateView v-else-if="role === 'SUPERVISING_STAFF' || role==='TECHNICAL_COACH'"/>
 			<NotAutorized v-else/>
 		</div>
+		<Column v-else class="items-center justify-center p-6 gap-2 rounded-lg border transition-all cursor-pointer border-dashed bg-slate-50">
+			<ListChecks class="w-16 h-16 stroke-[1.2]" />
+			<Text>Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer</Text>
+		</Column>
 	</SidebarTemplate>
 </template>
