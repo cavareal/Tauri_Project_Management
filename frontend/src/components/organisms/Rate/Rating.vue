@@ -16,11 +16,18 @@ import { useQuery } from "@tanstack/vue-query"
 import { getGradeTypeByName } from "@/services/grade-type-service"
 import type { GradeType } from "@/types/grade-type"
 import { hasPermission } from "@/services/user-service"
+import { onMounted, ref } from "vue"
+import { getTeamByUserId } from "@/services/team-service"
+import { Cookies } from "@/utils/cookie"
+import type { Team } from "@/types/team"
 
 const props = defineProps<{
 	teamId : string,
 	sprintId : string
 }>()
+
+const currentUser = Cookies.getUserId()
+const teamOfCurrentUser = ref<Team>()
 
 const canGradeGlobalPerformance = hasPermission("GRADE_GLOBAL_PERFORMANCE")
 const canGradeBonus = hasPermission("LIMITED_BONUS_MALUS")
@@ -40,10 +47,20 @@ const { data: gradeType } = useQuery<GradeType, Error>({
 	queryKey: ["grade-type"],
 	queryFn: () => getGradeTypeByName("Performance globale de l'équipe")
 })
+
+onMounted(async() => {
+	if (!currentUser) return
+	teamOfCurrentUser.value = await getTeamByUserId(currentUser)
+})
+
+// TODO
+// rajouter les bons noms de gratype dans les paramètres
+// afficher seulements les grades qui sont autorisés (SS -> , TM -> Bonus)
+
 </script>
 
 <template>
-	<ContainerGradeType v-if="canGradeGlobalPerformance" title="Note Globale de présentation" infotext="Vous devez évaluer chaque équipe sur sa présentation globale">
+	<ContainerGradeType v-if="canGradeGlobalPerformance && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId !== teamOfCurrentUser.id.toString()" title="Note Globale de présentation" infotext="Vous devez évaluer chaque équipe sur sa présentation globale">
 		<template #icon>
 			<Users :size="40" :stroke-width="1"/>
 		</template>
@@ -57,7 +74,7 @@ const { data: gradeType } = useQuery<GradeType, Error>({
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeTechnicalSolution" title="Solution Technique" infotext="Vous devez évaluer chaque équipe sur la solution technique qui a été mise en œuvre.">
+	<ContainerGradeType v-if="canGradeTechnicalSolution && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId === teamOfCurrentUser.id.toString()" title="Solution Technique" infotext="Vous devez évaluer chaque équipe sur la solution technique qui a été mise en œuvre.">
 		<template #icon>
 			<Blocks :size="40" :stroke-width="1"/>
 		</template>
@@ -71,7 +88,7 @@ const { data: gradeType } = useQuery<GradeType, Error>({
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeSprintConformity" title="Conformité du sprint" infotext="Vous devez évaluer la conformité du sprint des équipes.">
+	<ContainerGradeType v-if="canGradeSprintConformity && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId === teamOfCurrentUser.id.toString()" title="Conformité du sprint" infotext="Vous devez évaluer la conformité du sprint des équipes.">
 		<template #icon>
 			<Play :size="40" :stroke-width="1"/>
 		</template>
@@ -85,7 +102,7 @@ const { data: gradeType } = useQuery<GradeType, Error>({
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeProjectManagement" title="Gestion du projet" infotext="Vous devez évaluer chaque équipe sur sa gestion du projet.">
+	<ContainerGradeType v-if="canGradeProjectManagement && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId === teamOfCurrentUser.id.toString()" title="Gestion du projet" infotext="Vous devez évaluer chaque équipe sur sa gestion du projet.">
 		<template #icon>
 			<SquareGanttChart :size="40" :stroke-width="1"/>
 		</template>
@@ -141,7 +158,7 @@ const { data: gradeType } = useQuery<GradeType, Error>({
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeBonus" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
+	<ContainerGradeType v-if="canGradeBonus && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId === teamOfCurrentUser.id.toString()" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
 		<template #icon>
 			<LucideCircleFadingPlus :size="40" :stroke-width="1"/>
 		</template>
