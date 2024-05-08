@@ -2,9 +2,7 @@
 import { ref } from "vue"
 import { SidebarTemplate } from "@/components/templates"
 import NotAutorized from "@/components/organisms/errors/NotAuthorized.vue"
-import TMRateView from "@/components/organisms/Rate/TMRateView.vue"
 import { Cookies } from "@/utils/cookie"
-import SSTCRateView from "@/components/organisms/Rate/SSTCRateView.vue"
 import { Header } from "@/components/molecules/header"
 import {
 	Select,
@@ -25,7 +23,6 @@ import { NotAuthorized } from "@/components/organisms/errors"
 import Rating from "@/components/organisms/Rate/Rating.vue"
 
 
-const role = Cookies.getRole()
 const selectedTeam = ref("")
 const selectedSprint = ref("")
 const componentKey = ref(0)
@@ -70,8 +67,6 @@ const forceRerender = () => {
 			</Header>
 			<div v-if="selectedTeam !== '' && selectedSprint !== ''">
 				<Rating v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
-				<!--			<TMRateView v-else-if="role === 'TEAM_MEMBER'" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>-->
-<!--				<SSTCRateView v-else-if="role === 'SUPERVISING_STAFF' || role==='TECHNICAL_COACH'"/>-->
 				<NotAutorized v-else/>
 			</div>
 			<Column v-else class="items-center justify-center p-6 gap-2 rounded-lg border transition-all cursor-pointer border-dashed bg-slate-50">

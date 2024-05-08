@@ -31,13 +31,13 @@ const handleBonusInput = (event: InputEvent, index: number) => {
 		</template>
 		<div class="flex">
 			<Column>
-				<Row v-for="(name, index) in firstColumn" :key="index" class="grid grid-cols-3 items-center gap-4">
+				<Row v-for="(name, index) in firstColumn" :key="index" class="grid grid-cols-3 items-center gap-4 mb-2">
 					<Label>{{ name }}</Label>
 					<Input v-model="bonus[index]" type="number" min="-4" max="4" @input="handleBonusInput($event, index)"/>
 				</Row>
 			</Column>
 			<Column>
-				<Row v-for="(name, index) in secondColumn" :key="index" class="grid grid-cols-3 items-center gap-4">
+				<Row v-for="(name, index) in secondColumn" :key="index" class="grid grid-cols-3 items-center gap-4 mb-2">
 					<Label>{{ name }}</Label>
 					<Input v-model="bonus[index + 4]" type="number" min="-4" max="4" @input="handleBonusInput($event,index + 4)"/>
 				</Row>

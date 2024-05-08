@@ -12,14 +12,12 @@ import {
 	Blocks
 } from "lucide-vue-next"
 import { DialogRating, DialogViewGrades, DialogBonus } from "@/components/organisms/rating"
-import { useQuery } from "@tanstack/vue-query"
-import { getGradeTypeByName } from "@/services/grade-type-service"
-import type { GradeType } from "@/types/grade-type"
 import { hasPermission } from "@/services/user-service"
 import { onMounted, ref } from "vue"
 import { getTeamByUserId } from "@/services/team-service"
 import { Cookies } from "@/utils/cookie"
 import type { Team } from "@/types/team"
+import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
 
 const props = defineProps<{
 	teamId : string,
@@ -138,11 +136,11 @@ onMounted(async() => {
 		</template>
 		<template #dialog>
 			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogRating title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance individuelle">
+			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance individuelle">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>
-			</DialogRating>
+			</DialogIndividualRate>
 		</template>
 	</ContainerGradeType>
 
