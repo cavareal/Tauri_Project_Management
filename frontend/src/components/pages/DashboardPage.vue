@@ -11,7 +11,7 @@ const message = ref("")
 
 const role = getCookie("role") || "Aucun rôle"
 
-if (!role.trim()) {
+if (role === "Aucun rôle") {
 	setCookie("role", "OPTION_LEADER")
 }
 

@@ -18,9 +18,6 @@ const { data: notifications, refetch: refetchNotifications }
 const refetch = async() => {
 	await refetchNotifications()
 }
-
-console.log(getAllNotifications())
-
 </script>
 
 <template>

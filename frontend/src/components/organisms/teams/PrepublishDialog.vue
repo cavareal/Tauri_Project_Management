@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { getCookie } from "@/utils/cookie"
 
-const emits = defineEmits(["prepublish:teams"])
+const emits = defineEmits(["prepublish:teams", "create:notifications"])
 const open = ref(false)
 const currentProject = getCookie("currentProject")
 
@@ -17,6 +17,7 @@ const { mutate, error, isPending } = useMutation({ mutationKey: ["prepublish-tea
 	await updateProject(currentProject, { phase: "PREPUBLISHED" })
 		.then(() => open.value = false)
 		.then(() => emits("prepublish:teams"))
+		.then(() => emits("create:notifications"))
 } })
 
 const DIALOG_TITLE = "Prépublier les équipes"

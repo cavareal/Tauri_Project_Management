@@ -14,10 +14,14 @@ import { Header } from "@/components/molecules/header"
 import type { RoleType } from "@/types/role"
 import { computed, onMounted, ref } from "vue"
 import { PageSkeleton } from "@/components/atoms/skeletons"
-import { useQuery } from "@tanstack/vue-query"
+import { useMutation, useQuery } from "@tanstack/vue-query"
 import SignalTeamDialog from "@/components/organisms/teams/SignalTeamDialog.vue"
 import ValidTeamDialog from "@/components/organisms/teams/ValidTeamDialog.vue"
 import { userHasValidateTeams } from "@/services/flag-service"
+import { addNotification } from "@/services/notification-service"
+import { getUserById } from "@/services/user-service"
+import type { Notification } from "@/types/notification"
+import type { User } from "@/types/user"
 
 const validateTeamDescription = "Validation des équipes prépubliées"
 const token = getCookie("token")
@@ -51,6 +55,23 @@ onMounted(async() => {
 	}
 })
 
+//const currenrUser = await getUserById(currentUserId)
+//const exampleUser = await getUserById("10")
+
+//const notification: Notification = {
+////	id: 100,
+//	message: "La composition des équipes a été prépubliée.",
+//	checked: false,
+//	type: "CREATE_TEAMS",
+//	userTo: exampleUser,
+//	userFrom: currenrUser
+//}
+
+//TO DO
+//const { mutate } = useMutation({ mutationKey: ["prepublish-teams"], mutationFn: async() => {
+//	await addNotification(notification)
+//} })
+
 </script>
 
 <template>
@@ -59,7 +80,7 @@ onMounted(async() => {
 			<DeleteTeamsDialog v-if="displayButtons" @delete:teams="refetchTeams">
 				<Button variant="outline">Supprimer les équipes</Button>
 			</DeleteTeamsDialog>
-			<PrepublishDialog v-if="displayButtons" @prepublish:teams="refetchCurrentPhase">
+			<PrepublishDialog v-if="displayButtons" @prepublish:teams="refetchCurrentPhase" @create:notifications="mutate">
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
 			<SignalTeamDialog v-if="displayPrepublishedButton" @signal:teams="refetchTeams" :currentUserId="currentUserId">
