@@ -9,7 +9,8 @@ import { Cookies } from "@/utils/cookie"
 export const getTeams = async(): Promise<Team[]> => {
 	const response = await queryAndValidate({
 		route: "teams",
-		responseSchema: TeamSchema.array()
+		responseSchema: TeamSchema.array(),
+		params: { projectId: Cookies.getProjectId().toString() }
 	})
 
 	if (response.status === "error") {

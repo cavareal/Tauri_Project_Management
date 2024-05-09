@@ -16,3 +16,9 @@ export const createSprint = async(body: Omit<CreateSprint, "projectId">): Promis
 		throw new Error(response.error)
 	}
 }
+
+//TO-DO: Implement getCurrentSprint
+// eslint-disable-next-line @typescript-eslint/require-await
+export const getCurrentSprint = async(): Promise<number> => {
+	return 1
+}

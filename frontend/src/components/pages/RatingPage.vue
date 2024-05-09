@@ -16,11 +16,13 @@ import {
 } from "@/components/ui/select"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
+import { hasPermission } from "@/services/user-service"
 
 const token = Cookies.getToken()
 const role = Cookies.getRole()
 const currentProject = Cookies.getProjectId()
 let nbSprints = ref("3")
+const canRate = hasPermission("RATING_PAGE")
 
 /* GET number of sprints of this project */
 const requestOptionsStudents = {
@@ -76,7 +78,7 @@ const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryF
 		<div>
 			<NotAutorized v-if="!token || !role"/>
 			<TMRateView v-else-if="role === 'TEAM_MEMBER'"/>
-			<SSTCRateView v-else-if="role === 'SUPERVISING_STAFF' || role==='TECHNICAL_COACH'"/>
+			<SSTCRateView v-else-if="canRate"/>
 			<NotAutorized v-else/>
 		</div>
 	</SidebarTemplate>
