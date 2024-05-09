@@ -33,7 +33,7 @@ public class StudentController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Student>> getAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+	public ResponseEntity<List<Student>> getAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
 		List<Student> students = studentService.getAllStudentsByProject(token, projectId);
 		return ResponseEntity.ok(students);
 	}
@@ -60,7 +60,7 @@ public class StudentController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> deleteAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+	public ResponseEntity<String> deleteAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
 		studentService.deleteAllStudentsByProject(token, projectId);
 		CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
 		return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
@@ -83,7 +83,7 @@ public class StudentController {
 	}
 
 	@GetMapping("/download")
-	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) throws IOException {
+	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) throws IOException {
 		byte[] studentsCSV = studentService.createStudentsCSV(token, projectId);
 		return ResponseEntity.ok(studentsCSV);
 	}

@@ -1,6 +1,7 @@
-import { mutateAndValidate } from "@/utils/api"
-import { CreateSprintSchema, type CreateSprint } from "@/types/sprint"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { CreateSprintSchema, type CreateSprint, SprintSchema } from "@/types/sprint"
 import { Cookies } from "@/utils/cookie"
+import type { Sprint } from "@/types/sprint"
 
 export const createSprint = async(body: Omit<CreateSprint, "projectId">): Promise<void> => {
 	const projectId = Cookies.getProjectId()
@@ -17,8 +18,15 @@ export const createSprint = async(body: Omit<CreateSprint, "projectId">): Promis
 	}
 }
 
-//TO-DO: Implement getCurrentSprint
-// eslint-disable-next-line @typescript-eslint/require-await
-export const getCurrentSprint = async(): Promise<number> => {
-	return 1
+export const getSprints = async(): Promise<Sprint[]> => {
+	const response = await queryAndValidate({
+		route: "sprints",
+		responseSchema: SprintSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
 }

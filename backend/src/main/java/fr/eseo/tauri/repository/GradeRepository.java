@@ -36,9 +36,15 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 			"AND r.type = :roleType")
 	Double findAverageGradesByGradeType(Team team, String gradeTypeName, RoleType roleType);
 
+	@Query("SELECT AVG(g.value) FROM Grade g JOIN Role r ON g.author.id = r.user.id WHERE g.gradeType = :gradeType AND g.team = :team AND r.type = :roleType")
+	Double findAverageTeamGradeByGradeTypeAndRoleType(Team team, GradeType gradeType, RoleType roleType);
+
+	@Query("SELECT AVG(g.value) FROM Grade g JOIN Role r ON g.author.id = r.user.id WHERE g.gradeType = :gradeType AND g.student = :student AND r.type = :roleType")
+	Double findAverageStudentGradeByGradeTypeAndRoleType(Student student, GradeType gradeType, RoleType roleType);
+
 	@Modifying
 	@Transactional
-	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported AND LOWER(g.gradeType.name) = :gradeTypeName")
+	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported AND g.gradeType.name = :gradeTypeName")
 	void updateImportedMeanByStudentId(Float value, Integer studentId, String gradeTypeName);
 
 	@Modifying

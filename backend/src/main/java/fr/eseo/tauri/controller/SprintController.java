@@ -30,7 +30,7 @@ public class SprintController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Sprint>> getAllSprintsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+    public ResponseEntity<List<Sprint>> getAllSprintsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
         List<Sprint> sprints = sprintService.getAllSprintsByProject(token, projectId);
         return ResponseEntity.ok(sprints);
     }
@@ -57,7 +57,7 @@ public class SprintController {
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllSprintsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+    public ResponseEntity<String> deleteAllSprintsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
         sprintService.deleteAllSprintsByProject(token, projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());

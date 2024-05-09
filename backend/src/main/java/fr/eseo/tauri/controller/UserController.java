@@ -80,8 +80,8 @@ public class UserController {
 	}
 
 	@GetMapping("{id}/team")
-	public ResponseEntity<List<Team>> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-		List<Team> teams = userService.getTeamByMemberId(token, id);
+	public ResponseEntity<List<Team>> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
+		List<Team> teams = userService.getTeamByMemberId(token, id, projectId);
 		return ResponseEntity.ok(teams);
 	}
 
