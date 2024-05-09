@@ -29,7 +29,6 @@ const componentKey = ref(0)
 
 const authorized = hasPermission("RATING_PAGE")
 
-
 const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
 

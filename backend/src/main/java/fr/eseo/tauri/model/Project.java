@@ -2,7 +2,9 @@ package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
+import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -15,9 +17,11 @@ public class Project {
     @JsonProperty
     private Integer id;
 
+    @NotNull(groups = { Create.class }, message = "The nbTeams field is required")
     @JsonProperty
     private Integer nbTeams;
 
+    @NotNull(groups = { Create.class }, message = "The nbWomen field is required")
     @JsonProperty
     private Integer nbWomen;
 

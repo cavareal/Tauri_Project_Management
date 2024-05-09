@@ -1,4 +1,4 @@
-import { GradeTypeSchema, type UpdateGradeType } from "@/types/grade-type"
+import { GradeTypeSchema, UpdateGradeTypeSchema, type UpdateGradeType } from "@/types/grade-type"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
 import type { GradeType } from "@/types/grade-type"
@@ -13,14 +13,7 @@ export const getAllImportedGradeTypes = async() => {
 		throw new Error(response.error)
 	}
 
-	const meanIndex = response.data.findIndex(gradeType => gradeType.name.toLowerCase() === "mean")
-	if (meanIndex !== -1) {
-		const mean = response.data[meanIndex]
-		response.data.splice(meanIndex, 1)
-		response.data.unshift(mean)
-	}
-
-	const averageIndex = response.data.findIndex(gradeType => gradeType.name.toLowerCase() === "average")
+	const averageIndex = response.data.findIndex(gradeType => gradeType.name === "Moyenne")
 	if (averageIndex !== -1) {
 		const average = response.data[averageIndex]
 		response.data.splice(averageIndex, 1)
@@ -35,7 +28,7 @@ export const updateGradeType = async(id: number, body: UpdateGradeType): Promise
 		method: "PATCH",
 		route: `grade-types/${id}`,
 		body,
-		bodySchema: z.any()
+		bodySchema: UpdateGradeTypeSchema
 	})
 
 	if (response.status === "error") {

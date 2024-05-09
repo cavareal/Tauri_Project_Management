@@ -28,7 +28,7 @@ defineProps<{
 				<TableHead :class="rowClass" class="min-w-28">Genre</TableHead>
 				<TableHead :class="rowClass" class="min-w-28">Bachelor</TableHead>
 				<TableHead v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass" class="min-w-32">
-					<span v-if="['mean', 'average'].includes(gradeType.name.toLowerCase())">Moyenne</span>
+					<span v-if="gradeType.name === 'Moyenne'">Moyenne</span>
 					<span v-else>{{ gradeType.name }} ({{ gradeType.factor }})</span>
 				</TableHead>
 			</TableRow>

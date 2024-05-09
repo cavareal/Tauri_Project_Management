@@ -24,7 +24,7 @@ const props = defineProps<{
 	gradeTypes: GradeType[] | null
 }>()
 
-let filteredGradeTypes = computed(() => props.gradeTypes?.filter(gradeType => !["mean", "average"].includes(gradeType.name.toLowerCase())))
+let filteredGradeTypes = computed(() => props.gradeTypes?.filter(gradeType => gradeType.name !== "Moyenne"))
 
 const onInputValueChange = (e: Event, gradeTypeId: number) => {
 	if (!filteredGradeTypes.value) return

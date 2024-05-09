@@ -153,7 +153,3 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 </template>
-
-<style scoped>
-
-</style>

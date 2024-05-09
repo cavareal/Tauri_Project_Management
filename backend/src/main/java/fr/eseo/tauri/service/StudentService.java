@@ -7,6 +7,7 @@ import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
@@ -304,7 +305,7 @@ public class StudentService {
         headers[2] = "sexe M / F";
         int index = 5;
         for (GradeType gradeType : importedGrades) {
-            if(gradeType.name().equals("AVERAGE")){
+            if(gradeType.name().equals(GradeTypeName.AVERAGE.displayName())){
                 continue;
             }
             headers[index] = gradeType.name();

@@ -6,6 +6,7 @@ import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.StudentRepository;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
@@ -348,7 +349,7 @@ class StudentServiceTest {
         gradeType1.factor(1.0f);
 
         GradeType gradeType2 = new GradeType();
-        gradeType2.name("AVERAGE");
+        gradeType2.name(GradeTypeName.AVERAGE.displayName());
         gradeType2.factor(2.0f);
 
         studentService.writeHeaders(csvWriter, Arrays.asList(gradeType1, gradeType2));
