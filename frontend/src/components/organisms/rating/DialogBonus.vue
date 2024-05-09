@@ -2,9 +2,10 @@
 
 import { CustomDialog } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
-import { Column } from "@/components/atoms/containers"
+import { Column, Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
 import { ref } from "vue"
+import { DialogClose } from "@/components/ui/dialog"
 
 let bonus = ref(["0", "0", "0", "0", "0", "0", "0", "0"])
 const names = ["Alice", "Bob", "Charlie", "David", "Emma", "Frank", "Grace", "Henry"]

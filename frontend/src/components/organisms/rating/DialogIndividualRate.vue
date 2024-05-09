@@ -4,19 +4,22 @@ import { CustomDialog } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { Column, Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import { DialogClose } from "@/components/ui/dialog"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import type { GradeType } from "@/types/grade-type"
 import { getGradeTypeByName } from "@/services/grade-type-service"
 import { createGrade } from "@/services/grade-service"
 import { createToast } from "@/utils/toast"
+import { getTeamById, getTeamByUserId } from "@/services/team-service"
+import type { Team } from "@/types/team"
 
 let mark = ref(["0", "0", "0", "0", "0", "0", "0", "0"])
 const names = ["Alice", "Bob", "Charlie", "David", "Emma", "Frank", "Grace", "Henry"]
 const firstColumn = names.slice(0, 4)
 const secondColumn = names.slice(4)
 const open = ref(false)
+const currentTeam = ref<Team>()
 
 const props = defineProps<{
 	title: string,
@@ -29,6 +32,11 @@ const props = defineProps<{
 const { data: gradeType } = useQuery<GradeType, Error>({
 	queryKey: ["grade-type"],
 	queryFn: () => getGradeTypeByName(props.gradeTypeString)
+})
+
+onMounted(async() => {
+	if (props.teamId) return
+	currentTeam.value = await getTeamById(Number(props.teamId))
 })
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
