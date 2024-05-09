@@ -1,8 +1,8 @@
 import type { CreateFeedback } from "@/types/feedback"
-import { mutateAndValidate } from "@/utils/api"
-import { CreateFeedbackSchema } from "@/types/feedback"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { CreateFeedbackSchema, FeedbackSchema } from "@/types/feedback"
 import { Cookies } from "@/utils/cookie"
-import { getCurrentSprint } from "@/services/sprint-service"
+import type { Feedback } from "@/types/feedback"
 
 export const addFeedback = async(feedback: CreateFeedback): Promise<void> => {
 	const response = await mutateAndValidate({
@@ -17,9 +17,8 @@ export const addFeedback = async(feedback: CreateFeedback): Promise<void> => {
 	}
 }
 
-export const createFeedback = async(teamId: string, feedbackContent: string): Promise<void> => {
+export const createFeedback = async(teamId: number, feedbackContent: string, sprintId: number): Promise<void> => {
 	const authorId = Cookies.getUserId()
-	const sprintId = await getCurrentSprint()
 	const feedback: CreateFeedback = {
 		teamId,
 		content: feedbackContent,
@@ -28,4 +27,17 @@ export const createFeedback = async(teamId: string, feedbackContent: string): Pr
 		authorId
 	}
 	return await addFeedback(feedback)
+}
+
+export const getFeedbacksBySprintAndTeam = async(teamId: number, sprintId: number): Promise<Feedback[]> => {
+	const response = await queryAndValidate({
+		route: `teams/${teamId}/sprints/${sprintId}/comments`,
+		responseSchema: FeedbackSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
 }

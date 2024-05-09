@@ -1,21 +1,26 @@
 import { z } from "zod"
+import { TeamSchema } from "@/types/team"
+import { SprintSchema } from "@/types/sprint"
+import { UserSchema } from "@/types/user"
 
 export const FeedbackSchema = z.object({
 	id: z.number(),
 	content: z.string(),
 	feedback: z.boolean(),
-	teamId: z.number(),
-	sprintId: z.number(),
-	authorId: z.number()
+	team: TeamSchema,
+	sprint: SprintSchema,
+	author: UserSchema
 })
 
 export const CreateFeedbackSchema = FeedbackSchema.omit({
 	id: true,
-	authorId: true,
-	teamId: true
+	author: true,
+	team: true,
+	sprint: true
 }).extend({
 	authorId: z.coerce.number(),
-	teamId: z.string()
+	teamId: z.coerce.number(),
+	sprintId: z.coerce.number()
 })
 
 

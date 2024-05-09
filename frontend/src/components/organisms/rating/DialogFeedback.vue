@@ -14,26 +14,24 @@ import { CustomSelect } from "@/components/molecules/select"
 import { getTeams } from "@/services/team-service"
 import { createFeedback } from "@/services/feedback-service"
 
+const props = defineProps({
+	selectedTeamId: Number,
+	selectedSprintId: Number
+})
+
 const open = ref(false)
 const feedback = ref("")
-const teams = ref<Team[]>()
-const selectedTeamId = ref<string>()
 
-const isDisabled = computed(() => feedback.value === "" || selectedTeamId.value === undefined)
+const isDisabled = computed(() => feedback.value === "")
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"], mutationFn: async() => {
-	await createFeedback(selectedTeamId.value!, feedback.value)
+	await createFeedback(props.selectedTeamId!, feedback.value, props.selectedSprintId!)
 		.then(() => open.value = false)
 		.then(() => createToast("Le feedback a été enregistré."))
 } })
 
 const DIALOG_TITLE = "Donner un feedback"
-const DIALOG_DESCRIPTION = "Envoyer un feedback sur le déroulement du dernier sprint"
-
-onMounted(async() => {
-	teams.value = await getTeams()
-})
-
+const DIALOG_DESCRIPTION = "Envoyer un feedback à l'équipe sélectionné sur le déroulement du sprint"
 
 const getTeamName = (team : Team) => {
 	if (team) {
@@ -56,7 +54,6 @@ const getTeamID = (team : Team) => {
     <slot />
   </template>
 
-    <CustomSelect v-model="selectedTeamId" :getName="getTeamName" :data="teams!" :getId="getTeamID" placeholder="Sélectionner une équipe"/>
   <Text class="-mb-2">Votre feedback</Text>
   <Textarea v-model="feedback" placeholder="Ajouter un feedback" class="max-h-64"></Textarea>
   <ErrorText v-if="error" class="mt-2">Une erreur est survenue.</ErrorText>

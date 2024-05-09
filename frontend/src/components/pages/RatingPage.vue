@@ -65,7 +65,7 @@ const forceRerender = () => {
 		<div v-if="selectedTeam !== ''">
 			<NotAutorized v-if="!token || !role" />
 			<TMRateView v-else-if="role === 'TEAM_MEMBER'" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
-			<SSTCRateView v-else-if="canRate"/>
+			<SSTCRateView v-else-if="canRate" :sprintId="selectedSprint" :teamId="selectedTeam"/>
 			<NotAutorized v-else/>
 		</div>
 	</SidebarTemplate>

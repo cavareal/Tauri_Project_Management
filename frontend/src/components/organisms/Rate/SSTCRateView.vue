@@ -5,6 +5,11 @@ import { ContainerGradeType } from "@/components/molecules/rateContainer"
 import { DialogRating, DialogViewGrades } from "@/components/organisms/rating"
 import DialogFeedback from "@/components/organisms/rating/DialogFeedback.vue"
 
+const props = defineProps({
+	sprintId: Number,
+	teamId: Number
+})
+
 </script>
 
 
@@ -99,8 +104,10 @@ import DialogFeedback from "@/components/organisms/rating/DialogFeedback.vue"
     </template>
 
     <template #dialog>
+      <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId">
         <Button variant="secondary">Voir les feedbacks</Button>
-      <DialogFeedback>
+      </DialogViewFeedback>
+      <DialogFeedback :selectedTeamId="props.teamId" :selectedSprintId="props.sprintId">
           <Button variant="default">Donner un feedback</Button>
       </DialogFeedback>
     </template>
