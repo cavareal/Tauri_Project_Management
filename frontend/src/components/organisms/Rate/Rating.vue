@@ -43,15 +43,16 @@ const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
 
 
 onMounted(async() => {
-	if (!currentUser) return
 	teamOfCurrentUser.value = await getTeamByUserId(currentUser)
+	console.log(teamOfCurrentUser.value?.id)
+	console.log(props.teamId)
 })
 
 
 </script>
 
 <template>
-	<ContainerGradeType v-if="canGradeGlobalPerformance && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId !== teamOfCurrentUser.id.toString()" title="Note Globale de présentation" infotext="Vous devez évaluer chaque équipe sur sa présentation globale">
+	<ContainerGradeType v-if="canGradeGlobalPerformance && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) !== teamOfCurrentUser.id" title="Note Globale de présentation" infotext="Vous devez évaluer chaque équipe sur sa présentation globale">
 		<template #icon>
 			<Users :size="40" :stroke-width="1"/>
 		</template>
@@ -64,7 +65,7 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeTechnicalSolution && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId === teamOfCurrentUser.id.toString()" title="Solution Technique" infotext="Vous devez évaluer chaque équipe sur la solution technique qui a été mise en œuvre.">
+	<ContainerGradeType v-if="canGradeTechnicalSolution && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Solution Technique" infotext="Vous devez évaluer chaque équipe sur la solution technique qui a été mise en œuvre.">
 		<template #icon>
 			<Blocks :size="40" :stroke-width="1"/>
 		</template>
@@ -78,7 +79,7 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeSprintConformity && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId === teamOfCurrentUser.id.toString()" title="Conformité du sprint" infotext="Vous devez évaluer la conformité du sprint des équipes.">
+	<ContainerGradeType v-if="canGradeSprintConformity && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Conformité du sprint" infotext="Vous devez évaluer la conformité du sprint des équipes.">
 		<template #icon>
 			<Play :size="40" :stroke-width="1"/>
 		</template>
@@ -91,7 +92,7 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeProjectManagement && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId === teamOfCurrentUser.id.toString()" title="Gestion du projet" infotext="Vous devez évaluer chaque équipe sur sa gestion du projet.">
+	<ContainerGradeType v-if="canGradeProjectManagement && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Gestion du projet" infotext="Vous devez évaluer chaque équipe sur sa gestion du projet.">
 		<template #icon>
 			<SquareGanttChart :size="40" :stroke-width="1"/>
 		</template>
@@ -144,7 +145,7 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeBonus && teamOfCurrentUser && teamOfCurrentUser.id && props.teamId === teamOfCurrentUser.id.toString()" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
+	<ContainerGradeType v-if="canGradeBonus && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
 		<template #icon>
 			<LucideCircleFadingPlus :size="40" :stroke-width="1"/>
 		</template>
