@@ -4,6 +4,7 @@ import { UserSchema, type UpdateUser, type User } from "@/types/user"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { Cookies } from "@/utils/cookie"
 import { z } from "zod"
+import type { Team } from "@/types/team"
 
 export const getConnectedUser = async(): Promise<User> => {
 	const id = Cookies.getUserId()

@@ -178,6 +178,7 @@ public class TeamService {
         }
         projectService.updateProject(token, projectId, projectDetails);
         List<Team> teams = this.createTeams(token, projectId, nbTeams);
+        CustomLogger.info("Teams have been created");
         this.fillTeams(teams, women, men, womenPerTeam, nbStudent);
     }
 
@@ -243,5 +244,7 @@ public class TeamService {
             this.roleRepository.save(role);
             this.studentRepository.save(student);
         }
+        CustomLogger.info("Teams have been filled with students");
     }
+
 }

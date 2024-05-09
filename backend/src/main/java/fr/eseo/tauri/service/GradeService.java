@@ -34,6 +34,7 @@ public class GradeService {
     private final GradeTypeService gradeTypeService;
     private final UserRepository userRepository;
     private final TeamService teamService;
+    private final BonusRepository bonusRepository;
 
     public Grade getGradeById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
@@ -152,4 +153,29 @@ public class GradeService {
 			return null;
 		}
 	}
+
+    public Double getSprintGrade(String token, Integer userId, Integer sprintId) {
+    /*    if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        Student student = studentService.getStudentById(token, userId);
+
+        Double sprintGrade;
+
+        var grade1 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.TECHNICAL_SOLUTION.displayName());
+        var grade2 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.PROJECT_MANAGEMENT.displayName());
+        var grade3 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.SPRINT_CONFORMITY.displayName());
+        var grade4 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.CONTENT_PRESENTATION.displayName());
+
+
+
+        var bonuses = bonusRepository.findAllStudentBonuses(userId);
+
+        //Student student = studentService.getStudentById(token, userId);
+        //Sprint sprint = sprintService.getSprintById(token, sprintId);
+
+        return gradeRepository.findSprintGrade(student, sprint);*/
+        return 0.0;
+    }
 }
