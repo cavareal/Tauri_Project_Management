@@ -13,13 +13,17 @@ import { createGrade } from "@/services/grade-service"
 import { createToast } from "@/utils/toast"
 import { getTeamById, getTeamByUserId } from "@/services/team-service"
 import type { Team } from "@/types/team"
+import { hasPermission } from "@/services/user-service"
+import { getStudentsByTeamId } from "@/services/student-service"
+import { Cookies } from "@/utils/cookie"
 
 let mark = ref(["0", "0", "0", "0", "0", "0", "0", "0"])
-const names = ["Alice", "Bob", "Charlie", "David", "Emma", "Frank", "Grace", "Henry"]
-const firstColumn = names.slice(0, 4)
-const secondColumn = names.slice(4)
 const open = ref(false)
 const currentTeam = ref<Team>()
+
+const DIALOG_DESCRIPTION = "Vous pouvez attribuer une note individuelle à chaque étudiant"
+
+const gradeIndividual = hasPermission("GRADE_INDIVIDUAL_PERFORMANCE")
 
 const props = defineProps<{
 	title: string,
@@ -33,6 +37,11 @@ const { data: gradeType } = useQuery<GradeType, Error>({
 	queryKey: ["grade-type"],
 	queryFn: () => getGradeTypeByName(props.gradeTypeString)
 })
+
+const { data: teamStudents, refetch } = useQuery({ queryKey: ["team-students"], queryFn: async() => {
+	if (!props.teamId) return
+	return await getStudentsByTeamId(Number(props.teamId))
+} })
 
 onMounted(async() => {
 	if (props.teamId) return
@@ -63,26 +72,25 @@ const handleInput = (event: InputEvent, index: number) => {
 	}
 }
 
+
+const handleTriggerClick = async() => {
+	await refetch()
+}
+
 </script>
 
 <template>
-	<CustomDialog title="Notes individuelles" description="Vous pouvez attribuer une note individuelle à chaque étudiant">
+	<CustomDialog title="Notes individuelles" :description="DIALOG_DESCRIPTION">
 		<template #trigger>
-			<Button variant="default">Voir les notes</Button>
+			<Button variant="default" @click="handleTriggerClick">Voir les notes</Button>
 		</template>
 		<div class="flex">
-			<Column>
-				<Row v-for="(name, index) in firstColumn" :key="index" class="grid grid-cols-3 items-center gap-4 mb-2">
-					<Label>{{ name }}</Label>
-					<Input v-model="mark[index]" type="number" min="0" max="20" @input="handleInput($event, index)"/>
+			<Row class="flex-wrap">
+				<Row v-for="(student, index) in teamStudents" :key="student.id" class="grid grid-cols-3 items-center gap-4 mb-2 w-1/2">
+					<Label>{{ student.name }}</Label>
+					<Input type="number" @input="handleInput($event, index)" />
 				</Row>
-			</Column>
-			<Column>
-				<Row v-for="(name, index) in secondColumn" :key="index" class="grid grid-cols-3 items-center gap-4 mb-2">
-					<Label>{{ name }}</Label>
-					<Input v-model="mark[index + 4]" type="number" min="0" max="20" @input="handleInput($event,index + 4)"/>
-				</Row>
-			</Column>
+			</Row>
 		</div>
 		<template #footer>
 			<DialogClose>
