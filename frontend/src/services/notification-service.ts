@@ -17,6 +17,20 @@ export const getAllNotifications = async(): Promise<Notification[]> => {
 	return response.data
 }
 
+export const getAllNotificationsFromUser = async(userId: number): Promise<Notification[]> => {
+	const response = await queryAndValidate({
+		route: `users/${userId}/notifications`,
+		responseSchema: z.array(NotificationSchema)
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+
 export const changeStateChecked = async(id: number): Promise<void> => {
 	const response = await mutateAndValidate({
 		route: `notifications/${id}/changeStateChecked`,

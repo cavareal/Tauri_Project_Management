@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Integer> {
 
-    @Query("SELECT n FROM Notification n WHERE n.userTo= :user")
+    @Query("SELECT n FROM Notification n WHERE n.userTo.id= :user")
     List<Notification> findByUser(@Param("user") int id);
 
 }
