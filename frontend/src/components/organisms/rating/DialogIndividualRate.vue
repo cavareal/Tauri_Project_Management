@@ -2,25 +2,20 @@
 
 import { CustomDialog } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
-import { Column, Row } from "@/components/atoms/containers"
+import { Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
-import { onMounted, ref } from "vue"
+import { ref } from "vue"
 import { DialogClose } from "@/components/ui/dialog"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import type { GradeType } from "@/types/grade-type"
 import { getGradeTypeByName } from "@/services/grade-type-service"
 import { createGrade } from "@/services/grade-service"
 import { createToast } from "@/utils/toast"
-import { getTeamById, getTeamByUserId } from "@/services/team-service"
-import type { Team } from "@/types/team"
 import { hasPermission } from "@/services/user-service"
 import { getStudentsByTeamId } from "@/services/student-service"
-import { Cookies } from "@/utils/cookie"
+import LoadingButton from "../../molecules/buttons/LoadingButton.vue"
 
-let mark = ref(["0", "0", "0", "0", "0", "0", "0", "0"])
 const open = ref(false)
-const currentTeam = ref<Team>()
-
 const DIALOG_DESCRIPTION = "Vous pouvez attribuer une note individuelle à chaque étudiant"
 
 const gradeIndividual = hasPermission("GRADE_INDIVIDUAL_PERFORMANCE")
@@ -43,33 +38,39 @@ const { data: teamStudents, refetch } = useQuery({ queryKey: ["team-students"], 
 	return await getStudentsByTeamId(Number(props.teamId))
 } })
 
-onMounted(async() => {
-	if (props.teamId) return
-	currentTeam.value = await getTeamById(Number(props.teamId))
-})
+let marks = ref<{ studentId: number; mark: number; }[]>([])
+
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
-	await createGrade({
-		value: Number(mark.value),
-		gradeTypeId: gradeType.value.id,
-		teamId: Number(props.teamId),
-		sprintId: Number(props.sprintId),
-		comment: null,
-		studentId: null
-	})
-	//.then(() => mark.value = "")
-		.then(() => createToast("La note a bien été enregistrée."))
-		.then(() => open.value = false)
-} })
-const handleInput = (event: InputEvent, index: number) => {
-	const inputNote = parseInt((event.target as HTMLInputElement).value)
-	if (inputNote > 20) {
-		mark.value[index] = String(20)
-	} else if (inputNote < 0) {
-		mark.value[index] = String(0)
-	} else {
-		mark.value[index] = String(inputNote)
+	for (let i = 0; i < marks.value.length; i++) {
+		console.log()
+		await createGrade({
+			value: Number(marks.value[i].mark),
+			gradeTypeId: gradeType.value.id,
+			teamId: null,
+			sprintId: Number(props.sprintId),
+			comment: null,
+			studentId: marks.value[i].studentId
+		})
+			.then(() => marks.value[i].mark = 0)
+			.then(() => createToast("La note a bien été enregistrée."))
 	}
+	open.value = false
+} })
+
+const handleInput = (event: InputEvent, index: number, studentId : number) => {
+	const inputNote = parseInt((event.target as HTMLInputElement).value)
+	if (!marks.value[index]) {
+		marks.value[index] = { studentId: 0, mark: 0 }
+	}
+	if (inputNote > 20) {
+		marks.value[index].mark = 20
+	} else if (inputNote < 0) {
+		marks.value[index].mark = 0
+	} else {
+		marks.value[index].mark = Number(inputNote)
+	}
+	marks.value[index].studentId = studentId
 }
 
 
@@ -88,13 +89,18 @@ const handleTriggerClick = async() => {
 			<Row class="flex-wrap">
 				<Row v-for="(student, index) in teamStudents" :key="student.id" class="grid grid-cols-3 items-center gap-4 mb-2 w-1/2">
 					<Label>{{ student.name }}</Label>
-					<Input type="number" @input="handleInput($event, index)" />
+					<Input type="number" min="0" max="20" @input="handleInput($event, index, student.id)" />
 				</Row>
 			</Row>
 		</div>
 		<template #footer>
 			<DialogClose>
-				<Button variant="default">Valider</Button>
+				<Button variant="outline">Annuler</Button>
+			</DialogClose>
+			<DialogClose>
+				<LoadingButton type="submit" :loading="isPending" @click="mutate">
+					Confirmer
+				</LoadingButton>
 			</DialogClose>
 		</template>
 	</CustomDialog>
