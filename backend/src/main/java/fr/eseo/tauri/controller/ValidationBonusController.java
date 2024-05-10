@@ -1,6 +1,5 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.service.ValidationBonusService;
 import fr.eseo.tauri.util.CustomLogger;

@@ -38,7 +38,6 @@ public class NotificationController {
     /**
      * Get all notifications by project
      * @param token the token of the user
-     * @param projectId the id of the project
      * @return the list of notifications
      */
     @GetMapping
