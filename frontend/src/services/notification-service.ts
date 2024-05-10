@@ -1,7 +1,7 @@
 
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
-import { NotificationSchema } from "@/types/notification"
-import type { Notification } from "@/types/notification"
+import { CreateNotificationSchema, NotificationSchema } from "@/types/notification"
+import type { Notification, CreateNotification } from "@/types/notification"
 import { z } from "zod"
 
 export const getAllNotifications = async(): Promise<Notification[]> => {
@@ -28,18 +28,20 @@ export const changeStateChecked = async(id: number): Promise<void> => {
 	}
 }
 
-export const addNotification = async(notification: Notification): Promise<void> => {
-	const formData = new FormData()
-	if (!notification) {
-		formData.append("notification", notification)
+export const addNotification = async(userToId: number, userFromId: number): Promise<void> => {
+	const notification: CreateNotification = {
+		message: "La composition des équipes a été prépubliée.",
+		checked: false,
+		type: "CREATE_TEAMS",
+		userToId: userToId,
+		userFromId: userFromId
 	}
 
 	const response = await mutateAndValidate({
 		method: "POST",
 		route: "notifications",
-		body: formData,
-		bodySchema: z.instanceof(FormData),
-		jsonContent: false
+		body: notification,
+		bodySchema: CreateNotificationSchema
 	})
 
 	if (response.status === "error") {

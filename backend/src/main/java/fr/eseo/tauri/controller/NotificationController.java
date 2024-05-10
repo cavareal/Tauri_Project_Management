@@ -36,14 +36,6 @@ public class NotificationController {
         return ResponseEntity.ok(notification);
     }
 
-    //TODO
-    /*
-    @GetMapping("/users/{userId}/notifications")
-    public ResponseEntity<Iterable<Notification>> getAllNotificationsUser(@PathVariable Integer userId) {
-        Optional<User> actualUser = userRepository.findById(userId);
-        return ResponseEntity.ok(notificationRepository.findByUser(userId));
-    }*/
-
     /**
      * Get all notifications by project
      * @param token the token of the user

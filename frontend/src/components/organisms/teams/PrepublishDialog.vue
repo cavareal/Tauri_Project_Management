@@ -8,16 +8,20 @@ import { updateProject } from "@/services/project-service"
 import { useMutation } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { getCookie } from "@/utils/cookie"
+import { addNotification } from "@/services/notification-service"
 
 const emits = defineEmits(["prepublish:teams", "create:notifications"])
 const open = ref(false)
 const currentProject = getCookie("currentProject")
+const currentUserId = getCookie("user")
 
 const { mutate, error, isPending } = useMutation({ mutationKey: ["prepublish-teams"], mutationFn: async() => {
-	await updateProject(currentProject, { phase: "PREPUBLISHED" })
-		.then(() => open.value = false)
-		.then(() => emits("prepublish:teams"))
-		.then(() => emits("create:notifications"))
+	if (typeof currentUserId === "string") {
+		await updateProject(currentProject, { phase: "PREPUBLISHED" })
+			.then(() => open.value = false)
+			.then(() => emits("prepublish:teams"))
+			.then(() => addNotification(10, parseInt(currentUserId)))
+	}
 } })
 
 const DIALOG_TITLE = "Prépublier les équipes"

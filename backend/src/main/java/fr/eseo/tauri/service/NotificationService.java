@@ -4,6 +4,7 @@ import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.NotificationRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,26 @@ public class NotificationService {
 		}
 
 		return notificationRepository.findAll();
+	}
+
+	/**
+	 * Get a notification by the user id
+	 * @param token the token of the user
+	 * @param userId the id of the user who receive the notifications (userTo)
+	 * @return the notifications
+	 */
+	public List<Notification> getNotificationsByUser(String token, Integer userId) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotification"))) {
+			CustomLogger.error("there is no authorization !");
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+
+		List<Notification> notifications = notificationRepository.findByUser(userId);
+		if (notifications.isEmpty()){
+			CustomLogger.error("there is no notifications found !");
+			throw new ResourceNotFoundException("notification (searched by user)", userId);
+		}
+		return notifications;
 	}
 
 	/**
