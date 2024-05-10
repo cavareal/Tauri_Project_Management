@@ -8,12 +8,14 @@ import {
 } from "@/components/ui/sheet"
 import { Header } from "@/components/molecules/header"
 import { useQuery } from "@tanstack/vue-query"
-import { getAllNotifications } from "@/services/notification-service"
+import { getAllNotificationsFromUser } from "@/services/notification-service"
 import NotificationTable from "@/components/organisms/notifications/NotificationTable.vue"
 import { Text } from "@/components/atoms/texts"
+import { getCookie } from "@/utils/cookie"
 
+const currentUserId = getCookie("user")
 const { data: notifications, refetch: refetchNotifications }
-    = useQuery({ queryKey: ["notifications"], queryFn: getAllNotifications })
+    = useQuery({ queryKey: ["notifications"], queryFn: () => getAllNotificationsFromUser(parseInt(currentUserId)) })
 
 const refetch = async() => {
 	await refetchNotifications()
