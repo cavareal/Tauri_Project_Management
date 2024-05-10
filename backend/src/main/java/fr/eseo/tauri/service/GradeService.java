@@ -1,6 +1,8 @@
 package fr.eseo.tauri.service;
 
+import com.opencsv.CSVWriter;
 import fr.eseo.tauri.model.*;
+import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
@@ -13,6 +15,10 @@ import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.GradeRepository;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.List;
 
 import static fr.eseo.tauri.util.ListUtil.filter;
@@ -62,15 +68,15 @@ public class GradeService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        if(grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
-        if(grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
-        if(grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
+        if (grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
+        if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
+        if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
         if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
             grade.student(null);
-            if(grade.teamId() != null) grade.team(teamService.getTeamById(token, grade.teamId()));
+            if (grade.teamId() != null) grade.team(teamService.getTeamById(token, grade.teamId()));
         } else {
             grade.team(null);
-            if(grade.studentId() != null) grade.student(studentService.getStudentById(token, grade.studentId()));
+            if (grade.studentId() != null) grade.student(studentService.getStudentById(token, grade.studentId()));
         }
 
         if ((grade.team() == null) == (grade.student() == null)) {
@@ -89,7 +95,8 @@ public class GradeService {
         if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
         if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, updatedGrade.sprintId()));
         if (updatedGrade.authorId() != null) grade.author(userService.getUserById(token, updatedGrade.authorId()));
-        if (updatedGrade.studentId() != null) grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
+        if (updatedGrade.studentId() != null)
+            grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
         if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(token, updatedGrade.teamId()));
         gradeRepository.save(grade);
     }
@@ -143,16 +150,16 @@ public class GradeService {
         return gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType);
     }
 
-	public Float getGradeByStudentAndGradeType(Student student, GradeType gradeType) {
-		try {
-			Float grade = gradeRepository.findValueByStudentAndGradeType(student, gradeType);
-			CustomLogger.info("Getting grade for student " + student.name() + " and grade type " + gradeType.name() + ": " + grade);
-			return grade;
-		} catch (NullPointerException e) {
-			CustomLogger.info("No grade found for student " + student.name() + " and grade type " + gradeType.name());
-			return null;
-		}
-	}
+    public Float getGradeByStudentAndGradeType(Student student, GradeType gradeType) {
+        try {
+            Float grade = gradeRepository.findValueByStudentAndGradeType(student, gradeType);
+            CustomLogger.info("Getting grade for student " + student.name() + " and grade type " + gradeType.name() + ": " + grade);
+            return grade;
+        } catch (NullPointerException e) {
+            CustomLogger.info("No grade found for student " + student.name() + " and grade type " + gradeType.name());
+            return null;
+        }
+    }
 
     public Double getSprintGrade(String token, Integer userId, Integer sprintId) {
     /*    if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
@@ -178,4 +185,65 @@ public class GradeService {
         return gradeRepository.findSprintGrade(student, sprint);*/
         return 0.0;
     }
+
+    /**
+     * This method generates a CSV report of a student's individual grades.
+     *
+     * @param token The authentication token of the user.
+     * @param userId The ID of the student for whom the report is to be generated.
+     * @return A byte array containing the CSV report.
+     * @throws IOException If an I/O error occurs.
+     */
+    public byte[] createStudentIndividualGradesCSVReport(String token, int userId) throws IOException {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "exportGrades"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        CustomLogger.info("Creating student grades report for student with id " + userId);
+
+        // Fetch student details and grades
+        Student student = studentService.getStudentById(token, userId);
+        List<Grade> grades = gradeRepository.findAllunimportedByStudentId(userId);
+
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
+             CSVWriter csvWriter = new CSVWriter(writer)) {
+
+            // Prepare headers and student information
+            String[] header = new String[3 + grades.size()];
+            String[] studentInfo = new String[3 + grades.size()];
+            initializeArrays(header, studentInfo);
+
+            // Populate student basic info
+            studentInfo[0] = student.name();
+            studentInfo[1] = student.gender() == Gender.MAN ? "M" : "F";
+            studentInfo[2] = Boolean.TRUE.equals(student.bachelor()) ? "B" : "";
+
+            // Populate grades info
+            for (int i = 0; i < grades.size(); i++) {
+                header[i + 3] = grades.get(i).gradeType().name();
+                studentInfo[i + 3] = String.valueOf(grades.get(i).value());
+            }
+
+            // Write to CSV
+            csvWriter.writeNext(header);
+            csvWriter.writeNext(studentInfo);
+            writer.flush();
+
+            return byteArrayOutputStream.toByteArray();
+        }
+    }
+
+    /**
+     * </br> Helper method to initialize the given arrays with empty strings.
+     * This method initializes the given arrays with empty strings.
+     *
+     * @param header The header array to initialize.
+     * @param info The info array to initialize.
+     */
+    private void initializeArrays(String[] header, String[] info) {
+        Arrays.fill(header, "");
+        Arrays.fill(info, "");
+    }
+
 }

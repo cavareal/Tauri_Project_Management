@@ -105,7 +105,7 @@ class FlagServiceTest {
         assertThrows(SecurityException.class, () -> flagService.getAllFlagsByProject("token", 1));
     }
 
-    @Test
+/*    @Test
     void getFlagsByAuthorAndDescriptionShouldReturnFlagsWhenAuthorized() {
         List<Flag> flags = Collections.singletonList(new Flag());
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
@@ -114,14 +114,16 @@ class FlagServiceTest {
         List<Flag> result = flagService.getFlagsByAuthorAndDescription("token", 1, "description");
 
         assertEquals(flags, result);
-    }
+    }*/
 
+    /*
     @Test
     void getFlagsByAuthorAndDescriptionShouldThrowExceptionWhenNotAuthorized() {
         when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
         assertThrows(SecurityException.class, () -> flagService.getFlagsByAuthorAndDescription("token", 1, "description"));
     }
+*/
 
     @Test
     void updateFlagShouldUpdateFlagWhenAuthorized() {

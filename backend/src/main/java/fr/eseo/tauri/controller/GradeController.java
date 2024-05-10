@@ -16,6 +16,7 @@ import fr.eseo.tauri.util.valid.Create;
 import fr.eseo.tauri.util.valid.Update;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -155,5 +156,13 @@ public class GradeController {
 			return -1.0;
 		}
 	}
+
+	@GetMapping("download-student-grades/{studentId}")
+	public ResponseEntity<byte[]> downloadStudentGrades(@RequestHeader("Authorization") String token, @PathVariable Integer studentId) throws IOException {
+		byte[] gradesCSV = gradeService.createStudentIndividualGradesCSVReport(token, studentId);
+		return ResponseEntity.ok(gradesCSV);
+	}
+
+
 	
 }

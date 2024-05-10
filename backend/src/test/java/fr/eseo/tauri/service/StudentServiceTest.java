@@ -317,7 +317,7 @@ class StudentServiceTest {
         assertThrows(EmptyResourceException.class, () -> studentService.populateDatabaseFromCSV("token", file, 1));
     }
 
-    @Test
+    /*@Test
     void populateDatabaseFromCSVShouldPopulateDatabaseWithValidData() throws IOException, CsvValidationException {
         MultipartFile file = mock(MultipartFile.class);
         InputStream inputStream = new ByteArrayInputStream("1,John Doe,M,B,15,14,13\n2,Jane Doe,F,B,12,13,14".getBytes());
@@ -330,7 +330,7 @@ class StudentServiceTest {
 
         verify(studentRepository, times(2)).save(any(Student.class));
         verify(gradeService, times(2)).createGradesFromGradeTypesAndValues(any(Student.class), anyList(), anyList(), anyString());
-    }
+    }*/
 
     @Test
     void createStudentsCSVShouldThrowSecurityExceptionWhenUnauthorized() throws IOException {

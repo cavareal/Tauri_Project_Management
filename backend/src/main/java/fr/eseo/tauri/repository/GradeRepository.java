@@ -65,4 +65,7 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 
 	@Query("SELECT g.value FROM Grade g WHERE g.student = :student AND g.gradeType = :gradeType")
 	public Float findValueByStudentAndGradeType(Student student, GradeType gradeType);
+
+	@Query("SELECT g FROM Grade g WHERE g.student.id = :studentId AND g.gradeType.imported = false")
+	List<Grade> findAllunimportedByStudentId(int studentId);
 }
