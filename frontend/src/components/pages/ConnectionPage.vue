@@ -18,20 +18,20 @@ const username = ref<string>("")
 const password = ref<string>("")
 
 const handleSubmit = async(event: Event) => {
-  	event.preventDefault();
-  	// TODO xss/escape html before ???
-  	console.log(username.value, password.value)
-	await mutate();
+	event.preventDefault()
+	// TODO xss/escape html before ???
+	console.log(username.value, password.value)
+	await mutate()
 }
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["login"], mutationFn: async() => {
+	console.log("Page : " + username.value + " - " + password.value)
 	await login(username.value, password.value).then(() => {
-		redirect("/");
-	}).catch(() => {
-		console.log("errorlogin")
+		redirect("/")
+	}).catch((e) => {
+		console.log("errorlogin : " + e)
 	})
 } })
-
 
 
 const CARD_TITLE = "Bienvenue sur Tauri !"
@@ -47,13 +47,13 @@ const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette 
 		</Column>
 
 		<CustomCard class="border-none drop-shadow-login-card" :title="CARD_TITLE" :description="CARD_DESCRIPTION">
-			
+
 			<form @submit.prevent="handleSubmit">
-				<input type="text" id="username" name="username" v-model="username" placeholder="Addresse mail" required> 
-				<input type="password" id="password" name="password" v-model="password" placeholder="Mot de passe" required> 
+				<input type="text" id="username" name="username" v-model="username" placeholder="Addresse mail" required>
+				<input type="password" id="password" name="password" v-model="password" placeholder="Mot de passe" required>
 				<Button type="submit">Connexion</Button>
-			</form> 
-			
+			</form>
+
 		</CustomCard>
 	</Column>
 </template>

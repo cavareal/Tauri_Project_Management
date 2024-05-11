@@ -1,17 +1,20 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.model.AuthRequest;
-import fr.eseo.tauri.model.LoginResponse;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.security.AuthRequest;
+import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import fr.eseo.tauri.security.JwtTokenUtil;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,22 +22,30 @@ import java.util.Map;
 @Tag(name = "auth")
 public class AuthController {
 
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenUtil jwtTokenUtil;
+
     @PostMapping("/login")
-    public Boolean login(@RequestBody User user) {
-        CustomLogger.info(user.email() + " is trying to log in");
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        try {
+            System.out.println("request : " + request);
 
-            // Prevent XSS faille
-            String loginSecure = HtmlUtils.htmlEscape(request.get("username"));
-            String passwordSecure = HtmlUtils.htmlEscape(request.get("password"));
-
-            // TODO faille xss : htmlEscape and/or validator, when receiving username and password
-            // TODO implement logic to authenticate user, and return data to user (adapt type of var response)
-
-            String response = "";
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-
+            User userDetails = (User) userDetailsService.loadUserByUsername(request.login());
+            if (passwordEncoder.matches(request.password(), userDetails.getPassword())) {
+                CustomLogger.info("Credentials match");
+                String accessToken = jwtTokenUtil.generateAccessToken(userDetails);
+                CustomLogger.info("Token generated");
+                AuthResponse response = new AuthResponse(userDetails.getUsername(), accessToken);
+                CustomLogger.info("Response ready");
+                System.out.println("Response : " + response);
+                return ResponseEntity.ok(response);
+            }
+            System.out.println("Credentials doesn't match");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            return (ResponseEntity<String>) ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            System.out.println("Exception : " + e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
@@ -51,9 +62,6 @@ public class AuthController {
 
         return true;
     }
-
-
-
 
 
 }
