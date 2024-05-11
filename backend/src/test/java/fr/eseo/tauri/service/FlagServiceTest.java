@@ -4,6 +4,7 @@ import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.repository.FlagRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,6 +22,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
+@Nested
 class FlagServiceTest {
 
     private final String TEST_TOKEN = "testToken";
