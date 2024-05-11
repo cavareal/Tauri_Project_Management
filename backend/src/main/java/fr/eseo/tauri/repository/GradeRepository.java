@@ -6,6 +6,7 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
+import jakarta.annotation.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -68,4 +69,13 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 
 	@Query("SELECT g FROM Grade g WHERE g.student.id = :studentId AND g.gradeType.imported = false")
 	List<Grade> findAllunimportedByStudentId(int studentId);
+
+	@Query("SELECT g FROM Grade g WHERE g.gradeType.imported = false AND g.student.project.id = :projectId")
+	List<Grade> findAllunimportedByProjectId(int projectId);
+
+//	@Query("SELECT DISTINCT g.gradeType FROM Grade g WHERE g.gradeType.imported = false AND g.student.project.id = :projectId and g.value is not null")
+//	List<GradeType> findAllUnimportedGradeTypesByProjectId(int projectId);
+
+	@Query("SELECT g.gradeType FROM Grade g WHERE g.gradeType.imported = false and g.gradeType.forGroup = false")
+	List<GradeType> findAllUnimportedGradeTypesByProjectId(int projectId);
 }

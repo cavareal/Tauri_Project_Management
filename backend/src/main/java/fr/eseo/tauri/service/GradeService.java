@@ -18,6 +18,7 @@ import fr.eseo.tauri.repository.GradeRepository;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -190,60 +191,61 @@ public class GradeService {
      * This method generates a CSV report of a student's individual grades.
      *
      * @param token The authentication token of the user.
-     * @param userId The ID of the student for whom the report is to be generated.
+     * @param projectId The ID of the project.
      * @return A byte array containing the CSV report.
      * @throws IOException If an I/O error occurs.
      */
-    public byte[] createStudentIndividualGradesCSVReport(String token, int userId) throws IOException {
+    public byte[] createStudentIndividualGradesCSVReport(String token, int projectId) throws IOException {
+        CustomLogger.info("Creating student grades report for project with id " + projectId);
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "exportGrades"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        CustomLogger.info("Creating student grades report for student with id " + userId);
+        CustomLogger.info("Creating student grades report for project with id " + projectId);
 
         // Fetch student details and grades
-        Student student = studentService.getStudentById(token, userId);
-        List<Grade> grades = gradeRepository.findAllunimportedByStudentId(userId);
+        List<Student> students = studentRepository.findAllByProject(projectId);
+        List<GradeType> notImportedGradeTypes = gradeRepository.findAllUnimportedGradeTypesByProjectId(projectId);
+        CustomLogger.info("Found " + students.size() + " students and " + notImportedGradeTypes.size() + " grade types");
+
+        int gradeTypesCount = notImportedGradeTypes.size();
+        int studentFieldsSize = 3;
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
              CSVWriter csvWriter = new CSVWriter(writer)) {
 
-            // Prepare headers and student information
-            String[] header = new String[3 + grades.size()];
-            String[] studentInfo = new String[3 + grades.size()];
-            initializeArrays(header, studentInfo);
+            String[] header = new String[studentFieldsSize + gradeTypesCount];
+            String[] factors = new String[studentFieldsSize + gradeTypesCount];
+            Arrays.fill(header, "");
+            Arrays.fill(factors, "");
 
-            // Populate student basic info
-            studentInfo[0] = student.name();
-            studentInfo[1] = student.gender() == Gender.MAN ? "M" : "F";
-            studentInfo[2] = Boolean.TRUE.equals(student.bachelor()) ? "B" : "";
+            for (int i = 0; i < gradeTypesCount; i++) {
+                header[i + studentFieldsSize] = notImportedGradeTypes.get(i).name();
+                factors[i + studentFieldsSize] = String.valueOf(notImportedGradeTypes.get(i).factor());
+            }
+            csvWriter.writeNext(header);
+            csvWriter.writeNext(factors);
 
-            // Populate grades info
-            for (int i = 0; i < grades.size(); i++) {
-                header[i + 3] = grades.get(i).gradeType().name();
-                studentInfo[i + 3] = String.valueOf(grades.get(i).value());
+            for (Student student : students) {
+                String[] studentInfo = new String[studentFieldsSize + gradeTypesCount];
+                Arrays.fill(studentInfo, "");
+                studentInfo[0] = student.name();
+                studentInfo[1] = student.gender() == Gender.MAN ? "M" : "F";
+                studentInfo[2] = Boolean.TRUE.equals(student.bachelor()) ? "B" : "";
+
+                for (int i = 0; i < gradeTypesCount; i++) {
+                    GradeType gradeType = notImportedGradeTypes.get(i);
+                    Float grade = getGradeByStudentAndGradeType(student, gradeType);
+                    studentInfo[i + studentFieldsSize] = grade != null ? String.valueOf(grade) : "";
+                }
+                csvWriter.writeNext(studentInfo);
             }
 
-            // Write to CSV
-            csvWriter.writeNext(header);
-            csvWriter.writeNext(studentInfo);
             writer.flush();
 
             return byteArrayOutputStream.toByteArray();
         }
-    }
-
-    /**
-     * </br> Helper method to initialize the given arrays with empty strings.
-     * This method initializes the given arrays with empty strings.
-     *
-     * @param header The header array to initialize.
-     * @param info The info array to initialize.
-     */
-    private void initializeArrays(String[] header, String[] info) {
-        Arrays.fill(header, "");
-        Arrays.fill(info, "");
     }
 
 }

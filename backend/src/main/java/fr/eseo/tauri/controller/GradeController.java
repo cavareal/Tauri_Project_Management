@@ -157,9 +157,9 @@ public class GradeController {
         }
     }
 
-    @GetMapping("download-student-individual-grades/{studentId}")
-    public ResponseEntity<byte[]> downloadStudentGrades(@RequestHeader("Authorization") String token, @PathVariable Integer studentId) throws IOException {
-        byte[] gradesCSV = gradeService.createStudentIndividualGradesCSVReport(token, studentId);
+    @GetMapping("download-student-individual-grades/{projectId}")
+    public ResponseEntity<byte[]> downloadStudentGrades(@RequestHeader("Authorization") String token, @PathVariable Integer projectId) throws IOException {
+        byte[] gradesCSV = gradeService.createStudentIndividualGradesCSVReport(token, projectId);
         return ResponseEntity.ok(gradesCSV);
     }
 
