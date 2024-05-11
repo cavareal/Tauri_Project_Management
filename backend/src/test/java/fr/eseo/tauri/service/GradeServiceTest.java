@@ -294,33 +294,6 @@ class GradeServiceTest {
     }
 
     @Test
-    void createStudentIndividualGradesCSVReportShouldGenerateCorrectReportWithValidInput() throws IOException {
-        String token = "testToken";
-        int userId = 1;
-        Student student = new Student();
-        student.name("John Doe");
-        student.gender(Gender.MAN);
-        student.bachelor(true);
-        GradeType gradeType = new GradeType();
-        gradeType.name("Test Grade");
-        Grade grade = new Grade();
-        grade.value(90f);
-        grade.gradeType(gradeType);
-        List<Grade> grades = Collections.singletonList(grade);
-
-        when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
-        when(studentService.getStudentById(token, userId)).thenReturn(student);
-        when(gradeRepository.findAllunimportedByStudentId(userId)).thenReturn(grades);
-
-        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, userId);
-
-        String expectedCsv = "\"\",\"\",\"\",\"Test Grade\"\n\"John Doe\",\"M\",\"B\",\"90.0\"\n";
-        String actualCsv = new String(result);
-
-        assertEquals(expectedCsv, actualCsv);
-    }
-
-    @Test
     void createStudentIndividualGradesCSVReportShouldThrowSecurityExceptionWhenNotAuthorized() {
         String token = "testToken";
         int userId = 1;
@@ -331,22 +304,58 @@ class GradeServiceTest {
     }
 
     @Test
-    void createStudentIndividualGradesCSVReportShouldHandleNoGrades() throws IOException {
-        String token = "testToken";
-        int userId = 1;
+    void createStudentIndividualGradesCSVReportShouldGenerateCorrectReportWhenAuthorized() throws IOException {
+        String token = "validToken";
+        int projectId = 1;
         Student student = new Student();
         student.name("John Doe");
         student.gender(Gender.MAN);
         student.bachelor(true);
-        List<Grade> grades = Collections.emptyList();
+        GradeType gradeType = new GradeType();
+        gradeType.name("Test Grade");
+        gradeType.factor(1f);
+        List<Student> students = Collections.singletonList(student);
+        List<GradeType> gradeTypes = Collections.singletonList(gradeType);
 
         when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
-        when(studentService.getStudentById(token, userId)).thenReturn(student);
-        when(gradeRepository.findAllunimportedByStudentId(userId)).thenReturn(grades);
+        when(studentRepository.findAllByProject(projectId)).thenReturn(students);
+        when(gradeRepository.findAllUnimportedGradeTypesByProjectId(projectId)).thenReturn(gradeTypes);
+        when(gradeService.getGradeByStudentAndGradeType(student, gradeType)).thenReturn(90f);
 
-        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, userId);
+        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, projectId);
 
-        String expectedCsv = "\"\",\"\",\"\"\n\"John Doe\",\"M\",\"B\"\n";
+        String expectedCsv = """
+                "","","","Test Grade"
+                "","","","1.0"
+                "John Doe","M","B","90.0"
+                """;
+        String actualCsv = new String(result);
+
+        assertEquals(expectedCsv, actualCsv);
+    }
+
+    @Test
+    void createStudentIndividualGradesCSVReportShouldHandleNoGrades() throws IOException {
+        String token = "validToken";
+        int projectId = 1;
+        Student student = new Student();
+        student.name("John Doe");
+        student.gender(Gender.MAN);
+        student.bachelor(true);
+        List<Student> students = Collections.singletonList(student);
+        List<GradeType> gradeTypes = Collections.emptyList();
+
+        when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
+        when(studentRepository.findAllByProject(projectId)).thenReturn(students);
+        when(gradeRepository.findAllUnimportedGradeTypesByProjectId(projectId)).thenReturn(gradeTypes);
+
+        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, projectId);
+
+        String expectedCsv = """
+                "","",""
+                "","",""
+                "John Doe","M","B"
+                """;
         String actualCsv = new String(result);
 
         assertEquals(expectedCsv, actualCsv);
