@@ -293,91 +293,6 @@ class GradeServiceTest {
         assertEquals(86.67f, result, 0.01f);
     }
 
-   /* @Test
-    void createGradeShouldSaveGradeWithGivenParameters() {
-        User author = new User();
-        GradeType gradeType = new GradeType();
-        Student student = new Student();
-        float value = 90f;
-        String comment = "Good job";
-
-        Grade grade = new Grade();
-        grade.value(value);
-        grade.comment(comment);
-        grade.author(author);
-        grade.gradeType(gradeType);
-        grade.student(student);
-
-        when(gradeRepository.save(any(Grade.class))).thenReturn(grade);
-
-        Grade result = gradeService.createGrade(author, gradeType, student, value, comment);
-
-        assertEquals(grade, result);
-        assertEquals(value, result.value());
-        assertEquals(comment, result.comment());
-        assertEquals(author, result.author());
-        assertEquals(gradeType, result.gradeType());
-        assertEquals(student, result.student());
-    }*/
-
-    /*@Test
-    void assignGradeToTeamShouldAssignGradeWhenTeamExists() {
-        Team team = new Team();
-        GradeType gradeType = new GradeType();
-        User author = new User();
-        when(teamRepository.findByName(anyString())).thenReturn(team);
-        when(gradeTypeRepository.findByName(anyString())).thenReturn(gradeType);
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(author));
-
-        gradeService.assignGradeToTeam("teamName", 90, "gradeName", 1);
-
-        verify(gradeRepository, times(1)).save(any(Grade.class));
-    }*/
-
-   /* @Test
-    void assignGradeToTeamShouldThrowExceptionWhenTeamDoesNotExist() {
-        when(teamRepository.findByName(anyString())).thenReturn(null);
-
-        assertThrows(IllegalArgumentException.class, () -> gradeService.assignGradeToTeam("teamName", 90, "gradeName", 1));
-    }*/
-
-    /*@Test
-    void assignGradeToStudentShouldAssignGradeWhenStudentExists() {
-        Student student = new Student();
-        GradeType gradeType = new GradeType();
-        when(studentRepository.findByName(anyString())).thenReturn(student);
-        when(gradeTypeRepository.findByName(anyString())).thenReturn(gradeType);
-
-        gradeService.assignGradeToStudent("studentName", 90, "gradeName");
-
-        verify(gradeRepository, times(1)).save(any(Grade.class));
-    }*/
-
-    /*@Test
-    void assignGradeToStudentShouldNotAssignGradeWhenStudentDoesNotExist() {
-        when(studentRepository.findByName(anyString())).thenReturn(null);
-
-        gradeService.assignGradeToStudent("studentName", 90, "gradeName");
-
-        verify(gradeRepository, never()).save(any(Grade.class));
-    }*/
-
-
-    /*@Test
-    void createGradesFromGradeTypesAndValuesShouldNotCreateGradesWhenValuesEmpty() {
-        Student student = new Student();
-        student.name("John Doe");
-        GradeType gradeType = new GradeType();
-        gradeType.name("Test Grade");
-        List<String> valuesString = Collections.emptyList();
-        List<GradeType> gradeTypes = Collections.singletonList(gradeType);
-
-        gradeService.createGradesFromGradeTypesAndValues(student, valuesString, gradeTypes, "Good job");
-
-        verify(gradeRepository, never()).save(any(Grade.class));
-    }
-*/
-
     @Test
     void createStudentIndividualGradesCSVReportShouldGenerateCorrectReportWithValidInput() throws IOException {
         String token = "testToken";
@@ -416,7 +331,7 @@ class GradeServiceTest {
     }
 
     @Test
-    void createStudentIndividualGradesCSVReportShouldHandleNoGrades() throws IOException, IOException {
+    void createStudentIndividualGradesCSVReportShouldHandleNoGrades() throws IOException {
         String token = "testToken";
         int userId = 1;
         Student student = new Student();
