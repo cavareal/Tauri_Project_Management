@@ -1,10 +1,16 @@
-import { ProjectPhaseSchema, type ProjectPhase, type Project, ProjectSchema } from "@/types/project"
+import { type ProjectPhase, type Project, ProjectSchema, type UpdateProject, UpdateProjectSchema } from "@/types/project"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { Cookies } from "@/utils/cookie"
 
-export const getCurrentPhase = async(projectId : string | null): Promise<ProjectPhase> => {
+export const getCurrentProject = async(): Promise<Project> => {
+	const id = Cookies.getProjectId()
+	if (id === null) {
+		throw new Error("No project selected")
+	}
+
 	const response = await queryAndValidate({
-		route: `projects/phase/${projectId}`,
-		responseSchema: ProjectPhaseSchema
+		route: `projects/${id}`,
+		responseSchema: ProjectSchema
 	})
 
 	if (response.status === "error") {
@@ -14,25 +20,21 @@ export const getCurrentPhase = async(projectId : string | null): Promise<Project
 	return response.data
 }
 
-export const getProjectById = async(id : string | null): Promise<Project> => {
-	const response = await queryAndValidate({
-		responseSchema: ProjectSchema,
-		route: `projects/${id}`
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
-
-	return response.data
+export const getCurrentPhase = async(): Promise<ProjectPhase> => {
+	return getCurrentProject().then(project => project.phase)
 }
 
-export const updateProject = async(id: string | null, body: Partial<Omit<Project, "id">>): Promise<void> => {
+export const updateProject = async(body: UpdateProject): Promise<void> => {
+	const id = Cookies.getProjectId()
+	if (id === null) {
+		throw new Error("No project selected")
+	}
+
 	const response = await mutateAndValidate({
 		method: "PATCH",
 		route: `projects/${id}`,
 		body,
-		bodySchema: ProjectSchema.omit({ id: true }).partial()
+		bodySchema: UpdateProjectSchema
 	})
 
 	if (response.status === "error") {

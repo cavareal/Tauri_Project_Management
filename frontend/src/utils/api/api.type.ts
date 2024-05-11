@@ -49,3 +49,23 @@ export type MutateAndValidateResponse = {
 	status: "error"
 	error: string
 }
+
+
+export type MutateAndValidateRequestWithReturn<T, R> = {
+	method: "POST" | "PUT" | "PATCH" | "DELETE"
+	route: string
+	params?: Record<string, string>
+	jsonContent?: boolean
+	delay?: number
+	bodySchema?: z.ZodType<T>
+	body?: T
+	responseSchema: z.ZodType<R>
+}
+
+export type MutateAndValidateResponseWithReturn<R> = {
+	status: "success"
+	data: R
+} | {
+	status: "error"
+	error: string
+}

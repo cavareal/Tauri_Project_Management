@@ -62,7 +62,8 @@ public class GlobalExceptionHandler {
 
 	private ResponseEntity<ExceptionResponse> handleException(Exception e, HttpServletRequest request, HttpStatus status) {
 		var response = new ExceptionResponse(e, request);
-		CustomLogger.info(response.toString());
+		CustomLogger.error(request.getServletPath());
+		CustomLogger.error(e.getMessage());
 		return ResponseEntity.status(status).body(response);
 	}
 

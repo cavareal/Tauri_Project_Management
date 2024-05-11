@@ -1,7 +1,8 @@
 import type { ApiQueryRequest, ApiQueryResponse } from "."
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import type {
-	MutateAndValidateRequest, MutateAndValidateResponse, QueryAndValidateRequest, QueryAndValidateResponse
+	MutateAndValidateRequest, MutateAndValidateRequestWithReturn, MutateAndValidateResponse,
+	MutateAndValidateResponseWithReturn, QueryAndValidateRequest, QueryAndValidateResponse
 } from "./api.type"
 import { wait } from "@/utils/time"
 import type { SafeParseReturnType } from "zod"
@@ -25,7 +26,7 @@ export const apiQuery = async <T>(
 
 	if (delay) await new Promise(resolve => setTimeout(resolve, delay))
 
-	const token = getCookie("token")
+	const token = Cookies.getToken()
 
 	const headers = {
 		"Authorization": token || "null",
@@ -93,7 +94,7 @@ const buildUrl = (route: string, params?: Record<string, string>) => {
 }
 
 const getHeaders = (jsonContent: boolean = true) => {
-	const token = getCookie("token")
+	const token = Cookies.getToken()
 
 	const headers = {
 		"Authorization": token || "null"
@@ -121,9 +122,9 @@ export const queryAndValidate = async <T>({
 }: QueryAndValidateRequest<T>): Promise<QueryAndValidateResponse<T>> => {
 	if (delay) await wait(delay)
 
-	const currentProjectId = getCookie("currentProject")
+	const currentProjectId = Cookies.getProjectId()
 
-	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId ?? "" }), {
+	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId?.toString() ?? "" }), {
 		headers: getHeaders(jsonContent)
 	})
 	if (!response.ok) return {
@@ -181,9 +182,9 @@ export const mutateAndValidate = async <T>({
 	if (body) bodyData = parsedBody?.data as BodyInit
 	if (jsonContent) bodyData = JSON.stringify(bodyData)
 
-	const currentProjectId = getCookie("currentProject")
+	const currentProjectId = Cookies.getProjectId()
 
-	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId ?? "" }), {
+	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId?.toString() ?? "" }), {
 		method,
 		body: bodyData,
 		headers: getHeaders(jsonContent)
@@ -195,5 +196,69 @@ export const mutateAndValidate = async <T>({
 
 	return {
 		status: "success"
+	}
+}
+
+
+/**
+ * Mutates data in the API and validates the response.
+ * @param method HTTP method to use for mutation (POST, PUT, PATCH or DELETE)
+ * @param route API route to fetch, without the base URL defined in .env (example: "roles" for "{VITE_TAURI_API_URL}/roles")
+ * @param params Query parameters to append to the URL (example: { param: value })
+ * @param jsonContent Booleam that indicates if the content should be sent as JSON (true by default)
+ * @param delay Delay before fetching in ms (useful for testing loading states)
+ * @param body Data to send in the request body
+ * @param bodySchema Zod schema to validate the body
+ * @param responseSchema Zod schema to validate the response
+ * @returns An object with the status of the request and an error message if it failed
+ */
+export const mutateAndValidateWithReturn = async <T, R>({
+	method, route, params, jsonContent = true, delay, body, bodySchema, responseSchema
+}: MutateAndValidateRequestWithReturn<T, R>): Promise<MutateAndValidateResponseWithReturn<R>> => {
+	if (delay) await wait(delay)
+	if (body && !bodySchema) return {
+		status: "error",
+		error: "Body schema is required when body is provided"
+	}
+
+	let parsedBody: SafeParseReturnType<T, T> | null = null
+	if (body && bodySchema) {
+		parsedBody = bodySchema.safeParse(body)
+		if (!parsedBody.success) return {
+			status: "error",
+			error: `Failed to validate ${method} ${route}: ${parsedBody.error.message}`
+		}
+	}
+
+	let bodyData: BodyInit | undefined = undefined
+	if (body) bodyData = parsedBody?.data as BodyInit
+	if (jsonContent) bodyData = JSON.stringify(bodyData)
+
+	const currentProjectId = Cookies.getProjectId()
+
+	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId?.toString() ?? "" }), {
+		method,
+		body: bodyData,
+		headers: getHeaders(jsonContent)
+	})
+	if (!response.ok) return {
+		status: "error",
+		error: `Failed to fetch ${method} ${route}: ${response.status} ${response.statusText}`
+	}
+
+	let data: unknown = await response.text()
+	try {
+		data = JSON.parse(data as string)
+	} catch (error) { /* Do nothing */ }
+
+	const parsedResponse = responseSchema.safeParse(data)
+	if (!parsedResponse.success) return {
+		status: "error",
+		error: `Failed to validate GET ${route}: ${parsedResponse.error.message}`
+	}
+
+	return {
+		status: "success",
+		data: parsedResponse.data
 	}
 }

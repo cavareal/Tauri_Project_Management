@@ -41,7 +41,7 @@ public class RoleService {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "addRole"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
-		role.user(userService.getUserById(token, role.userId()));
+		if(role.userId() != null) role.user(userService.getUserById(token, role.userId()));
 		roleRepository.save(role);
 	}
 

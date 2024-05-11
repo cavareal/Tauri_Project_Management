@@ -5,12 +5,15 @@ import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
-import fr.eseo.tauri.model.GradeType;
-import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
+import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
@@ -28,6 +31,11 @@ public class StudentService {
     private final TeamService teamService;
     private final GradeTypeService gradeTypeService;
     private final GradeService gradeService;
+    private final RoleService roleService;
+    @Lazy
+    private final SprintService sprintService;
+    private final PresentationOrderService presentationOrderService;
+    private final BonusRepository bonusRepository;
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
@@ -52,7 +60,24 @@ public class StudentService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+        if(student.projectId() != null) student.project(projectService.getProjectById(token, student.projectId()));
+        if(student.teamId() != null)student.team(teamService.getTeamById(token, student.teamId()));
         studentRepository.save(student);
+
+        Role role = new Role();
+        role.user(student);
+        role.type(RoleType.OPTION_STUDENT);
+        roleService.createRole(token, role);
+
+        List<Sprint> sprints = sprintService.getAllSprintsByProject(token, student.projectId());
+        if(!sprints.isEmpty()) {
+            for (Sprint sprint : sprints) {
+                PresentationOrder presentationOrder = new PresentationOrder();
+                presentationOrder.sprint(sprint);
+                presentationOrder.student(student);
+                presentationOrderService.createPresentationOrder(token, presentationOrder);
+            }
+        }
     }
 
     public void updateStudent(String token, Integer id, Student updatedStudent) {
@@ -89,6 +114,7 @@ public class StudentService {
         }
         studentRepository.deleteAllByProject(projectId);
         gradeTypeService.deleteAllImportedGradeTypes(token);
+        teamService.deleteAllTeamsByProject(token, projectId);
     }
 
 
@@ -176,9 +202,7 @@ public class StudentService {
         student.name(name);
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
-        student.teamRole("Not assigned");
         student.project(projectService.getProjectById(token, projectId));
-        student.team(null); // Team is not assigned yet
         student.password("password");
         student.privateKey("privateKey");
         student.email(name.toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
@@ -214,14 +238,24 @@ public class StudentService {
         List<String> names = (List<String>) extractedData.get(MAP_KEY_NAMES);
         List<String> genders = (List<String>) extractedData.get(MAP_KEY_GENDERS);
         List<String> bachelors = (List<String>) extractedData.get(MAP_KEY_BACHELORS);
-        List<List<String>> gradesList = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
+        List<List<String>> grades = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
 
         for (int i = 0; i < names.size(); i++) {
             Student student = createStudentFromData(token, names.get(i), genders.get(i), bachelors.get(i), projectId);
             createStudent(token, student);
-            gradeService.createGradesFromGradeTypesAndValues(student, gradesList.get(i), gradeTypes, "Imported grades");
-        }
+            for (int j = 0; j < grades.get(i).size(); j++) {
 
+                if(grades.get(i).get(j).trim().isEmpty()) continue;
+
+                try {
+                    Grade grade = new Grade();
+                    grade.value(Float.parseFloat(grades.get(i).get(j).trim()));
+                    grade.student(student);
+                    grade.gradeType(gradeTypes.get(j));
+                    gradeService.createGrade(token, grade);
+                } catch (NumberFormatException ignored) {} // Do nothing // If the grade is not a number, it is ignored
+            }
+        }
         CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
     }
 
@@ -263,7 +297,7 @@ public class StudentService {
      * @param csvWriter The CSVWriter object that is used to write to the CSV file.
      * @param importedGrades The list of imported grade types.
      */
-    private void writeHeaders(CSVWriter csvWriter, List<GradeType> importedGrades) {
+    public void writeHeaders(CSVWriter csvWriter, List<GradeType> importedGrades) {
         String[] factors = new String[importedGrades.size() + 4];
         String[] headers = new String[importedGrades.size() + 4];
         Arrays.fill(headers, "");
@@ -271,7 +305,7 @@ public class StudentService {
         headers[2] = "sexe M / F";
         int index = 5;
         for (GradeType gradeType : importedGrades) {
-            if(gradeType.name().equals("AVERAGE")){
+            if(gradeType.name().equals(GradeTypeName.AVERAGE.displayName())){
                 continue;
             }
             headers[index] = gradeType.name();
@@ -287,12 +321,12 @@ public class StudentService {
      *
      * @param csvWriter The CSVWriter object that is used to write to the CSV file.
      * @param students  The list of students whose data is to be written to the CSV file.
-     * @param importedGrades The list of imported grade types.
+     * @param importedGradeTypes The list of imported grade types.
      */
-    private void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGrades) {
+    public void writeStudentData(CSVWriter csvWriter, List<Student> students, List<GradeType> importedGradeTypes) {
         int studentIndex = 1;
         for (Student student : students) {
-            String[] studentInfo = new String[importedGrades.size() + 4];
+            String[] studentInfo = new String[importedGradeTypes.size() + 4];
             Arrays.fill(studentInfo, "");
             studentInfo[0] = String.valueOf(studentIndex++);
             studentInfo[1] = student.name();
@@ -300,7 +334,7 @@ public class StudentService {
             studentInfo[3] = Boolean.TRUE.equals(student.bachelor()) ? "B" : "";
 
             int gradeIndex = 4;
-            for (GradeType gradeType : importedGrades) {
+            for (GradeType gradeType : importedGradeTypes) {
                 Float grade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
                 studentInfo[gradeIndex++] = grade != null ? String.valueOf(grade) : "";
             }
@@ -314,7 +348,7 @@ public class StudentService {
      * @param csvWriter The CSVWriter object that is used to write to the CSV file.
      * @param numberOfGrades The number of imported grade types.
      */
-    private void writeSummaryData(CSVWriter csvWriter, int numberOfGrades) {
+    public void writeSummaryData(CSVWriter csvWriter, int numberOfGrades) {
         writeEmptyRows(csvWriter, 4, numberOfGrades + 4);
         writeCountRow(csvWriter, "Nombre F", studentRepository.countWomen(), numberOfGrades + 4);
         writeCountRow(csvWriter, "Nombre M", studentRepository.countTotal() - studentRepository.countWomen(), numberOfGrades + 4);
@@ -333,7 +367,7 @@ public class StudentService {
      * @param numRows The number of empty rows to write. This is an integer.
      * @param rowLength The length of the row in the CSV file. This is an integer.
      */
-    private void writeEmptyRows(CSVWriter csvWriter, int numRows, int rowLength) {
+    public void writeEmptyRows(CSVWriter csvWriter, int numRows, int rowLength) {
         String[] emptyRow = new String[rowLength];
         Arrays.fill(emptyRow, "");
         for (int i = 0; i < numRows; i++) {
@@ -352,12 +386,20 @@ public class StudentService {
      * @param count The count of students in the specified category. This is an integer.
      * @param rowLength The length of the row in the CSV file. This is an integer.
      */
-    private void writeCountRow(CSVWriter csvWriter, String label, int count, int rowLength) {
+    public void writeCountRow(CSVWriter csvWriter, String label, int count, int rowLength) {
         String[] row = new String[rowLength];
         Arrays.fill(row, "");
         row[1] = label;
         row[2] = String.valueOf(count);
         csvWriter.writeNext(row);
+    }
+
+    public List<Bonus> getStudentBonuses(String token, Integer idStudent) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        return bonusRepository.findAllStudentBonuses(idStudent);
     }
 
 }

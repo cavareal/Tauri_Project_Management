@@ -3,6 +3,7 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Flag;
+import fr.eseo.tauri.model.enumeration.FlagType;
 import fr.eseo.tauri.repository.FlagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class FlagService {
     private final UserService userService;
     private final StudentService studentService;
     private final ProjectService projectService;
+    private final ValidationFlagService validationFlagService;
 
     public Flag getFlagById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readFlag"))) {
@@ -38,10 +40,12 @@ public class FlagService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         flag.author(userService.getUserById(token, flag.authorId()));
-        flag.firstStudent(studentService.getStudentById(token, flag.firstStudentId()));
-        flag.secondStudent(studentService.getStudentById(token, flag.secondStudentId()));
+        if (flag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById(token, flag.firstStudentId()));
+        if (flag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById(token, flag.secondStudentId()));
 
         flagRepository.save(flag);
+
+        validationFlagService.createValidationFlags(token, flag);
     }
 
     public void updateFlag(String token, Integer id, Flag updatedFlag) {
@@ -77,10 +81,10 @@ public class FlagService {
         flagRepository.deleteAllByProject(projectId);
     }
 
-	public List<Flag> getFlagsByAuthorAndDescription(String token, Integer authorId , String description) {
+	public List<Flag> getFlagsByAuthorAndType(String token, Integer authorId , FlagType type) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readFlags"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return flagRepository.findByAuthorIdAndDescription(authorId, description);
+        return flagRepository.findByAuthor_IdAndType(authorId, type);
 	}
 }

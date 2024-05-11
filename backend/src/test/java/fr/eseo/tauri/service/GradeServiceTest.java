@@ -1,6 +1,8 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
+import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +25,8 @@ import static org.mockito.Mockito.*;
 
 @Nested
 class GradeServiceTest {
+
+    private final String TEST_TOKEN = "testToken";
 
     @Mock
     private GradeRepository gradeRepository;
@@ -38,6 +43,24 @@ class GradeServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private AuthService authService;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private SprintService sprintService;
+
+    @Mock
+    private GradeTypeService gradeTypeService;
+
+    @Mock
+    private TeamService teamService;
+
+    @Mock
+    private StudentService studentService;
+
     @InjectMocks
     private GradeService gradeService;
 
@@ -47,291 +70,370 @@ class GradeServiceTest {
     }
 
     @Test
-    void createGrade_savesGrade() {
-        User author = new User();
-        GradeType gradeType = new GradeType();
-        Student student = new Student();
+    void getGradeByIdShouldReturnGradeWhenAuthorized() {
+        Grade grade = new Grade();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeRepository.findById(anyInt())).thenReturn(Optional.of(grade));
 
-        gradeService.createGrade(author, gradeType, student, 10, "Good job!");
+        Grade result = gradeService.getGradeById(TEST_TOKEN, 1);
+
+        assertEquals(grade, result);
+    }
+
+    @Test
+    void getGradeByIdShouldThrowSecurityExceptionWhenNotAuthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeService.getGradeById(TEST_TOKEN, 1));
+    }
+
+    @Test
+    void getGradeByIdShouldThrowResourceNotFoundExceptionWhenGradeNotFound() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> gradeService.getGradeById(TEST_TOKEN, 1));
+    }
+
+    @Test
+    void getAllUnimportedGradesByProjectShouldReturnGradesWhenAuthorized() {
+        List<Grade> grades = Collections.singletonList(new Grade());
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeRepository.findAllUnimportedByProject(anyInt())).thenReturn(grades);
+
+        List<Grade> result = gradeService.getAllUnimportedGradesByProject(TEST_TOKEN, 1);
+
+        assertEquals(grades, result);
+    }
+
+    @Test
+    void getAllUnimportedGradesByProjectShouldThrowExceptionWhenNotAuthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeService.getAllUnimportedGradesByProject(TEST_TOKEN, 1));
+    }
+
+    @Test
+    void getAllImportedGradesByProjectShouldReturnGradesWhenAuthorized() {
+        List<Grade> grades = Collections.singletonList(new Grade());
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeRepository.findAllImportedByProject(anyInt())).thenReturn(grades);
+
+        List<Grade> result = gradeService.getAllImportedGradesByProject(TEST_TOKEN, 1);
+
+        assertEquals(grades, result);
+    }
+
+    @Test
+    void getAllImportedGradesByProjectShouldThrowExceptionWhenNotAuthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeService.getAllImportedGradesByProject(TEST_TOKEN, 1));
+    }
+
+    @Test
+    void createGradeShouldSaveGradeWhenAuthorizedAndGradeTypeForGroup() {
+        Grade grade = new Grade();
+        grade.authorId(1);
+        grade.sprintId(1);
+        grade.gradeTypeId(1);
+        grade.teamId(1);
+        GradeType gradeType = new GradeType();
+        gradeType.forGroup(true);
+        grade.gradeType(gradeType);
+
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
+        when(sprintService.getSprintById(anyString(), anyInt())).thenReturn(new Sprint());
+        when(gradeTypeService.getGradeTypeById(anyString(), anyInt())).thenReturn(gradeType);
+        when(teamService.getTeamById(anyString(), anyInt())).thenReturn(new Team());
+
+        gradeService.createGrade(TEST_TOKEN, grade);
 
         verify(gradeRepository, times(1)).save(any(Grade.class));
     }
 
     @Test
-    void createGradesFromGradeTypesAndValues_createsGrades() {
-        Student student = new Student();
-        List<String> valuesString = Arrays.asList("10.0", "9.0", "8.0");
+    void createGradeShouldSaveGradeWhenAuthorizedAndGradeTypeNotForGroup() {
+        Grade grade = new Grade();
+        grade.authorId(1);
+        grade.sprintId(1);
+        grade.gradeTypeId(1);
+        grade.studentId(1);
         GradeType gradeType = new GradeType();
-        List<GradeType> gradeTypes = Arrays.asList(gradeType, gradeType, gradeType);
+        gradeType.forGroup(false);
+        grade.gradeType(gradeType);
 
-        gradeService.createGradesFromGradeTypesAndValues(student, valuesString, gradeTypes, "Good job!");
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
+        when(sprintService.getSprintById(anyString(), anyInt())).thenReturn(new Sprint());
+        when(gradeTypeService.getGradeTypeById(anyString(), anyInt())).thenReturn(gradeType);
+        when(studentService.getStudentById(anyString(), anyInt())).thenReturn(new Student());
 
-        verify(gradeRepository, times(3)).save(any(Grade.class));
-    }
-
-    @Test
-    void createGradesFromGradeTypesAndValues_ignoresEmptyValues() {
-        Student student = new Student();
-        List<String> valuesString = Arrays.asList("10.0", "", "");
-        GradeType gradeType = new GradeType();
-        List<GradeType> gradeTypes = Arrays.asList(gradeType, gradeType, gradeType);
-
-        gradeService.createGradesFromGradeTypesAndValues(student, valuesString, gradeTypes, "Good job!");
+        gradeService.createGrade(TEST_TOKEN, grade);
 
         verify(gradeRepository, times(1)).save(any(Grade.class));
     }
 
     @Test
-    void createGradesFromGradeTypesAndValues_ignoresInvalidValues() {
-        Student student = new Student();
-        List<String> valuesString = Arrays.asList("10.0", "invalid", "8.0");
-        GradeType gradeType = new GradeType();
-        List<GradeType> gradeTypes = Arrays.asList(gradeType, gradeType, gradeType);
+    void createGradeShouldThrowExceptionWhenNotAuthorized() {
+        Grade grade = new Grade();
 
-        gradeService.createGradesFromGradeTypesAndValues(student, valuesString, gradeTypes, "Good job!");
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
-        verify(gradeRepository, times(2)).save(any(Grade.class));
+        assertThrows(SecurityException.class, () -> gradeService.createGrade(TEST_TOKEN, grade));
     }
 
     @Test
-    void updateImportedMean_handlesNoStudents() {
-        List<Student> students = Collections.emptyList();
-        List<Grade> grades = Collections.emptyList();
+    void updateGradeShouldThrowExceptionWhenNotAuthorized() {
+        Grade updatedGrade = new Grade();
 
-        when(studentRepository.findAll()).thenReturn(students);
-        when(gradeRepository.findAll()).thenReturn(grades);
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
-        gradeService.updateImportedMean();
-
-        verify(gradeRepository, times(0)).updateImportedMeanByStudentId(anyFloat(), anyInt());
+        assertThrows(SecurityException.class, () -> gradeService.updateGrade(TEST_TOKEN, 1, updatedGrade));
     }
 
     @Test
-    void createGrade_handlesRepositoryException() {
-        User author = new User();
-        GradeType gradeType = new GradeType();
-        Student student = new Student();
+    void deleteGradeShouldDeleteGradeWhenAuthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeRepository.findById(anyInt())).thenReturn(Optional.of(new Grade()));
 
-        doThrow(new RuntimeException("Database Error")).when(gradeRepository).save(any(Grade.class));
+        gradeService.deleteGrade(TEST_TOKEN, 1);
 
-        assertThrows(RuntimeException.class, () -> gradeService.createGrade(author, gradeType, student, 10, "Good job!"),
-                "Expected createGrade to throw, but it did not");
-
-        verify(gradeRepository, times(1)).save(any(Grade.class));
+        verify(gradeRepository, times(1)).deleteById(anyInt());
     }
 
     @Test
-    void createGrade_savesGradeWithCorrectAttributes() {
-        ArgumentCaptor<Grade> gradeCaptor = ArgumentCaptor.forClass(Grade.class);
-        User author = new User();
-        GradeType gradeType = new GradeType();
-        Student student = new Student();
+    void deleteGradeShouldThrowSecurityExceptionWhenNotAuthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
-        gradeService.createGrade(author, gradeType, student, 10, "Good job!");
-
-        verify(gradeRepository).save(gradeCaptor.capture());
-        Grade capturedGrade = gradeCaptor.getValue();
-
-        assertEquals(10, capturedGrade.value());
-        assertEquals("Good job!", capturedGrade.comment());
-        assertEquals(author, capturedGrade.author());
-        assertEquals(gradeType, capturedGrade.gradeType());
-        assertEquals(student, capturedGrade.student());
+        assertThrows(SecurityException.class, () -> gradeService.deleteGrade(TEST_TOKEN, 1));
     }
 
     @Test
-    void mean_calculatesCorrectMeanForNonEmptyGrades() {
-        GradeType gradeType = new GradeType();
-        gradeType.factor(0.5f);
-        Grade grade1 = new Grade();
-        grade1.value(10.0f);
-        grade1.gradeType(gradeType);
-        Grade grade2 = new Grade();
-        grade2.value(20.0f);
-        grade2.gradeType(gradeType);
-        List<Grade> grades = List.of(grade1, grade2);
+    void deleteGradeShouldThrowResourceNotFoundExceptionWhenGradeNotFound() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(gradeRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        float mean = gradeService.mean(grades);
-
-        assertEquals(15.0f, mean);
+        assertThrows(ResourceNotFoundException.class, () -> gradeService.deleteGrade(TEST_TOKEN, 1));
     }
 
     @Test
-    void mean_returnsZeroForEmptyGrades() {
-        List<Grade> grades = Collections.emptyList();
+    void deleteAllGradesByProjectShouldDeleteGradesWhenAuthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
 
-        float mean = gradeService.mean(grades);
+        gradeService.deleteAllGradesByProject(TEST_TOKEN, 1);
 
-        assertEquals(0.0f, mean);
+        verify(gradeRepository, times(1)).deleteAllByProject(anyInt());
     }
 
     @Test
-    void mean_returnsZeroWhenAllGradeFactorsAreZero() {
-        GradeType gradeType = new GradeType();
-        gradeType.factor(0.0f);
-        Grade grade1 = new Grade();
-        grade1.value(10.0f);
-        grade1.gradeType(gradeType);
-        Grade grade2 = new Grade();
-        grade2.value(20.0f);
-        grade2.gradeType(gradeType);
-        List<Grade> grades = List.of(grade1, grade2);
+    void deleteAllGradesByProjectShouldThrowSecurityExceptionWhenNotAuthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
-        float mean = gradeService.mean(grades);
-
-        assertEquals(0.0f, mean);
+        assertThrows(SecurityException.class, () -> gradeService.deleteAllGradesByProject(TEST_TOKEN, 1));
     }
 
     @Test
-    void getAverageGradesByGradeTypeByRoleType_returnsAverageForValidInputs() {
-        int userId = 1;
-        RoleType roleType = RoleType.TEAM_MEMBER;
-        String gradeTypeName = "Test Grade";
-        Team team = new Team();
-        Double expectedAverage = 85.0;
-
-        when(teamRepository.findTeamByStudentId(userId)).thenReturn(team);
-        when(gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType)).thenReturn(expectedAverage);
-
-        Double actualAverage = gradeService.getAverageGradesByGradeTypeByRoleType(userId, roleType, gradeTypeName);
-
-        assertEquals(expectedAverage, actualAverage);
-    }
-
-    @Test
-    void getAverageGradesByGradeTypeByRoleType_returnsNullForNoGrades() {
-        int userId = 1;
-        RoleType roleType = RoleType.TEAM_MEMBER;
-        String gradeTypeName = "Test Grade";
-        Team team = new Team();
-
-        when(teamRepository.findTeamByStudentId(userId)).thenReturn(team);
-        when(gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType)).thenReturn(null);
-
-        Double actualAverage = gradeService.getAverageGradesByGradeTypeByRoleType(userId, roleType, gradeTypeName);
-
-        assertNull(actualAverage);
-    }
-
-    @Test
-    void assignGradeToStudent_createsGradeForValidStudent() {
-        String studentName = "John Doe";
-        Integer value = 85;
-        String gradeName = "Test Grade";
-        Student student = new Student();
-        GradeType gradeType = new GradeType();
-
-        when(studentRepository.findByName(studentName)).thenReturn(student);
-        when(gradeTypeRepository.findByName(gradeName)).thenReturn(gradeType);
-
-        gradeService.assignGradeToStudent(studentName, value, gradeName);
-
-        verify(gradeRepository, times(1)).save(any(Grade.class));
-    }
-
-    @Test
-    void assignGradeToStudent_doesNotCreateGradeForInvalidStudent() {
-        String studentName = "Invalid Student";
-        Integer value = 85;
-        String gradeName = "Test Grade";
-
-        when(studentRepository.findByName(studentName)).thenReturn(null);
-
-        gradeService.assignGradeToStudent(studentName, value, gradeName);
-
-        verify(gradeRepository, times(0)).save(any(Grade.class));
-    }
-
-    @Test
-    void assignGradeToTeam_createsGradeForValidTeam() {
-        String teamName = "Team A";
-        Integer value = 85;
-        String gradeName = "Test Grade";
-        int userId = 1;
-        Team team = new Team();
-        GradeType gradeType = new GradeType();
-        User author = new User();
-
-        when(teamRepository.findByName(teamName)).thenReturn(team);
-        when(gradeTypeRepository.findByName(gradeName)).thenReturn(gradeType);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(author));
-
-        gradeService.assignGradeToTeam(teamName, value, gradeName, userId);
-
-        verify(gradeRepository, times(1)).save(any(Grade.class));
-    }
-
-    @Test
-    void assignGradeToTeam_doesNotCreateGradeForInvalidTeam() {
-        String teamName = "Invalid Team";
-        Integer value = 85;
-        String gradeName = "Test Grade";
-        int userId = 1;
-
-        when(teamRepository.findByName(teamName)).thenReturn(null);
-
-        assertThrows(IllegalArgumentException.class, () -> gradeService.assignGradeToTeam(teamName, value, gradeName, userId));
-        verify(gradeRepository, times(0)).save(any(Grade.class));
-    }
-
-
-    @Test
-    void updateImportedMean_doesNotUpdateMeanForBachelorStudents() {
+    void updateImportedMeanShouldNotUpdateMeanForBachelorStudents() {
         Student student = new Student();
         student.id(1);
         student.bachelor(true);
-        List<Student> students = List.of(student);
+        List<Student> students = Collections.singletonList(student);
 
         when(studentRepository.findAll()).thenReturn(students);
 
         gradeService.updateImportedMean();
 
-        verify(gradeRepository, times(0)).updateImportedMeanByStudentId(anyFloat(), anyInt());
+        verify(gradeRepository, never()).updateImportedMeanByStudentId(anyFloat(), anyInt());
     }
 
     @Test
-    @DisplayName("getGradeByStudentAndGradeType returns grade for valid student and grade type")
-    void getGradeByStudentAndGradeType_returnsGradeForValidStudentAndGradeType() {
+    void meanShouldReturnZeroWhenNoGrades() {
+        List<Grade> grades = Collections.emptyList();
+
+        float result = gradeService.mean(grades);
+
+        assertEquals(0, result);
+    }
+
+    @Test
+    void meanShouldReturnZeroWhenAllFactorsAreZero() {
+        GradeType gradeType = new GradeType();
+        gradeType.factor(0f);
+        Grade grade1 = new Grade();
+        grade1.value(90f);
+        grade1.gradeType(gradeType);
+        Grade grade2 = new Grade();
+        grade2.value(80f);
+        grade2.gradeType(gradeType);
+        List<Grade> grades = Arrays.asList(grade1, grade2);
+
+        float result = gradeService.mean(grades);
+
+        assertEquals(0, result);
+    }
+
+    @Test
+    void meanShouldReturnCorrectMeanWhenGradesWithFactors() {
+        GradeType gradeType1 = new GradeType();
+        gradeType1.factor(2f);
+        Grade grade1 = new Grade();
+        grade1.value(90f);
+        grade1.gradeType(gradeType1);
+        GradeType gradeType2 = new GradeType();
+        gradeType2.factor(1f);
+        Grade grade2 = new Grade();
+        grade2.value(80f);
+        grade2.gradeType(gradeType2);
+        List<Grade> grades = Arrays.asList(grade1, grade2);
+
+        float result = gradeService.mean(grades);
+
+        assertEquals(86.67f, result, 0.01f);
+    }
+
+   /* @Test
+    void createGradeShouldSaveGradeWithGivenParameters() {
+        User author = new User();
+        GradeType gradeType = new GradeType();
+        Student student = new Student();
+        float value = 90f;
+        String comment = "Good job";
+
+        Grade grade = new Grade();
+        grade.value(value);
+        grade.comment(comment);
+        grade.author(author);
+        grade.gradeType(gradeType);
+        grade.student(student);
+
+        when(gradeRepository.save(any(Grade.class))).thenReturn(grade);
+
+        Grade result = gradeService.createGrade(author, gradeType, student, value, comment);
+
+        assertEquals(grade, result);
+        assertEquals(value, result.value());
+        assertEquals(comment, result.comment());
+        assertEquals(author, result.author());
+        assertEquals(gradeType, result.gradeType());
+        assertEquals(student, result.student());
+    }*/
+
+    /*@Test
+    void assignGradeToTeamShouldAssignGradeWhenTeamExists() {
+        Team team = new Team();
+        GradeType gradeType = new GradeType();
+        User author = new User();
+        when(teamRepository.findByName(anyString())).thenReturn(team);
+        when(gradeTypeRepository.findByName(anyString())).thenReturn(gradeType);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(author));
+
+        gradeService.assignGradeToTeam("teamName", 90, "gradeName", 1);
+
+        verify(gradeRepository, times(1)).save(any(Grade.class));
+    }*/
+
+   /* @Test
+    void assignGradeToTeamShouldThrowExceptionWhenTeamDoesNotExist() {
+        when(teamRepository.findByName(anyString())).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> gradeService.assignGradeToTeam("teamName", 90, "gradeName", 1));
+    }*/
+
+    /*@Test
+    void assignGradeToStudentShouldAssignGradeWhenStudentExists() {
+        Student student = new Student();
+        GradeType gradeType = new GradeType();
+        when(studentRepository.findByName(anyString())).thenReturn(student);
+        when(gradeTypeRepository.findByName(anyString())).thenReturn(gradeType);
+
+        gradeService.assignGradeToStudent("studentName", 90, "gradeName");
+
+        verify(gradeRepository, times(1)).save(any(Grade.class));
+    }*/
+
+    /*@Test
+    void assignGradeToStudentShouldNotAssignGradeWhenStudentDoesNotExist() {
+        when(studentRepository.findByName(anyString())).thenReturn(null);
+
+        gradeService.assignGradeToStudent("studentName", 90, "gradeName");
+
+        verify(gradeRepository, never()).save(any(Grade.class));
+    }*/
+
+
+    /*@Test
+    void createGradesFromGradeTypesAndValuesShouldNotCreateGradesWhenValuesEmpty() {
         Student student = new Student();
         student.name("John Doe");
         GradeType gradeType = new GradeType();
         gradeType.name("Test Grade");
+        List<String> valuesString = Collections.emptyList();
+        List<GradeType> gradeTypes = Collections.singletonList(gradeType);
 
-        when(gradeRepository.findValueByStudentAndGradeType(student, gradeType)).thenReturn(85.0f);
+        gradeService.createGradesFromGradeTypesAndValues(student, valuesString, gradeTypes, "Good job");
 
-        Float actualGrade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
-
-        assertEquals(85.0f, actualGrade);
+        verify(gradeRepository, never()).save(any(Grade.class));
     }
+*/
 
     @Test
-    @DisplayName("getGradeByStudentAndGradeType returns null for invalid student and grade type")
-    void getGradeByStudentAndGradeType_returnsNullForInvalidStudentAndGradeType() {
-        Student student = new Student();
-        student.name("Invalid Student");
-        GradeType gradeType = new GradeType();
-        gradeType.name("Invalid Grade");
-
-        when(gradeRepository.findValueByStudentAndGradeType(student, gradeType)).thenReturn(null);
-
-        Float actualGrade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
-
-        assertNull(actualGrade);
-    }
-
-    @Test
-    @DisplayName("getGradeByStudentAndGradeType handles NullPointerException")
-    void getGradeByStudentAndGradeType_handlesNullPointerException() {
+    void createStudentIndividualGradesCSVReportShouldGenerateCorrectReportWithValidInput() throws IOException {
+        String token = "testToken";
+        int userId = 1;
         Student student = new Student();
         student.name("John Doe");
+        student.gender(Gender.MAN);
+        student.bachelor(true);
         GradeType gradeType = new GradeType();
         gradeType.name("Test Grade");
+        Grade grade = new Grade();
+        grade.value(90f);
+        grade.gradeType(gradeType);
+        List<Grade> grades = Collections.singletonList(grade);
 
-        when(gradeRepository.findValueByStudentAndGradeType(student, gradeType)).thenThrow(new NullPointerException());
+        when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
+        when(studentService.getStudentById(token, userId)).thenReturn(student);
+        when(gradeRepository.findAllunimportedByStudentId(userId)).thenReturn(grades);
 
-        Float actualGrade = gradeService.getGradeByStudentAndGradeType(student, gradeType);
+        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, userId);
 
-        assertNull(actualGrade);
+        String expectedCsv = "\"\",\"\",\"\",\"Test Grade\"\n\"John Doe\",\"M\",\"B\",\"90.0\"\n";
+        String actualCsv = new String(result);
+
+        assertEquals(expectedCsv, actualCsv);
     }
 
+    @Test
+    void createStudentIndividualGradesCSVReportShouldThrowSecurityExceptionWhenNotAuthorized() {
+        String token = "testToken";
+        int userId = 1;
+
+        when(authService.checkAuth(token, "exportGrades")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeService.createStudentIndividualGradesCSVReport(token, userId));
+    }
+
+    @Test
+    void createStudentIndividualGradesCSVReportShouldHandleNoGrades() throws IOException, IOException {
+        String token = "testToken";
+        int userId = 1;
+        Student student = new Student();
+        student.name("John Doe");
+        student.gender(Gender.MAN);
+        student.bachelor(true);
+        List<Grade> grades = Collections.emptyList();
+
+        when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
+        when(studentService.getStudentById(token, userId)).thenReturn(student);
+        when(gradeRepository.findAllunimportedByStudentId(userId)).thenReturn(grades);
+
+        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, userId);
+
+        String expectedCsv = "\"\",\"\",\"\"\n\"John Doe\",\"M\",\"B\"\n";
+        String actualCsv = new String(result);
+
+        assertEquals(expectedCsv, actualCsv);
+    }
 }

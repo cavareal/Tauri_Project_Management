@@ -25,5 +25,6 @@ module.exports = {
 		"vue/no-reserved-component-names": "off",
 		"@typescript-eslint/explicit-function-return-type": "off",
 		"func-style": ["error", "expression", { "allowArrowFunctions": true }],
+		"max-len": "off"
 	}
 }

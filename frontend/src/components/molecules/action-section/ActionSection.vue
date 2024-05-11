@@ -13,11 +13,11 @@ defineProps<{
 
 <template>
 	<Row class="items-center border rounded-lg p-6">
-			<Column class="items-start justify-center flex-1 gap-1">
-				<Subtitle>{{ title }}</Subtitle>
-				<InfoText>{{ description }}</InfoText>
-			</Column>
+		<Column class="items-start justify-center flex-1 gap-1">
+			<Subtitle>{{ title }}</Subtitle>
+			<InfoText>{{ description }}</InfoText>
+		</Column>
 
-			<slot />
-		</Row>
+		<slot />
+	</Row>
 </template>

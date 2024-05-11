@@ -1,60 +1,54 @@
 <script setup lang="ts">
 
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
-import { useQuery } from "@tanstack/vue-query"
-import { getTeams } from "@/services/team-service"
 import { ErrorText } from "@/components/atoms/texts"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import LoadingButton from "../../molecules/buttons/LoadingButton.vue"
-import { getCookie } from "@/utils/cookie"
-import { type Ref, ref } from "vue"
-import { addGradeToTeam } from "@/services/grade-service"
+import { useMutation, useQuery } from "@tanstack/vue-query"
+import { ref } from "vue"
+import { createGrade } from "@/services/grade-service"
+import { createToast } from "@/utils/toast"
+import type { GradeType } from "@/types/grade-type"
+import { getGradeTypeByName } from "@/services/grade-type-service"
 
-const userId = getCookie("user")
-const selectedTeam = ref("")
-let note = ref("")
-const token = getCookie("token")
-const currentProject = getCookie("currentProject")
-
+let mark = ref("")
+const open = ref(false)
 const props = defineProps<{
 	title: string,
 	description : string,
-	gradeType : string
+	teamId : string,
+	sprintId : string,
+	gradeTypeString : string
 }>()
 
-const evaluations: Ref<Record<string, { team: string, gradeType : string,  grade: number }[]>> = ref({})
+const { data: gradeType } = useQuery<GradeType, Error>({
+	queryKey: ["grade-type"],
+	queryFn: () => getGradeTypeByName(props.gradeTypeString)
+})
 
-const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: () => getTeams(currentProject) })
+const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
+	await createGrade({
+	    value: Number(mark.value),
+		gradeTypeId: gradeType.value.id,
+		teamId: Number(props.teamId),
+		sprintId: Number(props.sprintId),
+		comment: null,
+		studentId: null
+	})
+		.then(() => mark.value = "")
+		.then(() => createToast("La note a bien été enregistrée."))
+		.then(() => open.value = false)
+} })
 
-const addEvaluation = () => {
-	if (!evaluations.value[selectedTeam.value]) {
-		evaluations.value[selectedTeam.value] = []
-	}
-	const teamIndex = evaluations.value[selectedTeam.value].findIndex(e => e.team === selectedTeam.value)
-	if (teamIndex !== -1) {
-		evaluations.value[selectedTeam.value][teamIndex].grade = Number(note.value)
-	} else {
-		evaluations.value[selectedTeam.value].push({
-			team: selectedTeam.value,
-			gradeType: props.gradeType,
-			grade: Number(note.value)
-		})
-	}
-}
 const handleNoteInput = (event: InputEvent) => {
 	const inputNote = parseInt((event.target as HTMLInputElement).value)
 	if (inputNote > 20) {
-		note.value = String(20)
+		mark.value = String(20)
 	} else {
-		note.value = String(inputNote)
+		mark.value = String(inputNote)
 	}
-}
-const sendGrades = () => {
-	void addEvaluation(),
-	console.log(evaluations.value),
-	void addGradeToTeam(userId, evaluations, token)
 }
 
 </script>
@@ -69,25 +63,17 @@ const sendGrades = () => {
 
 		<div class="grid gap-4 py-4">
 			<div class="grid grid-cols-3 items-center gap-4">
-				<Label for="equipe">Equipe :</Label>
-				<select v-model="selectedTeam">
-					<option value="" disabled selected hidden>Choisir une équipe</option>
-					<option v-for="team in teams" :key="team.id">
-						{{ team.name }}
-					</option>
-				</select>
-			</div>
-			<div class="grid grid-cols-3 items-center gap-4">
 				<Label for="note">Note :</Label>
-				<Input id="note" type="number" min="0" max="20" v-model="note" @input="handleNoteInput"/>
+				<Input id="note" type="number" min="0" max="20" v-model="mark" @input="handleNoteInput"/>
 			</div>
 		</div>
+
 		<template #footer>
-			<DialogClose v-if="!isLoading">
+			<DialogClose>
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
 			<DialogClose>
-				<LoadingButton type="submit" @click="sendGrades" :loading="isLoading">
+				<LoadingButton type="submit" :loading="isPending" @click="mutate">
 					Confirmer
 				</LoadingButton>
 			</DialogClose>

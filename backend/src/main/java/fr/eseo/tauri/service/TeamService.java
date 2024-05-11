@@ -45,7 +45,7 @@ public class TeamService {
      * @param nbTeams the number of teams to create
      * @return a List<Teams> if teams are created, otherwise null
      */
-    private List<Team> createTeams(String token, Integer projectId, Integer nbTeams) {
+    public List<Team> createTeams(String token, Integer projectId, Integer nbTeams) {
         if (nbTeams < 1) {
             CustomLogger.error("TeamService.createTeams : The number of teams to create must be greater than 0");
             throw new IllegalArgumentException("The number of teams to create must be greater than 0");
@@ -64,7 +64,7 @@ public class TeamService {
         // Create the teams
         for (int i = 0; i < nbTeams; i++) {
             Team team = new Team();
-            team.name("Team " + (i + 1));
+            team.name("Équipe " + (i + 1));
             team.project(project);
             this.teamRepository.save(team);
             teams.add(team);
@@ -81,7 +81,6 @@ public class TeamService {
         Team team = getTeamById(token, id);
 
         if (updatedTeam.name() != null) team.name(updatedTeam.name());
-        if (updatedTeam.projectId() != null) team.project(projectService.getProjectById(token, updatedTeam.projectId()));
         if (updatedTeam.leaderId() != null) team.leader(userService.getUserById(token, updatedTeam.leaderId()));
 
         teamRepository.save(team);
@@ -131,7 +130,16 @@ public class TeamService {
         return studentRepository.findByTeam(id);
     }
 
-    public double getTeamAvgGrade(String token, Integer id) {
+    public List<User> getMembersByTeamId(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        List<User> members = new ArrayList<>(getStudentsByTeamId(token, id));
+        members.add(getTeamById(token, id).leader());
+        return members;
+    }
+
+    public Double getTeamAvgGrade(String token, Integer id) {
         Team team = getTeamById(token, id);
         return teamRepository.findAvgGradeByTeam(team);
     }
@@ -170,6 +178,7 @@ public class TeamService {
         }
         projectService.updateProject(token, projectId, projectDetails);
         List<Team> teams = this.createTeams(token, projectId, nbTeams);
+        CustomLogger.info("Teams have been created");
         this.fillTeams(teams, women, men, womenPerTeam, nbStudent);
     }
 
@@ -180,7 +189,7 @@ public class TeamService {
      * @param men the list of men students
      * @param womenPerTeam the number of women per team
      */
-    private void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent) {
+    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent) {
         int nbTeams = teams.size();
         int nbWomen = women.size();
 
@@ -235,5 +244,7 @@ public class TeamService {
             this.roleRepository.save(role);
             this.studentRepository.save(student);
         }
+        CustomLogger.info("Teams have been filled with students");
     }
+
 }

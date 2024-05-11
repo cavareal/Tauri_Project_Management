@@ -7,17 +7,16 @@ import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
-import { getCookie } from "@/utils/cookie"
-
-const currentProjectId = getCookie("currentProject")
+import { createToast } from "@/utils/toast"
 
 const emits = defineEmits(["delete:teams"])
 const open = ref(false)
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-teams"], mutationFn: async() => {
-	await deleteAllTeams(currentProjectId)
+	await deleteAllTeams()
 		.then(() => open.value = false)
 		.then(() => emits("delete:teams"))
+		.then(() => createToast("Les équipes ont été supprimées."))
 } })
 
 const DIALOG_TITLE = "Supprimer les équipes"

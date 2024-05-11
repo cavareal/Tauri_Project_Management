@@ -18,9 +18,13 @@ export type Sprint = z.infer<typeof SprintSchema>
 
 export const CreateSprintSchema = SprintSchema.omit({
 	id: true,
-	project: true
+	project: true,
+	startDate: true,
+	endDate: true
 }).extend({
-	projectId: z.number()
+	projectId: z.coerce.number(),
+	startDate: z.string(),
+	endDate: z.string()
 })
 export type CreateSprint = z.infer<typeof CreateSprintSchema>
 

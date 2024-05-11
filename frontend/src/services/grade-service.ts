@@ -1,10 +1,29 @@
-import { GradeDoubleArraySchema, GradeSchema, type Grade } from "@/types/grade"
+import { GradeDoubleArraySchema, GradeSchema, type Grade, CreateGradeSchema } from "@/types/grade"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { type CreateGrade } from "@/types/grade"
 import { z } from "zod"
 import type { GradeType } from "@/types/grade-type"
 import type { User } from "@/types/user"
 import type { Student } from "@/types/student"
 import type { Team } from "@/types/team"
+import { getConnectedUser } from "@/services/user-service"
+
+
+export const createGrade = async(body : Omit<CreateGrade, "authorId">): Promise<void> => {
+	const user = await getConnectedUser()
+	const response	= await mutateAndValidate({
+		method: "POST",
+		route: "grades",
+		body: {
+			...body,
+			authorId: user.id
+		},
+		bodySchema: CreateGradeSchema
+	})
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
 
 export const getAllImportedGrades = async(): Promise<Grade[]> => {
 	const response = await queryAndValidate({
@@ -34,7 +53,7 @@ export const getAverageGrades = async(userId: number): Promise<z.infer<typeof Gr
 
 export const updateStudentGrade = async(id: string | null, value: number | null, comment: string | null, gradeType: GradeType | null, author: User | null, student: Student | null/*, sprint: Sprint | null*/): Promise<void> => {
 	const response = await mutateAndValidate({
-		method: "PUT",
+		method: "PATCH",
 		route: `grades/student/${id}`,
 		body: { value, comment, gradeType, author, student },
 		bodySchema: z.any()
@@ -47,7 +66,7 @@ export const updateStudentGrade = async(id: string | null, value: number | null,
 
 export const updateTeamGrade = async(id: string | null, value: number | null, comment: string | null, gradeType: GradeType | null, author: User | null, team: Team | null/*, sprint: Sprint | null*/): Promise<void> => {
 	const response = await mutateAndValidate({
-		method: "PUT",
+		method: "PATCH",
 		route: `grades/team/${id}`,
 		body: { value, comment, gradeType, author, team },
 		bodySchema: z.any()
@@ -71,9 +90,9 @@ export const addGradesToTeam = async(userId: string | null, rate : any): Promise
 	}
 }
 
-export const addGradeToTeam = async(userId: string | null, evaluations : any, token : any) => {
+export const addGradeToTeam = async(userId: number, evaluations: any, token: any) => {
 	try {
-		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + "grades/add-grade-to-team/" + userId, {
+		const response = await fetch(import.meta.env.VITE_TAURI_API_URL + `grades/add-grade-to-team/${userId}`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

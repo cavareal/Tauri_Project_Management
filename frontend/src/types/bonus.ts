@@ -5,7 +5,7 @@ import { z } from "zod"
 
 export const BonusSchema = z.object({
 	id: z.number(),
-	value: z.number(),
+	value: z.coerce.number(),
 	comment: z.string().nullable(),
 	limited: z.boolean(),
 	sprint: SprintSchema,
@@ -20,9 +20,9 @@ export const CreateBonusSchema = BonusSchema.omit({
 	student: true,
 	author: true
 }).extend({
-	sprintId: z.number(),
-	studentId: z.number(),
-	authorId: z.number()
+	sprintId: z.coerce.number(),
+	studentId: z.coerce.number(),
+	authorId: z.coerce.number()
 })
 export type CreateBonus = z.infer<typeof CreateBonusSchema>
 

@@ -1,5 +1,6 @@
 package fr.eseo.tauri.repository;
 
+import fr.eseo.tauri.model.enumeration.FlagType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import fr.eseo.tauri.model.Flag;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,5 +21,7 @@ public interface FlagRepository extends JpaRepository<Flag, Integer> {
 
     @Query("SELECT f FROM Flag f WHERE f.author.id = :authorId AND f.description = :description")
     List<Flag> findByAuthorIdAndDescription(Integer authorId, String description);
+
+    List<Flag> findByAuthor_IdAndType(Integer authorId, FlagType type);
 
 }

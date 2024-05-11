@@ -1,6 +1,5 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.service.ValidationBonusService;
 import fr.eseo.tauri.util.CustomLogger;
@@ -16,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/bonuses/{bonusId}/validated")
+@RequestMapping("/api/bonuses/{bonusId}/validation")
 @Tag(name = "validationBonuses")
 public class ValidationBonusController {
 
@@ -24,29 +23,22 @@ public class ValidationBonusController {
     private final ResponseMessage responseMessage = new ResponseMessage("validationBonus");
 
     @GetMapping("/{authorId}")
-    public ResponseEntity<Boolean> checkUserValidatedById(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId, @PathVariable Integer authorId) {
-        var userValidated = validationBonusService.checkUserValidatedById(token, bonusId, authorId);
-        return ResponseEntity.ok(userValidated);
+    public ResponseEntity<ValidationBonus> getValidationBonusByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId, @PathVariable Integer authorId) {
+        var validationBonus = validationBonusService.getValidationBonusByAuthorId(token, bonusId, authorId);
+        return ResponseEntity.ok(validationBonus);
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsersValidated(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId) {
-        var usersValidated = validationBonusService.getAllUsersValidated(token, bonusId);
-        return ResponseEntity.ok(usersValidated);
+    public ResponseEntity<List<ValidationBonus>> getAllValidationBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId) {
+        List<ValidationBonus> validationBonuses = validationBonusService.getAllValidationBonuses(token, bonusId);
+        return ResponseEntity.ok(validationBonuses);
     }
 
-    @PostMapping
-    public ResponseEntity<String> createValidationBonus(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody ValidationBonus validationBonus) {
-        validationBonusService.createValidationBonus(token, validationBonus);
-        CustomLogger.info(responseMessage.create());
-        return ResponseEntity.ok(responseMessage.create());
-    }
-
-    @DeleteMapping("/{authorId}")
-    public ResponseEntity<String> deleteValidationBonusByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId, @PathVariable Integer authorId) {
-        validationBonusService.deleteValidationBonusByAuthorId(token, bonusId, authorId);
-        CustomLogger.info(responseMessage.delete());
-        return ResponseEntity.ok(responseMessage.delete());
+    @PatchMapping("/{authorId}")
+    public ResponseEntity<String> updateValidationBonus(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId, @PathVariable Integer authorId, @Validated(Create.class) @RequestBody ValidationBonus updatedValidationBonus) {
+        validationBonusService.updateValidationBonus(token, bonusId, authorId, updatedValidationBonus);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
 }

@@ -15,8 +15,8 @@ export const CreateTeamSchema = TeamSchema.omit({
 	project: true,
 	leader: true
 }).extend({
-	projectId: z.number(),
-	leaderId: z.number().optional()
+	projectId: z.coerce.number(),
+	leaderId: z.coerce.number().optional()
 })
 export type CreateTeam = z.infer<typeof CreateTeamSchema>
 

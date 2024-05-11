@@ -4,6 +4,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
@@ -61,13 +62,15 @@ public class GradeTypeService {
         GradeType gradeType = getGradeTypeById(token, id);
 
         if (updatedGradeType.name() != null) gradeType.name(updatedGradeType.name());
-        if (updatedGradeType.factor() != null) gradeType.factor(updatedGradeType.factor());
+        if (updatedGradeType.factor() != null) {
+            gradeType.factor(updatedGradeType.factor());
+            gradeService.updateImportedMean();
+        }
         if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
         if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
         if (updatedGradeType.scaleUrl() != null) gradeType.scaleUrl(updatedGradeType.scaleUrl());
 
         gradeTypeRepository.save(gradeType);
-        gradeService.updateImportedMean();
     }
 
     public void deleteGradeTypeById(String token, Integer id) {
@@ -97,11 +100,9 @@ public class GradeTypeService {
      *
      * @param coefficients the list of coefficients for the GradeType objects
      * @param names      the list of names for the GradeType objects
-     * @param forGroup     the forGroup value for the GradeType objects
-     * @param imported     the imported value for the GradeType objects
      * @return a list of GradeType objects created from the provided coefficients and names
      */
-    public List<GradeType> generateImportedGradeTypes(String token, List<String> coefficients, List<String> names, Boolean forGroup, Boolean imported) {
+    public List<GradeType> generateImportedGradeTypes(String token, List<String> coefficients, List<String> names) {
 
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeType"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -119,22 +120,22 @@ public class GradeTypeService {
 
         List<GradeType> importedGradeTypes = new ArrayList<>();
 
-        importedGradeTypes.add(createImportedGradeType("AVERAGE", (float) 0, forGroup, imported));
+        importedGradeTypes.add(createImportedGradeType(GradeTypeName.AVERAGE.displayName(), (float) 0));
 
         for (int i = 0; i < coefficients.size(); i++) {
-            importedGradeTypes.add(createImportedGradeType(names.get(i), Float.parseFloat(coefficients.get(i)), forGroup, imported));
+            importedGradeTypes.add(createImportedGradeType(names.get(i), Float.parseFloat(coefficients.get(i))));
         }
 
         CustomLogger.info("Successfully created GradeType objects from the provided coefficients and names.");
         return importedGradeTypes;
     }
 
-    private GradeType createImportedGradeType(String name, Float factor, Boolean forGroup, Boolean imported) {
+    public GradeType createImportedGradeType(String name, Float factor) {
         GradeType gradeType = new GradeType();
         gradeType.name(name);
         gradeType.factor(factor);
-        gradeType.forGroup(forGroup);
-        gradeType.imported(imported);
+        gradeType.forGroup(false);
+        gradeType.imported(true);
         return(gradeTypeRepository.save(gradeType));
     }
 
@@ -163,7 +164,7 @@ public class GradeTypeService {
             }
         }
 
-        return generateImportedGradeTypes(token, coefficients, names, false, true);
+        return generateImportedGradeTypes(token, coefficients, names);
     }
 
     /**
@@ -174,7 +175,7 @@ public class GradeTypeService {
      * @param coefficients the list of coefficients to which the extracted coefficients are added
      * @return the starting index of the coefficients in the line
      */
-    private int processLineForCoefficients(String[] nextLine, List<String> coefficients) {
+    public int processLineForCoefficients(String[] nextLine, List<String> coefficients) {
         int startingCoefficients = 1;
         for (String part : nextLine) {
             String trimmedPart = part.trim();
@@ -196,7 +197,7 @@ public class GradeTypeService {
      * @param names              the list of names to which the extracted names are added
      * @param startingCoefficients the starting index of the coefficients in the line
      */
-    private void processLineForNames(String[] nextLine, List<String> names, int startingCoefficients) {
+    public void processLineForNames(String[] nextLine, List<String> names, int startingCoefficients) {
         int index = 0;
         for (String part : nextLine) {
             index++;
@@ -205,6 +206,14 @@ public class GradeTypeService {
                 names.add(trimmedPart);
             }
         }
+    }
+
+
+    public GradeType findByName(String name, String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeType"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeTypeRepository.findByName(name);
     }
     
 }

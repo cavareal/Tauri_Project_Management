@@ -14,6 +14,7 @@ import { CustomSelect } from "@/components/molecules/select"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { ErrorText } from "@/components/atoms/texts"
+import { createToast } from "@/utils/toast"
 
 const open = ref(false)
 const emits = defineEmits(["edit:team"])
@@ -22,17 +23,16 @@ const props = defineProps<{
 	team: Team
 }>()
 
-const teamName = ref<string>(props.team.name)
+const teamName = ref<string>(props.team.name ?? "")
 const teamLeaderId = ref<string | undefined>(props.team.leader?.id.toString())
 
 const { data: supervisors } = useQuery({ queryKey: ["supervisors"], queryFn: () => getUsersByRole("SUPERVISING_STAFF") })
 
 const { mutate, error, isPending } = useMutation({ mutationKey: ["edit-team"], mutationFn: async() => {
-	await (async() => {
-		teamLeaderId.value && await updateTeam(props.team.id, teamName.value, teamLeaderId.value)
-	})()
+	await updateTeam(props.team.id, { name: teamName.value, leaderId: parseInt(teamLeaderId.value ?? "") ?? undefined })
 		.then(() => open.value = false)
 		.then(() => emits("edit:team"))
+		.then(() => createToast(`L'équipe ${teamName.value} a été modifiée.`))
 } })
 
 const DIALOG_TITLE = "Modifier une équipe"

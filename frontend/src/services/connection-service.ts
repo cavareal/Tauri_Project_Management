@@ -23,6 +23,8 @@ export const login = async(login: string, password: string) => {
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+	const user = users[0]
+	Cookies.setUserId(user.id)
 
 	console.log("login", "3")
 

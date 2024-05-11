@@ -1,6 +1,7 @@
 package fr.eseo.tauri.controller;
 
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.service.StudentService;
 import fr.eseo.tauri.util.CustomLogger;
@@ -33,7 +34,7 @@ public class StudentController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Student>> getAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+	public ResponseEntity<List<Student>> getAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
 		List<Student> students = studentService.getAllStudentsByProject(token, projectId);
 		return ResponseEntity.ok(students);
 	}
@@ -60,7 +61,7 @@ public class StudentController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> deleteAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) {
+	public ResponseEntity<String> deleteAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
 		studentService.deleteAllStudentsByProject(token, projectId);
 		CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
 		return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
@@ -77,15 +78,21 @@ public class StudentController {
 	 * If an error occurs during the processing of the file, it returns an internal server error response with a message indicating the error.
 	 */
 	@PostMapping("/upload")
-	public ResponseEntity<String> handleFileUpload(@RequestHeader("Authorization") String token, @RequestParam("file-upload") MultipartFile file, @RequestParam Integer projectId) throws IOException, CsvValidationException {
+	public ResponseEntity<String> handleFileUpload(@RequestHeader("Authorization") String token, @RequestParam("file-upload") MultipartFile file, @RequestParam("projectId") Integer projectId) throws IOException, CsvValidationException {
 		studentService.populateDatabaseFromCSV(token, file, projectId);
 		return ResponseEntity.ok("File uploaded successfully");
 	}
 
 	@GetMapping("/download")
-	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam Integer projectId) throws IOException {
+	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) throws IOException {
 		byte[] studentsCSV = studentService.createStudentsCSV(token, projectId);
 		return ResponseEntity.ok(studentsCSV);
+	}
+
+	@GetMapping("/{id}/bonuses")
+	public ResponseEntity<List<Bonus>> getStudentBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		List<Bonus> bonuses = studentService.getStudentBonuses(token, id);
+		return ResponseEntity.ok(bonuses);
 	}
 
 }
