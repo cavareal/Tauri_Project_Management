@@ -18,7 +18,7 @@ public class UserSeeder {
 		for (int i = 0; i < NB_USERS; i++) {
 			var user = new User();
 
-			user.name(faker.name().fullName());
+			user.name(faker.name().lastName().toUpperCase() + " " + faker.name().firstName());
 			user.email(faker.internet().emailAddress());
 			user.password(faker.internet().password());
 			user.privateKey(faker.number().digits(20));
