@@ -5,6 +5,7 @@ import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { Cookies } from "@/utils/cookie"
 import { z } from "zod"
 import type { Team } from "@/types/team"
+import { RoleTypeSchema } from "@/types/role"
 
 export const getConnectedUser = async(): Promise<User> => {
 	const id = Cookies.getUserId()
@@ -77,4 +78,17 @@ export const hasPermission = (permission: PermissionType): boolean => {
 	const permissions = Cookies.getPermissions()
 
 	return permissions.includes(permission)
+}
+
+export const getAllRoles = async(id: number): Promise<RoleType[]> => {
+	const response = await queryAndValidate({
+		route: `users/${id}/roles`,
+		responseSchema: RoleTypeSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
 }
