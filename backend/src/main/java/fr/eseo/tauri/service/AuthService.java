@@ -21,7 +21,6 @@ public class AuthService {
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
-    private final UserService userService;
 
     public Boolean checkAuth(String token, String permission) {
         CustomLogger.info("Checking if user's token can do this request" + token + " " + permission);
