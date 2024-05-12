@@ -18,12 +18,12 @@ public class UserSeeder {
 	private final ApplicationSecurity applicationSecurity;
 
 	public void seed(Faker faker) {
-		var pluser = new User();
-		pluser.name("Richard Woodward");
-		pluser.email("projectLeader");
-		pluser.password(applicationSecurity.passwordEncoder().encode("projectLeader"));
-		pluser.privateKey(faker.number().digits(20));
-		userRepository.save(pluser);
+		var userPL = new User();
+		userPL.name("Richard Woodward");
+		userPL.email("richard.woodward@eseo.fr");
+		userPL.password(applicationSecurity.passwordEncoder().encode("projectLeader"));
+		userPL.privateKey(faker.number().digits(20));
+		userRepository.save(userPL);
 
 		for (int i = 0; i < NB_USERS; i++) {
 			var user = new User();
