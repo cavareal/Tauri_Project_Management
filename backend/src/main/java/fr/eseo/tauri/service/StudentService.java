@@ -11,6 +11,7 @@ import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
+import fr.eseo.tauri.security.ApplicationSecurity;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -36,6 +37,7 @@ public class StudentService {
     private final SprintService sprintService;
     private final PresentationOrderService presentationOrderService;
     private final BonusRepository bonusRepository;
+    private final ApplicationSecurity applicationSecurity;
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
@@ -203,7 +205,7 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.project(projectService.getProjectById(token, projectId));
-        student.password("password");
+        student.password(applicationSecurity.passwordEncoder().encode("password"));
         student.privateKey("privateKey");
         student.email(name.toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
         return student;
