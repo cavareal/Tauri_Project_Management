@@ -1,6 +1,5 @@
 package fr.eseo.tauri.seeder;
 
-import fr.eseo.tauri.controller.AuthController;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.security.ApplicationSecurity;
