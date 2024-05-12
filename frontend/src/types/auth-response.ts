@@ -1,8 +1,9 @@
 import { z } from "zod"
 
 export const AuthResponseSchema = z.object({
-	login: z.string(),
-	accessToken: z.string()
+	id: z.number(),
+	accessToken: z.string(),
+	projectId: z.number()
 })
 
 export type AuthResponse = z.infer<typeof AuthResponseSchema>
