@@ -239,7 +239,7 @@ export const mutateAndValidateWithReturn = async <T, R>({
 	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId?.toString() ?? "" }), {
 		method,
 		body: bodyData,
-		headers: getHeaders(jsonContent)
+		headers: { "Content-Type": "application/json" }
 	})
 	if (!response.ok) return {
 		status: "error",
