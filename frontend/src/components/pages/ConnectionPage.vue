@@ -1,19 +1,17 @@
 <script setup lang="ts">
 
-import { RadioGroup } from "@/components/ui/radio-group"
 import { ref } from "vue"
 import { Logo } from "@/components/atoms/logo"
 import { redirect } from "@/utils/router"
 import { Column } from "@/components/atoms/containers"
 import Title from "@/components/atoms/texts/Title.vue"
-import type { RoleType } from "@/types/role"
 import { login } from "@/services/connection-service"
-import { RadioLabel } from "@/components/molecules/radio"
 import { CustomCard } from "@/components/molecules/card"
-import { useQuery } from "@tanstack/vue-query"
 import { useMutation } from "@tanstack/vue-query"
+import { Cookies } from "@/utils/cookie"
 
-const selectedRole = ref<RoleType>("OPTION_LEADER")
+Cookies.removeAll()
+
 const username = ref<string>("")
 const password = ref<string>("")
 

@@ -17,7 +17,7 @@ const getCookie = <T = string>(name: CookieName): T => {
 		return null as unknown as T
 	}
 
-	// remove the ; at the end of the cookie
+	// remove the ';' at the end of the cookie
 	let end = cookies.indexOf(";", index)
 	end = end === -1 ? cookies.length : end
 	return cookies.slice(index + name.length + 1, end) as T
@@ -30,6 +30,10 @@ const getCookie = <T = string>(name: CookieName): T => {
  */
 const setCookie = (name: CookieName, value: string): void => {
 	document.cookie = `${name}=${value}; path=/`
+}
+
+const removeCookie = (name: CookieName): void => {
+	document.cookie = `${name}=; expires=Thu, 19 Apr 2001 00:00:00 UTC; path=/;`
 }
 
 export namespace Cookies {
@@ -47,4 +51,12 @@ export namespace Cookies {
 
 	export const getPermissions = (): PermissionType[] => getCookie<PermissionType[]>("permissions")
 	export const setPermissions = (permissions: PermissionType[]): void => setCookie("permissions", JSON.stringify(permissions))
+
+	export const removeAll = (): void => {
+		removeCookie("role")
+		removeCookie("token")
+		removeCookie("currentProject")
+		removeCookie("user")
+		removeCookie("permissions")
+	}
 }
