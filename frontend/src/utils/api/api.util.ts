@@ -97,7 +97,7 @@ const getHeaders = (jsonContent: boolean = true) => {
 	const token = Cookies.getToken()
 
 	const headers = {
-		"Authorization": token || "null"
+		"Authorization": "Bearer " + token || "null"
 	}
 
 	if (!jsonContent) return headers
