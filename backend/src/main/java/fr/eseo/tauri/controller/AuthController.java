@@ -1,8 +1,12 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.PermissionType;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.security.AuthRequest;
 import fr.eseo.tauri.security.AuthResponse;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.UserService;
 import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,37 +20,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import fr.eseo.tauri.security.JwtTokenUtil;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @Tag(name = "auth")
 public class AuthController {
-
+    private final AuthService authService;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
 
+    // TODO: Use the AuthService
+    private final UserService userService;
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        try {
-            System.out.println("request : " + request);
-
-            User userDetails = (User) userDetailsService.loadUserByUsername(request.login());
-            if (passwordEncoder.matches(request.password(), userDetails.getPassword())) {
-                CustomLogger.info("Credentials match");
-                String accessToken = jwtTokenUtil.generateAccessToken(userDetails);
-                CustomLogger.info("Token generated");
-                AuthResponse response = new AuthResponse(userDetails.getUsername(), accessToken);
-                CustomLogger.info("Response ready");
-                System.out.println("Response : " + response);
-                return ResponseEntity.ok(response);
-            }
-            System.out.println("Credentials doesn't match");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (Exception e) {
-            System.out.println("Exception : " + e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        CustomLogger.info(request.login() + " is trying to log in");
+        AuthResponse response = authService.login(request.login(), request.password());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logon")
