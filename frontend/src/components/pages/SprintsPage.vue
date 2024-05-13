@@ -26,7 +26,6 @@ const { data: sprints, error: error, refetch: getSprints, isLoading, isFetching 
 		const newSprints = await getAllSprints()
 
 		if(newSprints.length != 0){
-			console.log(newSprints)
 			lastSprintEndDate.value = formatDate(newSprints[newSprints.length - 1].endDate)
 			lastSprintOrder.value = newSprints[newSprints.length - 1].sprintOrder
 		}
