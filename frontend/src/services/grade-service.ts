@@ -124,3 +124,17 @@ export const addGradeToTeam = async(userId: number, evaluations: any, token: any
 		console.error(error)
 	}
 }
+
+export const getAverageByGradeType = async(id: number, sprintId: number, gradeTypeName: string): Promise<number> => {
+	const response = await queryAndValidate({
+		route: `grades/average/${id}`,
+		params: { sprintId: sprintId.toString(), gradeTypeName: gradeTypeName },
+		responseSchema: z.number()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}

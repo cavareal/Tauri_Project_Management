@@ -154,6 +154,17 @@ public class GradeService {
 		}
 	}
 
+    public Double getAverageGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
+        GradeType gradeType = gradeTypeRepository.findByName(gradeTypeName);
+        Double grade;
+        if (Boolean.TRUE.equals(gradeType.forGroup())) {
+            grade = gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, gradeTypeName);
+        } else {
+            grade = gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, gradeTypeName);
+        }
+        return grade;
+    }
+
     public Double getSprintGrade(String token, Integer userId, Integer sprintId) {
     /*    if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);

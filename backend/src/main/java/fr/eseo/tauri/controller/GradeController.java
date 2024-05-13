@@ -155,5 +155,14 @@ public class GradeController {
 			return -1.0;
 		}
 	}
+
+	@GetMapping("/average/{id}")
+	private double getAverageGradeTypeByStudentIdOrTeamId(@PathVariable Integer id,@RequestParam("sprintId") Integer sprintId,@RequestParam("gradeTypeName") String gradeTypeName) {
+		try{
+			return getAverageGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName);
+		} catch (NullPointerException e){
+			return -1.0;
+		}
+	}
 	
 }
