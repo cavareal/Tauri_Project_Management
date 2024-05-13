@@ -12,7 +12,7 @@ stages:
 variables:
   GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
-  #### Value of variables init in gitlab>settings>ci_cd>variables
+  #### Value of variables setup in gitlab>settings>ci_cd>variables
   #---DB backend
   # $DATABASE_USERNAME
   # $DATABASE_PASSWORD
@@ -28,10 +28,10 @@ variables:
   # $SSH_PRIVATE_KEY_DEV
   # $SSH_PRIVATE_KEY_PROD
 
+
 before_script:
   - export https_proxy=http://192.168.4.8:3128/
   - export http_proxy=http://192.168.4.8:3128/
-
 
 
 
@@ -180,8 +180,8 @@ push-dev:
     - chmod 644 ~/.ssh/known_hosts
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
-    - ssh $SSH_USER@$SERVER_IP_DEV "rm -f /srv/tomcat10/webapps/tauri.war"
-    - ssh $SSH_USER@$SERVER_IP_DEV "rm -f -R /srv/tomcat10/webapps/tauri/"
+    - ssh $SSH_USER@$SERVER_IP_DEV "if [ -f /srv/tomcat10/webapps/tauri.war ]; then rm -f /srv/tomcat10/webapps/tauri.war; fi"
+    - ssh $SSH_USER@$SERVER_IP_DEV "if [ -d /srv/tomcat10/webapps/tauri/ ]; then rm -rf /srv/tomcat10/webapps/tauri/; fi"
     - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_DEV:/srv/tomcat10/webapps
   retry: 2
   only:
@@ -189,6 +189,8 @@ push-dev:
     - gitlab-ci
      
 
+
+ 
 
 #################
 ## DEPLOY PROD ##
@@ -208,8 +210,8 @@ push-prod:
     - chmod 644 ~/.ssh/known_hosts
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
-    - ssh $SSH_USER@$SERVER_IP_PROD "rm -f /srv/tomcat10/webapps/tauri.war"
-    - ssh $SSH_USER@$SERVER_IP_PROD "rm -f -R /srv/tomcat10/webapps/tauri/"
+    - ssh $SSH_USER@$SERVER_IP_PROD "if [ -f /srv/tomcat10/webapps/tauri.war ]; then rm -f /srv/tomcat10/webapps/tauri.war; fi"
+    - ssh $SSH_USER@$SERVER_IP_PROD "if [ -d /srv/tomcat10/webapps/tauri/ ]; then rm -rf /srv/tomcat10/webapps/tauri/; fi"
     - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_PROD:/srv/tomcat10/webapps
   retry: 2
   only:
