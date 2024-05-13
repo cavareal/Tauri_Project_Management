@@ -35,13 +35,10 @@ public class UserSeeder {
 
 			user.name(faker.name().lastName().toUpperCase() + " " + faker.name().firstName());
 			user.email(faker.internet().emailAddress());
-			user.password(applicationSecurity.passwordEncoder().encode(faker.internet().password()));
+			user.password(applicationSecurity.passwordEncoder().encode("password"));
 			user.privateKey(faker.number().digits(20));
 
 			userRepository.save(user);
 		}
 	}
-
-
-
 }

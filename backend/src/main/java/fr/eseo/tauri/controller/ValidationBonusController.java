@@ -34,11 +34,11 @@ public class ValidationBonusController {
         return ResponseEntity.ok(validationBonuses);
     }
 
-    @PatchMapping("/{authorId}")
-    public ResponseEntity<String> updateValidationBonus(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId, @PathVariable Integer authorId, @Validated(Create.class) @RequestBody ValidationBonus updatedValidationBonus) {
-        validationBonusService.updateValidationBonus(token, bonusId, authorId, updatedValidationBonus);
-        CustomLogger.info(responseMessage.update());
-        return ResponseEntity.ok(responseMessage.update());
+    @PostMapping
+    public ResponseEntity<String> createValidationBonuses(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody ValidationBonus validationBonus ) {
+        validationBonusService.createValidationBonus(token, validationBonus);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
 }
