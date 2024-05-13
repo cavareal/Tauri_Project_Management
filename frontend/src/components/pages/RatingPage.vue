@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
-import { getSprints } from "@/services/sprint-service"
+import { getAllSprints } from "@/services/sprint-service"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
 import { Text } from "@/components/atoms/texts"
