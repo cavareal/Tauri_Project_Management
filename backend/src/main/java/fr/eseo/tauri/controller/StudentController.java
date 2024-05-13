@@ -1,6 +1,7 @@
 package fr.eseo.tauri.controller;
 
 import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.service.StudentService;
 import fr.eseo.tauri.util.CustomLogger;
@@ -86,6 +87,12 @@ public class StudentController {
 	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) throws IOException {
 		byte[] studentsCSV = studentService.createStudentsCSV(token, projectId);
 		return ResponseEntity.ok(studentsCSV);
+	}
+
+	@GetMapping("/{id}/bonuses")
+	public ResponseEntity<List<Bonus>> getStudentBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		List<Bonus> bonuses = studentService.getStudentBonuses(token, id);
+		return ResponseEntity.ok(bonuses);
 	}
 
 }

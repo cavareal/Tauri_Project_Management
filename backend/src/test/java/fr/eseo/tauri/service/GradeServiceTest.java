@@ -2,6 +2,7 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
+import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -292,87 +294,70 @@ class GradeServiceTest {
     }
 
     @Test
-    void createGradeShouldSaveGradeWithGivenParameters() {
-        User author = new User();
-        GradeType gradeType = new GradeType();
-        Student student = new Student();
-        float value = 90f;
-        String comment = "Good job";
+    void createStudentIndividualGradesCSVReportShouldThrowSecurityExceptionWhenNotAuthorized() {
+        String token = "testToken";
+        int userId = 1;
 
-        Grade grade = new Grade();
-        grade.value(value);
-        grade.comment(comment);
-        grade.author(author);
-        grade.gradeType(gradeType);
-        grade.student(student);
+        when(authService.checkAuth(token, "exportGrades")).thenReturn(false);
 
-        when(gradeRepository.save(any(Grade.class))).thenReturn(grade);
-
-        Grade result = gradeService.createGrade(author, gradeType, student, value, comment);
-
-        assertEquals(grade, result);
-        assertEquals(value, result.value());
-        assertEquals(comment, result.comment());
-        assertEquals(author, result.author());
-        assertEquals(gradeType, result.gradeType());
-        assertEquals(student, result.student());
+        assertThrows(SecurityException.class, () -> gradeService.createStudentIndividualGradesCSVReport(token, userId));
     }
 
     @Test
-    void assignGradeToTeamShouldAssignGradeWhenTeamExists() {
-        Team team = new Team();
-        GradeType gradeType = new GradeType();
-        User author = new User();
-        when(teamRepository.findByName(anyString())).thenReturn(team);
-        when(gradeTypeRepository.findByName(anyString())).thenReturn(gradeType);
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(author));
-
-        gradeService.assignGradeToTeam("teamName", 90, "gradeName", 1);
-
-        verify(gradeRepository, times(1)).save(any(Grade.class));
-    }
-
-    @Test
-    void assignGradeToTeamShouldThrowExceptionWhenTeamDoesNotExist() {
-        when(teamRepository.findByName(anyString())).thenReturn(null);
-
-        assertThrows(IllegalArgumentException.class, () -> gradeService.assignGradeToTeam("teamName", 90, "gradeName", 1));
-    }
-
-    @Test
-    void assignGradeToStudentShouldAssignGradeWhenStudentExists() {
-        Student student = new Student();
-        GradeType gradeType = new GradeType();
-        when(studentRepository.findByName(anyString())).thenReturn(student);
-        when(gradeTypeRepository.findByName(anyString())).thenReturn(gradeType);
-
-        gradeService.assignGradeToStudent("studentName", 90, "gradeName");
-
-        verify(gradeRepository, times(1)).save(any(Grade.class));
-    }
-
-    @Test
-    void assignGradeToStudentShouldNotAssignGradeWhenStudentDoesNotExist() {
-        when(studentRepository.findByName(anyString())).thenReturn(null);
-
-        gradeService.assignGradeToStudent("studentName", 90, "gradeName");
-
-        verify(gradeRepository, never()).save(any(Grade.class));
-    }
-
-
-    @Test
-    void createGradesFromGradeTypesAndValuesShouldNotCreateGradesWhenValuesEmpty() {
+    void createStudentIndividualGradesCSVReportShouldGenerateCorrectReportWhenAuthorized() throws IOException {
+        String token = "validToken";
+        int projectId = 1;
         Student student = new Student();
         student.name("John Doe");
+        student.gender(Gender.MAN);
+        student.bachelor(true);
         GradeType gradeType = new GradeType();
         gradeType.name("Test Grade");
-        List<String> valuesString = Collections.emptyList();
+        gradeType.factor(1f);
+        List<Student> students = Collections.singletonList(student);
         List<GradeType> gradeTypes = Collections.singletonList(gradeType);
 
-        gradeService.createGradesFromGradeTypesAndValues(student, valuesString, gradeTypes, "Good job");
+        when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
+        when(studentRepository.findAllByProject(projectId)).thenReturn(students);
+        when(gradeRepository.findAllUnimportedGradeTypesByProjectId(projectId)).thenReturn(gradeTypes);
+        when(gradeService.getGradeByStudentAndGradeType(student, gradeType)).thenReturn(90f);
 
-        verify(gradeRepository, never()).save(any(Grade.class));
+        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, projectId);
+
+        String expectedCsv = """
+                "","","","Test Grade"
+                "","","","1.0"
+                "John Doe","M","B","90.0"
+                """;
+        String actualCsv = new String(result);
+
+        assertEquals(expectedCsv, actualCsv);
     }
 
+    @Test
+    void createStudentIndividualGradesCSVReportShouldHandleNoGrades() throws IOException {
+        String token = "validToken";
+        int projectId = 1;
+        Student student = new Student();
+        student.name("John Doe");
+        student.gender(Gender.MAN);
+        student.bachelor(true);
+        List<Student> students = Collections.singletonList(student);
+        List<GradeType> gradeTypes = Collections.emptyList();
+
+        when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
+        when(studentRepository.findAllByProject(projectId)).thenReturn(students);
+        when(gradeRepository.findAllUnimportedGradeTypesByProjectId(projectId)).thenReturn(gradeTypes);
+
+        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, projectId);
+
+        String expectedCsv = """
+                "","",""
+                "","",""
+                "John Doe","M","B"
+                """;
+        String actualCsv = new String(result);
+
+        assertEquals(expectedCsv, actualCsv);
+    }
 }

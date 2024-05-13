@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.service.GradeService;
 import fr.eseo.tauri.service.RoleService;
 import fr.eseo.tauri.service.UserService;
 import fr.eseo.tauri.util.CustomLogger;
@@ -27,6 +28,7 @@ public class UserController {
 	private final UserService userService;
 	private final ResponseMessage responseMessage = new ResponseMessage("user");
 	private final RoleService roleService;
+	private final GradeService gradeService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -83,6 +85,12 @@ public class UserController {
 	public ResponseEntity<List<Team>> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
 		List<Team> teams = userService.getTeamByMemberId(token, id, projectId);
 		return ResponseEntity.ok(teams);
+	}
+
+	@GetMapping("{id}/sprint/{sprintId}/grade")
+	public ResponseEntity<Double> getSprintGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
+		Double sprintGrade = gradeService.getSprintGrade(token, id, sprintId);
+		return ResponseEntity.ok(sprintGrade);
 	}
 
 }

@@ -4,7 +4,6 @@ import fr.eseo.tauri.model.ValidationFlag;
 import fr.eseo.tauri.service.ValidationFlagService;
 import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
-import fr.eseo.tauri.util.valid.Create;
 import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

@@ -9,6 +9,7 @@ import type { GradeType } from "@/types/grade-type"
 import type { Student } from "@/types/student"
 import type { Grade } from "@/types/grade"
 import { Loading } from "@/components/organisms/loading"
+import { extractNames } from "@/utils/string"
 
 const rowClass = cn("py-2 h-auto")
 
@@ -24,11 +25,12 @@ defineProps<{
 	<Table v-if="gradeTypes">
 		<TableHeader>
 			<TableRow>
-				<TableHead :class="rowClass" class="min-w-64">Nom</TableHead>
+				<TableHead :class="rowClass" class="min-w-36">Nom</TableHead>
+				<TableHead :class="rowClass" class="min-w-36">Prénom</TableHead>
 				<TableHead :class="rowClass" class="min-w-28">Genre</TableHead>
 				<TableHead :class="rowClass" class="min-w-28">Bachelor</TableHead>
 				<TableHead v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass" class="min-w-32">
-					<span v-if="['mean', 'average'].includes(gradeType.name.toLowerCase())">Moyenne</span>
+					<span v-if="gradeType.name === 'Moyenne'">Moyenne</span>
 					<span v-else>{{ gradeType.name }} ({{ gradeType.factor }})</span>
 				</TableHead>
 			</TableRow>
@@ -37,7 +39,10 @@ defineProps<{
 		<TableBody v-if="students">
 			<TableRow v-for="student in students" :key="student.id">
 				<TableCell class="font-medium" :class="rowClass">
-					{{ student.name }}
+					{{ extractNames(student.name).lastName }}
+				</TableCell>
+				<TableCell class="font-medium" :class="rowClass">
+					{{ extractNames(student.name).firstName }}
 				</TableCell>
 				<TableCell :class="rowClass">
 					<GenderIcon :gender="student.gender" />

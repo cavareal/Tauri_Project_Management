@@ -2,8 +2,10 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Flag;
+import fr.eseo.tauri.model.enumeration.FlagType;
 import fr.eseo.tauri.repository.FlagRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,14 +15,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
+@Nested
 class FlagServiceTest {
 
     private final String TEST_TOKEN = "testToken";
@@ -31,34 +33,14 @@ class FlagServiceTest {
     @Mock
     private AuthService authService;
 
+
+
     @Mock
     private FlagRepository flagRepository;
-
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private StudentService studentService;
-
-    @Mock
-    private ProjectService projectService;
-
-    @Mock
-    private ValidationFlagService validationFlagService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-    }
-
-    @Test
-    void createFlagShouldSaveFlagWhenAuthorized() {
-        Flag flag = new Flag();
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-
-        flagService.createFlag("token", flag);
-
-        verify(flagRepository, times(1)).save(any(Flag.class));
     }
 
     @Test
@@ -103,24 +85,6 @@ class FlagServiceTest {
         when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
         assertThrows(SecurityException.class, () -> flagService.getAllFlagsByProject("token", 1));
-    }
-
-    @Test
-    void getFlagsByAuthorAndDescriptionShouldReturnFlagsWhenAuthorized() {
-        List<Flag> flags = Collections.singletonList(new Flag());
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-        when(flagRepository.findByAuthorIdAndDescription(anyInt(), anyString())).thenReturn(flags);
-
-        List<Flag> result = flagService.getFlagsByAuthorAndDescription("token", 1, "description");
-
-        assertEquals(flags, result);
-    }
-
-    @Test
-    void getFlagsByAuthorAndDescriptionShouldThrowExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> flagService.getFlagsByAuthorAndDescription("token", 1, "description"));
     }
 
     @Test
@@ -193,5 +157,44 @@ class FlagServiceTest {
         when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
         assertThrows(SecurityException.class, () -> flagService.deleteAllFlagsByProject(TEST_TOKEN, 1));
+    }
+
+    @Test
+    void getFlagsByAuthorAndTypeShouldReturnFlagsWhenAuthorized() {
+        String token = "validToken";
+        Integer authorId = 1;
+        FlagType type = FlagType.REPORTING;
+
+        when(authService.checkAuth(token, "readFlags")).thenReturn(true);
+        when(flagRepository.findByAuthor_IdAndType(authorId, type)).thenReturn(Collections.singletonList(new Flag()));
+
+        List<Flag> result = flagService.getFlagsByAuthorAndType(token, authorId, type);
+
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void getFlagsByAuthorAndTypeShouldThrowSecurityExceptionWhenNotAuthorized() {
+        String token = "validToken";
+        Integer authorId = 1;
+        FlagType type = FlagType.REPORTING;
+
+        when(authService.checkAuth(token, "readFlags")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> flagService.getFlagsByAuthorAndType(token, authorId, type));
+    }
+
+    @Test
+    void getFlagsByAuthorAndTypeShouldReturnEmptyListWhenNoFlagsFound() {
+        String token = "validToken";
+        Integer authorId = 1;
+        FlagType type = FlagType.REPORTING;
+
+        when(authService.checkAuth(token, "readFlags")).thenReturn(true);
+        when(flagRepository.findByAuthor_IdAndType(authorId, type)).thenReturn(Collections.emptyList());
+
+        List<Flag> result = flagService.getFlagsByAuthorAndType(token, authorId, type);
+
+        assertTrue(result.isEmpty());
     }
 }

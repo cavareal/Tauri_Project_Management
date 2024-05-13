@@ -244,6 +244,7 @@ public class TeamService {
             this.roleRepository.save(role);
             this.studentRepository.save(student);
         }
+        CustomLogger.info("Teams have been filled with students");
     }
 
     public List<Comment> getFeedbacksByTeamAndSprint(String token, Integer teamId, Integer sprintId) {

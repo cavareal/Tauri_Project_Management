@@ -46,7 +46,7 @@ export const updateUser = async(id: string | null, body: UpdateUser): Promise<vo
 	}
 }
 
-export const getUserById = async(id: string): Promise<User> => {
+export const getUserById = async(id: number): Promise<User> => {
 	const response = await queryAndValidate({
 		route: `users/${id}`,
 		responseSchema: UserSchema
@@ -76,4 +76,10 @@ export const hasPermission = (permission: PermissionType): boolean => {
 	const permissions = Cookies.getPermissions()
 
 	return permissions.includes(permission)
+}
+
+export const getCurrentUser = async(): Promise<User> => {
+	const id = Cookies.getUserId()
+
+	return await getUserById(id)
 }

@@ -1,12 +1,11 @@
 package fr.eseo.tauri.service;
 
+import com.opencsv.exceptions.CsvValidationException;
+import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.GradeType;
-import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
-import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -31,9 +31,6 @@ class GradeTypeServiceTest {
 
     @Mock
     private GradeTypeRepository gradeTypeRepository;
-
-    @Mock
-    private GradeService gradeService;
 
     @BeforeEach
     void setUp() {
@@ -218,147 +215,244 @@ class GradeTypeServiceTest {
         assertThrows(SecurityException.class, () -> gradeTypeService.deleteAllImportedGradeTypes("token"));
     }
 
-
-    /**
     @Test
-    void createGradeType_withValidInput_savesGradeType() {
+    void deleteAllUnimportedGradeTypesShouldDeleteWhenAuthorized() {
+        String token = "validToken";
+
+        when(authService.checkAuth(token, "deleteGradeType")).thenReturn(true);
+
+        gradeTypeService.deleteAllUnimportedGradeTypes(token);
+
+        verify(gradeTypeRepository, times(1)).deleteAllUnimported();
+    }
+
+    @Test
+    void deleteAllUnimportedGradeTypesShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+
+        when(authService.checkAuth(token, "deleteGradeType")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.deleteAllUnimportedGradeTypes(token));
+    }
+
+    @Test
+    void generateImportedGradeTypesShouldCreateGradeTypesWhenAuthorized() {
+        String token = "validToken";
+        List<String> coefficients = Arrays.asList("1.0", "2.0", "3.0");
+        List<String> names = Arrays.asList("Type1", "Type2", "Type3");
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(true);
+
+        List<GradeType> result = gradeTypeService.generateImportedGradeTypes(token, coefficients, names);
+
+        assertEquals(4, result.size()); // 3 types + 1 average
+    }
+
+    @Test
+    void generateImportedGradeTypesShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        List<String> coefficients = Arrays.asList("1.0", "2.0", "3.0");
+        List<String> names = Arrays.asList("Type1", "Type2", "Type3");
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.generateImportedGradeTypes(token, coefficients, names));
+    }
+
+    @Test
+    void generateImportedGradeTypesShouldThrowEmptyResourceExceptionWhenCoefficientsEmpty() {
+        String token = "validToken";
+        List<String> coefficients = new ArrayList<>();
+        List<String> names = Arrays.asList("Type1", "Type2", "Type3");
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(true);
+
+        assertThrows(EmptyResourceException.class, () -> gradeTypeService.generateImportedGradeTypes(token, coefficients, names));
+    }
+
+    @Test
+    void generateImportedGradeTypesShouldThrowEmptyResourceExceptionWhenNamesEmpty() {
+        String token = "validToken";
+        List<String> coefficients = Arrays.asList("1.0", "2.0", "3.0");
+        List<String> names = new ArrayList<>();
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(true);
+
+        assertThrows(EmptyResourceException.class, () -> gradeTypeService.generateImportedGradeTypes(token, coefficients, names));
+    }
+
+    @Test
+    void createImportedGradeTypeShouldReturnGradeTypeWhenAuthorized() {
+        String token = "validToken";
+        String name = "Type1";
+        Float factor = 1.0f;
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(true);
+        when(gradeTypeRepository.save(any(GradeType.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        GradeType result = gradeTypeService.createImportedGradeType(name, factor);
+
+        assertEquals(name, result.name());
+        assertEquals(factor, result.factor());
+        assertFalse(result.forGroup());
+        assertTrue(result.imported());
+    }
+
+    @Test
+    void createGradeTypesFromCSVShouldReturnGradeTypesWhenAuthorized() throws IOException, CsvValidationException {
+        String token = "validToken";
+        InputStream inputStream = new ByteArrayInputStream("1.0,2.0,3.0\nType1,Type2,Type3".getBytes());
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(true);
+
+        List<GradeType> result = gradeTypeService.createGradeTypesFromCSV(token, inputStream);
+
+        assertEquals(4, result.size()); // 3 types + 1 average
+    }
+
+    @Test
+    void createGradeTypesFromCSVShouldThrowSecurityExceptionWhenUnauthorized(){
+        String token = "validToken";
+        InputStream inputStream = new ByteArrayInputStream("1.0,2.0,3.0\nType1,Type2,Type3".getBytes());
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.createGradeTypesFromCSV(token, inputStream));
+    }
+
+    @Test
+    void createGradeTypesFromCSVShouldThrowEmptyResourceExceptionWhenCoefficientsEmpty() {
+        String token = "validToken";
+        InputStream inputStream = new ByteArrayInputStream("\nType1,Type2,Type3".getBytes());
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(true);
+
+        assertThrows(EmptyResourceException.class, () -> gradeTypeService.createGradeTypesFromCSV(token, inputStream));
+    }
+
+    @Test
+    void createGradeTypesFromCSVShouldThrowEmptyResourceExceptionWhenNamesEmpty() {
+        String token = "validToken";
+        InputStream inputStream = new ByteArrayInputStream("1.0,2.0,3.0\n".getBytes());
+
+        when(authService.checkAuth(token, "addGradeType")).thenReturn(true);
+
+        assertThrows(EmptyResourceException.class, () -> gradeTypeService.createGradeTypesFromCSV(token, inputStream));
+    }
+
+    @Test
+    void processLineForCoefficientsShouldReturnCorrectStartingIndexAndFillCoefficients() {
+        String[] nextLine = {"Not a number", "2.0", "3.0", "4.0"};
+        List<String> coefficients = new ArrayList<>();
+
+        int result = gradeTypeService.processLineForCoefficients(nextLine, coefficients);
+
+        assertEquals(2, result);
+        assertEquals(Arrays.asList("2.0", "3.0", "4.0"), coefficients);
+    }
+
+    @Test
+    void processLineForCoefficientsShouldReturnOneWhenAllAreCoefficients() {
+        String[] nextLine = {"1.0", "2.0", "3.0"};
+        List<String> coefficients = new ArrayList<>();
+
+        int result = gradeTypeService.processLineForCoefficients(nextLine, coefficients);
+
+        assertEquals(1, result);
+        assertEquals(Arrays.asList("1.0", "2.0", "3.0"), coefficients);
+    }
+
+    @Test
+    void processLineForCoefficientsShouldReturnLengthPlusOneWhenNoCoefficients() {
+        String[] nextLine = {"Not a number", "Also not a number", "Still not a number"};
+        List<String> coefficients = new ArrayList<>();
+
+        int result = gradeTypeService.processLineForCoefficients(nextLine, coefficients);
+
+        assertEquals(4, result);
+        assertTrue(coefficients.isEmpty());
+    }
+
+    @Test
+    void processLineForCoefficientsShouldHandleEmptyLine() {
+        String[] nextLine = {};
+        List<String> coefficients = new ArrayList<>();
+
+        int result = gradeTypeService.processLineForCoefficients(nextLine, coefficients);
+
+        assertEquals(1, result);
+        assertTrue(coefficients.isEmpty());
+    }
+
+    @Test
+    void processLineForNamesShouldAddNamesWhenIndexGreaterThanOrEqualToStartingCoefficients() {
+        String[] nextLine = {"Not a name", "Name1", "Name2", "Name3"};
+        List<String> names = new ArrayList<>();
+        int startingCoefficients = 2;
+
+        gradeTypeService.processLineForNames(nextLine, names, startingCoefficients);
+
+        assertEquals(Arrays.asList("Name1", "Name2", "Name3"), names);
+    }
+
+    @Test
+    void processLineForNamesShouldNotAddNamesWhenIndexLessThanStartingCoefficients() {
+        String[] nextLine = {"Name1", "Name2", "Name3"};
+        List<String> names = new ArrayList<>();
+        int startingCoefficients = 4;
+
+        gradeTypeService.processLineForNames(nextLine, names, startingCoefficients);
+
+        assertTrue(names.isEmpty());
+    }
+
+    @Test
+    void processLineForNamesShouldHandleEmptyLine() {
+        String[] nextLine = {};
+        List<String> names = new ArrayList<>();
+        int startingCoefficients = 1;
+
+        gradeTypeService.processLineForNames(nextLine, names, startingCoefficients);
+
+        assertTrue(names.isEmpty());
+    }
+
+    @Test
+    void findByNameShouldReturnGradeTypeWhenAuthorizedAndNameExists() {
+        String token = "validToken";
+        String name = "Type1";
         GradeType gradeType = new GradeType();
-        gradeType.name( GradeTypeName.DEFAULT.toString());
-        gradeTypeService.createGradeType(gradeType);
-        verify(gradeTypeRepository, times(1)).save(gradeType);
+        gradeType.name(name);
+
+        when(authService.checkAuth(token, "readGradeType")).thenReturn(true);
+        when(gradeTypeRepository.findByName(name)).thenReturn(gradeType);
+
+        GradeType result = gradeTypeService.findByName(name, token);
+
+        assertEquals(gradeType, result);
     }
 
     @Test
-    void createGradeType_withNullName_throwsException() {
-        GradeType gradeType = new GradeType();
-        gradeType.name(null);
-        assertThrows(IllegalArgumentException.class, () -> gradeTypeService.createGradeType(gradeType));
+    void findByNameShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        String name = "Type1";
+
+        when(authService.checkAuth(token, "readGradeType")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> gradeTypeService.findByName(name, token));
     }
 
     @Test
-    void createGradeTypesFromCSV_withValidInput_createsGradeTypes() {
-        String csvContent = """
-                "","","","","","2","3","3","2","2","1","1"
-                "","","sexe
-                M / F","","","PADL","PDLO","PWND","IRS","STAGE S7","S5","S6"
-                "1","ABADIE Cyril","M","B","  12.52 ","","","","","","",""
-                "2","ALARD Sébastien","M","","  13.72 ","  15.38 ","  10.97 ","  11.50 ","  18.57 ","  14.50 ","  13.19 ","  14.51 \"""";
-        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
+    void findByNameShouldReturnNullWhenNameDoesNotExist() {
+        String token = "validToken";
+        String name = "NonexistentType";
 
-        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(inputStream);
+        when(authService.checkAuth(token, "readGradeType")).thenReturn(true);
+        when(gradeTypeRepository.findByName(name)).thenReturn(null);
 
-        assertEquals(7+1, gradeTypes.size()); // 7 columns + 1 for the average that is added by the service
-        verify(gradeTypeRepository, times(7+1)).save(any(GradeType.class));
+        GradeType result = gradeTypeService.findByName(name, token);
+
+        assertNull(result);
     }
-
-    @Test
-    void createGradeTypesFromCSV_withInvalidInput_logsError() {
-        String csvContent = "Invalid content";
-        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
-
-        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(inputStream);
-
-        assertTrue(gradeTypes.isEmpty());
-        verify(gradeTypeRepository, never()).save(any(GradeType.class));
-    }
-
-    @Test
-    void createGradeTypesFromCSV_withEmptyInput_returnsEmptyList() {
-        String csvContent = "";
-        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
-
-        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(inputStream);
-        CustomLogger.info("size" + gradeTypes);
-        assertTrue(gradeTypes.isEmpty());
-        verify(gradeTypeRepository, never()).save(any(GradeType.class));
-    }
-
-    @Test
-    void createGradeTypesFromCSV_withSummaryData_ignoresSummaryData() {
-        String csvContent = """
-                "","","","","","2","3","3","2","2","1","1"
-                "","","sexe
-                M / F","","","PADL","PDLO","PWND","IRS","STAGE S7","S5","S6"
-                "1","ABADIE Cyril","M","B","  12.52 ","","","","","","",""
-                "2","ALARD Sébastien","M","","  13.72 ","  15.38 ","  10.97 ","  11.50 ","  18.57 ","  14.50 ","  13.19 ","  14.51 "
-                "","Nombre F","6","","","","","","","","",""
-                "","Nombre H","42","","","","","","","","",""
-                "","Nombre B","","6","","","","","","","","\"""";
-        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
-
-        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(inputStream);
-
-        assertEquals(7+1, gradeTypes.size()); // 7 columns + 1 for the average that is added by the service
-        verify(gradeTypeRepository, times(7+1)).save(any(GradeType.class));
-    }
-
-    @Test
-    void deleteAllImportedGradeTypes_deletesAllImportedGradeTypes() {
-        doNothing().when(gradeTypeRepository).deleteAllImported();
-
-        gradeTypeService.deleteAllImportedGradeTypes();
-
-        verify(gradeTypeRepository, times(1)).deleteAllImported();
-    }
-
-    @Test
-    void deleteAllImportedGradeTypes_handlesException() {
-        doThrow(new RuntimeException()).when(gradeTypeRepository).deleteAllImported();
-
-        gradeTypeService.deleteAllImportedGradeTypes();
-
-        verify(gradeTypeRepository, times(1)).deleteAllImported();
-    }
-
-    @Test
-    @DisplayName("getImportedGradeTypes returns all imported grade types")
-    void getImportedGradeTypes_returnsAllImportedGradeTypes() {
-        GradeType gradeType1 = new GradeType();
-        gradeType1.name("GradeType1");
-        gradeType1.imported(true);
-
-        GradeType gradeType2 = new GradeType();
-        gradeType2.name("GradeType2");
-        gradeType2.imported(true);
-
-        when(gradeTypeRepository.findAllImported()).thenReturn(Arrays.asList(gradeType1, gradeType2));
-
-        List<GradeType> actualGradeTypes = gradeTypeService.getImportedGradeTypes();
-
-        assertEquals(2, actualGradeTypes.size());
-        assertTrue(actualGradeTypes.contains(gradeType1));
-        assertTrue(actualGradeTypes.contains(gradeType2));
-    }
-
-    @Test
-    @DisplayName("getImportedGradeTypes returns empty list when no imported grade types exist")
-    void getImportedGradeTypes_returnsEmptyListWhenNoImportedGradeTypesExist() {
-        when(gradeTypeRepository.findAllImported()).thenReturn(Collections.emptyList());
-
-        List<GradeType> actualGradeTypes = gradeTypeService.getImportedGradeTypes();
-
-        assertTrue(actualGradeTypes.isEmpty());
-    }
-
-    @Test
-    @DisplayName("getImportedGradeTypes handles exceptions gracefully")
-    void getImportedGradeTypes_handlesExceptionsGracefully() {
-        when(gradeTypeRepository.findAllImported()).thenThrow(new RuntimeException());
-
-        assertThrows(RuntimeException.class, () -> gradeTypeService.getImportedGradeTypes());
-    }
-
-    @Test
-    @DisplayName("updateFactor handles exceptions gracefully")
-    void updateFactor_handlesExceptionsGracefully() {
-        GradeType gradeType = new GradeType();
-        gradeType.id(1);
-        gradeType.factor(1.0f);
-
-        when(gradeTypeRepository.findById(1)).thenReturn(Optional.of(gradeType));
-        doThrow(new RuntimeException()).when(gradeTypeRepository).save(gradeType);
-
-        assertThrows(RuntimeException.class, () -> gradeTypeService.updateFactor(1, 2.0f));
-    }*/
 
 }

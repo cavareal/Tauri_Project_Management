@@ -7,7 +7,9 @@ import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class StudentService {
     @Lazy
     private final SprintService sprintService;
     private final PresentationOrderService presentationOrderService;
+    private final BonusRepository bonusRepository;
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
@@ -302,7 +305,7 @@ public class StudentService {
         headers[2] = "sexe M / F";
         int index = 5;
         for (GradeType gradeType : importedGrades) {
-            if(gradeType.name().equals("AVERAGE")){
+            if(gradeType.name().equals(GradeTypeName.AVERAGE.displayName())){
                 continue;
             }
             headers[index] = gradeType.name();
@@ -389,6 +392,14 @@ public class StudentService {
         row[1] = label;
         row[2] = String.valueOf(count);
         csvWriter.writeNext(row);
+    }
+
+    public List<Bonus> getStudentBonuses(String token, Integer idStudent) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        return bonusRepository.findAllStudentBonuses(idStudent);
     }
 
 }
