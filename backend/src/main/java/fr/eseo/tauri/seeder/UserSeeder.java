@@ -19,9 +19,9 @@ public class UserSeeder {
 
 	public void seed(Faker faker) {
 		var userPL = new User();
-		userPL.name("Richard Woodward");
-		userPL.email("richard.woodward@eseo.fr");
-		userPL.password(applicationSecurity.passwordEncoder().encode("projectLeader"));
+		userPL.name("Woodward Richard");
+		userPL.email("admin@tauri.com");
+		userPL.password(applicationSecurity.passwordEncoder().encode("admin"));
 		userPL.privateKey(faker.number().digits(20));
 		userRepository.save(userPL);
 
