@@ -2,7 +2,7 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.User;
-import fr.eseo.tauri.repository.TeamRepository;
+import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -16,8 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Nested
@@ -28,6 +27,7 @@ class UserServiceTest {
 
     @Mock
     UserRepository userRepository;
+
 
     @Mock
     AuthService authService;
@@ -148,6 +148,68 @@ class UserServiceTest {
         when(authService.checkAuth(token, "deleteUser")).thenReturn(false);
 
         assertThrows(SecurityException.class, () -> userService.deleteUserById(token, id));
+    }
+
+    @Test
+    void deleteAllUsersDeletesAllUsersWhenAuthorized() {
+        String token = "validToken";
+
+        when(authService.checkAuth(token, "deleteUser")).thenReturn(true);
+
+        userService.deleteAllUsers(token);
+
+        verify(userRepository, times(1)).deleteAll();
+    }
+
+    @Test
+    void deleteAllUsersThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+
+        when(authService.checkAuth(token, "deleteUser")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> userService.deleteAllUsers(token));
+    }
+
+    @Test
+    void getRolesByUserIdThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+
+        when(authService.checkAuth(token, "readRoleByUserId")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> userService.getRolesByUserId(token, id));
+    }
+
+    @Test
+    void getTeamByMemberIdThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer userId = 1;
+        Integer projectId = 1;
+
+        when(authService.checkAuth(token, "readTeamBySupervisor")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> userService.getTeamByMemberId(token, userId, projectId));
+    }
+
+    @Test
+    void getPermissionsByUserThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+
+        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> userService.getPermissionsByUser(token, id));
+    }
+
+    @Test
+    void hasPermissionThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+        PermissionType permission = PermissionType.ADD_ALL_TEAMS_FEEDBACK;
+
+        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> userService.hasPermission(token, id, permission));
     }
 
 }
