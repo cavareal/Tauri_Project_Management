@@ -9,6 +9,7 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -97,7 +98,7 @@ public class UserService {
 		return roleRepository.findByUser(user);
 	}
 
-	public List<Team> getTeamByMemberId(String token, Integer userId, Integer projectId) {
+	public Team getTeamByMemberId(String token, Integer userId, Integer projectId) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
@@ -108,7 +109,8 @@ public class UserService {
 		} else if (roles.contains(RoleType.TEAM_MEMBER)) {
 			return teamRepository.findByStudentId(userId);
 		} else {
-			throw new IllegalArgumentException(getUserById(token, userId).name() + "is not a member of any team");
+			CustomLogger.info(getUserById(token, userId).name() + "is not a member of any team");
+			return null;
 		}
 	}
 

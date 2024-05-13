@@ -21,17 +21,20 @@ import type { Team } from "@/types/team"
 import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
 import DialogViewFeedback from "@/components/organisms/rating/DialogViewFeedback.vue"
 import DialogFeedback from "@/components/organisms/rating/DialogFeedback.vue"
+import { useQuery } from "@tanstack/vue-query"
 
 const props = defineProps<{
 	teamId : string,
 	sprintId : string
 }>()
 
-const currentUser = Cookies.getUserId()
-const teamOfCurrentUser = ref<Team>()
+const currentUserId = Cookies.getUserId()
+const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], queryFn: async() => getTeamByUserId(currentUserId) })
+
 
 const canGradeGlobalPerformance = hasPermission("GRADE_GLOBAL_PERFORMANCE")
-const canGradeBonus = hasPermission("LIMITED_BONUS_MALUS")
+const canGradeLimitedBonus = hasPermission("LIMITED_BONUS_MALUS")
+const canGradeUnlimitedBonus = hasPermission("GIVE_UNLIMITED_BONUS_MALUS")
 const canGradePresentationContent = hasPermission("GRADE_PRESENTATION_CONTENT")
 const canGradeMaterialSupport = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeIndividualPerformance = hasPermission("GRADE_INDIVIDUAL_PERFORMANCE")
@@ -45,18 +48,10 @@ const canGradeSprintConformity = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canAddFeedbacks = hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 
-
-onMounted(async() => {
-	teamOfCurrentUser.value = await getTeamByUserId(currentUser)
-	console.log(teamOfCurrentUser.value?.id)
-	console.log(props.teamId)
-})
-
-
 </script>
 
 <template>
-	<ContainerGradeType v-if="canGradeGlobalPerformance && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) !== teamOfCurrentUser.id" title="Note Globale de présentation" infotext="Vous devez évaluer chaque équipe sur sa présentation globale">
+	<ContainerGradeType v-if="canGradeGlobalPerformance && currentUserTeam && currentUserTeam.id !== Number(props.teamId)" title="Note Globale de présentation" infotext="Vous devez évaluer chaque équipe sur sa présentation globale">
 		<template #icon>
 			<Users :size="40" :stroke-width="1"/>
 		</template>
@@ -69,7 +64,7 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeTechnicalSolution && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Solution Technique" infotext="Vous devez évaluer chaque équipe sur la solution technique qui a été mise en œuvre.">
+	<ContainerGradeType v-if="canGradeTechnicalSolution && currentUserTeam && currentUserTeam.id === Number(props.teamId)" title="Solution Technique" infotext="Vous devez évaluer chaque équipe sur la solution technique qui a été mise en œuvre.">
 		<template #icon>
 			<Blocks :size="40" :stroke-width="1"/>
 		</template>
@@ -83,7 +78,7 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeSprintConformity && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Conformité du sprint" infotext="Vous devez évaluer la conformité du sprint des équipes.">
+	<ContainerGradeType v-if="canGradeSprintConformity && currentUserTeam && currentUserTeam.id === Number(props.teamId)" title="Conformité du sprint" infotext="Vous devez évaluer la conformité du sprint des équipes.">
 		<template #icon>
 			<Play :size="40" :stroke-width="1"/>
 		</template>
@@ -96,7 +91,7 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeProjectManagement && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Gestion du projet" infotext="Vous devez évaluer chaque équipe sur sa gestion du projet.">
+	<ContainerGradeType v-if="canGradeProjectManagement && currentUserTeam && currentUserTeam.id === Number(props.teamId)" title="Gestion du projet" infotext="Vous devez évaluer chaque équipe sur sa gestion du projet.">
 		<template #icon>
 			<SquareGanttChart :size="40" :stroke-width="1"/>
 		</template>
@@ -163,12 +158,15 @@ onMounted(async() => {
     </template>
   </ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeBonus && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
+	<ContainerGradeType v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
 		<template #icon>
 			<LucideCircleFadingPlus :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogBonus></DialogBonus>
+			<DialogBonus
+				:limited="canGradeLimitedBonus && !canGradeUnlimitedBonus"
+				:teamId="props.teamId"
+			></DialogBonus>
 		</template>
 	</ContainerGradeType>
 </template>

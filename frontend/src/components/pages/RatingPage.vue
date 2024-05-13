@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
-import { getAllSprints } from "@/services/sprint-service"
+import { getSprints } from "@/services/sprint-service"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
 import { Text } from "@/components/atoms/texts"
@@ -30,7 +30,7 @@ const componentKey = ref(0)
 const authorized = hasPermission("RATING_PAGE")
 
 const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
-const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getAllSprints })
+const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
 
 const forceRerender = () => {
 	componentKey.value += 1
@@ -49,7 +49,7 @@ const forceRerender = () => {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="sprint in sprints" :key="sprint.id" :value="sprint.id" @click="forceRerender">{{sprint.id}}</SelectItem>
+							<SelectItem v-for="sprint in sprints" :key="sprint.id" :value="sprint.id.toString()" @click="forceRerender">{{sprint.id}}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>
@@ -59,7 +59,7 @@ const forceRerender = () => {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="team in teams" :key="team.id" :value="team.id" @click="forceRerender">{{ team.name }}</SelectItem>
+							<SelectItem v-for="team in teams" :key="team.id" :value="team.id.toString()" @click="forceRerender">{{ team.name }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>

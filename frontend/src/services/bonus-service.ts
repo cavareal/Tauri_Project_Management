@@ -18,7 +18,7 @@ export const createBonus = async(body: Omit<CreateBonus, "authorId">): Promise<v
 	}
 }
 
-export const updateBonus = async(id: string | null, body: UpdateBonus): Promise<void> => {
+export const updateBonus = async(id: number, body: UpdateBonus): Promise<void> => {
 
 	const response = await mutateAndValidate({
 		method: "PATCH",
@@ -32,10 +32,11 @@ export const updateBonus = async(id: string | null, body: UpdateBonus): Promise<
 	}
 }
 
-export const getStudentBonuses = async(studentId: number): Promise<Bonus[]> => {
+export const getStudentBonus = async(studentId: number, limited: boolean): Promise<Bonus> => {
 	const response = await queryAndValidate({
-		route: `students/${studentId}/bonuses`,
-		responseSchema: z.array(BonusSchema)
+		route: `students/${studentId}/bonus`,
+		responseSchema: BonusSchema,
+		params: { limited: limited.toString() }
 	})
 
 	if (response.status === "error") {

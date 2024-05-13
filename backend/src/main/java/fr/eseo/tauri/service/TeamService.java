@@ -195,13 +195,12 @@ public class TeamService {
 
         int index;
 
-        Role role = new Role();
-        role.type(RoleType.TEAM_MEMBER);
-
         // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
         for (int i = 0; i < nbTeams; i++) {
             for (int j = 0; j < womenPerTeam; j++) {
                 Student student;
+                Role role = new Role();
+                role.type(RoleType.TEAM_MEMBER);
                 index = i * womenPerTeam + j;
 
                 if (index < nbWomen) {
@@ -232,6 +231,8 @@ public class TeamService {
             }
 
             Student student;
+            Role role = new Role();
+            role.type(RoleType.TEAM_MEMBER);
             if (i < nbWomen) {
                 student = women.get(i);
                 student.team(sortedTeams.get((i - index)% nbTeams));

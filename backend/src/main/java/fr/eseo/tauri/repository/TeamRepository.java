@@ -25,13 +25,13 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     Integer countBachelorInTeam(Integer teamId);
 
     @Query("SELECT t FROM Team t WHERE t.leader.id = :leaderId AND t.project.id = :projectId")
-    List<Team> findByLeaderId(Integer leaderId, Integer projectId);
+    Team findByLeaderId(Integer leaderId, Integer projectId);
 
     @Query("SELECT t FROM Team t WHERE t.leader.id = :leaderId")
     List<Team> findAllByLeaderId(Integer leaderId);
 
     @Query("SELECT s.team FROM Student s WHERE s.id = :id")
-    List<Team> findByStudentId(Integer id);
+    Team findByStudentId(Integer id);
 
     @Query("SELECT t FROM Team t WHERE t.name = :name")
     Team findByName(String name);
