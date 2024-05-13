@@ -37,6 +37,7 @@ public class StudentService {
     private final SprintService sprintService;
     private final PresentationOrderService presentationOrderService;
     private final BonusRepository bonusRepository;
+    private final BonusService bonusService;
     private final ApplicationSecurity applicationSecurity;
 
     static final String MAP_KEY_NAMES = "names";
@@ -74,10 +75,12 @@ public class StudentService {
         List<Sprint> sprints = sprintService.getAllSprintsByProject(token, student.projectId());
         if(!sprints.isEmpty()) {
             for (Sprint sprint : sprints) {
-                PresentationOrder presentationOrder = new PresentationOrder();
-                presentationOrder.sprint(sprint);
-                presentationOrder.student(student);
+                PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
                 presentationOrderService.createPresentationOrder(token, presentationOrder);
+                Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
+                Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
+                bonusService.createBonus(token, limitedBonus);
+                bonusService.createBonus(token, unlimitedBonus);
             }
         }
     }
@@ -256,7 +259,8 @@ public class StudentService {
                     grade.gradeType(gradeTypes.get(j));
                     gradeService.createGrade(token, grade);
                 } catch (NumberFormatException ignored) {
-                } // Do nothing // If the grade is not a number, it is ignored
+                    // Do nothing // If the grade is not a number, it is ignored
+                }
             }
         }
         CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
@@ -397,12 +401,12 @@ public class StudentService {
         csvWriter.writeNext(row);
     }
 
-    public List<Bonus> getStudentBonuses(String token, Integer idStudent) {
+    public Bonus getStudentBonus(String token, Integer idStudent, Boolean limited) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        return bonusRepository.findAllStudentBonuses(idStudent);
+        return bonusRepository.findStudentBonus(idStudent, limited);
     }
 
 }

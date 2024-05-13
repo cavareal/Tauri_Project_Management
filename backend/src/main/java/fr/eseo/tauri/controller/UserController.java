@@ -82,9 +82,9 @@ public class UserController {
 	}
 
 	@GetMapping("{id}/team")
-	public ResponseEntity<List<Team>> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
-		List<Team> teams = userService.getTeamByMemberId(token, id, projectId);
-		return ResponseEntity.ok(teams);
+	public ResponseEntity<Team> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
+		Team team = userService.getTeamByMemberId(token, id, projectId);
+		return ResponseEntity.ok(team);
 	}
 
 	@GetMapping("{id}/sprint/{sprintId}/grade")
@@ -98,5 +98,6 @@ public class UserController {
 		List<RoleType> roles = userService.getRolesByUserId(token, id);
 		return ResponseEntity.ok(roles);
 	}
+
 
 }

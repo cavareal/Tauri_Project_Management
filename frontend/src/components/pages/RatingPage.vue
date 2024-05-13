@@ -62,7 +62,7 @@ const forceRerender = () => {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="team in teams" :key="team.id" :value="team.id" @click="forceRerender">{{ team.name }}</SelectItem>
+							<SelectItem v-for="team in teams" :key="team.id" :value="team.id.toString()" @click="forceRerender">{{ team.name }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>

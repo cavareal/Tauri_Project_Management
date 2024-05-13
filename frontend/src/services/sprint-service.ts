@@ -5,7 +5,7 @@ import { z } from "zod"
 import { Cookies } from "@/utils/cookie"
 
 
-export const getAllSprints = async (): Promise<Sprint[]> => {
+export const getSprints = async(): Promise<Sprint[]> => {
 
 	const currentProjectId = Cookies.getProjectId().toString()
 
@@ -18,7 +18,7 @@ export const getAllSprints = async (): Promise<Sprint[]> => {
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
-	
+
 	if(response.data.length != 0){
 		response.data.sort((a, b) => a.sprintOrder - b.sprintOrder);
 	}
@@ -26,11 +26,11 @@ export const getAllSprints = async (): Promise<Sprint[]> => {
 	return response.data
 }
 
-export const addSprint = async (sprint: unknown): Promise<void> => {
+export const addSprint = async(sprint: unknown): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
 		body: sprint,
-		route: `sprints`,
+		route: "sprints",
 		bodySchema: z.unknown()
 	})
 
@@ -39,7 +39,7 @@ export const addSprint = async (sprint: unknown): Promise<void> => {
 	}
 }
 
-export const updateSprint = async (sprint: unknown, sprintId: number): Promise<void> => {
+export const updateSprint = async(sprint: unknown, sprintId: number): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "PATCH",
 		body: sprint,
@@ -56,7 +56,7 @@ export const updateSprint = async (sprint: unknown, sprintId: number): Promise<v
 export const deleteSprint = async(sprintId: number | null): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "DELETE",
-		route: `sprints/${sprintId}`,
+		route: `sprints/${sprintId}`
 	})
 
 	if (response.status === "error") {
