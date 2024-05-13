@@ -1,8 +1,11 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.PermissionType;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -16,8 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Nested
@@ -31,6 +33,9 @@ class RoleServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private PermissionService permissionService;
 
     @InjectMocks
     private RoleService roleService;
@@ -187,6 +192,49 @@ class RoleServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> roleService.deleteRoleById(token, id));
     }
 
+    @Test
+    void deleteAllRolesShouldDeleteAllRolesWhenAuthorized() {
+        String token = "validToken";
 
+        when(authService.checkAuth(token, "deleteRole")).thenReturn(true);
+
+        roleService.deleteAllRoles(token);
+
+        verify(roleRepository, times(1)).deleteAll();
+    }
+
+    @Test
+    void deleteAllRolesShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+
+        when(authService.checkAuth(token, "deleteRole")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> roleService.deleteAllRoles(token));
+    }
+
+    @Test
+    void getUsersByRoleTypeShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        RoleType roleType = RoleType.OPTION_LEADER;
+
+        when(authService.checkAuth(token, "deleteRole")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> roleService.getUsersByRoleType(token, roleType));
+    }
+
+    @Test
+    void hasPermissionShouldReturnFalseWhenPermissionDoesNotExist() {
+        String token = "validToken";
+        RoleType roleType = RoleType.OPTION_LEADER;
+        PermissionType permissionType = PermissionType.ADD_GRADE_COMMENT;
+        List<Permission> permissions = List.of(new Permission());
+
+        when(authService.checkAuth(token, "deleteRole")).thenReturn(true);
+        when(permissionService.getAllPermissionsByRole(token, roleType)).thenReturn(permissions);
+
+        Boolean result = roleService.hasPermission(token, roleType, permissionType);
+
+        assertFalse(result);
+    }
 
 }

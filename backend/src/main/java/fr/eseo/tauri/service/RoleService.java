@@ -92,4 +92,6 @@ public class RoleService {
 		return ListUtil.map(permissions, Permission::type).contains(permissionType);
 	}
 
+
+
 }

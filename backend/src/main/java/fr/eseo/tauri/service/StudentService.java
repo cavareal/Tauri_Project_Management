@@ -5,6 +5,7 @@ import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import fr.eseo.tauri.exception.ResourceNotFoundException;
 
 import java.io.*;
 import java.util.*;
@@ -255,7 +255,8 @@ public class StudentService {
                     grade.student(student);
                     grade.gradeType(gradeTypes.get(j));
                     gradeService.createGrade(token, grade);
-                } catch (NumberFormatException ignored) {} // Do nothing // If the grade is not a number, it is ignored
+                } catch (NumberFormatException ignored) {
+                } // Do nothing // If the grade is not a number, it is ignored
             }
         }
         CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));

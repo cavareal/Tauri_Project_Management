@@ -76,53 +76,6 @@ public class GradeController {
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 
-    /**
-     * This method is a POST endpoint that accepts a JSON string representing a map of evaluations.
-     *
-     * @param evaluations A JSON string representing a map of evaluations.
-     * @return A ResponseEntity with either a success message or an error message.
-     */
-	/*@PostMapping("/add-grade-to-team/{userId}")
-	public ResponseEntity<Map<String, String>> addGradeFromArray(@RequestBody String evaluations, @PathVariable Integer userId) throws JsonProcessingException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		TypeReference<Map<String, List<Map<String, Object>>>> typeReference = new TypeReference<>() {
-		};
-		Map<String, List<Map<String, Object>>> evaluationsMap = objectMapper.readValue(evaluations, typeReference);
-
-		for (Map.Entry<String, List<Map<String, Object>>> entry : evaluationsMap.entrySet()) {
-			String teamName = entry.getKey();
-			List<Map<String, Object>> evaluationsList = entry.getValue();
-
-			for (Map<String, Object> evaluation : evaluationsList) {
-				if (evaluation.get("gradeType").equals("gradeOverallPerformance")) {
-					Integer value = (Integer) evaluation.get("grade");
-					gradeService.assignGradeToTeam(teamName, value, "Performance Globale", userId);
-				}
-				if (evaluation.get("gradeType").equals("gradeMaterialSupport")) {
-					Integer value = (Integer) evaluation.get("grade");
-					gradeService.assignGradeToTeam(teamName, value, "Support Matériel", userId);
-				}
-				if (evaluation.get("gradeType").equals("gradeContentPresentation")) {
-					Integer value = (Integer) evaluation.get("grade");
-					gradeService.assignGradeToTeam(teamName, value, "Contenu de la présentation", userId);
-				}
-				if (evaluation.get("gradeType").equals("gradeTechnicalSolution")) {
-					Integer value = (Integer) evaluation.get("grade");
-					gradeService.assignGradeToTeam(teamName, value, "Solution technique", userId);
-				}
-				if (evaluation.get("gradeType").equals("gradeProjectManagement")) {
-					Integer value = (Integer) evaluation.get("grade");
-					gradeService.assignGradeToTeam(teamName, value, "Gestion de projet", userId);
-				}
-				if (evaluation.get("gradeType").equals("gradeSprintConformity")) {
-					Integer value = (Integer) evaluation.get("grade");
-					gradeService.assignGradeToTeam(teamName, value, "Conformité au sprint", userId);
-				}
-			}
-		}
-		return ResponseEntity.ok(Map.of("message", "Grades added successfully."));
-	}*/
-
     //TODO : Handle the token
     //@GetMapping("/unimported/averages") => On peut récup le user dans le token ?
     @GetMapping("/average-grades-by-grade-type-by-role/{userId}")
