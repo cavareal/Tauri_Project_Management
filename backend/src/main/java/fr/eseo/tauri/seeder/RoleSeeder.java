@@ -19,8 +19,13 @@ public class RoleSeeder {
 		var users = userRepository.findAll();
 		var roleTypes = RoleType.values();
 
+		var rolePL = new Role();
+		rolePL.user(users.get(0));
+		rolePL.type(RoleType.PROJECT_LEADER);
+		roleRepository.save(rolePL);
+
 		// Create one role record for each role type
-		for (int i = 0; i < roleTypes.length; i++) {
+		for (int i = 1; i < roleTypes.length; i++) {
 			var role = new Role();
 
 			role.user(users.get(i));

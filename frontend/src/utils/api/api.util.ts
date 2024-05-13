@@ -97,7 +97,7 @@ const getHeaders = (jsonContent: boolean = true) => {
 	const token = Cookies.getToken()
 
 	const headers = {
-		"Authorization": token || "null"
+		"Authorization": "Bearer " + token || "null"
 	}
 
 	if (!jsonContent) return headers
@@ -239,7 +239,7 @@ export const mutateAndValidateWithReturn = async <T, R>({
 	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId?.toString() ?? "" }), {
 		method,
 		body: bodyData,
-		headers: getHeaders(jsonContent)
+		headers: { "Content-Type": "application/json" }
 	})
 	if (!response.ok) return {
 		status: "error",

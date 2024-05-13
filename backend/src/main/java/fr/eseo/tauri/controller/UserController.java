@@ -93,4 +93,10 @@ public class UserController {
 		return ResponseEntity.ok(sprintGrade);
 	}
 
+	@GetMapping("{id}/roles")
+	public ResponseEntity<List<RoleType>> getRolesByUserId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		List<RoleType> roles = userService.getRolesByUserId(token, id);
+		return ResponseEntity.ok(roles);
+	}
+
 }
