@@ -74,7 +74,6 @@ onMounted(async() => {
 			<Blocks :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
 			<DialogRating title="Note de la solution technique" description="Veuillez noter la solution technique mise en œuvre par l'équipe" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Solution Technique">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
