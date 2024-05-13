@@ -38,7 +38,7 @@ public class Sprint {
 
     @NotNull(groups = { Create.class }, message = "The sprintOrder field is required")
     @JsonProperty
-    private String sprintOrder;
+    private Integer sprintOrder;
 
     @ManyToOne
     @JoinColumn(name = "project_id")

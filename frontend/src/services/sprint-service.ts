@@ -18,8 +18,10 @@ export const getAllSprints = async (): Promise<Sprint[]> => {
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
-
-	response.data.sort((a, b) => a.sprintOrder - b.sprintOrder);
+	
+	if(response.data.length != 0){
+		response.data.sort((a, b) => a.sprintOrder - b.sprintOrder);
+	}
 
 	return response.data
 }
