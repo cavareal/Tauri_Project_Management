@@ -22,11 +22,11 @@ public class Sprint {
     @JsonProperty
     private Integer id;
 
-    @NotNull(groups = { Create.class }, message = "The name field is required")
+    @NotNull(groups = { Create.class }, message = "The startDate field is required")
     @JsonProperty
     private LocalDate startDate;
 
-    @NotNull(groups = { Create.class }, message = "The name field is required")
+    @NotNull(groups = { Create.class }, message = "The endDate field is required")
     @JsonProperty
     private LocalDate endDate;
 
@@ -35,6 +35,10 @@ public class Sprint {
     @Column(name="end_type")
     @JsonProperty
     private SprintEndType endType;
+
+    @NotNull(groups = { Create.class }, message = "The sprintOrder field is required")
+    @JsonProperty
+    private String sprintOrder;
 
     @ManyToOne
     @JoinColumn(name = "project_id")

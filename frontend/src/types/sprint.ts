@@ -3,6 +3,7 @@ import { z } from "zod"
 
 export const SprintEndTypeSchema = z.enum([
 	"NORMAL_SPRINT",
+	"UNGRADED_SPRINT",
 	"FINAL_SPRINT"
 ])
 export type SprintEndType = z.infer<typeof SprintEndTypeSchema>
@@ -12,6 +13,7 @@ export const SprintSchema = z.object({
 	startDate: z.coerce.date(),
 	endDate: z.coerce.date(),
 	endType: SprintEndTypeSchema,
+	sprintOrder: z.coerce.number(),
 	project: ProjectSchema
 })
 export type Sprint = z.infer<typeof SprintSchema>

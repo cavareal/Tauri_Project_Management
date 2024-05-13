@@ -8,11 +8,10 @@ import { getCookie } from "@/utils/cookie"
 export const getAllSprints = async (): Promise<Sprint[]> => {
 
 	const currentProjectId = getCookie("currentProject")
-	console.log("getAllSprints", currentProjectId)
 
 	const response = await queryAndValidate({
 		responseSchema: SprintSchema.array(),
-		params: { projectId: "1" },
+		params: { projectId: currentProjectId ?? "" },
 		route: "sprints"
 	})
 
@@ -20,16 +19,42 @@ export const getAllSprints = async (): Promise<Sprint[]> => {
 		throw new Error(response.error)
 	}
 
+	response.data.sort((a, b) => a.sprintOrder - b.sprintOrder);
+
 	return response.data
 }
 
 export const addSprint = async (sprint: unknown): Promise<void> => {
-
 	const response = await mutateAndValidate({
 		method: "POST",
-		route: `sprints/`,
 		body: sprint,
+		route: `sprints`,
 		bodySchema: z.unknown()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const updateSprint = async (sprint: unknown, sprintId: number): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "PATCH",
+		body: sprint,
+		route: `sprints/${sprintId}`,
+		bodySchema: z.unknown()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+
+export const deleteSprint = async(sprintId: number | null): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "DELETE",
+		route: `sprints/${sprintId}`,
 	})
 
 	if (response.status === "error") {

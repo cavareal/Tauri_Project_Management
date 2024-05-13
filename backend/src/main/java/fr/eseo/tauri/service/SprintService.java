@@ -40,12 +40,16 @@ public class SprintService {
         return sprintRepository.findAllByProject(projectId);
     }
 
-    public void createSprint(String token, Sprint sprint) {
+    public void createSprint(String token, Sprint sprint, Integer projectId) {
+        System.out.println("create sprint");
+
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addSprint"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
+
         //TODO : à remettre quand on aura le studentservice de pret
-        sprint.project(projectService.getProjectById(token, sprint.projectId()));
+        sprint.project(projectService.getProjectById(token, projectId));
+
         List<Student> students = studentService.getAllStudentsByProject(token, sprint.projectId());
         Bonus bonus = new Bonus();
         bonus.value((float) 0);
@@ -69,6 +73,7 @@ public class SprintService {
         if (updatedSprint.startDate() != null) sprint.startDate(updatedSprint.startDate());
         if (updatedSprint.endDate() != null) sprint.endDate(updatedSprint.endDate());
         if (updatedSprint.endType() != null) sprint.endType(updatedSprint.endType());
+        if (updatedSprint.sprintOrder() != null) sprint.sprintOrder(updatedSprint.sprintOrder());
         if (updatedSprint.projectId() != null) sprint.project(projectService.getProjectById(token, updatedSprint.projectId()));
 
         sprintRepository.save(sprint);

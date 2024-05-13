@@ -2,38 +2,67 @@
 
 import { SidebarTemplate } from "@/components/templates"
 import { getCookie } from "@/utils/cookie"
-import EditNbSprints from "@/components/organisms/sprints/EditNbSprints.vue"
 import AddSprint from "@/components/organisms/sprints/AddSprint.vue"
+import EditSprint from "@/components/organisms/sprints/EditSprint.vue"
 import { Error, NotAuthorized } from "@/components/organisms/errors"
 import type { RoleType } from "@/types/role"
 import { Header } from "@/components/molecules/header"
 import { useQuery } from "@tanstack/vue-query"
 import { getAllSprints } from "@/services/sprint-service"
+import { onMounted, ref } from "vue"
+import { CalendarDate, parseDate } from '@internationalized/date'
+import { PageSkeleton } from "@/components/atoms/skeletons"
 
 const token = getCookie("token")
 const role = getCookie<RoleType>("role")
-// TODO
-// Check si déjà sprint en place
-// Si oui, on affiche addSPrint avec une certaine phrase, et edit avec ceux actuel
-// Sinon, on affiche seulement addSprint, avec une phrase différente
 
-// TODO
-// Add and edit : same or 2 different components ??
+const IS_SPRINT = "Cliquez-ici pour ajouter un sprint"
+const ISNT_SPRINT = "Vous n'avez pas encore crée de sprint, cliquez-ici pour ajouter le premier"
 
-const { data: sprints, error: error } = useQuery({
-	queryKey: ["sprints"], queryFn: () => getAllSprints()
+const lastSprintEndDate = ref<CalendarDate>();
+const lastSprintOrder = ref<number>(0);
+
+const { data: sprints, error: error, refetch: getSprints, isLoading, isFetching } = useQuery({ queryKey: ["sprints"], queryFn: async () => {
+		const newSprints = await getAllSprints()
+
+		lastSprintEndDate.value = formatDate(newSprints[newSprints.length - 1].endDate)
+		lastSprintOrder.value = newSprints[newSprints.length - 1].sprintOrder
+
+		return newSprints
+	}
 })
 
+
+
+
+
+onMounted(async () => {
+	await getSprints()
+})
+
+
+function formatDate(date: Date) {
+	const day = String(date.getDate()).padStart(2, '0');
+	const month = String(date.getMonth() + 1).padStart(2, '0');
+	const year = date.getFullYear();
+	return new CalendarDate(Number(year), Number(month), Number(day));
+}
 
 </script>
 
 <template>
 	<SidebarTemplate>
 		<Header title="Sprints" />
-		<p>{{ sprints }}</p>
-		<Error v-if="error" />
-		<EditNbSprints v-if="token && (role === 'PROJECT_LEADER' || role === 'OPTION_LEADER')" />
-		<AddSprint v-if="token && (role === 'PROJECT_LEADER' || role === 'OPTION_LEADER')" />
+		<PageSkeleton v-if="isLoading || isFetching" />
+		<div v-else-if="token && (role === 'PROJECT_LEADER' || role === 'OPTION_LEADER')">
+			<EditSprint v-if="sprints && sprints.length > 0" v-for="sprint in sprints" :sprint="sprint"
+				@edit:sprint="getSprints" @delete:sprint="getSprints" />
+			<AddSprint v-if="sprints && sprints.length > 0" :title="IS_SPRINT" :lastSprintEndDate="lastSprintEndDate"
+				:lastSprintOrder="lastSprintOrder" @add:sprint="getSprints" />
+			<AddSprint v-else :title="ISNT_SPRINT" :lastSprintEndDate="undefined" :lastSprintOrder="lastSprintOrder"
+				@add:sprint="getSprints" />
+		</div>
 		<NotAuthorized v-else />
+		<Error v-if="error" />
 	</SidebarTemplate>
 </template>

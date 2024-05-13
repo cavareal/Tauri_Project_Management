@@ -36,8 +36,8 @@ public class SprintController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createSprint(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Sprint sprint) {
-        sprintService.createSprint(token, sprint);
+    public ResponseEntity<String> createSprint(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Sprint sprint, @RequestParam Integer projectId) {
+        sprintService.createSprint(token, sprint, projectId);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
