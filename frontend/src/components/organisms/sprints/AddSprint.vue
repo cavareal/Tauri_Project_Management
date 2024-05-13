@@ -1,33 +1,24 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
 import AddSprintDialog from "./AddSprintDialog.vue"
 import { CalendarPlus } from "lucide-vue-next"
-import { Column } from "@/components/atoms/containers"
-import { InfoText, Subtitle } from "@/components/atoms/texts"
-import Text from "@/components/atoms/texts/Text.vue"
-import { cn } from "@/utils/style"
-
-const nbSprints = ref(0)
-
-const IS_SPRINT = "Cliquez-ici pour ajouter un sprint"
-const ISNT_SPRINT = "Vous n'avez pas encore crée de sprint, cliquez-ici pour ajouter le premier"
-
+import { CalendarDate, parseDate } from '@internationalized/date'
+    
 const emitAdd = defineEmits(["add:sprint"])
 
-const style = computed(() => cn(
-	"items-center justify-center",
-	"p-6 gap-2",
-	"rounded-lg border transition-all cursor-pointer border-dashed",
-	"bg-white hover:bg-slate-50"
-))
-
+const props = defineProps<{
+    title: String,
+    lastSprintEndDate: CalendarDate | undefined,
+	lastSprintOrder: number;
+}>()
 </script>
 
 <template>
-	<AddSprintDialog @add:sprint="emitAdd('add:sprint')">
-		<Column :class="style">
-			<CalendarPlus class="w-16 h-16 stroke-[1.2]" />
-			<Text>{{ nbSprints != 0 ? IS_SPRINT : ISNT_SPRINT }}</Text>
-		</Column>
-	</AddSprintDialog>
+    <div class="border border-gray-300 border-dashed rounded-lg my-4 hover:bg-gray-100 flex justify-center flex-col items-stretch">   
+        <AddSprintDialog @add:sprint="emitAdd('add:sprint')" class="flex flex-col items-center" :lastSprintEndDate="lastSprintEndDate" :lastSprintOrder="lastSprintOrder">
+            <div class="flex flex-col items-center p-2">
+                <CalendarPlus class="w-10 h-10 my-2" />
+                <p class=" my-2">{{ title }}</p>
+            </div>
+        </AddSprintDialog>
+    </div>
 </template>

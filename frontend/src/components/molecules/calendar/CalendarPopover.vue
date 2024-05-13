@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, h, ref, watch } from "vue"
+import { computed, h, ref, watch, type Ref } from "vue"
 import type { CalendarDate } from "@internationalized/date"
 import { DateFormatter, getLocalTimeZone, parseDate, today } from "@internationalized/date"
-import { toDate } from "radix-vue"
+import { toDate, type Grid } from "radix-vue"
 import { CalendarCheck } from "lucide-vue-next"
 import { z } from "zod"
 import { Calendar } from "@/components/ui/calendar"
@@ -15,22 +15,19 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 const props = defineProps<{
     minValue: CalendarDate | undefined,
     maxValue: CalendarDate | undefined,
-	class?: string
+    actualValue: CalendarDate | undefined,
 }>()
-// watch(props.maxValue, (newValue, oldValue) => {
-//         console.log(newValue, oldValue)
-//     });
 
 
 const emit = defineEmits(["update:dateValue"])
 
 function onDateSelected(selectedDate: CalendarDate | undefined) {
-	emit("update:dateValue", selectedDate)
+    emit('update:dateValue', selectedDate);
 }
 
 
-const df = new DateFormatter("fr-FR", {
-	dateStyle: "long"
+const df = new DateFormatter('fr-FR', {
+    dateStyle: 'long',
 })
 
 const formSchema = z.object({
@@ -39,42 +36,31 @@ const formSchema = z.object({
 
 const placeholder = ref()
 
-const { setValues, values } = useForm({
-	validationSchema: formSchema
-})
-
-const value = computed({
-	get: () => values.dob ? parseDate(values.dob) : undefined,
-	set: val => val
-})
+const value = ref({
+    actual: props.actualValue,
+}) as Ref<Grid>
 
 </script>
 
 <template>
     <Popover>
         <PopoverTrigger as-child>
-            <Button variant="outline" class="w-[240px] ps-3 text-start font-normal" :class="props.class">
-                <span>{{ value ? df.format(toDate(value)) : "Choisissez une date" }}</span>
+            <Button variant="outline" class="w-[250px] ps-3 text-start font-normal">
+                <span>{{ value.actual ? df.format(toDate(value.actual)) : "Choisissez une date" }}</span>
                 <CalendarCheck class="ms-auto h-4 w-4 opacity-50" />
             </Button>
             <input hidden>
         </PopoverTrigger>
         <PopoverContent class="w-auto p-0">
-            <Calendar v-model:placeholder="placeholder" v-model="value" calendar-label="Sprint date" initial-focus
+            <Calendar v-model:placeholder="placeholder" v-model="value.actual" calendar-label="Sprint date" initial-focus
                 :min-value="props.minValue" :max-value="props.maxValue" @update:model-value="(v) => {
                     if (v) {
-                        setValues({
-                            dob: v.toString(),
-                        })
                         onDateSelected(parseDate(v.toString()))
                     }
                     else {
-                        setValues({
-                            dob: '',
-                        })
                         onDateSelected(undefined)
-                    }
-                }" />
+                    }}
+                " />
         </PopoverContent>
     </Popover>
 </template>

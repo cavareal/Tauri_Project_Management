@@ -5,12 +5,20 @@ import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { ErrorText } from "@/components/atoms/texts"
 import { Button } from "@/components/ui/button"
 import CalendarPopover from "@/components/molecules/calendar/CalendarPopover.vue"
-import { Column, Row } from "@/components/atoms/containers"
-import { CalendarDate } from "@internationalized/date"
+import { Row } from "@/components/atoms/containers"
+import { CalendarDate, parseDate } from '@internationalized/date'
 import { useMutation } from "@tanstack/vue-query"
 import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
-import { createSprint } from "@/services/sprint-service"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { updateSprint } from "@/services/sprint-service"
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select'
 import { Info } from "lucide-vue-next"
 import {
 	Tooltip,
@@ -19,39 +27,40 @@ import {
 	TooltipTrigger
 } from '@/components/ui/tooltip'
 import { getCookie } from "@/utils/cookie"
+import type { Sprint } from "@/types/sprint"
 import { Input } from "@/components/ui/input"
 
 
-const DIALOG_TITLE = "Ajouter un sprint"
-const DIALOG_DESCRIPTION = "Pour ajouter un sprint, vous devez spécifier les dates de début et de fin, ainsi que le type de sprint."
+const DIALOG_TITLE = "Modifier un sprint"
+const DIALOG_DESCRIPTION = "Vous pouvez modifier les dates de début et de fin, ainsi que le type de sprint."
 
 const open = ref(false)
 
-const emits = defineEmits(["add:sprint"]);
+const emits = defineEmits(["edit:sprint"]);
 
 const props = defineProps<{
-	lastSprintEndDate: CalendarDate | undefined,
-	lastSprintOrder: number;
+    sprint: Sprint,
 }>()
 
-const startDate = ref<CalendarDate>();
-const endDate = ref<CalendarDate>();
-const endType = ref<string>();
-const sprintOrder = ref<number>(props.lastSprintOrder + 1);
+const startDate = ref<CalendarDate>(formatDate(props.sprint.startDate));
+const endDate = ref<CalendarDate>(formatDate(props.sprint.endDate));
+const endType = ref<string>(props.sprint.endType);
 const valuesEmpty = ref<boolean>(false);
+const sprintOrder = ref<number>(props.sprint.sprintOrder);
 
 var minDate = new CalendarDate(1900, 1, 1)
 var maxDate = new CalendarDate(2100, 1, 1)
+	
+function formatDate(date: Date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const year = date.getFullYear();
+	return new CalendarDate(Number(year), Number(month), Number(day));
+}
 
-const nextDayAfterStartDate = (date: CalendarDate | undefined) => {
-	if (date != undefined) {
-		return new CalendarDate(date.year, date.month, date.day + 1);
-	}
-};
 
-
-const { error, isPending, mutate: add } = useMutation({
-	mutationKey: ["add-sprint"], mutationFn: async () => {
+const { error, isPending, mutate: edit } = useMutation({
+	mutationKey: ["edit-sprint"], mutationFn: async () => {
 
 		if (!startDate.value || !endDate.value || !endType.value || !sprintOrder.value) {
 			valuesEmpty.value = true;
@@ -65,12 +74,11 @@ const { error, isPending, mutate: add } = useMutation({
 
 		const sprintData = { startDate: start_date, endDate: end_date, endType: endType.value, projectId: currentProjectId ?? "", sprintOrder: sprintOrder.value };
 
-		await addSprint(sprintData)
+		await updateSprint(sprintData, props.sprint.id)
 			.then(() => open.value = false)
-			.then(() => emits("add:sprint"))
+			.then(() => emits("edit:sprint"))
 	}
 })
-
 
 </script>
 
@@ -80,22 +88,22 @@ const { error, isPending, mutate: add } = useMutation({
 			<slot />
 		</template>
 
-		<Column>
-			<Row class="items-center justify-between my-2">
+		<div>
+			<Row class="flex items-center justify-between my-2">
 				<Label>Date de début</Label>
-				<CalendarPopover v-model="startDate" @update:dateValue="(newDate: CalendarDate) => startDate = newDate"
-					:min-value="lastSprintEndDate != undefined ? nextDayAfterStartDate(lastSprintEndDate) : minDate" :max-value="endDate" :actual-value="undefined" />
+				<CalendarPopover v-model="startDate" @update:dateValue="(newDate: CalendarDate ) => startDate = newDate" 
+					:min-value="minDate" :max-value="endDate" :actual-value="startDate" />
 			</Row>
-			<Row class="items-center justify-between my-2">
+			<Row class="flex items-center justify-between my-2">
 				<Label>Date de fin</Label>
-				<CalendarPopover v-model="endDate" @update:dateValue="(newDate: CalendarDate) => endDate = newDate"
-					:min-value="nextDayAfterStartDate(startDate)" :max-value="maxDate" :actual-value="undefined"/>
+				<CalendarPopover v-model="endDate" @update:dateValue="(newDate: CalendarDate ) => endDate = newDate" 
+					:min-value="startDate" :max-value="maxDate" :actual-value="endDate"/>
 			</Row>
 			<Row class="flex items-center justify-between my-2">
 				<Label>Ordre de ce sprint</Label>
 				<Input v-model="sprintOrder" type="number" min="1" class="w-[250px]" />
 			</Row>
-			<Row class="items-center justify-between my-2">
+			<Row class="flex items-center justify-between my-2">
 				<Label class="flex">Type de sprint
 					<TooltipProvider>
 						<Tooltip>
@@ -130,9 +138,11 @@ const { error, isPending, mutate: add } = useMutation({
 					</SelectContent>
 				</Select>
 			</Row>
-		</Column>
+		</div>
 
-		<ErrorText v-if="error" class="mb-2">Une erreur est survenue lors de l'ajout du sprint.</ErrorText>
+
+
+		<ErrorText v-if="error" class="mb-2">Une erreur est survenue lors de la modification du sprint.</ErrorText>
 		<ErrorText v-if="valuesEmpty" class="mb-2">Veuilliez bien remplir tous les champs</ErrorText>
 
 
@@ -140,8 +150,8 @@ const { error, isPending, mutate: add } = useMutation({
 			<DialogClose>
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" class="flex items-center" :loading="isPending" @click="add">
-				Continuer
+			<LoadingButton type="submit" class="flex items-center" :loading="isPending" @click="edit">
+				Confirmer
 			</LoadingButton>
 		</template>
 	</CustomDialog>

@@ -7,7 +7,10 @@ import lombok.Getter;
 @Getter
 public enum SprintEndType {
 
-	NORMAL_SPRINT,
-	FINAL_SPRINT;
+	NORMAL_SPRINT("Sprint Normal"),
+	UNGRADED_SPRINT("Sprint Non Noté"),
+	FINAL_SPRINT("Sprint Final");
+
+	private final String endType;
 
 }

@@ -1,16 +1,35 @@
-import { mutateAndValidate, queryAndValidate } from "@/utils/api"
-import { CreateSprintSchema, type CreateSprint, SprintSchema } from "@/types/sprint"
-import { Cookies } from "@/utils/cookie"
 import type { Sprint } from "@/types/sprint"
+import { SprintSchema } from "@/types/sprint"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { z } from "zod"
+import { getCookie } from "@/utils/cookie"
 
-export const createSprint = async(body: Omit<CreateSprint, "projectId">): Promise<void> => {
-	const projectId = Cookies.getProjectId()
 
+export const getAllSprints = async (): Promise<Sprint[]> => {
+
+	const currentProjectId = getCookie("currentProject")
+
+	const response = await queryAndValidate({
+		responseSchema: SprintSchema.array(),
+		params: { projectId: currentProjectId ?? "" },
+		route: "sprints"
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	response.data.sort((a, b) => a.sprintOrder - b.sprintOrder);
+
+	return response.data
+}
+
+export const addSprint = async (sprint: unknown): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
-		route: "sprints",
-		body: { ...body, projectId },
-		bodySchema: CreateSprintSchema
+		body: sprint,
+		route: `sprints`,
+		bodySchema: z.unknown()
 	})
 
 	if (response.status === "error") {
@@ -18,15 +37,27 @@ export const createSprint = async(body: Omit<CreateSprint, "projectId">): Promis
 	}
 }
 
-export const getSprints = async(): Promise<Sprint[]> => {
-	const response = await queryAndValidate({
-		route: "sprints",
-		responseSchema: SprintSchema.array()
+export const updateSprint = async (sprint: unknown, sprintId: number): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "PATCH",
+		body: sprint,
+		route: `sprints/${sprintId}`,
+		bodySchema: z.unknown()
 	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+}
 
-	return response.data
+
+export const deleteSprint = async(sprintId: number | null): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "DELETE",
+		route: `sprints/${sprintId}`,
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }
