@@ -38,6 +38,20 @@ export const getAllImportedGrades = async(): Promise<Grade[]> => {
 	return response.data
 }
 
+export const getAllUnimportedGrades = async(): Promise<Grade[]> => {
+	const response = await queryAndValidate({
+		route: "grades/unimported",
+		responseSchema: GradeSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+
+}
+
 export const getAverageGrades = async(userId: number): Promise<z.infer<typeof GradeDoubleArraySchema>> => {
 	const response = await queryAndValidate({
 		route: `grades/average-grades-by-grade-type-by-role/${userId}`,

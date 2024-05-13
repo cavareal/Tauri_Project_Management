@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { SidebarTemplate } from "@/components/templates"
-import Tab from "@/components/molecules/tab/Tab.vue"
-import Tabs from "@/components/molecules/tab/Tabs.vue"
-import { Cookies } from "@/utils/cookie"
 import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
-import TMOwnGradeView from "@/components/organisms/Grade/TMOwnGradeView.vue"
 import { ref } from "vue"
 import { hasPermission } from "@/services/user-service"
 import { useQuery } from "@tanstack/vue-query"
@@ -14,10 +10,9 @@ import { getSprints } from "@/services/sprint-service"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Header } from "@/components/molecules/header"
 import { Text } from "@/components/atoms/texts"
-import Rating from "@/components/organisms/Rate/Rating.vue"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
-import Grade from "@/components/organisms/Grade/Grade.vue"
+import Grade from "@/components/organisms/Grade/GradeTable.vue"
 
 const selectedTeam = ref("")
 const selectedSprint = ref("")

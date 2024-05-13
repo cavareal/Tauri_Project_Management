@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/vue-query"
 import { getStudentsByTeamId } from "@/services/student-service"
 import { cn } from "@/utils/style"
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
 	Users,
 	UserCog,
@@ -17,6 +17,8 @@ import {
 	Blocks
 } from "lucide-vue-next"
 import { watch } from "vue"
+import { getAllImportedGradeTypes } from "@/services/grade-type-service"
+import { getAllImportedGrades, getAllUnimportedGrades } from "@/services/grade-service"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
 const props = defineProps<{
@@ -25,18 +27,18 @@ const props = defineProps<{
 }>()
 
 let oldTeamId = props.teamId
-const handleTriggerClick = async() => {
-	await refetch()
-}
 
 const { data: teamStudents, refetch } = useQuery({ queryKey: ["team-students"], queryFn: async() => {
 	if (!props.teamId) return
 	return await getStudentsByTeamId(Number(props.teamId))
 } })
 
+const { data: grades, ...gradesQuery } = useQuery({ queryKey: ["grades"], queryFn: getAllUnimportedGrades })
+
 watch(() => props.teamId, async() => {
 	if (props.teamId !== oldTeamId) {
 		await refetch()
+		await gradesQuery.refetch()
 		oldTeamId = props.teamId
 	}
 })
@@ -64,7 +66,7 @@ watch(() => props.teamId, async() => {
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="(student, i) in teamStudents" :key="i">
+			<TableRow v-for="student in teamStudents"  :key="student.id">
 				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 			</TableRow>
 		</TableBody>
