@@ -11,30 +11,37 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserSeeder {
 
-	private static final int NB_USERS = 39;
+	private static final int NB_USERS = 37;
 
 	private final UserRepository userRepository;
-
 	private final ApplicationSecurity applicationSecurity;
 
 	public void seed(Faker faker) {
-		var userPL = new User();
-		userPL.name("Woodward Richard");
-		userPL.email("admin@tauri.com");
-		userPL.password(applicationSecurity.passwordEncoder().encode("admin"));
-		userPL.privateKey(faker.number().digits(20));
+		var userPL = new User("Woodward Richard", "pl@tauri.com", applicationSecurity.passwordEncoder().encode("pl"), faker.number().digits(20));
 		userRepository.save(userPL);
+
+		var userSS = new User("Clavreul Mickaël", "ss@tauri.com", applicationSecurity.passwordEncoder().encode("ss"), faker.number().digits(20));
+		userRepository.save(userSS);
+
+		var userOL = new User("Rousseau Sophie", "ol@tauri.com", applicationSecurity.passwordEncoder().encode("ol"), faker.number().digits(20));
+		userRepository.save(userOL);
+
+		var userTC = new User("Leclaire Clément", "tc@tauri.com", applicationSecurity.passwordEncoder().encode("tc"), faker.number().digits(20));
+		userRepository.save(userTC);
+
 
 		for (int i = 0; i < NB_USERS; i++) {
 			var user = new User();
 
 			user.name(faker.name().lastName().toUpperCase() + " " + faker.name().firstName());
 			user.email(faker.internet().emailAddress());
-			user.password(faker.internet().password());
+			user.password(applicationSecurity.passwordEncoder().encode(faker.internet().password()));
 			user.privateKey(faker.number().digits(20));
 
 			userRepository.save(user);
 		}
 	}
+
+
 
 }
