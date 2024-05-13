@@ -31,7 +31,7 @@ export const createFeedback = async(teamId: number, feedbackContent: string, spr
 
 export const getFeedbacksBySprintAndTeam = async(teamId: number, sprintId: number): Promise<Feedback[]> => {
 	const response = await queryAndValidate({
-		route: `teams/${teamId}/sprints/${sprintId}/comments`,
+		route: `teams/${teamId}/sprints/${sprintId}/feedbacks`,
 		responseSchema: FeedbackSchema.array()
 	})
 

@@ -62,7 +62,7 @@ const forceRerender = () => {
 				</SelectContent>
 			</Select>
 		</Header>
-		<div v-if="selectedTeam !== ''">
+		<div v-if="selectedTeam !== '' && selectedSprint !== ''">
 			<NotAutorized v-if="!token || !role" />
 			<TMRateView v-else-if="role === 'TEAM_MEMBER'" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
 			<SSTCRateView v-else-if="canRate" :sprintId="selectedSprint" :teamId="selectedTeam"/>

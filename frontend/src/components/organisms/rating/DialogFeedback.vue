@@ -6,12 +6,10 @@ import { CustomDialog } from "@/components/molecules/dialog"
 import { ErrorText, Text } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { Textarea } from "@/components/ui/textarea"
-import { onMounted, ref, computed } from "vue"
+import { ref, computed } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import { createToast } from "@/utils/toast"
 import type { Team } from "@/types/team"
-import { CustomSelect } from "@/components/molecules/select"
-import { getTeams } from "@/services/team-service"
 import { createFeedback } from "@/services/feedback-service"
 
 const props = defineProps({
@@ -19,14 +17,17 @@ const props = defineProps({
 	selectedSprintId: Number
 })
 
+const emits = defineEmits(["feedback:added"])
+
 const open = ref(false)
 const feedback = ref("")
 
 const isDisabled = computed(() => feedback.value === "")
 
-const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"], mutationFn: async() => {
+const { mutate, isPending, error } = useMutation({ mutationKey: ["feedback:added"], mutationFn: async() => {
 	await createFeedback(props.selectedTeamId!, feedback.value, props.selectedSprintId!)
 		.then(() => open.value = false)
+		.then(() => emits("feedback:added"))
 		.then(() => createToast("Le feedback a été enregistré."))
 } })
 

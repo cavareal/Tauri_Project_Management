@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ContainerGradeType } from "@/components/molecules/rateContainer"
 import { DialogRating, DialogViewGrades } from "@/components/organisms/rating"
 import DialogFeedback from "@/components/organisms/rating/DialogFeedback.vue"
+import DialogViewFeedback from "@/components/organisms/rating/DialogViewFeedback.vue"
 
 const props = defineProps({
 	sprintId: Number,
@@ -104,7 +105,7 @@ const props = defineProps({
     </template>
 
     <template #dialog>
-      <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId">
+      <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId" @feedback:added="refreshFeedbacks">
         <Button variant="secondary">Voir les feedbacks</Button>
       </DialogViewFeedback>
       <DialogFeedback :selectedTeamId="props.teamId" :selectedSprintId="props.sprintId">
