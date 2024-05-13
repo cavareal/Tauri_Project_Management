@@ -11,14 +11,6 @@ Cookies.removeAll()
 </script>
 
 <template>
-	<!-- <Column class="bg-cover bg-white bg-center size-full items-center justify-start gap-12 pt-12 bg-eseo">
-		<Column class="items-center gap-4">
-			<Logo class="h-32 fill-dark-blue" />
-			<Title class="text-dark-blue">Bienvenue sur Tauri !</Title>
-		</Column>
-
-		<ConnectionForm />
-	</Column> -->
 	<Row class="w-full h-full items-stretch justify-stretch">
 		<img src="/background.png" alt="Background with Tauri Logo" class="w-1/2 h-full object-cover object-top" />
 
