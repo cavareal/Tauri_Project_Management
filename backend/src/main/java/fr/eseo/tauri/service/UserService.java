@@ -7,7 +7,6 @@ import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
-import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,6 @@ public class UserService {
 	private final AuthService authService;
 	private final UserRepository userRepository;
 	private final TeamRepository teamRepository;
-	private final StudentRepository studentRepository;
 	private final RoleRepository roleRepository;
 	private final PermissionService permissionService;
 
@@ -143,6 +141,10 @@ public class UserService {
 		var permissions = getPermissionsByUser(token, id);
 
 		return permissions.contains(permission);
+	}
+
+	public User getUserByEmail(String email) {
+		return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User with email " + email + " not found."));
 	}
 
 }
