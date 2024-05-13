@@ -11,7 +11,6 @@ import {
 	LucideCirclePlus,
 	User,
 	SquareGanttChart,
-	Play,
 	Presentation,
 	Package,
 	Blocks
@@ -78,7 +77,6 @@ watch(() => props.teamId, async() => {
 		<TableBody>
 			<TableRow v-for="student in teamStudents"  :key="student.id">
 				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
-<!--				<TableCell :class="rowClass">{{useAverageQuery(Number(props.teamId), "Solution Technique")}}</TableCell>-->
 				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Solution Technique').value >= 0 ? useAverageQuery(Number(props.teamId), 'Solution Technique').value : ''}}</TableCell>
 				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), "Gestion de projet").value >= 0 ? useAverageQuery(Number(props.teamId), 'Gestion de projet').value : '' }}</TableCell>
 				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Contenu de la présentation').value >= 0 ? useAverageQuery(Number(props.teamId), 'Contenu de la présentation').value : '' }}</TableCell>
