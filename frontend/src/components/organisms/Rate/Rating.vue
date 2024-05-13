@@ -9,7 +9,8 @@ import {
 	Play,
 	Presentation,
 	Package,
-	Blocks
+	Blocks,
+	MessageSquareReply
 } from "lucide-vue-next"
 import { DialogRating, DialogViewGrades, DialogBonus } from "@/components/organisms/rating"
 import { hasPermission } from "@/services/user-service"
@@ -148,9 +149,9 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-  <ContainerGradeType v-if="canAddFeedbacks" title="Performance individuelle" infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
+  <ContainerGradeType v-if="canAddFeedbacks" title="Feedbacks" infotext="Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint">
     <template #icon>
-      <User :size="40" :stroke-width="1"/>
+      <MessageSquareReply :size="40" :stroke-width="1"/>
     </template>
     <template #dialog>
       <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId">
