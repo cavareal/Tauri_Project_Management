@@ -36,6 +36,10 @@ public class ApplicationSecurity {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .formLogin(form -> form
+                    .loginPage("/login")
+                    .permitAll()
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/**", "REQUEST")).permitAll()
