@@ -24,6 +24,7 @@ public class TeamService {
     private final ProjectService projectService;
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
+    private final CommentRepository commentRepository;
 
     public Team getTeamById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
@@ -178,7 +179,6 @@ public class TeamService {
         }
         projectService.updateProject(token, projectId, projectDetails);
         List<Team> teams = this.createTeams(token, projectId, nbTeams);
-        CustomLogger.info("Teams have been created");
         this.fillTeams(teams, women, men, womenPerTeam, nbStudent);
     }
 
@@ -247,4 +247,10 @@ public class TeamService {
         CustomLogger.info("Teams have been filled with students");
     }
 
+    public List<Comment> getFeedbacksByTeamAndSprint(String token, Integer teamId, Integer sprintId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return commentRepository.findAllByTeam_IdAndSprint_IdAndFeedback(teamId, sprintId, true);
+    }
 }

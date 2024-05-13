@@ -18,6 +18,8 @@ import { getTeamByUserId } from "@/services/team-service"
 import { Cookies } from "@/utils/cookie"
 import type { Team } from "@/types/team"
 import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
+import DialogViewFeedback from "@/components/organisms/rating/DialogViewFeedback.vue"
+import DialogFeedback from "@/components/organisms/rating/DialogFeedback.vue"
 
 const props = defineProps<{
 	teamId : string,
@@ -40,6 +42,7 @@ const gradeOwnTeam = hasPermission("GRADE_OWN_TEAM")
 const canGradeTechnicalSolution = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeSprintConformity = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
+const canAddFeedbacks = hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 
 
 onMounted(async() => {
@@ -139,11 +142,25 @@ onMounted(async() => {
 			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
 			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance individuelle">
 				<template #trigger>
-					<Button variant="default">Noter une équipe</Button>
+					<Button variant="outline">Noter une équipe</Button>
 				</template>
 			</DialogIndividualRate>
 		</template>
 	</ContainerGradeType>
+
+  <ContainerGradeType v-if="canAddFeedbacks" title="Performance individuelle" infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
+    <template #icon>
+      <User :size="40" :stroke-width="1"/>
+    </template>
+    <template #dialog>
+      <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId">
+        <Button variant="outline">Voir les feedbacks</Button>
+      </DialogViewFeedback>
+      <DialogFeedback :selectedTeamId="props.teamId" :selectedSprintId="props.sprintId">
+          <Button variant="default">Donner un feedback</Button>
+      </DialogFeedback>
+    </template>
+  </ContainerGradeType>
 
 	<ContainerGradeType v-if="canGradeBonus && teamOfCurrentUser && teamOfCurrentUser.id && Number(props.teamId) === teamOfCurrentUser.id" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
 		<template #icon>
