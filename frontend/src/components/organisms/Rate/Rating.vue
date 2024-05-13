@@ -42,6 +42,7 @@ const gradeOwnTeam = hasPermission("GRADE_OWN_TEAM")
 const canGradeTechnicalSolution = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeSprintConformity = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
+const canAddFeedbacks = hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 
 
 onMounted(async() => {
@@ -147,12 +148,12 @@ onMounted(async() => {
 		</template>
 	</ContainerGradeType>
 
-  <ContainerGradeType v-if="canGradeIndividualPerformance" title="Performance individuelle" infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
+  <ContainerGradeType v-if="canAddFeedbacks" title="Performance individuelle" infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
     <template #icon>
       <User :size="40" :stroke-width="1"/>
     </template>
     <template #dialog>
-      <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId" @feedback:added="refetchFeedback">
+      <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId">
         <Button variant="outline">Voir les feedbacks</Button>
       </DialogViewFeedback>
       <DialogFeedback :selectedTeamId="props.teamId" :selectedSprintId="props.sprintId">

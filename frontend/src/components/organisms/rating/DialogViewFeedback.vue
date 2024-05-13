@@ -54,12 +54,10 @@ const DIALOG_DESCRIPTION = "Feedbacks donnés à l'équipe durant le sprint"
 			<Text class="text-center">Aucun feedback donné</Text>
 		</div>
 		<div v-else>
-			<div v-for="author in authorsFeedbacks" :key="author.id" class="p-10">
+			<div v-for="author in authorsFeedbacks" :key="author.id" class="p-5 flex flex-col">
 				<Text class="bold">{{ author.name }}</Text>
 				<div v-for="feedback in getFeedbacksFromAuthor(author.id.toString())" :key="feedback.id" class="p-2">
-					<!-- <Text>{{ feedback.content }}</Text>
-					<Separator /> -->
-					<Input disabled :default-value="feedback.content" />
+					<Input disabled :default-value="feedback.content"/>
 				</div>
 			</div>
 		</div>
