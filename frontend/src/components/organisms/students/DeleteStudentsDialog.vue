@@ -7,6 +7,7 @@ import { ref } from "vue"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
+import { createToast } from "@/utils/toast"
 
 const open = ref(false)
 const emits = defineEmits(["delete:students"])
@@ -15,6 +16,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-student
 	await deleteAllStudents()
 		.then(() => open.value = false)
 		.then(() => emits("delete:students"))
+		.then(() => createToast("Les étudiants ont été supprimés."))
 } })
 
 const DIALOG_TITLE = "Supprimer les étudiants"

@@ -1,21 +1,37 @@
-import type { RoleType } from "@/types/role"
-import { UserSchema } from "@/types/user"
-import { apiQuery } from "@/utils/api"
-import { setCookie } from "@/utils/cookie"
+import { AuthResponseSchema } from "@/types/auth-response"
+import { apiQuery, mutateAndValidateWithReturn } from "@/utils/api"
+import { Cookies } from "@/utils/cookie"
+import { getAllPermissions, getAllRoles } from "@/services/user-service"
+import { AuthRequestSchema } from "@/types/auth-request"
 
-export const login = async(role: RoleType) => {
-	setCookie("role", role)
-	setCookie("token", "bonamyRule34")
+export const login = async(login: string, password: string) => {
+	// TODO: set the project id
+	Cookies.setProjectId(1)
 
-	const response = await apiQuery({
-		route: `roles/user/${role}`,
-		responseSchema: UserSchema,
-		method: "GET"
+	console.log("Login : " + JSON.stringify({ login, password }))
+
+	const response = await mutateAndValidateWithReturn({
+		route: "auth/login",
+		responseSchema: AuthResponseSchema,
+		bodySchema: AuthRequestSchema,
+		method: "POST",
+		body: { login, password }
 	})
+
+	console.log("response: ", response)
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
 
-	setCookie("user", response.data.id.toString())
+	Cookies.setUserId(response.data.id)
+	Cookies.setToken(response.data.accessToken)
+
+
+	const roles = await getAllRoles(response.data.id)
+	// TODO: set all roles and not only the first one
+	Cookies.setRole(roles[0])
+
+	const permissions = await getAllPermissions(response.data.id)
+	Cookies.setPermissions(permissions)
 }

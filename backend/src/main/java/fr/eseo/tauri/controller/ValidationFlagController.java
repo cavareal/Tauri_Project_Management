@@ -1,51 +1,44 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.ValidationFlag;
-import fr.eseo.tauri.repository.ValidationFlagRepository;
+import fr.eseo.tauri.service.ValidationFlagService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/validation_flags")
-@Tag(name = "validation-flags")
+@RequiredArgsConstructor
+@RequestMapping("/api/flags/{flagId}/validation")
+@Tag(name = "validationFlags")
 public class ValidationFlagController {
 
-    private final ValidationFlagRepository validationFlagRepository;
+    private final ValidationFlagService validationFlagService;
+    private final ResponseMessage responseMessage = new ResponseMessage("validationFlag");
 
-    @Autowired
-    public ValidationFlagController(ValidationFlagRepository validationFlagRepository) {
-        this.validationFlagRepository = validationFlagRepository;
+    @GetMapping("/{authorId}")
+    public ResponseEntity<ValidationFlag> getValidationFlagByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer authorId, @PathVariable Integer flagId) {
+        ValidationFlag validationFlag = validationFlagService.getValidationFlagByAuthorId(token, flagId, authorId);
+        return ResponseEntity.ok(validationFlag);
     }
 
-    @PostMapping("/")
-    public ValidationFlag addValidationFlag(@RequestBody ValidationFlag validationFlag) {
-        return validationFlagRepository.save(validationFlag);
+    @GetMapping
+    public ResponseEntity<List<ValidationFlag>> getAllValidationFlags(@RequestHeader("Authorization") String token, @PathVariable Integer flagId) {
+        List<ValidationFlag> validationFlags = validationFlagService.getAllValidationFlags(token, flagId);
+        return ResponseEntity.ok(validationFlags);
     }
 
-    @GetMapping("/")
-    public Iterable<ValidationFlag> getAllValidationFlags() {
-        return validationFlagRepository.findAll();
+    @PatchMapping("/{authorId}")
+    public ResponseEntity<String> updateValidationFlag(@RequestHeader("Authorization") String token, @PathVariable Integer authorId, @PathVariable Integer flagId, @Validated(Update.class) @RequestBody ValidationFlag updatedValidationFlag) {
+        validationFlagService.updateValidationFlag(token, flagId, authorId, updatedValidationFlag);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
-    @GetMapping("/{id}")
-    public ValidationFlag getValidationFlagById(@PathVariable Integer id) {
-        return validationFlagRepository.findById(id).orElse(null);
-    }
-
-    @PutMapping("/{id}")
-    public ValidationFlag updateValidationFlag(@PathVariable Integer id, @RequestBody ValidationFlag validationFlagDetails) {
-        ValidationFlag validationFlag = validationFlagRepository.findById(id).orElse(null);
-        if (validationFlag != null) {
-            validationFlag.confirmed(validationFlagDetails.confirmed());
-            return validationFlagRepository.save(validationFlag);
-        }
-        return null;
-    }
-
-    @DeleteMapping("/{id}")
-    public String deleteValidationFlag(@PathVariable Integer id) {
-        validationFlagRepository.deleteById(id);
-        return "ValidationFlag deleted";
-    }
 }

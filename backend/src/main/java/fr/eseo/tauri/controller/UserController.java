@@ -1,76 +1,102 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.service.GradeService;
 import fr.eseo.tauri.service.RoleService;
 import fr.eseo.tauri.service.UserService;
+import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(path = "/api/users")
 @Tag(name = "users")
 public class UserController {
 
-	private final UserRepository userRepository;
 	private final UserService userService;
+	private final ResponseMessage responseMessage = new ResponseMessage("user");
 	private final RoleService roleService;
+	private final GradeService gradeService;
 
-	@Autowired
-	public UserController(UserRepository userRepository, UserService userService, RoleService roleService) {
-		this.userRepository = userRepository;
-        this.userService = userService;
-		this.roleService = roleService;
-    }
-
-	@PostMapping(path = "/")
-	public @ResponseBody String addUser(@RequestParam String name, @RequestParam String email) {
-		User user = new User();
-		user.name(name);
-		user.email(email);
-		userRepository.save(user);
-		return "Saved";
-	}
-
-	@GetMapping(path = "/")
-	public @ResponseBody Iterable<User> allUsers() {
-		return userRepository.findAll();
+	@GetMapping("/{id}")
+	public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		User user = userService.getUserById(token, id);
+		return ResponseEntity.ok(user);
 	}
 
 	@GetMapping(path = "/roles/{roleType}")
-	public @ResponseBody Iterable<User> getUsersByRole(@PathVariable RoleType roleType) {
-		return roleService.getUsersByRoleType(roleType);
+	public Iterable<User> getUsersByRole(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType) {
+		return roleService.getUsersByRoleType(token, roleType);
 	}
 
-	@GetMapping(path = "/{id}")
-	public @ResponseBody User getUser(@PathVariable Integer id) {
-		return userRepository.findById(id).orElse(null);
+	@PostMapping
+	public ResponseEntity<String> createUser(@RequestParam String name, @Validated(Create.class) @RequestBody User user) {
+		userService.createUser(name, user);
+		CustomLogger.info(responseMessage.create());
+		return ResponseEntity.ok(responseMessage.create());
 	}
 
-	@GetMapping(path = "/{id}/hasPermission")
-	public @ResponseBody Boolean hasPermission(@PathVariable Integer id, @RequestParam PermissionType permissionRequired) {
-		return userService.hasPermission(id, permissionRequired);
+	@PatchMapping("/{id}")
+	public ResponseEntity<String> updateUser(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody User user) {
+		userService.updateUser(token, id, user);
+		CustomLogger.info(responseMessage.update());
+		return ResponseEntity.ok(responseMessage.update());
 	}
 
-	@PutMapping(path = "/update")
-	public @ResponseBody String updateUser(@RequestParam Integer id, @RequestParam String name, @RequestParam String email) {
-		User user = userRepository.findById(id).orElse(null);
-		if (user != null) {
-			user.name(name);
-			user.email(email);
-			userRepository.save(user);
-			return "Updated";
-		}
-		return "User not found";
+	@DeleteMapping(path = "/delete/{id}")
+	public ResponseEntity<String> deleteUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		userService.deleteUserById(token, id);
+		CustomLogger.info(responseMessage.delete());
+		return ResponseEntity.ok(responseMessage.delete());
 	}
 
- 	@DeleteMapping(path = "/delete/{id}")
-	public @ResponseBody String deleteUser(@PathVariable Integer id) {
-		userRepository.deleteById(id);
-		return "Deleted";
+	@DeleteMapping
+	public ResponseEntity<String> deleteAllUsers(@RequestHeader("Authorization") String token) {
+		userService.deleteAllUsers(token);
+		CustomLogger.info(responseMessage.deleteAll());
+		return ResponseEntity.ok(responseMessage.deleteAll());
+	}
+
+	@GetMapping(path = "/{id}/permissions/{permissionType}")
+	public ResponseEntity<Boolean> hasPermission(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable PermissionType permissionType) {
+		var hasPermission = userService.hasPermission(token, id, permissionType);
+		return ResponseEntity.ok(hasPermission);
+	}
+
+	@GetMapping(path = "/{id}/permissions")
+	public ResponseEntity<List<PermissionType>> getAllPermissions(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		var permissions = userService.getPermissionsByUser(token, id);
+		return ResponseEntity.ok(permissions);
+	}
+
+	@GetMapping("{id}/team")
+	public ResponseEntity<List<Team>> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
+		List<Team> teams = userService.getTeamByMemberId(token, id, projectId);
+		return ResponseEntity.ok(teams);
+	}
+
+	@GetMapping("{id}/sprint/{sprintId}/grade")
+	public ResponseEntity<Double> getSprintGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
+		Double sprintGrade = gradeService.getSprintGrade(token, id, sprintId);
+		return ResponseEntity.ok(sprintGrade);
+	}
+
+	@GetMapping("{id}/roles")
+	public ResponseEntity<List<RoleType>> getRolesByUserId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		List<RoleType> roles = userService.getRolesByUserId(token, id);
+		return ResponseEntity.ok(roles);
 	}
 
 }

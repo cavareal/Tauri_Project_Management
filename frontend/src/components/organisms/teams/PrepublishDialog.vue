@@ -4,17 +4,19 @@ import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
-import { setCurrentPhase } from "@/services/project-service"
+import { updateProject } from "@/services/project-service"
 import { useMutation } from "@tanstack/vue-query"
 import { ref } from "vue"
+import { createToast } from "@/utils/toast"
 
 const emits = defineEmits(["prepublish:teams"])
 const open = ref(false)
 
 const { mutate, error, isPending } = useMutation({ mutationKey: ["prepublish-teams"], mutationFn: async() => {
-	await setCurrentPhase("PREPUBLISHED")
+	await updateProject({ phase: "PREPUBLISHED" })
 		.then(() => open.value = false)
 		.then(() => emits("prepublish:teams"))
+		.then(() => createToast("La composition des équipes a été prépubliée."))
 } })
 
 const DIALOG_TITLE = "Prépublier les équipes"

@@ -1,14 +1,18 @@
-import type { PermissionType } from "@/types/permission"
+import { PermissionTypeSchema, type PermissionType } from "@/types/permission"
 import type { RoleType } from "@/types/role"
-import { UserSchema, type User } from "@/types/user"
-import { apiQuery } from "@/utils/api"
+import { UserSchema, type UpdateUser, type User } from "@/types/user"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { Cookies } from "@/utils/cookie"
 import { z } from "zod"
+import type { Team } from "@/types/team"
+import { RoleTypeSchema } from "@/types/role"
 
-export const getUsersByRole = async(role: RoleType): Promise<User[]> => {
-	const response = await apiQuery({
-		route: `users/roles/${role}`,
-		responseSchema: z.array(UserSchema),
-		method: "GET"
+export const getConnectedUser = async(): Promise<User> => {
+	const id = Cookies.getUserId()
+
+	const response = await queryAndValidate({
+		route: `users/${id}`,
+		responseSchema: UserSchema
 	})
 
 	if (response.status === "error") {
@@ -18,11 +22,74 @@ export const getUsersByRole = async(role: RoleType): Promise<User[]> => {
 	return response.data
 }
 
-export const hasPermission = async(user: User, permission: PermissionType): Promise<boolean> => {
-	const response = await apiQuery({
-		route: `users/${user.id}/hasPermission?permissionRequired=${permission}`,
-		responseSchema: z.boolean(),
-		method: "GET"
+export const getUsersByRole = async(role: RoleType): Promise<User[]> => {
+	const response = await queryAndValidate({
+		route: `roles/${role}/users`,
+		responseSchema: UserSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const updateUser = async(id: string | null, body: UpdateUser): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "PUT",
+		route: `users/${id}`,
+		body,
+		bodySchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const getUserById = async(id: number): Promise<User> => {
+	const response = await queryAndValidate({
+		route: `users/${id}`,
+		responseSchema: UserSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getAllPermissions = async(id: number): Promise<PermissionType[]> => {
+	const response = await queryAndValidate({
+		route: `users/${id}/permissions`,
+		responseSchema: PermissionTypeSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const hasPermission = (permission: PermissionType): boolean => {
+	const permissions = Cookies.getPermissions()
+
+	return permissions.includes(permission)
+}
+
+export const getCurrentUser = async(): Promise<User> => {
+	const id = Cookies.getUserId()
+
+	return await getUserById(id)
+}
+
+export const getAllRoles = async(id: number): Promise<RoleType[]> => {
+	const response = await queryAndValidate({
+		route: `users/${id}/roles`,
+		responseSchema: RoleTypeSchema.array()
 	})
 
 	if (response.status === "error") {

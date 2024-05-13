@@ -1,17 +1,15 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-
 @Entity
 @Table(name = "teams")
-@Getter
-@Setter
+@Data
 public class Team {
 
     @Id
@@ -33,6 +31,10 @@ public class Team {
     @OnDelete(action = OnDeleteAction.NO_ACTION)
     @JsonProperty
     private User leader;
+
+    @Transient
+    @JsonDeserialize
+    private Integer leaderId;
 
 }
 

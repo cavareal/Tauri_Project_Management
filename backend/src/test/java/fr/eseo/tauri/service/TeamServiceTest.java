@@ -1,10 +1,13 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,11 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Nested
@@ -28,10 +29,18 @@ class TeamServiceTest {
     private TeamRepository teamRepository;
 
     @Mock
+    private AuthService authService;
+
+    @Mock
     private StudentRepository studentRepository;
 
     @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
     private ProjectService projectService;
+
+
 
     @InjectMocks
     private TeamService teamService;
@@ -43,304 +52,221 @@ class TeamServiceTest {
     }
 
     @Test
-    void testGetAllTeams() {
-        // Arrange
-        Team team1 = new Team();
-        Team team2 = new Team();
-        Project project = new Project();
-        when(teamRepository.findAllByProjectId(project.id())).thenReturn(Arrays.asList(team1, team2));
-        when(projectService.getCurrentProject()).thenReturn(project);
+    void getTeamByIdReturnsTeamWhenAuthorizedAndTeamExists() {
+        String token = "validToken";
+        Integer id = 1;
+        Team expectedTeam = new Team();
 
-        // Act
-        List<Team> teams = teamService.getAllTeams();
+        when(authService.checkAuth(token, "readTeam")).thenReturn(true);
+        when(teamRepository.findById(id)).thenReturn(Optional.of(expectedTeam));
 
-        // Assert
-        assertThat(teams).hasSize(2);
-        verify(teamRepository, times(1)).findAllByProjectId(project.id());
-        verify(projectService, times(1)).getCurrentProject();
+        Team actualTeam = teamService.getTeamById(token, id);
 
+        assertEquals(expectedTeam, actualTeam);
     }
 
     @Test
-    void testGetAllTeamsEmptyList() {
-        // Arrange
-        Project project = new Project();
-        when(projectService.getCurrentProject()).thenReturn(project);
-        when(teamRepository.findAllByProjectId(project.id())).thenReturn(List.of());
+    void getTeamByIdThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
 
-        // Action
-        List<Team> teams = teamService.getAllTeams();
+        when(authService.checkAuth(token, "readTeam")).thenReturn(false);
 
-        // Assert
-        assertThat(teams).isEmpty();
-        verify(teamRepository, times(1)).findAllByProjectId(project.id());
-        verify(projectService, times(1)).getCurrentProject();
+        assertThrows(SecurityException.class, () -> teamService.getTeamById(token, id));
     }
 
     @Test
-    void testGetTeamById() {
-        // Arrange
-        Team team = new Team();
-        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+    void getTeamByIdThrowsResourceNotFoundExceptionWhenTeamDoesNotExist() {
+        String token = "validToken";
+        Integer id = 1;
 
-        // Act
-        Team result = teamService.getTeamById(1);
+        when(authService.checkAuth(token, "readTeam")).thenReturn(true);
+        when(teamRepository.findById(id)).thenReturn(Optional.empty());
 
-        // Assert
-        assertThat(result).isEqualTo(team);
-        verify(teamRepository, times(1)).findById(1);
+        assertThrows(ResourceNotFoundException.class, () -> teamService.getTeamById(token, id));
     }
 
     @Test
-    void testGetTeamByName() {
-        // Arrange
-        Team team = new Team();
-        String teamName = "Team 1";
-        team.name(teamName);
-        when(teamRepository.findByName(teamName)).thenReturn(team);
+    void getAllTeamsByProjectReturnsTeamsWhenAuthorizedAndProjectExists() {
+        String token = "validToken";
+        Integer projectId = 1;
+        List<Team> expectedTeams = Arrays.asList(new Team(), new Team());
 
-        // Act
-        Team result = teamRepository.findByName(teamName);
+        when(authService.checkAuth(token, "readTeams")).thenReturn(true);
+        when(teamRepository.findAllByProject(projectId)).thenReturn(expectedTeams);
 
-        // Assert
-        assertThat(result).isEqualTo(team);
-        verify(teamRepository, times(1)).findByName(teamName);
+        List<Team> actualTeams = teamService.getAllTeamsByProject(token, projectId);
+
+        assertEquals(expectedTeams, actualTeams);
     }
 
     @Test
-    void testGetTeamByIdNull() {
-        // Arrange
-        when(teamRepository.findById(1)).thenReturn(Optional.empty());
+    void getAllTeamsByProjectThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer projectId = 1;
 
-        // Act
-        Team result = teamService.getTeamById(1);
+        when(authService.checkAuth(token, "readTeams")).thenReturn(false);
 
-        // Assert
-        assertThat(result).isNull();
+        assertThrows(SecurityException.class, () -> teamService.getAllTeamsByProject(token, projectId));
     }
 
     @Test
-    void testGetNbWomanByTeamId() {
-        // Arrange
-        Team team = new Team();
-        Student student1 = new Student();
-        student1.gender(Gender.WOMAN);
-        Student student2 = new Student();
-        student2.gender(Gender.MAN);
-        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
+    void getAllTeamsByProjectReturnsEmptyListWhenNoTeamsExist() {
+        String token = "validToken";
+        Integer projectId = 1;
 
-        // Act
-        Integer nbWomanTeam1 = teamService.getNbWomanByTeamId(1);
-        Integer nbWomanTeam2 = teamService.getNbWomanByTeamId(2);
+        when(authService.checkAuth(token, "readTeams")).thenReturn(true);
+        when(teamRepository.findAllByProject(projectId)).thenReturn(Collections.emptyList());
 
-        // Assert
-        assertThat(nbWomanTeam1).isEqualTo(1);
-        assertThat(nbWomanTeam2).isNull();
+        List<Team> actualTeams = teamService.getAllTeamsByProject(token, projectId);
+
+        assertTrue(actualTeams.isEmpty());
     }
 
     @Test
-    void testGetNbWomanByTeamIdZero() {
-        // Arrange
-        Team team = new Team();
-        Student student1 = new Student();
-        student1.gender(Gender.MAN);
-        Student student2 = new Student();
-        student2.gender(Gender.MAN);
-        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
-
-        // Act
-        Integer nbWoman = teamService.getNbWomanByTeamId(1);
-
-        // Assert
-        assertThat(nbWoman).isZero();
-    }
-
-    @Test
-    void testGetNbBachelorsByTeamId() {
-        // Arrange
-        Team team = new Team();
-        Student student1 = new Student();
-        student1.bachelor(true);
-        Student student2 = new Student();
-        student2.bachelor(false);
-        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
-
-        // Act
-        Integer nbBachelorsTeam1 = teamService.getNbBachelorByTeamId(1);
-        Integer nbBachelorsTeam2 = teamService.getNbBachelorByTeamId(2);
-
-        // Assert
-        assertThat(nbBachelorsTeam1).isEqualTo(1);
-        assertThat(nbBachelorsTeam2).isNull();
-    }
-
-    @Test
-    void testGetNbBachelorsByTeamIdZero() {
-        // Arrange
-        Team team = new Team();
-        Student student1 = new Student();
-        student1.bachelor(false);
-        Student student2 = new Student();
-        student2.bachelor(false);
-        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
-
-        // Act
-        Integer nbBachelors = teamService.getNbBachelorByTeamId(1);
-
-        // Assert
-        assertThat(nbBachelors).isZero();
-    }
-
-    @Test
-    void testGetNbStudentsByTeamId() {
-        // Arrange
-        Team team = new Team();
-        Student student1 = new Student();
-        Student student2 = new Student();
-        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(Arrays.asList(student1, student2));
-
-        // Act
-        Integer nbStudentsTeam1 = teamService.getNbStudentsByTeamId(1);
-        Integer nbStudentsTeam2 = teamService.getNbStudentsByTeamId(2);
-
-
-        // Assert
-        assertThat(nbStudentsTeam1).isEqualTo(2);
-        assertThat(nbStudentsTeam2).isNull();
-    }
-
-    @Test
-    void testGetNbStudentsByTeamIdZero() {
-        // Arrange
-        Team team = new Team();
-        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
-        when(studentRepository.findByTeam(team)).thenReturn(List.of());
-
-        // Act
-        Integer nbStudents = teamService.getNbStudentsByTeamId(1);
-
-        // Assert
-        assertThat(nbStudents).isZero();
-    }
-
-    @Test
-    void testGetTeamBySSId_ExistingId() {
-        // Arrange
-        User leader = new User();
-        leader.id(1);
-        Team team1 = new Team();
-        team1.leader(leader);
-        Team team2 = new Team();
-        doReturn(Arrays.asList(team1, team2)).when(teamService).getAllTeams();
-
-        // Act
-        Team result = teamService.getTeamBySSId(1);
-
-        // Assert
-        assertThat(result).isEqualTo(team1);
-        verify(teamService, times(1)).getAllTeams();
-    }
-
-    @Test
-    void testGetTeamBySSId_NonExistingId() {
-        // Arrange
-        User leader = new User();
-        leader.id(1);
-        Team team1 = new Team();
-        Team team2 = new Team();
-        doReturn(Arrays.asList(team1, team2)).when(teamService).getAllTeams();
-
-        // Act
-        Team result = teamService.getTeamBySSId(1);
-
-        // Assert
-        assertThat(result).isNull();
-        verify(teamService, times(1)).getAllTeams();
-    }
-
-    /*@Test
-    void testGenerateTeams() {
-        // Arrange
+    void createTeamsShouldCreateTeamsWhenAuthorizedAndProjectExists() {
+        String token = "validToken";
+        Integer projectId = 1;
         Integer nbTeams = 3;
-        Integer womenPerTeam = 2;
-        List<Team> expectedTeams = new ArrayList<>();
-        for (int i = 0; i < nbTeams; i++) {
-            Team team = new Team();
-            expectedTeams.add(team);
-        }
 
-        // Mock the dependencies
-        when(studentRepository.findByGender(Gender.WOMAN)).thenReturn(new ArrayList<>());
-        when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN)).thenReturn(new ArrayList<>());
-        doReturn(expectedTeams).when(teamService).createTeams(nbTeams);
-        doNothing().when(teamService).fillTeams(anyList(), anyList(), anyList(), anyInt());
+        when(authService.checkAuth(token, "createTeam")).thenReturn(true);
+        when(authService.checkAuth(token, "createTeam")).thenReturn(true);
+        when(authService.checkAuth(token, "readTeams")).thenReturn(true);
+        when(authService.checkAuth(token, "deleteTeam")).thenReturn(true);
+        when(authService.checkAuth(token, "readProject")).thenReturn(true);
+        when(projectService.getProjectById(token, projectId)).thenReturn(new Project());
+        when(teamService.getAllTeamsByProject(token, projectId)).thenReturn(Collections.emptyList());
 
-        // Act
-        List<Team> result = teamService.generateTeams(nbTeams, womenPerTeam);
+        List<Team> teams = teamService.createTeams(token, projectId, nbTeams);
 
-        // Assert
-        assertEquals(expectedTeams, result);
-        verify(studentRepository, times(1)).findByGender(Gender.WOMAN);
-        verify(studentRepository, times(1)).findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN);
-        verify(teamService, times(1)).createTeams(nbTeams);
-        verify(teamService, times(1)).fillTeams(anyList(), anyList(), anyList(), anyInt());
-    }*/
+        assertEquals(nbTeams, teams.size());
+        verify(teamRepository, times(nbTeams)).save(any(Team.class));
+    }
 
-//    @Test
-//    void testFillTeams() throws Exception {
-//        // Arrange
-//        List<Team> teams = new ArrayList<>();
-//        List<Student> women = new ArrayList<>();
-//        List<Student> men = new ArrayList<>();
-//        int nbTeams = 3;
-//        int womenPerTeam = 2;
-//
-//        for (int i = 0; i < nbTeams; i++) {
-//            Team team = new Team();
-//            teams.add(team);
-//        }
-//
-//        for (int i = 0; i < nbTeams * womenPerTeam; i++) {
-//            Student woman = new Student();
-//            woman.gender(Gender.WOMAN);
-//            women.add(woman);
-//
-//            Student man = new Student();
-//            man.gender(Gender.MAN);
-//            men.add(man);
-//        }
-//
-//        when(teamRepository.findAllOrderByAvgGradeOrderByAsc()).thenReturn(teams);
-//
-//        // Act
-//        Method method = TeamService.class.getDeclaredMethod("fillTeams", List.class, List.class, List.class, Integer.class);
-//        method.setAccessible(true);
-//        method.invoke(teamService, teams, women, men, womenPerTeam);
-//
-//        // Assert
-//        for (Team team : teams) {
-//            /*int womenCount = (int) studentRepository.findByTeam(team).stream()
-//                    .filter(student -> student.gender() == Gender.WOMAN)
-//                    .count();*/
-//            int womenCount = 0;
-//            List<Student> studentsInTeam = studentRepository.findByTeam(team);
-//            assertEquals(4, studentsInTeam.size());
-//            for (Student student : studentsInTeam) {
-//                if (student.gender() == Gender.WOMAN) {
-//                    womenCount++;
-//                }
-//            }
-//            assertEquals(womenPerTeam, womenCount);
-//        }
-//    }
+    @Test
+    void createTeamsShouldThrowIllegalArgumentExceptionWhenNumberOfTeamsIsLessThanOne() {
+        String token = "validToken";
+        Integer projectId = 1;
+        Integer nbTeams = 0;
+
+        assertThrows(IllegalArgumentException.class, () -> teamService.createTeams(token, projectId, nbTeams));
+    }
+
+    @Test
+    void updateTeamShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+        Team updatedTeam = new Team();
+
+        when(authService.checkAuth(token, "updateTeam")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.updateTeam(token, id, updatedTeam));
+    }
+
+    @Test
+    void deleteAllTeamsByProjectShouldDeleteTeamsWhenAuthorizedAndProjectExists() {
+        String token = "validToken";
+        Integer projectId = 1;
+
+        when(authService.checkAuth(token, "deleteTeam")).thenReturn(true);
+
+        teamService.deleteAllTeamsByProject(token, projectId);
+
+        verify(studentRepository, times(1)).removeAllStudentsFromTeams(projectId);
+        verify(teamRepository, times(1)).deleteAllByProject(projectId);
+    }
+
+    @Test
+    void deleteAllTeamsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer projectId = 1;
+
+        when(authService.checkAuth(token, "deleteTeam")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.deleteAllTeamsByProject(token, projectId));
+    }
+
+    @Test
+    void getNbWomenByTeamIdThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+
+        when(authService.checkAuth(token, "deleteTeam")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.getNbWomenByTeamId(token, id));
+    }
+
+    @Test
+    void getNbBachelorByTeamIdThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+
+        when(authService.checkAuth(token, "deleteTeam")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.getNbBachelorByTeamId(token, id));
+    }
+
+    @Test
+    void getStudentsByTeamIdThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+
+        when(authService.checkAuth(token, "readTeam")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.getStudentsByTeamId(token, id));
+    }
+
+    @Test
+    void getTeamAvgGradeThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+
+        when(authService.checkAuth(token, "readTeam")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.getTeamAvgGrade(token, id));
+    }
+
+    @Test
+    void getCriteriaByTeamIdThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+        Integer projectId = 1;
+
+        when(authService.checkAuth(token, "readTeam")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.getCriteriaByTeamId(token, id, projectId));
+    }
+
+    @Test
+    void generateTeamsThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer projectId = 1;
+        Project projectDetails = new Project();
+
+        when(authService.checkAuth(token, "createTeam")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.generateTeams(token, projectId, projectDetails));
+    }
+
+    @Test
+    void generateTeamsThrowsIllegalArgumentExceptionWhenNotEnoughStudents() {
+        String token = "validToken";
+        Integer projectId = 1;
+        Project projectDetails = new Project();
+        projectDetails.nbTeams(3);
+        projectDetails.nbWomen(2);
+
+        List<Student> women = List.of(new Student());
+        List<Student> men = Arrays.asList(new Student(), new Student());
+
+        when(authService.checkAuth(token, "createTeam")).thenReturn(true);
+        when(studentRepository.findByGender(Gender.WOMAN)).thenReturn(women);
+        when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN)).thenReturn(men);
+
+        assertThrows(IllegalArgumentException.class, () -> teamService.generateTeams(token, projectId, projectDetails));
+    }
 
 }
-
 
 
 

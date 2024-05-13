@@ -2,6 +2,9 @@
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import TeamAccordionContent from "@/components/organisms/teams/TeamAccordionContent.vue"
 import type { Team } from "@/types/team"
+import type { Student } from "@/types/student"
+import { onMounted, ref } from "vue"
+import { getStudentsByTeamId } from "@/services/student-service"
 
 const props = defineProps({
 	team: {
@@ -13,7 +16,12 @@ const props = defineProps({
 		required: true
 	}
 })
-console.log(props.team)
+
+const students = ref<Student[]>([])
+
+onMounted(async() => {
+	students.value = await getStudentsByTeamId(props.team.id)
+})
 </script>
 
 <template>
@@ -23,7 +31,7 @@ console.log(props.team)
         {{ props.team.name }}
         {{ props.team.leader?.name ? `(${props.team.leader.name})` : "" }}
       </AccordionTrigger>
-      <TeamAccordionContent :teamId="props.team.id" :leader="props.team.leader?.name" :phase="props.phase" />
+      <TeamAccordionContent :teamId="props.team.id" :students="students"/>
     </AccordionItem>
   </Accordion>
 </template>

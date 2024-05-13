@@ -7,29 +7,52 @@ public class CustomLogger {
 
     private static Logger logger = LoggerFactory.getLogger(CustomLogger.class);
 
-    // Private constructor to hide the implicit public one
+    /**
+     * Private constructor to prevent instantiation
+     */
     CustomLogger() {
         throw new IllegalStateException("Utility class");
     }
 
-    // Method to set the logger, mainly for testing purposes
+    /**
+     * Set the logger (for testing purposes)
+     * @param logger the logger to set
+     */
     static void setLogger(Logger logger) {
         CustomLogger.logger = logger;
     }
 
-    public static void logInfo(String message) {
+    /**
+     * Log an info message
+     * @param message the message to log
+     */
+    public static void info(String message) {
         logger.info(message);
     }
 
-    public static void logWarn(String message) {
+    /**
+     * Log a warning message
+     * @param message the message to log
+     */
+    public static void warn(String message) {
         logger.warn(message);
     }
 
-    public static void logError(String message) {
+    /**
+     * Log an error message
+     * @param message the message to log
+     */
+    public static void error(String message) {
         logger.error(message);
     }
 
-    public static void logError(String message, Throwable throwable) {
+    /**
+     * Log an error message with a throwable
+     * @param message the message to log
+     * @param throwable the throwable to log
+     */
+    public static void error(String message, Throwable throwable) {
         logger.error(message, throwable);
     }
+
 }

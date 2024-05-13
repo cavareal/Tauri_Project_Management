@@ -4,51 +4,61 @@ import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.PermissionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static fr.eseo.tauri.model.enumeration.PermissionType.*;
 
 import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class PermissionSeeder {
 
-    private final Map<RoleType, List<PermissionType>> associationTable = Map.of(
-            RoleType.IDENTIFIED_USER, List.of(PermissionType.LOGIN_OUT, PermissionType.VIEW_GRADE_SCALE, PermissionType.IMPORT_GENERATED_KEY),
-            RoleType.SYSTEM_ADMINISTRATOR, List.of(PermissionType.IMPORT_GENERATED_KEY),
-            RoleType.TECHNICAL_COACH, List.of(PermissionType.GRADE_SUPPORT_MATERIAL, PermissionType.GRADE_PRESENTATION_CONTENT, PermissionType.ADD_COMMENT_WG, PermissionType.ADD_ALL_TEAMS_COMMENT,  PermissionType.ADD_ALL_TEAMS_FEEDBACK),
-            RoleType.SUPERVISING_STAFF, List.of(PermissionType.PREVIEW_TEAM, PermissionType.VALIDATION_TEAM_BEFORE_PREPUBLISH, PermissionType.FLAG_TEAM_WITHOUT_STUDENTS, PermissionType.FLAG_TEAM_WITH_STUDENTS, PermissionType.VIEW_TEAM_CHANGES, PermissionType.VIEW_TEAMS, PermissionType.VIEW_OWN_TEAM, PermissionType.VIEW_SPRINT_PROTOCOL, PermissionType.VIEW_OWN_TEAM_WITH_CRITERIA, PermissionType.VIEW_TEAMS_INFORMATIONS, PermissionType.GRADE_PRESENTATION_CONTENT, PermissionType.GRADE_SUPPORT_MATERIAL, PermissionType.GRADE_INDIVIDUAL_PERFORMANCE, PermissionType.ADD_GRADE_COMMENT, PermissionType.VIEW_ALL_ORAL_GRADES, PermissionType.GRADE_OWN_TEAM, PermissionType.VIEW_OWN_TEAM_COMMENT, PermissionType.GIVE_UNLIMITED_BONUS_MALUS, PermissionType.VALIDATION_LIMITED_BONUS_MALUS, PermissionType.VALIDATION_OWN_TEAM_GRADES, PermissionType.USE_KEY_OWN_TEAM, PermissionType.VERIFY_OWN_TEAM_KEY_USED, PermissionType.USE_KEY_ALL_TEAMS, PermissionType.VIEW_ALL_SPRINTS_GRADES, PermissionType.ADD_ALL_TEAMS_FEEDBACK, PermissionType.ADD_ALL_TEAMS_COMMENT, PermissionType.VIEW_FEEDBACK, PermissionType.VIEW_COMMENT),
-            RoleType.OPTION_LEADER, List.of(PermissionType.IMPORT, PermissionType.MODIFICATION_STUDENT_LIST, PermissionType.MANAGE_SPRINT, PermissionType.VIEW_ALL_WRITING_GRADES, PermissionType.EXPORT_INDIVIDUAL_GRADES),
-            RoleType.PROJECT_LEADER, List.of(PermissionType.IMPORT, PermissionType.MODIFICATION_STUDENT_LIST, PermissionType.EXPORT_STUDENT_LIST, PermissionType.TEAM_CREATION, PermissionType.TEAM_MANAGEMENT, PermissionType.PUBLISH_TEAMS, PermissionType.MANAGE_SPRINT, PermissionType.MANAGE_GRADE_SCALE, PermissionType.VIEW_ALL_WRITING_GRADES, PermissionType.VERIFY_ALL_KEYS_USED, PermissionType.EXPORT_INDIVIDUAL_GRADES),
-            RoleType.OPTION_STUDENT, List.of(PermissionType.FLAG_TEAM_WITH_STUDENTS, PermissionType.VIEW_TEAM_CHANGES, PermissionType.VALIDATION_OWN_TEAM, PermissionType.VIEW_TEAMS, PermissionType.VIEW_OWN_TEAM, PermissionType.VIEW_SPRINT_PROTOCOL, PermissionType.VIEW_OWN_SPRINT_GRADE),
-            RoleType.TEAM_MEMBER, List.of(PermissionType.GRADE_GLOBAL_PERFORMANCE, PermissionType.PUBLISH_RUNNING_ORDER, PermissionType.VIEW_OWN_GRADE_COMMENT, PermissionType.VIEW_OWN_TEAM_GRADE, PermissionType.VIEW_TEAM_GRADE, PermissionType.LIMITED_BONUS_MALUS, PermissionType.VIEW_OWN_GRADES_WG, PermissionType.USE_KEY_OWN_TEAM, PermissionType.VIEW_OWN_SPRINT_GRADE),
-            RoleType.ESEO_ADMINISTRATION, List.of(),
-            RoleType.JURY_MEMBER, List.of()
-    );
+	private static final Map<RoleType, List<PermissionType>> PERMISSIONS = Map.of(
+			RoleType.IDENTIFIED_USER, List.of(LOGIN_OUT, VIEW_GRADE_SCALE, IMPORT_GENERATED_KEY),
 
-    private final PermissionRepository permissionRepository;
+			RoleType.SYSTEM_ADMINISTRATOR, List.of(IMPORT_GENERATED_KEY),
 
-    public PermissionSeeder(PermissionRepository permissionRepository) {
-        this.permissionRepository = permissionRepository;
-    }
+			RoleType.TECHNICAL_COACH, List.of(GRADE_SUPPORT_MATERIAL, GRADE_PRESENTATION_CONTENT, ADD_COMMENT_WG, ADD_ALL_TEAMS_COMMENT, ADD_ALL_TEAMS_FEEDBACK, SPRINTS_PAGE, GRADES_PAGE, RATING_PAGE),
 
-    private void attributePermission(RoleType role, PermissionType permission) {
-        var permissionEntity = new Permission();
+			RoleType.SUPERVISING_STAFF, List.of(PREVIEW_TEAM, VALIDATION_TEAM_BEFORE_PREPUBLISH, FLAG_TEAM_WITHOUT_STUDENTS, FLAG_TEAM_WITH_STUDENTS, VIEW_TEAM_CHANGES, VIEW_TEAMS, VIEW_OWN_TEAM, VIEW_SPRINT_PROTOCOL, VIEW_OWN_TEAM_WITH_CRITERIA, VIEW_TEAMS_INFORMATIONS, GRADE_PRESENTATION_CONTENT, GRADE_SUPPORT_MATERIAL, /*GRADE_TECHNICAL_SOLUTION, GRADE_SPRINT_CONFORMITY, GRADE_PROJECT_MANAGEMENT,*/ GRADE_INDIVIDUAL_PERFORMANCE, ADD_GRADE_COMMENT, VIEW_ALL_ORAL_GRADES, GRADE_OWN_TEAM, VIEW_OWN_TEAM_COMMENT, GIVE_UNLIMITED_BONUS_MALUS, VALIDATION_LIMITED_BONUS_MALUS, VALIDATION_OWN_TEAM_GRADES, USE_KEY_OWN_TEAM, VERIFY_OWN_TEAM_KEY_USED, USE_KEY_ALL_TEAMS, VIEW_ALL_SPRINTS_GRADES, ADD_ALL_TEAMS_FEEDBACK, ADD_ALL_TEAMS_COMMENT, VIEW_FEEDBACK, VIEW_COMMENT, TEAMS_PAGE, MY_TEAM_PAGE, SPRINTS_PAGE, GRADES_PAGE, RATING_PAGE),
 
-        permissionEntity.role(role);
-        permissionEntity.type(permission);
+			RoleType.OPTION_LEADER, List.of(IMPORT, MODIFICATION_STUDENT_LIST, MANAGE_SPRINT, VIEW_ALL_WRITING_GRADES, EXPORT_INDIVIDUAL_GRADES, STUDENTS_PAGE, TEAMS_PAGE, SPRINTS_PAGE, GRADES_PAGE),
 
-        permissionRepository.save(permissionEntity);
-    }
+			RoleType.PROJECT_LEADER, List.of(IMPORT, MODIFICATION_STUDENT_LIST, EDIT_IMPORTED_GRADE_TYPES, EXPORT_STUDENT_LIST, TEAM_CREATION, TEAM_MANAGEMENT, PUBLISH_TEAMS, MANAGE_SPRINT, MANAGE_GRADE_SCALE, VIEW_ALL_WRITING_GRADES, VERIFY_ALL_KEYS_USED, EXPORT_INDIVIDUAL_GRADES, STUDENTS_PAGE, TEAMS_PAGE, SPRINTS_PAGE, GRADES_PAGE, GRADE_SCALES_PAGE),
 
-    public void seed() {
-        RoleType role;
-        for (var entry : associationTable.entrySet()) {
-            role = entry.getKey();
-            var permissions = entry.getValue();
+			RoleType.OPTION_STUDENT, List.of(FLAG_TEAM_WITH_STUDENTS, VIEW_TEAM_CHANGES, VALIDATION_OWN_TEAM, VIEW_TEAMS, VIEW_OWN_TEAM, VIEW_SPRINT_PROTOCOL, VIEW_OWN_SPRINT_GRADE, TEAMS_PAGE, MY_TEAM_PAGE, SPRINTS_PAGE, GRADES_PAGE, RATING_PAGE),
 
-            for (var permission : permissions) {
-                attributePermission(role, permission);
-            }
-        }
-    }
+			RoleType.TEAM_MEMBER, List.of(GRADE_GLOBAL_PERFORMANCE, PUBLISH_RUNNING_ORDER, VIEW_OWN_GRADE_COMMENT, VIEW_OWN_TEAM_GRADE, VIEW_TEAM_GRADE, LIMITED_BONUS_MALUS, VIEW_OWN_GRADES_WG, USE_KEY_OWN_TEAM, VIEW_OWN_SPRINT_GRADE, TEAMS_PAGE, MY_TEAM_PAGE, SPRINTS_PAGE, GRADES_PAGE, RATING_PAGE),
+
+			RoleType.ESEO_ADMINISTRATION, List.of(),
+
+			RoleType.JURY_MEMBER, List.of()
+	);
+
+	private final PermissionRepository permissionRepository;
+
+	public void seed() {
+		RoleType role;
+		for (var entry : PERMISSIONS.entrySet()) {
+			role = entry.getKey();
+			var permissions = entry.getValue();
+
+			for (var permission : permissions) {
+				attributePermission(role, permission);
+			}
+		}
+	}
+
+	private void attributePermission(RoleType role, PermissionType permission) {
+		var permissionEntity = new Permission();
+
+		permissionEntity.role(role);
+		permissionEntity.type(permission);
+
+		permissionRepository.save(permissionEntity);
+	}
+
 }

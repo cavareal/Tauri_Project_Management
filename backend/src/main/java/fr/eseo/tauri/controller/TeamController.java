@@ -1,105 +1,78 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Criteria;
+import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.service.AuthService;
-import fr.eseo.tauri.service.ProjectService;
 import fr.eseo.tauri.service.TeamService;
 import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import fr.eseo.tauri.util.ResponseMessage;
+import fr.eseo.tauri.util.valid.Create;
+import fr.eseo.tauri.util.valid.Update;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+
 import java.util.List;
-import java.util.Map;
 
 /**
  * Controller class for managing teams.
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/teams")
 @Tag(name = "teams")
 public class TeamController {
 
-    private static final String READ_STUDENT_BY_TEAM = "readStudentByTeam";
-    private static final String READ_CRITERIA = "readCriteria";
-    private static final String TEAM_CREATION = "teamCreation";
-    private static final String UNAUTHORIZED_MESSAGE = "Non autorisé";
-    private final AuthService authService;
     private final TeamService teamService;
-    private final ProjectService projectService;
+    private final ResponseMessage responseMessage = new ResponseMessage("team");
 
-    /**
-     * Constructor for TeamController.
-     *
-     * @param authService    the authentication service
-     * @param teamService    the team service
-     * @param projectService the projectService
-     */
-    @Autowired
-    public TeamController(AuthService authService, TeamService teamService, ProjectService projectService) {
-        this.authService = authService;
-        this.teamService = teamService;
-        this.projectService = projectService;
+    @GetMapping("/{id}")
+    public ResponseEntity<Team> getTeamById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        Team team = teamService.getTeamById(token, id);
+        return ResponseEntity.ok(team);
     }
 
-    /**
-     * Update the leader of a team.
-     *
-     * @param token    the authorization token
-     * @param idTeam   the ID of the team
-     * @param idLeader the ID of the new leader
-     * @return a response entity with a success message if the update was successful, otherwise an error message
-     */
-    @PutMapping("/update-leader-team/{idTeam}")
-    public ResponseEntity<String> updateLeaderTeam(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam, @RequestParam Integer idLeader) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
-            try {
-                Team team = teamService.updateLeaderTeam(idTeam, idLeader);
-                if (team != null) {
-                    return ResponseEntity.ok("La modification a bien été prise en compte");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour du leader de l'équipe");
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour du leader de l'équipe: " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @GetMapping
+    public ResponseEntity<List<Team>> getAllTeamsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        List<Team> teams = teamService.getAllTeamsByProject(token, projectId);
+        return ResponseEntity.ok(teams);
     }
 
-
-    /**
-     * Update the name of a team.
-     *
-     * @param token   the authorization token
-     * @param idTeam  the ID of the team
-     * @param newName the new name of a team
-     * @return a response entity with a success message if the update was successful, otherwise an error message
-     */
-    @PutMapping("/update-name-team/{idTeam}")
-    public ResponseEntity<String> updateNameTeam(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam, @RequestParam String newName) {
-        String permission = "teamRename";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                Team team = teamService.updateNameTeam(idTeam, newName);
-                if (team != null) {
-                    return ResponseEntity.ok("La modification a bien été prise en compte");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour du nom de l'équipe");
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour du nom de l'équipe : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @PatchMapping("/{id}")
+    public ResponseEntity<String> updateTeam(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Team updatedTeam) {
+        teamService.updateTeam(token, id, updatedTeam);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
     }
 
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllTeamsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        teamService.deleteAllTeamsByProject(token, projectId);
+        CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
+        return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
+    }
+
+    @GetMapping("/{id}/students")
+    public ResponseEntity<List<Student>> getStudentsByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        var students = teamService.getStudentsByTeamId(token, id);
+        return ResponseEntity.ok(students);
+    }
+
+    @GetMapping("/{id}/criteria")
+    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
+        Criteria criteria = teamService.getCriteriaByTeamId(token, id, projectId);
+        return ResponseEntity.ok(criteria);
+    }
+
+    @GetMapping("/{id}/average")
+    public ResponseEntity<Double> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        var avgGrade = this.teamService.getTeamAvgGrade(token, id);
+        return ResponseEntity.ok(avgGrade);
+    }
 
     /**
      * Create teams.
@@ -107,158 +80,11 @@ public class TeamController {
      * @param token the authorization token
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
-    @PostMapping("/")
-    public ResponseEntity<String> createTeams(@RequestHeader("Authorization") String token, @RequestBody Map<String, String> request) {
-
-        Integer nbTeams = Integer.valueOf(request.get("nbTeams"));
-        Integer womenPerTeam = Integer.valueOf(request.get("womenPerTeam"));
-
-        if (Boolean.TRUE.equals(authService.checkAuth(token, TEAM_CREATION))) {
-
-            try {
-                List<Team> teams = teamService.generateTeams(nbTeams, womenPerTeam);
-
-                if (!teams.isEmpty()) {
-                    CustomLogger.logInfo("Teams have been created");
-                    return ResponseEntity.ok("La creation a bien été prise en compte");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : les équipes n'ont pas pu être créées");
-                }
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la mise à jour : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
+    @PostMapping
+    public ResponseEntity<String> generateTeams(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId, @Validated(Create.class) @RequestBody Project projectDetails) {
+        teamService.generateTeams(token, projectId, projectDetails);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
-    /**
-     * Get All Teams.
-     *
-     * @return A list of all teams
-     */
-    @GetMapping()
-    public ResponseEntity<List<Team>> getAllTeams(@RequestHeader("Authorization") String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
-            try {
-                List<Team> teams = teamService.getAllTeams();
-                return ResponseEntity.ok(teams);
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }
-
-    @GetMapping("/{teamId}")
-    public ResponseEntity<Team> getTeamById(@RequestHeader("Authorization") String token, @PathVariable Integer teamId) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
-            try {
-                Team team = teamService.getTeamById(teamId);
-                if (team == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-                }
-                return ResponseEntity.ok(team);
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }
-
-    @GetMapping("/names")
-    public ResponseEntity<List<String>> getAllTeamNames(@RequestHeader("Authorization") String token) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, READ_STUDENT_BY_TEAM))) {
-            try {
-                List<String> teams = teamService.getAllTeamNames();
-                if (teams.isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(teams);
-                }
-                return ResponseEntity.ok(teams);
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }
-
-    @GetMapping("/{teamId}/criteria")
-    public ResponseEntity<Criteria> getCriteriaByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer teamId) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, READ_CRITERIA))) {
-            try {
-                Integer nbWoman = teamService.getNbWomanByTeamId(teamId);
-                Integer nbBachelor = teamService.getNbBachelorByTeamId(teamId);
-                Integer nbStudents = teamService.getNbStudentsByTeamId(teamId);
-                Criteria criteria = getCriteria(nbStudents, nbWoman, nbBachelor);
-                return ResponseEntity.ok(criteria);
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }
-
-    @NotNull
-    private Criteria getCriteria(Integer nbStudents, Integer nbWoman, Integer nbBachelor) {
-        Integer womenPerTeam = projectService.getRatioGender();
-        boolean validateWoman = false;
-        boolean validateBachelor = false;
-        if (nbStudents > 0 && (nbWoman * 100) / nbStudents >= womenPerTeam) {
-            validateWoman = true;
-        }
-        if (nbBachelor >= 1) {
-            validateBachelor = true;
-        }
-        return new Criteria(nbWoman, nbBachelor, nbStudents, validateWoman, validateBachelor);
-    }
-
-    @GetMapping("/{idTeam}/average")
-    public ResponseEntity<String> getTeamAvgGrade(@RequestHeader("Authorization") String token, @PathVariable Integer idTeam) {
-        String permission = "readTeamAvgGrade";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                double avgGrade = this.teamService.getTeamAvgGrade(idTeam);
-                return ResponseEntity.ok(String.valueOf(avgGrade));
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la récupération " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
-    }
-
-    @DeleteMapping
-    public ResponseEntity<String> deleteAllTeams(@RequestHeader("Authorization") String token) {
-        String permission = "teamDelete";
-        if (Boolean.TRUE.equals(authService.checkAuth(token, permission))) {
-            try {
-                teamService.deleteAllTeams();
-                return ResponseEntity.ok("Les équipes ont bien été supprimées");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la suppression : " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UNAUTHORIZED_MESSAGE);
-        }
-    }
-
-    @GetMapping("/ss/{ssId}")
-    public ResponseEntity<Team> getTeamBySupervisor(@RequestHeader("Authorization") String token, @PathVariable Integer ssId) {
-        if (Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))){
-            try {
-                Team team = teamService.getTeamBySSId(ssId);
-                return ResponseEntity.ok(team);
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }
 }

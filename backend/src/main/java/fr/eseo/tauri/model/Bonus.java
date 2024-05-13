@@ -1,28 +1,32 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "bonuses")
-@Getter
-@Setter
+@Data
 public class Bonus {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
     private Integer id;
 
+    @NotNull(groups = { Create.class }, message = "The value field is required")
     @JsonProperty
-    private String value;
+    private Float value;
 
     @JsonProperty
     private String comment;
 
+    @NotNull(groups = { Create.class }, message = "The limited field is required")
     @JsonProperty
     private Boolean limited;
 
@@ -43,4 +47,20 @@ public class Bonus {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private User author;
+
+    @NotNull(groups = { Create.class }, message = "The sprintId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer sprintId;
+
+    @NotNull(groups = { Create.class }, message = "The studentId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer studentId;
+
+    @NotNull(groups = { Create.class }, message = "The authorId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer authorId;
+
 }

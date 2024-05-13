@@ -12,12 +12,14 @@ defineProps<{
 </script>
 
 <template>
-	<Row class="items-center border rounded-lg p-6">
-			<Column class="items-start justify-center flex-1 gap-1">
-				<Subtitle>{{ title }}</Subtitle>
-				<InfoText>{{ description }}</InfoText>
-			</Column>
+	<Row class="items-center border rounded-lg p-6 gap-4">
+		<slot name="icon" />
 
-			<slot />
-		</Row>
+		<Column class="items-start justify-center flex-1 gap-1">
+			<Subtitle>{{ title }}</Subtitle>
+			<InfoText>{{ description }}</InfoText>
+		</Column>
+
+		<slot />
+	</Row>
 </template>

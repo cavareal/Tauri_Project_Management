@@ -6,6 +6,7 @@ export const PermissionTypeSchema = z.enum([
 	"IMPORT_GENERATED_KEY",
 	"IMPORT",
 	"MODIFICATION_STUDENT_LIST",
+	"EDIT_IMPORTED_GRADE_TYPES",
 	"EXPORT_STUDENT_LIST",
 	"TEAM_CREATION",
 	"PREVIEW_TEAM",
@@ -53,7 +54,14 @@ export const PermissionTypeSchema = z.enum([
 	"ADD_ALL_TEAMS_FEEDBACK",
 	"ADD_ALL_TEAMS_COMMENT",
 	"VIEW_FEEDBACK",
-	"VIEW_COMMENT"
+	"VIEW_COMMENT",
+	"STUDENTS_PAGE",
+	"TEAMS_PAGE",
+	"MY_TEAM_PAGE",
+	"SPRINTS_PAGE",
+	"GRADES_PAGE",
+	"RATING_PAGE",
+	"GRADE_SCALES_PAGE"
 ])
 
 export type PermissionType = z.infer<typeof PermissionTypeSchema>

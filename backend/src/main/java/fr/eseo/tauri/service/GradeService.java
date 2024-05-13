@@ -1,12 +1,25 @@
 package fr.eseo.tauri.service;
 
+import com.opencsv.CSVWriter;
 import fr.eseo.tauri.model.*;
+import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.model.Grade;
+import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.repository.GradeRepository;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static fr.eseo.tauri.util.ListUtil.filter;
@@ -14,159 +27,225 @@ import static fr.eseo.tauri.util.ListUtil.filter;
 @Service
 @RequiredArgsConstructor
 public class GradeService {
+    private final AuthService authService;
+    private final GradeRepository gradeRepository;
+    private final UserService userService;
+    @Lazy
+    private final StudentService studentService;
+    @Lazy
+    private final SprintService sprintService;
+    private final StudentRepository studentRepository;
+    private final TeamRepository teamRepository;
+    private final GradeTypeRepository gradeTypeRepository;
+    @Lazy
+    private final GradeTypeService gradeTypeService;
+    private final UserRepository userRepository;
+    private final TeamService teamService;
+    private final BonusRepository bonusRepository;
 
-	private final StudentRepository studentRepository;
-	private final GradeRepository gradeRepository;
-	private final TeamRepository teamRepository;
-	private final GradeTypeRepository gradeTypeRepository;
-	private final UserRepository userRepository;
+    public Grade getGradeById(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("grade", id));
+    }
 
-	/**
-	 * This method is used to update the mean of imported grades for each student.
-	 */
-	public void updateImportedMean() {
-		var students = studentRepository.findAll();
-		var grades = filter(gradeRepository.findAll(), grade -> grade.student() != null);
+    public List<Grade> getAllUnimportedGradesByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeRepository.findAllUnimportedByProject(projectId);
+    }
 
-		for (var student : students) {
-			if (Boolean.TRUE.equals(student.bachelor())) continue;
+    public List<Grade> getAllImportedGradesByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return gradeRepository.findAllImportedByProject(projectId);
+    }
 
-			var studentGrades = filter(grades, grade -> grade.student().id().equals(student.id())
-					&& grade.gradeType().imported()
-					&& !grade.gradeType().name().equalsIgnoreCase("mean")
-					&& !grade.gradeType().name().equalsIgnoreCase("average")
-			);
+    public void createGrade(String token, Grade grade) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
 
-			var mean = mean(studentGrades);
-
-			gradeRepository.updateImportedMeanByStudentId(mean, student.id());
-		}
-		CustomLogger.logInfo("Updated imported mean for all students.");
-	}
-
-	/**
-	 * This method calculates the mean of a list of grades.
-	 *
-	 * @param grades the list of Grade objects for which the mean is to be calculated
-	 * @return the mean of the grades, or 0 if there are no grades or all grades have a factor of 0
-	 */
-	float mean(List<Grade> grades) {
-		var total = 0f;
-		var factors = 0f;
-
-		for (var grade : grades) {
-			total += grade.value() * grade.gradeType().factor();
-			factors += grade.gradeType().factor();
-		}
-
-		if (factors == 0) return 0;
-		return total / factors;
-	}
-
-
-
-
-	/**
-	 * This method is used to create a new Grade object and save it to the database.
-	 *
-	 * @param author    the author of the grade
-	 * @param gradeType the type of the grade
-	 * @param student   the student who received the grade
-	 * @param value     the value of the grade
-	 * @param comment   the comment for the grade
-	 * @return the created Grade object that has been saved to the database
-	 */
-	public Grade createGrade(User author, GradeType gradeType, Student student, float value, String comment) {
-		Grade grade = new Grade();
-		grade.value(value);
-		grade.comment(comment);
-		grade.author(author);
-		grade.gradeType(gradeType);
-		grade.student(student);
-		return gradeRepository.save(grade);
-	}
-
-	/**
-	 * This method is used to assign a grade to a team.
-	 *
-	 * @param teamName  the name of the team to whom the grade is assigned
-	 * @param value     the value of the grade to be assigned
-	 * @param gradeName the name of the grade type to be assigned
-	 */
-    public void assignGradeToTeam(String teamName, Integer value, String gradeName, int userId) {
-        Team team = teamRepository.findByName(teamName);
-        GradeType gradeType = gradeTypeRepository.findByName(gradeName);
-		User author = userRepository.findById(userId).orElse(null);
-        if (team != null) {
-            Grade grade = new Grade();
-            grade.value(Float.valueOf(value));
-            grade.gradeType(gradeType);
-            grade.team(team);
-			grade.author(author);
-            gradeTypeRepository.save(gradeType);
-            gradeRepository.save(grade);
+        if (grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
+        if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
+        if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
+        if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
+            grade.student(null);
+            if (grade.teamId() != null) grade.team(teamService.getTeamById(token, grade.teamId()));
         } else {
-            throw new IllegalArgumentException("L'équipe avec le nom fourni n'a pas été trouvée.");
+            grade.team(null);
+            if (grade.studentId() != null) grade.student(studentService.getStudentById(token, grade.studentId()));
         }
+
+        if ((grade.team() == null) == (grade.student() == null)) {
+            throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
+        }
+
+        gradeRepository.save(grade);
     }
 
-
-	/**
-	 * This method is used to assign a grade to a student.
-	 *
-	 * @param studentName the name of the student to whom the grade is assigned
-	 * @param value       the value of the grade to be assigned
-	 * @param gradeName   the name of the grade type to be assigned
-	 */
-    public void assignGradeToStudent(String studentName, Integer value, String gradeName) {
-        Student student = studentRepository.findByName(studentName);
-        GradeType gradeType = gradeTypeRepository.findByName(gradeName);
-        if (student != null) {
-            Grade grade = new Grade();
-            grade.value(Float.valueOf(value));
-            grade.gradeType(gradeType);
-            grade.student(student);
-            gradeTypeRepository.save(gradeType);
-            gradeRepository.save(grade);
+    public void updateGrade(String token, Integer id, Grade updatedGrade) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-		else{
-			CustomLogger.logInfo("Student with name " + studentName + " not found.");
-		}
+        Grade grade = getGradeById(token, id);
+        if (updatedGrade.value() != null) grade.value(updatedGrade.value());
+        if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
+        if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, updatedGrade.sprintId()));
+        if (updatedGrade.authorId() != null) grade.author(userService.getUserById(token, updatedGrade.authorId()));
+        if (updatedGrade.studentId() != null)
+            grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
+        if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(token, updatedGrade.teamId()));
+        gradeRepository.save(grade);
     }
 
-	/**
-	 * This method is used to create grades for a student from the provided grade types and values.
-	 *
-	 * @param student      the student for whom the grades are created
-	 * @param valuesString the list of grade values as strings
-	 * @param gradeTypes   the list of grade types
-	 * @param comment      the comment for the grades
-	 */
-	public void createGradesFromGradeTypesAndValues(Student student, List<String> valuesString, List<GradeType> gradeTypes, String comment) {
-		List<Grade> grades = gradeRepository.findAll();
-		for (int i = 0; i < valuesString.size(); i++) {
-			String gradeValue = valuesString.get(i).trim();
-			if (!gradeValue.isEmpty()) {
-				if (i == 0) {
-					float gradeAsFloat = Float.parseFloat(gradeValue);
-					grades.add(createGrade(null, gradeTypes.get(0), student, gradeAsFloat, comment));  // First grade is the average grade
-				} else {
-					try {
-						float gradeAsFloat = Float.parseFloat(gradeValue);
-						grades.add(createGrade(null, gradeTypes.get(i), student, gradeAsFloat, comment));
-					} catch (NumberFormatException ignored) {
-						// Do nothing
-						// If the grade is not a number, it is ignored
-					}
-				}
-			}
-		}
-		CustomLogger.logInfo("Successfully created grades for student " + student.name() + " from grade types and values contained in the provided CSV file.");
-	}
+    public void deleteGrade(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        getGradeById(token, id);
+        gradeRepository.deleteById(id);
+    }
+
+    public void deleteAllGradesByProject(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        gradeRepository.deleteAllByProject(projectId);
+    }
+
+    /**
+     * This method is used to update the mean of imported grades for each student.
+     */
+    public void updateImportedMean() {
+        var students = studentRepository.findAll();
+        var grades = filter(gradeRepository.findAll(), grade -> grade.student() != null);
+        for (var student : students) {
+            if (Boolean.TRUE.equals(student.bachelor())) continue;
+            var studentGrades = filter(grades, grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && /*!grade.gradeType().name().equalsIgnoreCase("mean") && !grade.gradeType().name().equalsIgnoreCase("average")*/!grade.gradeType().name().equals(GradeTypeName.AVERAGE.displayName()));
+            var mean = mean(studentGrades);
+            gradeRepository.updateImportedMeanByStudentId(mean, student.id());
+        }
+        CustomLogger.info("Updated imported mean for all students.");
+    }
+
+    /**
+     * This method calculates the mean of a list of grades. * * @param grades the list of Grade objects for which the mean is to be calculated * @return the mean of the grades, or 0 if there are no grades or all grades have a factor of 0
+     */
+    public float mean(List<Grade> grades) {
+        var total = 0f;
+        var factors = 0f;
+        for (var grade : grades) {
+            total += grade.value() * grade.gradeType().factor();
+            factors += grade.gradeType().factor();
+        }
+        if (factors == 0) return 0;
+        return total / factors;
+    }
 
     public Double getAverageGradesByGradeTypeByRoleType(int userId, RoleType roleType, String gradeTypeName) {
         Team team = teamRepository.findTeamByStudentId(userId);
         return gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType);
+    }
+
+    public Float getGradeByStudentAndGradeType(Student student, GradeType gradeType) {
+        try {
+            Float grade = gradeRepository.findValueByStudentAndGradeType(student, gradeType);
+            CustomLogger.info("Getting grade for student " + student.name() + " and grade type " + gradeType.name() + ": " + grade);
+            return grade;
+        } catch (NullPointerException e) {
+            CustomLogger.info("No grade found for student " + student.name() + " and grade type " + gradeType.name());
+            return null;
+        }
+    }
+
+    public Double getSprintGrade(String token, Integer userId, Integer sprintId) {
+    /*    if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        Student student = studentService.getStudentById(token, userId);
+
+        Double sprintGrade;
+
+        var grade1 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.TECHNICAL_SOLUTION.displayName());
+        var grade2 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.PROJECT_MANAGEMENT.displayName());
+        var grade3 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.SPRINT_CONFORMITY.displayName());
+        var grade4 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.CONTENT_PRESENTATION.displayName());
+
+
+
+        var bonuses = bonusRepository.findAllStudentBonuses(userId);
+
+        //Student student = studentService.getStudentById(token, userId);
+        //Sprint sprint = sprintService.getSprintById(token, sprintId);
+
+        return gradeRepository.findSprintGrade(student, sprint);*/
+        return 0.0;
+    }
+
+    /**
+     * This method generates a CSV report of a student's individual grades.
+     *
+     * @param token The authentication token of the user.
+     * @param projectId The ID of the project.
+     * @return A byte array containing the CSV report.
+     * @throws IOException If an I/O error occurs.
+     */
+    public byte[] createStudentIndividualGradesCSVReport(String token, int projectId) throws IOException {
+        CustomLogger.info("Creating student grades report for project with id " + projectId);
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "exportGrades"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        CustomLogger.info("Creating student grades report for project with id " + projectId);
+
+        // Fetch student details and grades
+        List<Student> students = studentRepository.findAllByProject(projectId);
+        List<GradeType> notImportedGradeTypes = gradeRepository.findAllUnimportedGradeTypesByProjectId(projectId);
+        CustomLogger.info("Found " + students.size() + " students and " + notImportedGradeTypes.size() + " grade types");
+
+        int gradeTypesCount = notImportedGradeTypes.size();
+        int studentFieldsSize = 3;
+
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
+             CSVWriter csvWriter = new CSVWriter(writer)) {
+
+            String[] header = new String[studentFieldsSize + gradeTypesCount];
+            String[] factors = new String[studentFieldsSize + gradeTypesCount];
+            Arrays.fill(header, "");
+            Arrays.fill(factors, "");
+
+            for (int i = 0; i < gradeTypesCount; i++) {
+                header[i + studentFieldsSize] = notImportedGradeTypes.get(i).name();
+                factors[i + studentFieldsSize] = String.valueOf(notImportedGradeTypes.get(i).factor());
+            }
+            csvWriter.writeNext(header);
+            csvWriter.writeNext(factors);
+
+            for (Student student : students) {
+                String[] studentInfo = new String[studentFieldsSize + gradeTypesCount];
+                Arrays.fill(studentInfo, "");
+                studentInfo[0] = student.name();
+                studentInfo[1] = student.gender() == Gender.MAN ? "M" : "F";
+                studentInfo[2] = Boolean.TRUE.equals(student.bachelor()) ? "B" : "";
+
+                for (int i = 0; i < gradeTypesCount; i++) {
+                    GradeType gradeType = notImportedGradeTypes.get(i);
+                    Float grade = getGradeByStudentAndGradeType(student, gradeType);
+                    studentInfo[i + studentFieldsSize] = grade != null ? String.valueOf(grade) : "";
+                }
+                csvWriter.writeNext(studentInfo);
+            }
+
+            writer.flush();
+
+            return byteArrayOutputStream.toByteArray();
+        }
     }
 
 }

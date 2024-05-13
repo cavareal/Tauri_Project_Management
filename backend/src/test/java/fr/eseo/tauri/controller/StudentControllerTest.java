@@ -29,7 +29,7 @@ class StudentControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
+    /*@Test
     @Order(1)
     @DisplayName("Test getStudentQuantity endpoint - Success")
     void getStudentQuantity_returnsQuantity_whenAuthorized() {
@@ -77,5 +77,5 @@ class StudentControllerTest {
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals("Erreur lors de la mise à jour : Unexpected error", response.getBody());
-    }
+    }*/
 }

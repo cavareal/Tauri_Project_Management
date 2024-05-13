@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Input } from "@/components/ui/input"
 import { CustomDialog } from "@/components/molecules/dialog"
 import { LoadingButton } from "@/components/molecules/buttons"
-import { updateGradeTypeFactor } from "@/services/grade-type-service"
+import { updateGradeType } from "@/services/grade-type-service"
 import { ErrorText } from "@/components/atoms/texts"
 import type { GradeType } from "@/types/grade-type"
 import { computed, ref } from "vue"
@@ -13,6 +13,7 @@ import { DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { useMutation } from "@tanstack/vue-query"
 import { Label } from "@/components/ui/label"
+import { createToast } from "@/utils/toast"
 
 const DIALOG_TITLE = "Modifier les coefficients"
 const DIALOG_DESCRIPTION = "Les coefficients des notes importées sont utilisés lors de la génération des équipes."
@@ -23,7 +24,7 @@ const props = defineProps<{
 	gradeTypes: GradeType[] | null
 }>()
 
-let filteredGradeTypes = computed(() => props.gradeTypes?.filter(gradeType => !["mean", "average"].includes(gradeType.name.toLowerCase())))
+let filteredGradeTypes = computed(() => props.gradeTypes?.filter(gradeType => gradeType.name !== "Moyenne"))
 
 const onInputValueChange = (e: Event, gradeTypeId: number) => {
 	if (!filteredGradeTypes.value) return
@@ -39,12 +40,14 @@ const onInputValueChange = (e: Event, gradeTypeId: number) => {
 
 const emits = defineEmits(["update:factors"])
 
-const { isPending, error, mutate: upgrade } = useMutation({ mutationKey: ["update-grade-factors"], mutationFn: async() => {
-		if (!filteredGradeTypes.value) return
-		await Promise.all(filteredGradeTypes.value.map(gradeType => updateGradeTypeFactor(gradeType.id, gradeType.factor)))
-			.then(() => open.value = false)
-			.then(() => emits("update:factors"))
-	} })
+//TODO Pour optimiser le code : Envoyer une requête d'update du coeff SEULEMENT s'il a changé (système de old coeff / new coeff ?)
+const { isPending, error, mutate: update } = useMutation({ mutationKey: ["update-grade-factors"], mutationFn: async() => {
+	if (!filteredGradeTypes.value) return
+	await Promise.all(filteredGradeTypes.value.map(gradeType => updateGradeType(gradeType.id, { factor: gradeType.factor })))
+		.then(() => open.value = false)
+		.then(() => emits("update:factors"))
+		.then(() => createToast("Les coefficients ont été mis à jour."))
+} })
 
 </script>
 
@@ -58,7 +61,7 @@ const { isPending, error, mutate: upgrade } = useMutation({ mutationKey: ["updat
 			<Row v-for="(gradeType, i) in filteredGradeTypes" :key="i" class="items-center">
 				<Label :for="gradeType.name" class="w-1/2">{{ gradeType.name }}</Label>
 				<Input
-					:id="gradeType.name" class="w-1/2" :default-value="gradeType.factor"
+					:id="gradeType.name" class="w-1/2" :default-value="gradeType.factor ?? 1"
 					:onchange="(e: Event) => onInputValueChange(e, gradeType.id)"
 				/>
 			</Row>
@@ -70,7 +73,7 @@ const { isPending, error, mutate: upgrade } = useMutation({ mutationKey: ["updat
 			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" @click="upgrade" :loading="isPending">
+			<LoadingButton type="submit" @click="update" :loading="isPending">
 				Mettre à jour
 			</LoadingButton>
 		</template>

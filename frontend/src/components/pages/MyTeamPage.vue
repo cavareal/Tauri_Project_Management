@@ -1,41 +1,41 @@
 <script setup lang="ts">
-import { getCookie } from "@/utils/cookie"
-import { onMounted, ref, watch } from "vue"
-import type { ProjectPhase } from "@/types/project"
+import { Cookies } from "@/utils/cookie"
+import { computed, onMounted, ref } from "vue"
 import type { Team } from "@/types/team"
 import { SidebarTemplate } from "@/components/templates"
-import { Row } from "@/components/atoms/containers"
-import { Separator } from "@/components/ui/separator"
-import MyTeamCreated from "@/components/organisms/my-team/MyTeamCreated.vue"
 import { NotAuthorized, NotFound } from "@/components/organisms/errors"
-import { getTeamBySSId } from "@/services/team-service"
-import { getCurrentPhase } from "@/services/project-service"
+import { getTeamByUserId } from "@/services/team-service"
+import { getCurrentProject } from "@/services/project-service"
+import { Header } from "@/components/molecules/header"
+import { useQuery } from "@tanstack/vue-query"
+import MyTeamAccordion from "@/components/organisms/my-team/MyTeamAccordion.vue"
 
-const token = getCookie("token")
-const role = getCookie("role")
-const currentUser = getCookie("user")
-const currentPhase = ref<ProjectPhase>("COMPOSING")
+const token = Cookies.getToken()
+const role = Cookies.getRole()
+const currentUser = Cookies.getUserId()
 const team = ref<Team>()
 
-watch(() => { }, async() => {
-	currentPhase.value = await getCurrentPhase()
-}, { immediate: true })
+
+const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
+	queryKey: ["project"], queryFn: async() => (await getCurrentProject()).phase
+})
+
+const displayTeam = computed(() => (role === "SUPERVISING_STAFF" || role === "OPTION_STUDENT")
+    && currentPhase.value !== "COMPOSING")
 
 onMounted(async() => {
-	const data = await getTeamBySSId(currentUser)
-	team.value = data
+	if (!currentUser) return
+	team.value = await getTeamByUserId(currentUser)
 })
 </script>
 
 <template>
 	<SidebarTemplate>
-		<Row class="items-center justify-between">
-			<h1 class="text-3xl font-title-bold">Équipes</h1>
-		</Row>
-		<Separator />
+		<Header title="Mon équipe" />
 		<NotAuthorized v-if="!token || !role" />
-		<MyTeamCreated v-else-if="role === 'SUPERVISING_STAFF' && currentPhase !== 'COMPOSING' && team" :team="team"
-			:phase="currentPhase" />
+    <MyTeamAccordion v-else-if="displayTeam && team"
+                     :phase="currentPhase"
+                     :team="team"/>
 		<NotFound v-else />
 	</SidebarTemplate>
 </template>

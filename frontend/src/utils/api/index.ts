@@ -1,2 +1,2 @@
-export type { ApiQueryRequest, ApiQueryResponse, UploadFileRequest } from "./api.type"
-export { apiQuery } from "./api.util"
+export type { ApiQueryRequest, ApiQueryResponse } from "./api.type"
+export { apiQuery, queryAndValidate, mutateAndValidate, mutateAndValidateWithReturn } from "./api.util"

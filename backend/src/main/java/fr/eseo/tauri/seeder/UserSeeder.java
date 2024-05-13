@@ -2,27 +2,37 @@ package fr.eseo.tauri.seeder;
 
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.security.ApplicationSecurity;
+import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserSeeder {
+
+	private static final int NB_USERS = 39;
 
 	private final UserRepository userRepository;
 
-	@Autowired
-	public UserSeeder(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
+	private final ApplicationSecurity applicationSecurity;
 
 	public void seed(Faker faker) {
-		for (int i = 0; i < 40; i++) {
+		var userPL = new User();
+		userPL.name("Woodward Richard");
+		userPL.email("admin@tauri.com");
+		userPL.password(applicationSecurity.passwordEncoder().encode("admin"));
+		userPL.privateKey(faker.number().digits(20));
+		userRepository.save(userPL);
+
+		for (int i = 0; i < NB_USERS; i++) {
 			var user = new User();
-			user.name(faker.name().fullName());
+
+			user.name(faker.name().lastName().toUpperCase() + " " + faker.name().firstName());
 			user.email(faker.internet().emailAddress());
 			user.password(faker.internet().password());
 			user.privateKey(faker.number().digits(20));
+
 			userRepository.save(user);
 		}
 	}

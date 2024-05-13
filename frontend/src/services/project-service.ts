@@ -1,13 +1,16 @@
-import { ProjectPhaseSchema, type ProjectPhase } from "@/types/project"
-import { apiQuery } from "@/utils/api"
-import { z } from "zod"
+import { type ProjectPhase, type Project, ProjectSchema, type UpdateProject, UpdateProjectSchema } from "@/types/project"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { Cookies } from "@/utils/cookie"
 
-export const getCurrentPhase = async(): Promise<ProjectPhase> => {
-	const response = await apiQuery({
-		responseSchema: ProjectPhaseSchema,
-		method: "GET",
-		route: "projects/current-phase",
-		textResponse: true
+export const getCurrentProject = async(): Promise<Project> => {
+	const id = Cookies.getProjectId()
+	if (id === null) {
+		throw new Error("No project selected")
+	}
+
+	const response = await queryAndValidate({
+		route: `projects/${id}`,
+		responseSchema: ProjectSchema
 	})
 
 	if (response.status === "error") {
@@ -17,13 +20,21 @@ export const getCurrentPhase = async(): Promise<ProjectPhase> => {
 	return response.data
 }
 
-export const setCurrentPhase = async(phase: ProjectPhase): Promise<void> => {
-	const response = await apiQuery({
-		method: "PUT",
-		route: "projects/current-phase",
-		body: { phase },
-		responseSchema: z.string(),
-		textResponse: true
+export const getCurrentPhase = async(): Promise<ProjectPhase> => {
+	return getCurrentProject().then(project => project.phase)
+}
+
+export const updateProject = async(body: UpdateProject): Promise<void> => {
+	const id = Cookies.getProjectId()
+	if (id === null) {
+		throw new Error("No project selected")
+	}
+
+	const response = await mutateAndValidate({
+		method: "PATCH",
+		route: `projects/${id}`,
+		body,
+		bodySchema: UpdateProjectSchema
 	})
 
 	if (response.status === "error") {
