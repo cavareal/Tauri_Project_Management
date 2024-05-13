@@ -4,7 +4,6 @@
 stages:
   - build-frontend
   - build-backend
-  # - sonar
   - deploy-server-dev
   - deploy-server-prod
 
@@ -107,58 +106,6 @@ java-build:
     - main
     - dev
     - gitlab-ci
-
-
-###############
-## SONAR DEV ##
-###############
-quality-dev:
-  stage: sonar
-  image: gradle:8.4-jdk17
-  script:
-    - cd backend
-    - chmod +x ./gradlew
-    - ./gradlew --no-daemon test 
-    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_DevBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/build/libs/*.war
-    expire_in: 15 mins
-    when: always
-  retry: 2
-  dependencies:
-    - java-build
-  cache:
-    paths:
-      - $CI_PROJECT_DIR/.gradle/caches
-  only:
-    - dev
-    - gitlab-ci
-
-################
-## SONAR PROD ##
-################
-quality-prod:
-  stage: sonar
-  image: gradle:8.4-jdk17
-  script:
-    - cd backend
-    - chmod +x ./gradlew
-    - ./gradlew --no-daemon test
-    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_MasterBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/build/libs/*.war
-    expire_in: 15 mins
-    when: always
-  retry: 2
-  dependencies:
-    - java-build
-  cache:
-    paths:
-      - $CI_PROJECT_DIR/.gradle/caches
-  only:
-    - main
 
 
 
