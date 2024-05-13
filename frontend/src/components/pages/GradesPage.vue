@@ -2,7 +2,7 @@
 import { SidebarTemplate } from "@/components/templates"
 import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { hasPermission } from "@/services/user-service"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
@@ -22,7 +22,9 @@ const authorized = hasPermission("GRADES_PAGE")
 
 const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
-
+const ratedSprints = computed(() => {
+	return sprints.value?.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT") || []
+})
 const forceRerender = () => {
 	componentKey.value += 1
 }
@@ -40,7 +42,7 @@ const forceRerender = () => {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="sprint in sprints" :key="sprint.id" :value="sprint.id" @click="forceRerender">{{sprint.id}}</SelectItem>
+							<SelectItem v-for="sprint in ratedSprints" :key="sprint.id" :value="sprint.id" @click="forceRerender">{{sprint.id}}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>
