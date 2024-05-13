@@ -3,6 +3,13 @@ import { Blocks, SquareGanttChart, Package, Presentation, User, Play } from "luc
 import { Button } from "@/components/ui/button"
 import { ContainerGradeType } from "@/components/molecules/rateContainer"
 import { DialogRating, DialogViewGrades } from "@/components/organisms/rating"
+import DialogFeedback from "@/components/organisms/rating/DialogFeedback.vue"
+import DialogViewFeedback from "@/components/organisms/rating/DialogViewFeedback.vue"
+
+const props = defineProps({
+	sprintId: Number,
+	teamId: Number
+})
 
 </script>
 
@@ -91,6 +98,21 @@ import { DialogRating, DialogViewGrades } from "@/components/organisms/rating"
 			</DialogRating>
 		</template>
 	</ContainerGradeType>
+
+  <ContainerGradeType title="Feedback" infotext="Donner un feedback sur le dernier sprint">
+    <template #icon>
+      <User :size="40" :stroke-width="1"/>
+    </template>
+
+    <template #dialog>
+      <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId" @feedback:added="refreshFeedbacks">
+        <Button variant="secondary">Voir les feedbacks</Button>
+      </DialogViewFeedback>
+      <DialogFeedback :selectedTeamId="props.teamId" :selectedSprintId="props.sprintId">
+          <Button variant="default">Donner un feedback</Button>
+      </DialogFeedback>
+    </template>
+  </ContainerGradeType>
 </template>
 
 

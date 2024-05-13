@@ -1,9 +1,6 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.model.Criteria;
-import fr.eseo.tauri.model.Project;
-import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.service.TeamService;
 import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -85,6 +82,12 @@ public class TeamController {
         teamService.generateTeams(token, projectId, projectDetails);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
+    }
+
+    @GetMapping("/{teamId}/sprints/{sprintId}/feedbacks")
+    public ResponseEntity<List<Comment>> getFeedbacksByTeamAndSprint(@RequestHeader("Authorization") String token, @PathVariable Integer teamId, @PathVariable Integer sprintId) {
+        List<Comment> comment = teamService.getFeedbacksByTeamAndSprint(token, teamId, sprintId);
+        return ResponseEntity.ok(comment);
     }
 
 }
