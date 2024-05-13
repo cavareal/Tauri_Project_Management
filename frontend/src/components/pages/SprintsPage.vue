@@ -5,13 +5,13 @@ import { Cookies } from "@/utils/cookie"
 import AddSprint from "@/components/organisms/sprints/AddSprint.vue"
 import EditSprint from "@/components/organisms/sprints/EditSprint.vue"
 import { Error, NotAuthorized } from "@/components/organisms/errors"
-import type { RoleType } from "@/types/role"
 import { Header } from "@/components/molecules/header"
 import { useQuery } from "@tanstack/vue-query"
 import { getAllSprints } from "@/services/sprint-service"
 import { onMounted, ref } from "vue"
 import { CalendarDate, parseDate } from '@internationalized/date'
 import { PageSkeleton } from "@/components/atoms/skeletons"
+import { ActionSection } from "@/components/molecules/action-section"
 
 const token = Cookies.getToken()
 const role = Cookies.getRole()
@@ -25,13 +25,14 @@ const lastSprintOrder = ref<number>(0);
 const { data: sprints, error: error, refetch: getSprints, isLoading, isFetching } = useQuery({ queryKey: ["sprints"], queryFn: async () => {
 		const newSprints = await getAllSprints()
 
-		lastSprintEndDate.value = formatDate(newSprints[newSprints.length - 1].endDate)
-		lastSprintOrder.value = newSprints[newSprints.length - 1].sprintOrder
-
+		if(newSprints.length != 0){
+			console.log(newSprints)
+			lastSprintEndDate.value = formatDate(newSprints[newSprints.length - 1].endDate)
+			lastSprintOrder.value = newSprints[newSprints.length - 1].sprintOrder
+		}
 		return newSprints
 	}
 })
-
 
 
 
@@ -61,6 +62,10 @@ function formatDate(date: Date) {
 				:lastSprintOrder="lastSprintOrder" @add:sprint="getSprints" />
 			<AddSprint v-else :title="ISNT_SPRINT" :lastSprintEndDate="undefined" :lastSprintOrder="lastSprintOrder"
 				@add:sprint="getSprints" />
+		</div>
+		<div v-else-if="token && (role === 'OPTION_STUDENT')">
+			<ActionSection class="mb-5" v-for="sprint in sprints" :title="'Sprint ' + sprint.sprintOrder + ' : du ' + formatDate(sprint.startDate) + ' au ' + formatDate(sprint.endDate)" :description="sprint.endType">
+			</ActionSection>
 		</div>
 		<NotAuthorized v-else />
 		<Error v-if="error" />
