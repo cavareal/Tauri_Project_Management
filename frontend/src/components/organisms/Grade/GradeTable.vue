@@ -16,7 +16,7 @@ import {
 	Package,
 	Blocks
 } from "lucide-vue-next"
-import { watch, ref } from "vue"
+import { watch } from "vue"
 import { getAverageByGradeType } from "@/services/grade-service"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
@@ -33,20 +33,16 @@ const { data: teamStudents, refetch } = useQuery({ queryKey: ["team-students"], 
 } })
 
 
-// const { data: average, ...averageQuery } = useQuery({
-// 	queryKey: ["average", "gradeTypeName", "id"],
-// 	queryFn: async(id : number, gradeTypeName : string) => await getAverageByGradeType(id, Number(props.sprintId), gradeTypeName)
-// })
-
 const useAverageQuery = (id: number, gradeTypeName: string) => {
-	const { data: average } = useQuery({
+	let { data: average, error } = useQuery({
 		queryKey: ["average", gradeTypeName, id],
 		queryFn: async() => {
 			return await getAverageByGradeType(id, Number(props.sprintId), gradeTypeName)
 		}
 	})
-	console.log("id :" + id + " gradeTypeName : " + gradeTypeName + "sprintId : " + props.sprintId)
-	console.log(average.value)
+	if (error) {
+		average.value = -1
+	}
 	return average
 }
 
@@ -83,19 +79,19 @@ watch(() => props.teamId, async() => {
 			<TableRow v-for="student in teamStudents"  :key="student.id">
 				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 <!--				<TableCell :class="rowClass">{{useAverageQuery(Number(props.teamId), "Solution Technique")}}</TableCell>-->
-				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Solution Technique')}}</TableCell>
-				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), "Gestion de projet")}}</TableCell>
-				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Contenu de la présentation')}}</TableCell>
-				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Support de présentation')}}</TableCell>
-				<TableCell :class="rowClass"> / </TableCell>
-				<TableCell :class="rowClass"> / </TableCell>
-				<TableCell :class="rowClass"> / </TableCell>
-				<TableCell :class="rowClass"> / </TableCell>
-				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), "Performance globale de l'équipe")}}</TableCell>
-				<TableCell :class="rowClass"> / </TableCell>
-				<TableCell :class="rowClass">{{ useAverageQuery(Number(student.id), "Performance individuelle")}}</TableCell>
-				<TableCell :class="rowClass"> / </TableCell>
-				<TableCell :class="rowClass"> / </TableCell>
+				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Solution Technique').value >= 0 ? useAverageQuery(Number(props.teamId), 'Solution Technique').value : ''}}</TableCell>
+				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), "Gestion de projet").value >= 0 ? useAverageQuery(Number(props.teamId), 'Gestion de projet').value : '' }}</TableCell>
+				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Contenu de la présentation').value >= 0 ? useAverageQuery(Number(props.teamId), 'Contenu de la présentation').value : '' }}</TableCell>
+				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Support de présentation').value >= 0 ? useAverageQuery(Number(props.teamId), 'Support de présentation').value : ''}}</TableCell>
+				<TableCell :class="rowClass">  </TableCell>
+				<TableCell :class="rowClass">  </TableCell>
+				<TableCell :class="rowClass">  </TableCell>
+				<TableCell :class="rowClass">  </TableCell>
+				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), "Performance globale de l'équipe").value >= 0 ? useAverageQuery(Number(props.teamId), "Performance globale de l'équipe").value : ''}}</TableCell>
+				<TableCell :class="rowClass">  </TableCell>
+				<TableCell :class="rowClass">{{ useAverageQuery(Number(student.id), "Performance individuelle").value >= 0 ? useAverageQuery(Number(student.id), "Performance individuelle").value : ''}}</TableCell>
+				<TableCell :class="rowClass">  </TableCell>
+				<TableCell :class="rowClass">  </TableCell>
 			</TableRow>
 		</TableBody>
 	</Table>
