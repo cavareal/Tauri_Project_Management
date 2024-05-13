@@ -1,36 +1,12 @@
 <script setup lang="ts">
 
-import { ref } from "vue"
 import { Logo } from "@/components/atoms/logo"
-import { redirect } from "@/utils/router"
 import { Column } from "@/components/atoms/containers"
 import Title from "@/components/atoms/texts/Title.vue"
-import { login } from "@/services/connection-service"
-import { CustomCard } from "@/components/molecules/card"
-import { useMutation } from "@tanstack/vue-query"
 import { Cookies } from "@/utils/cookie"
 import { ConnectionForm } from "@/components/molecules/connection"
 
 Cookies.removeAll()
-
-const username = ref<string>("")
-const password = ref<string>("")
-
-const handleSubmit = async(event: Event) => {
-	event.preventDefault()
-	// TODO xss/escape html before ???
-	console.log(username.value, password.value)
-	await mutate()
-}
-
-const { mutate, isPending, error } = useMutation({ mutationKey: ["login"], mutationFn: async() => {
-	console.log("Page : " + username.value + " - " + password.value)
-	await login(username.value, password.value).then(() => {
-		redirect("/")
-	}).catch((e) => {
-		console.log("errorlogin : " + e)
-	})
-} })
 
 </script>
 

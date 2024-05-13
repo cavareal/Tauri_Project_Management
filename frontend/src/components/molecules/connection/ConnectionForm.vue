@@ -6,32 +6,37 @@ import { toTypedSchema } from "@vee-validate/zod"
 import { login } from "@/services/connection-service"
 
 import { Button } from "@/components/ui/button"
-import {
-	FormControl,
-	FormDescription,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage
-} from "@/components/ui/form"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { toast } from "@/components/ui/toast"
 import { AuthRequestSchema } from "@/types/auth-request"
 import { redirect } from "@/utils/router"
 import { CustomCard } from "@/components/molecules/card"
+import { Label } from "@/components/ui/label"
+import { useMutation } from "@tanstack/vue-query"
+import { mutateAndValidate } from "@/utils/api"
+import type { z } from "zod"
+import { LoadingButton } from "../buttons"
+import { Row } from "@/components/atoms/containers"
 
 const formSchema = toTypedSchema(AuthRequestSchema)
 
-const { handleSubmit } = useForm({
+const { handleSubmit, setErrors } = useForm({
 	validationSchema: formSchema
 })
 
-const onSubmit = handleSubmit(async(values) => {
+const { mutate, isPending } = useMutation({ mutationKey: ["login"], mutationFn: async(values: z.infer<typeof AuthRequestSchema>) => {
 	await login(values.login, values.password).then(() => {
 		redirect("/")
-	}).catch((e) => {
-		console.log("errorlogin : " + e)
+	}).catch(() => {
+		setErrors({
+			login: "L'email ou le mot de passe est invalide.",
+			password: "L'email ou le mot de passe est invalide."
+		})
 	})
+} })
+
+const onSubmit = handleSubmit((values) => {
+	void mutate(values)
 })
 
 const CARD_TITLE = "Connexion"
@@ -44,33 +49,31 @@ const CARD_DESCRIPTION = "Entrez votre adresse email et votre mot de passe pour 
 		<CustomCard class="border-none drop-shadow-login-card" :title="CARD_TITLE" :description="CARD_DESCRIPTION">
 
 			<FormField v-slot="{ componentField }" name="login">
-				<FormItem>
-					<FormLabel>Addresse mail</FormLabel>
+				<FormItem class="space-y-1">
+					<Label>Addresse mail</Label>
 					<FormControl>
 						<Input type="email" placeholder="email" v-bind="componentField" />
 					</FormControl>
-
 					<FormMessage />
 				</FormItem>
 			</FormField>
 
 			<FormField v-slot="{ componentField }" name="password">
-				<FormItem>
-					<FormLabel>Mot de passe</FormLabel>
+				<FormItem class="mt-4 space-y-1">
+					<Label>Mot de passe</Label>
 					<FormControl>
 						<Input type="password" placeholder="mot de passe" v-bind="componentField" />
 					</FormControl>
-
 					<FormMessage />
 				</FormItem>
 			</FormField>
 
 			<template v-slot:footer>
-				<div class="flex justify-end">
-					<Button type="submit">
+				<Row class="justify-end">
+					<LoadingButton type="submit" :loading="isPending">
 						Connexion
-					</Button>
-				</div>
+					</LoadingButton>
+				</Row>
 			</template>
 		</CustomCard>
 	</form>
