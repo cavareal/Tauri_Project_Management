@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const AuthRequestSchema = z.object({
-	login: z.string(),
+	login: z.string().email(),
 	password: z.string()
 })
 

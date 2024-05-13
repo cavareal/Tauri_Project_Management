@@ -9,6 +9,7 @@ import { login } from "@/services/connection-service"
 import { CustomCard } from "@/components/molecules/card"
 import { useMutation } from "@tanstack/vue-query"
 import { Cookies } from "@/utils/cookie"
+import { ConnectionForm } from "@/components/molecules/connection"
 
 Cookies.removeAll()
 
@@ -31,10 +32,6 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["login"], mutat
 	})
 } })
 
-
-const CARD_TITLE = "Bienvenue sur Tauri !"
-const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette page de connexion est temporaire."
-
 </script>
 
 <template>
@@ -44,14 +41,6 @@ const CARD_DESCRIPTION = "Sélectionnez vôtre rôle pour vous connecter. Cette 
 			<Title class="text-dark-blue">Bienvenue sur Tauri !</Title>
 		</Column>
 
-		<CustomCard class="border-none drop-shadow-login-card" :title="CARD_TITLE" :description="CARD_DESCRIPTION">
-
-			<form @submit.prevent="handleSubmit">
-				<input type="text" id="username" name="username" v-model="username" placeholder="Addresse mail" required>
-				<input type="password" id="password" name="password" v-model="password" placeholder="Mot de passe" required>
-				<Button type="submit">Connexion</Button>
-			</form>
-
-		</CustomCard>
+		<ConnectionForm />
 	</Column>
 </template>
