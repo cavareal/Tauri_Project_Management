@@ -73,6 +73,6 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 	@Query("SELECT g FROM Grade g WHERE g.gradeType.imported = false AND g.student.project.id = :projectId")
 	List<Grade> findAllunimportedByProjectId(int projectId);
 
-	@Query("SELECT g.gradeType FROM Grade g WHERE g.gradeType.imported = false and g.gradeType.forGroup = false") //TODO : Add the project id in the filter when the front of the grades will be testable
+	@Query("SELECT g.gradeType FROM Grade g WHERE g.gradeType.imported = false and g.student.project.id = :projectId")
 	List<GradeType> findAllUnimportedGradeTypesByProjectId(int projectId);
 }
