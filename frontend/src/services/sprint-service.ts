@@ -2,12 +2,12 @@ import type { Sprint } from "@/types/sprint"
 import { SprintSchema } from "@/types/sprint"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 
 
 export const getAllSprints = async (): Promise<Sprint[]> => {
 
-	const currentProjectId = getCookie("currentProject")
+	const currentProjectId = Cookies.getProjectId().toString()
 
 	const response = await queryAndValidate({
 		responseSchema: SprintSchema.array(),

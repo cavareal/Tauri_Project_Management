@@ -7,7 +7,6 @@ import { ref } from "vue"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
-import { getCookie } from "@/utils/cookie"
 
 const open = ref(false)
 const emits = defineEmits(["delete:sprint"])

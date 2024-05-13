@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { computed, h, ref, watch, type Ref } from "vue"
-import type { CalendarDate } from "@internationalized/date"
-import { DateFormatter, getLocalTimeZone, parseDate, today } from "@internationalized/date"
-import { toDate, type Grid } from "radix-vue"
+import { computed, h, ref, watch, type Ref } from 'vue'
+import { CalendarDate, DateFormatter, getLocalTimeZone, parseDate, today } from '@internationalized/date'
+import { toDate, type Grid } from 'radix-vue'
 import { CalendarCheck } from "lucide-vue-next"
-import { z } from "zod"
-import { Calendar } from "@/components/ui/calendar"
-import { Button } from "@/components/ui/button"
-import { useForm } from "vee-validate"
+import { z } from 'zod'
+import { Calendar } from '@/components/ui/calendar'
+import { Button } from '@/components/ui/button'
+import { useForm } from 'vee-validate'
 
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
 
 const props = defineProps<{
@@ -19,19 +18,18 @@ const props = defineProps<{
 }>()
 
 
-const emit = defineEmits(["update:dateValue"])
+const emit = defineEmits(['update:dateValue']);
 
 function onDateSelected(selectedDate: CalendarDate | undefined) {
     emit('update:dateValue', selectedDate);
 }
-
 
 const df = new DateFormatter('fr-FR', {
     dateStyle: 'long',
 })
 
 const formSchema = z.object({
-	dob: z.string().refine(v => v, { message: "Une date est requise !" })
+    dob: z.string().refine(v => v, { message: 'Une date est requise !' }),
 })
 
 const placeholder = ref()

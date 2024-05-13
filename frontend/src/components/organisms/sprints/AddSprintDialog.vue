@@ -9,7 +9,7 @@ import { Column, Row } from "@/components/atoms/containers"
 import { CalendarDate } from "@internationalized/date"
 import { useMutation } from "@tanstack/vue-query"
 import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
-import { createSprint } from "@/services/sprint-service"
+import { addSprint } from "@/services/sprint-service"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Info } from "lucide-vue-next"
 import {
@@ -18,7 +18,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger
 } from '@/components/ui/tooltip'
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import { Input } from "@/components/ui/input"
 
 
@@ -61,7 +61,7 @@ const { error, isPending, mutate: add } = useMutation({
 
 		const start_date = startDate.value?.year + '-' + startDate.value?.month.toString().padStart(2, '0') + '-' + startDate.value?.day.toString().padStart(2, '0')
 		const end_date = endDate.value?.year + '-' + endDate.value?.month.toString().padStart(2, '0') + '-' + endDate.value?.day.toString().padStart(2, '0')
-		const currentProjectId = getCookie("currentProject")
+		const currentProjectId = Cookies.getProjectId()
 
 		const sprintData = { startDate: start_date, endDate: end_date, endType: endType.value, projectId: currentProjectId ?? "", sprintOrder: sprintOrder.value };
 

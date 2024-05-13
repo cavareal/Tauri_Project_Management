@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import { getCookie } from "@/utils/cookie"
+import { Cookies } from "@/utils/cookie"
 import AddSprint from "@/components/organisms/sprints/AddSprint.vue"
 import EditSprint from "@/components/organisms/sprints/EditSprint.vue"
 import { Error, NotAuthorized } from "@/components/organisms/errors"
@@ -13,8 +13,8 @@ import { onMounted, ref } from "vue"
 import { CalendarDate, parseDate } from '@internationalized/date'
 import { PageSkeleton } from "@/components/atoms/skeletons"
 
-const token = getCookie("token")
-const role = getCookie<RoleType>("role")
+const token = Cookies.getToken()
+const role = Cookies.getRole()
 
 const IS_SPRINT = "Cliquez-ici pour ajouter un sprint"
 const ISNT_SPRINT = "Vous n'avez pas encore crée de sprint, cliquez-ici pour ajouter le premier"
