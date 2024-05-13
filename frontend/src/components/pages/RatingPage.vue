@@ -34,8 +34,6 @@ const ratedSprints = computed(() => {
 	return sprints.value?.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT") || []
 })
 
-// TODO :
-// - selectionner seulement les sprint notés
 
 const forceRerender = () => {
 	componentKey.value += 1

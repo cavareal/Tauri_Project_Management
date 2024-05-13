@@ -33,6 +33,7 @@ const { data: gradeType } = useQuery<GradeType, Error>({
 	queryFn: () => getGradeTypeByName(props.gradeTypeString)
 })
 
+
 const { data: teamStudents, refetch } = useQuery({ queryKey: ["team-students"], queryFn: async() => {
 	if (!props.teamId) return
 	return await getStudentsByTeamId(Number(props.teamId))
@@ -43,7 +44,6 @@ let marks = ref<{ studentId: number; mark: number; }[]>([])
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
 	for (let i = 0; i < marks.value.length; i++) {
-		console.log()
 		await createGrade({
 			value: Number(marks.value[i].mark),
 			gradeTypeId: gradeType.value.id,
@@ -81,15 +81,15 @@ const handleTriggerClick = async() => {
 </script>
 
 <template>
-	<CustomDialog title="Notes individuelles" :description="DIALOG_DESCRIPTION">
+	<CustomDialog title="Notes individuelles" :description="DIALOG_DESCRIPTION" class="w-full">
 		<template #trigger>
 			<Button variant="default" @click="handleTriggerClick">Voir les notes</Button>
 		</template>
 		<div class="flex">
 			<Row class="flex-wrap">
-				<Row v-for="(student, index) in teamStudents" :key="student.id" class="grid grid-cols-3 items-center gap-4 mb-2 w-1/2">
-					<Label>{{ student.name }}</Label>
-					<Input type="number" min="0" max="20" @input="handleInput($event, index, student.id)" />
+				<Row v-for="(student, index) in teamStudents" :key="student.id" class="grid grid-cols-[2fr,1fr] items-center mb-2 w-1/2 ">
+				<Label class="ml-2">{{ student.name }}</Label>
+					<Input type="number" min="0" max="20"  @input="handleInput($event, index, student.id)" />
 				</Row>
 			</Row>
 		</div>
