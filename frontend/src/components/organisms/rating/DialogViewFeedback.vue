@@ -7,9 +7,9 @@ import { DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { CustomDialog } from "@/components/molecules/dialog"
 import type { User } from "@/types/user"
-import { Separator } from "@/components/ui/separator"
 import { useQuery } from "@tanstack/vue-query"
 import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 const props = defineProps<{
 	teamId: number,
@@ -54,12 +54,14 @@ const DIALOG_DESCRIPTION = "Feedbacks donnés à l'équipe durant le sprint"
 			<Text class="text-center">Aucun feedback donné</Text>
 		</div>
 		<div v-else>
-			<div v-for="author in authorsFeedbacks" :key="author.id" class="p-5 flex flex-col">
-				<Text class="bold">{{ author.name }}</Text>
-				<div v-for="feedback in getFeedbacksFromAuthor(author.id.toString())" :key="feedback.id" class="p-2">
-					<Input disabled :default-value="feedback.content"/>
-				</div>
-			</div>
+      <ScrollArea class="h-[500px] w-[450px] p-4">
+        <div v-for="author in authorsFeedbacks" :key="author.id" class="p-5 flex flex-col">
+          <Text class="bold">{{ author.name }}</Text>
+          <div v-for="feedback in getFeedbacksFromAuthor(author.id.toString())" :key="feedback.id" class="p-2">
+            <Input disabled :default-value="feedback.content"/>
+          </div>
+        </div>
+      </ScrollArea>
 		</div>
 
 		<template #footer>

@@ -33,6 +33,7 @@ const { mutate, isPending, error } = useMutation({
 			.then(() => client.invalidateQueries({
 				queryKey: ["feedbacks", props.selectedTeamId, props.selectedSprintId]
 			}))
+			.then(() => feedback.value = "")
 			.then(() => createToast("Le feedback a été enregistré."))
 	}
 })
