@@ -23,7 +23,7 @@ const props = defineProps<{
 	gradeTypeString : string
 }>()
 
-const { data: gradeType } = useQuery<GradeType, Error>({
+const { data: gradeType, refetch } = useQuery<GradeType, Error>({
 	queryKey: ["grade-type"],
 	queryFn: () => getGradeTypeByName(props.gradeTypeString)
 })
@@ -49,6 +49,7 @@ const handleNoteInput = (event: InputEvent) => {
 	} else {
 		mark.value = String(inputNote)
 	}
+	void refetch()
 }
 
 </script>

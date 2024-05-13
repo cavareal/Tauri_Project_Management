@@ -28,7 +28,7 @@ const props = defineProps<{
 	gradeTypeString : string
 }>()
 
-const { data: gradeType } = useQuery<GradeType, Error>({
+const { data: gradeType, ...gradeTypeQuery } = useQuery<GradeType, Error>({
 	queryKey: ["grade-type"],
 	queryFn: () => getGradeTypeByName(props.gradeTypeString)
 })
@@ -43,6 +43,7 @@ let marks = ref<{ studentId: number; mark: number; }[]>([])
 
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
+	let gradesAdded = 0
 	for (let i = 0; i < marks.value.length; i++) {
 		await createGrade({
 			value: Number(marks.value[i].mark),
@@ -52,10 +53,15 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"]
 			comment: null,
 			studentId: marks.value[i].studentId
 		})
-			.then(() => marks.value[i].mark = 0)
+			.then(() => {
+				marks.value[i].mark = 0
+				gradesAdded++
+				if (gradesAdded === marks.value.length) {
+					open.value = false
+				}
+			})
 			.then(() => createToast("La note a bien été enregistrée."))
 	}
-	open.value = false
 } })
 
 const handleInput = (event: InputEvent, index: number, studentId : number) => {
@@ -75,6 +81,7 @@ const handleInput = (event: InputEvent, index: number, studentId : number) => {
 
 
 const handleTriggerClick = async() => {
+	await gradeTypeQuery.refetch()
 	await refetch()
 }
 
