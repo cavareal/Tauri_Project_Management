@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-	<div class="border border-gray-300 rounded-lg p-2 md:p-6 my-3">
+	<div class="border rounded-lg p-2 md:p-6">
 		<Column class="w-full items-start gap-4">
 			<Row class="w-full items-center justify-between h-10">
 				<Row class="gap-4 items-center">

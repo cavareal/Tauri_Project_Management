@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { computed, ref } from "vue"
 import { SidebarTemplate } from "@/components/templates"
 import NotAutorized from "@/components/organisms/errors/NotAuthorized.vue"
@@ -16,11 +17,9 @@ import { getTeams } from "@/services/team-service"
 import { getSprints } from "@/services/sprint-service"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
-import { Text } from "@/components/atoms/texts"
 import { hasPermission } from "@/services/user-service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import Rating from "@/components/organisms/Rate/Rating.vue"
-
 
 const selectedTeam = ref("")
 const selectedSprint = ref("")
@@ -28,12 +27,11 @@ const componentKey = ref(0)
 
 const authorized = hasPermission("RATING_PAGE")
 
-const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
+const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
 const ratedSprints = computed(() => {
 	return sprints.value?.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT") || []
 })
-
 
 const forceRerender = () => {
 	componentKey.value += 1
@@ -44,8 +42,8 @@ const forceRerender = () => {
 <template>
 	<SidebarTemplate>
 		<NotAuthorized v-if="!authorized" />
-		<div v-else>
-			<Header title="Evaluation">
+		<Column v-else class="gap-4">
+			<Header title="Évaluations">
 				<Select v-model="selectedSprint">
 					<SelectTrigger class="w-[180px]">
 						<SelectValue placeholder="Sprint par défaut" />
@@ -67,14 +65,14 @@ const forceRerender = () => {
 					</SelectContent>
 				</Select>
 			</Header>
-			<div v-if="selectedTeam !== '' && selectedSprint !== ''">
+			<Column v-if="selectedTeam !== '' && selectedSprint !== ''" class="gap-4">
 				<Rating v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
 				<NotAutorized v-else/>
-			</div>
-			<Column v-else class="items-center justify-center p-6 gap-2 rounded-lg border transition-all cursor-pointer border-dashed bg-slate-50">
-				<ListChecks class="w-16 h-16 stroke-[1.2]" />
-				<Text>Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer</Text>
 			</Column>
-		</div>
+            <Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
+				<ListChecks class="size-12 stroke-1 text-dark-blue" />
+                <p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer.</p>
+            </Column>
+		</Column>
 	</SidebarTemplate>
 </template>

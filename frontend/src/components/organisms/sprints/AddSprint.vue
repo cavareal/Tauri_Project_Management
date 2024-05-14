@@ -22,7 +22,7 @@ const TITLE = props.firstSprint ? "Vous n'avez pas encore crée de sprint, cliqu
         <AddSprintDialog @add:sprint="emitAdd('add:sprint')" :lastSprintEndDate="lastSprintEndDate" :lastSprintOrder="lastSprintOrder">
             <Column class="items-center py-4 gap-2">
 				<CalendarPlus class="size-12 stroke-1 text-dark-blue" />
-                <p class="text-dark-blue">{{ TITLE }}</p>
+                <p class="text-dark-blue text-sm">{{ TITLE }}</p>
             </Column>
         </AddSprintDialog>
     </div>

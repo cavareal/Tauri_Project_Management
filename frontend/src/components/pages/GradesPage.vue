@@ -9,7 +9,6 @@ import { getTeams } from "@/services/team-service"
 import { getSprints } from "@/services/sprint-service"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Header } from "@/components/molecules/header"
-import { Text } from "@/components/atoms/texts"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
 import Grade from "@/components/organisms/Grade/GradeTable.vue"
@@ -20,7 +19,7 @@ const componentKey = ref(0)
 
 const authorized = hasPermission("GRADES_PAGE")
 
-const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
+const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
 const ratedSprints = computed(() => {
 	return sprints.value?.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT") || []
@@ -34,7 +33,7 @@ const forceRerender = () => {
 <template>
 	<SidebarTemplate>
 		<NotAuthorized v-if="!authorized" />
-		<div v-else>
+		<Column v-else class="gap-4">
 			<Header title="Notes">
 				<Select v-model="selectedSprint">
 					<SelectTrigger class="w-[180px]">
@@ -57,14 +56,14 @@ const forceRerender = () => {
 					</SelectContent>
 				</Select>
 			</Header>
-			<div v-if="selectedTeam !== '' && selectedSprint !== ''">
+			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
 				<Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
 				<NotAutorized v-else/>
-			</div>
-			<Column v-else class="items-center justify-center p-6 gap-2 rounded-lg border transition-all cursor-pointer border-dashed bg-slate-50">
-				<ListChecks class="w-16 h-16 stroke-[1.2]" />
-				<Text>Vous n'avez pas sélectionné de sprint et/ou une équipe</Text>
 			</Column>
-		</div>
+			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
+				<ListChecks class="size-12 stroke-1 text-dark-blue" />
+                <p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer.</p>
+            </Column>
+		</Column>
 	</SidebarTemplate>
 </template>
