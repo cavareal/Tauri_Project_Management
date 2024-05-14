@@ -7,7 +7,7 @@ import { DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { CustomDialog } from "@/components/molecules/dialog"
 import type { User } from "@/types/user"
-import { useQuery } from "@tanstack/vue-query"
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
@@ -21,7 +21,6 @@ const { data: feedbacks, refetch: refetchFeedbacks } = useQuery<Feedback[], Erro
 	queryKey: ["feedbacks", props.teamId, props.sprintId],
 	queryFn: async() => {
 		const feedbacks = await getFeedbacksBySprintAndTeam(props.teamId, props.sprintId)
-
 		authorsFeedbacks.value = feedbacks.map(feedback => feedback.author)
 			.filter((author, index, self) => index === self.findIndex((t) => (
 				t.id === author.id
