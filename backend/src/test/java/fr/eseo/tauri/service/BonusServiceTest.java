@@ -1,9 +1,6 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Bonus;
-import fr.eseo.tauri.model.Sprint;
-import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
