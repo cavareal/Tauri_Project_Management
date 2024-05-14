@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -122,5 +123,17 @@ public class GradeController {
         } catch (NullPointerException e){
             return -1.0;
         }
+    }
+
+    @GetMapping("/average-team/{teamId}")
+    public ResponseEntity<Map<String, Double>> getTeamGrades(@PathVariable Integer teamId, @RequestParam("sprintId") Integer sprintId) {
+        Map<String, Double> teamGrades = gradeService.getTeamGrades(teamId, sprintId);
+        return ResponseEntity.ok(teamGrades);
+    }
+
+    @GetMapping("/average-students/{teamId}")
+    public ResponseEntity<Map<String, Double>> getTeamStudentGrades(@PathVariable Integer teamId, @RequestParam("sprintId") Integer sprintId) {
+        Map<String, Double> teamStudentGrades = gradeService.getTeamStudentGrades(teamId, sprintId);
+        return ResponseEntity.ok(teamStudentGrades);
     }
 }

@@ -39,3 +39,5 @@ export const UpdateGradeSchema = CreateGradeSchema.partial()
 export type UpdateGrade = z.infer<typeof UpdateGradeSchema>
 
 export const GradeDoubleArraySchema = z.array(z.array(z.number()))
+
+export const GradeMapSchema = z.record(z.number())

@@ -1,4 +1,4 @@
-import { GradeDoubleArraySchema, GradeSchema, type Grade, CreateGradeSchema } from "@/types/grade"
+import { GradeDoubleArraySchema, GradeSchema, type Grade, CreateGradeSchema, GradeMapSchema } from "@/types/grade"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { type CreateGrade } from "@/types/grade"
 import { z } from "zod"
@@ -130,6 +130,33 @@ export const getAverageByGradeType = async(id: number, sprintId: number, gradeTy
 		route: `grades/average/${id}`,
 		params: { sprintId: sprintId.toString(), gradeTypeName: gradeTypeName },
 		responseSchema: z.number()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getTeamAverage = async(teamId: number, sprintId: string): Promise<z.infer<typeof GradeMapSchema>> => {
+	const response = await queryAndValidate({
+		route: `grades/average-team/${teamId}`,
+		params: { sprintId: sprintId },
+		responseSchema: GradeMapSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+	return response.data
+}
+
+export const getStudentsAverageByTeam = async(teamId: number, sprintId: string): Promise<z.infer<typeof GradeMapSchema>> => {
+	const response = await queryAndValidate({
+		route: `grades/average-students/${teamId}`,
+		params: { sprintId: sprintId },
+		responseSchema: GradeMapSchema
 	})
 
 	if (response.status === "error") {

@@ -19,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static fr.eseo.tauri.util.ListUtil.filter;
 
@@ -254,5 +253,36 @@ public class GradeService {
             return byteArrayOutputStream.toByteArray();
         }
     }
+
+    public Map<String, Double> getTeamGrades(Integer teamId, Integer sprintId) {
+        Map<String, Double> allGrades = new HashMap<>();
+
+        List<String> gradeTypeGroupNameArray = Arrays.asList("Solution Technique", "Gestion de projet", "Conformité au sprint", "Support de présentation", "Performance globale de l'équipe");
+
+        for (String gradeType : gradeTypeGroupNameArray) {
+            Double averageGrade = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, gradeType);
+            allGrades.put(gradeType, averageGrade);
+        }
+
+        return allGrades;
+    }
+
+    public Map<String, Double> getTeamStudentGrades(Integer teamId, Integer sprintId) {
+        Map<String, Double> allGrades = new HashMap<>();
+
+        List<Student> teamStudents = studentRepository.findByTeam(teamId);
+
+        for (Student student : teamStudents) {
+            Double averageGrade = gradeRepository.findAverageByGradeTypeForStudent(student.id(), sprintId, "Performance individuelle");
+            allGrades.put(String.valueOf(student.id()), averageGrade);
+        }
+
+        return allGrades;
+    }
+
+
+
+
+
 
 }
