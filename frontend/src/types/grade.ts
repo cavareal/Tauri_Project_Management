@@ -25,6 +25,7 @@ export const CreateGradeSchema = GradeSchema.omit({
 	student: true,
 	team: true,
 	sprint: true,
+	isValid: true
 }).extend({
 	gradeTypeId: z.coerce.number(),
 	authorId: z.coerce.number(),
