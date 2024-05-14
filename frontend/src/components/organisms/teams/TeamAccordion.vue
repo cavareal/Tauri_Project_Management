@@ -87,7 +87,7 @@ const canEdit = hasPermission("TEAM_MANAGEMENT")
 
 <template>
 	<Loading v-if="isLoading" />
-	<Accordion v-else type="multiple">
+	<Accordion v-else type="multiple" :default-value="teams && teams.map(team => team.id.toString())">
 		<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
 			<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
 				v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"
