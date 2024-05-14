@@ -35,7 +35,7 @@ const forceRerender = () => {
 		<NotAuthorized v-if="!authorized" />
 		<Column v-else class="gap-4">
 			<Header title="Notes">
-				<Button variant="default">Noter une équipe</Button>
+				<Button variant="default">Valider les notes individuelles</Button>
 
 				<Select v-model="selectedSprint">
 					<SelectTrigger class="w-[180px]">
