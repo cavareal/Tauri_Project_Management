@@ -127,9 +127,12 @@ export const queryAndValidate = async <T>({
 	const response = await fetch(buildUrl(route, { ...params, projectId: currentProjectId?.toString() ?? "" }), {
 		headers: getHeaders(jsonContent)
 	})
-	if (!response.ok) return {
-		status: "error",
-		error: `Failed to fetch GET ${route}: ${response.status} ${response.statusText}`
+	if (!response.ok) {
+		console.error(`Failed to fetch GET ${route}: ${response.status} ${response.statusText}`)
+		return {
+			status: "error",
+			error: `Fai}led to fetch GET ${route}: ${response.status} ${response.statusText}`
+		}
 	}
 
 	let data: unknown = await response.text()
@@ -138,9 +141,12 @@ export const queryAndValidate = async <T>({
 	} catch (error) { /* Do nothing */ }
 
 	const parsedBody = responseSchema.safeParse(data)
-	if (!parsedBody.success) return {
-		status: "error",
-		error: `Failed to validate GET ${route}: ${parsedBody.error.message}`
+	if (!parsedBody.success) {
+		console.error(`Failed to validate GET ${route}: ${parsedBody.error.message}`)
+		return {
+			status: "error",
+			error: `Failed to validate GET ${route}: ${parsedBody.error.message}`
+		}
 	}
 
 	return {
@@ -164,17 +170,23 @@ export const mutateAndValidate = async <T>({
 	method, route, params, jsonContent = true, delay, body, bodySchema
 }: MutateAndValidateRequest<T>): Promise<MutateAndValidateResponse> => {
 	if (delay) await wait(delay)
-	if (body && !bodySchema) return {
-		status: "error",
-		error: "Body schema is required when body is provided"
+	if (body && !bodySchema) {
+		console.error("Body schema is required when body is provided")
+		return {
+			status: "error",
+			error: "Body schema is required when body is provided"
+		}
 	}
 
 	let parsedBody: SafeParseReturnType<T, T> | null = null
 	if (body && bodySchema) {
 		parsedBody = bodySchema.safeParse(body)
-		if (!parsedBody.success) return {
-			status: "error",
-			error: `Failed to validate ${method} ${route}: ${parsedBody.error.message}`
+		if (!parsedBody.success) {
+			console.error(`Failed to validate ${method} ${route}: ${parsedBody.error.message}`)
+			return {
+				status: "error",
+				error: `Failed to validate ${method} ${route}: ${parsedBody.error.message}`
+			}
 		}
 	}
 
@@ -189,9 +201,12 @@ export const mutateAndValidate = async <T>({
 		body: bodyData,
 		headers: getHeaders(jsonContent)
 	})
-	if (!response.ok) return {
-		status: "error",
-		error: `Failed to fetch ${method} ${route}: ${response.status} ${response.statusText}`
+	if (!response.ok) {
+		console.error(`Failed to fetch ${method} ${route}: ${response.status} ${response.statusText}`)
+		return {
+			status: "error",
+			error: `Failed to fetch ${method} ${route}: ${response.status} ${response.statusText}`
+		}
 	}
 
 	return {
