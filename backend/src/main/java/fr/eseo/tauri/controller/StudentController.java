@@ -90,9 +90,15 @@ public class StudentController {
 	}
 
 	@GetMapping("/{id}/bonus")
-	public ResponseEntity<Bonus> getStudentBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("limited") Boolean limited) {
+	public ResponseEntity<Bonus> getStudentBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("limited") Boolean limited) {
 		Bonus bonus = studentService.getStudentBonus(token, id, limited);
 		return ResponseEntity.ok(bonus);
+	}
+
+	@GetMapping("/{id}/bonuses")
+	public ResponseEntity<List<Bonus>> getStudentBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		List<Bonus> bonuses = studentService.getStudentBonuses(token, id);
+		return ResponseEntity.ok(bonuses);
 	}
 
 }
