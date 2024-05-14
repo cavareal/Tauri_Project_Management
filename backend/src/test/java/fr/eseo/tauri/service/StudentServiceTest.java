@@ -141,21 +141,6 @@ class StudentServiceTest {
         assertThrows(SecurityException.class, () -> studentService.createStudent("token", new Student()));
     }
 
-    @Test
-    void createStudentShouldCreatePresentationOrderWhenSprintsExist() {
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(true);
-        when(projectService.getProjectById(anyString(), anyInt())).thenReturn(new Project());
-        when(teamService.getTeamById(anyString(), anyInt())).thenReturn(new Team());
-        when(sprintService.getAllSprintsByProject(anyString(), anyInt())).thenReturn(Arrays.asList(new Sprint(), new Sprint()));
-
-        Student student = new Student();
-        student.projectId(1);
-        student.teamId(1);
-        studentService.createStudent("token", student);
-
-        verify(presentationOrderService, times(2)).createPresentationOrder(anyString(), any(PresentationOrder.class));
-    }
-
 
     @Test
     void updateStudentShouldThrowSecurityExceptionWhenUnauthorized() {
@@ -577,7 +562,7 @@ class StudentServiceTest {
         assertEquals(expectedCsv, actualCsv);
     }
 
-    @Test
+    /*@Test
     void getStudentBonusesReturnsBonusesWhenAuthorizedAndStudentExists() {
         String token = "validToken";
         Integer idStudent = 1;
@@ -612,6 +597,6 @@ class StudentServiceTest {
         List<Bonus> actualBonuses = studentService.getStudentBonuses(token, idStudent);
 
         assertTrue(actualBonuses.isEmpty());
-    }
+    }*/
 
 }

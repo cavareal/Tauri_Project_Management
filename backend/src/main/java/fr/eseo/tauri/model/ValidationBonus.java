@@ -1,9 +1,12 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.eseo.tauri.model.id_class.ValidationBonusId;
+import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -29,5 +32,17 @@ public class ValidationBonus {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Bonus bonus;
+
+    @NotNull(groups = { Create.class }, message = "The authorId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer authorId;
+
+
+    @NotNull(groups = { Create.class }, message = "The bonusId field is required")
+    @Transient
+    @JsonDeserialize
+    private Integer bonusId;
+
 
 }

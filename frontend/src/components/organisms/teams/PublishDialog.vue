@@ -1,31 +1,26 @@
 <script setup lang="ts">
 
-import { Button } from "@/components/ui/button"
-import { deleteSprint } from "@/services/sprint-service"
-import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
-import { ref } from "vue"
-import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
-import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
+import { LoadingButton } from "@/components/molecules/buttons"
+import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
+import { Button } from "@/components/ui/button"
+import { updateProject } from "@/services/project-service"
+import { useMutation } from "@tanstack/vue-query"
+import { ref } from "vue"
 import { createToast } from "@/utils/toast"
 
+const emits = defineEmits(["publish:teams"])
 const open = ref(false)
-const emits = defineEmits(["delete:sprint"])
 
-const props = defineProps<{
-    sprintId: number,
-	sprintOrder: number,
-}>()
-
-const { mutate, isPending, error } = useMutation({ mutationFn: async() => {
-	await deleteSprint(props.sprintId)
+const { mutate, error, isPending } = useMutation({ mutationKey: ["prepublish-teams"], mutationFn: async() => {
+	await updateProject({ phase: "PUBLISHED" })
 		.then(() => open.value = false)
-		.then(() => emits("delete:sprint"))
-		.then(() => createToast(`Le sprint ${props.sprintOrder} a bien été supprimé.`))
+		.then(() => emits("publish:teams"))
+		.then(() => createToast("La composition des équipes a été publiée."))
 } })
 
-const DIALOG_TITLE = "Supprimer un sprint"
-const DIALOG_DESCRIPTION = `Êtes-vous bien sûr de supprimer le sprint ${props.sprintOrder} ?`
+const DIALOG_TITLE = "Publier les équipes"
+const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir publier la composition des équipes ?"
 
 </script>
 

@@ -25,7 +25,6 @@ public class Project {
     @JsonProperty
     private Integer nbWomen;
 
-    // TODO: À supprimer une fois que la page Sprints aura été modifée en accord avec la maquette
     @JsonProperty
     private Integer nbSprint;
 

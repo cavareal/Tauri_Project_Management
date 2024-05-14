@@ -14,11 +14,11 @@ import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.GradeRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,9 +39,7 @@ public class GradeService {
     private final GradeTypeRepository gradeTypeRepository;
     @Lazy
     private final GradeTypeService gradeTypeService;
-    private final UserRepository userRepository;
     private final TeamService teamService;
-    private final BonusRepository bonusRepository;
 
     public Grade getGradeById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
@@ -127,7 +125,7 @@ public class GradeService {
             if (Boolean.TRUE.equals(student.bachelor())) continue;
             var studentGrades = filter(grades, grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && /*!grade.gradeType().name().equalsIgnoreCase("mean") && !grade.gradeType().name().equalsIgnoreCase("average")*/!grade.gradeType().name().equals(GradeTypeName.AVERAGE.displayName()));
             var mean = mean(studentGrades);
-            gradeRepository.updateImportedMeanByStudentId(mean, student.id());
+            updateImportedMeanByStudentId(mean, student.id());
         }
         CustomLogger.info("Updated imported mean for all students.");
     }
@@ -146,6 +144,16 @@ public class GradeService {
         return total / factors;
     }
 
+    // Non-transactional method to call the transactional one
+    public void updateImportedMeanByStudentId(Float value, Integer studentId) {
+        this.updateImportedMeanByStudentIdTransactional(value, studentId);
+    }
+
+    @Transactional
+    public void updateImportedMeanByStudentIdTransactional(Float value, Integer studentId) {
+        gradeRepository.updateImportedMeanByStudentId(value, studentId, GradeTypeName.AVERAGE.displayName());
+    }
+
     public Double getAverageGradesByGradeTypeByRoleType(int userId, RoleType roleType, String gradeTypeName) {
         Team team = teamRepository.findTeamByStudentId(userId);
         return gradeRepository.findAverageGradesByGradeType(team, gradeTypeName, roleType);
@@ -160,6 +168,17 @@ public class GradeService {
             CustomLogger.info("No grade found for student " + student.name() + " and grade type " + gradeType.name());
             return null;
         }
+    }
+
+    public Double getAverageGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
+        GradeType gradeType = gradeTypeRepository.findByName(gradeTypeName);
+        Double grade;
+        if (Boolean.TRUE.equals(gradeType.forGroup())) {
+            grade = gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, gradeTypeName);
+        } else {
+            grade = gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, gradeTypeName);
+        }
+        return grade;
     }
 
     public Double getSprintGrade(String token, Integer userId, Integer sprintId) {

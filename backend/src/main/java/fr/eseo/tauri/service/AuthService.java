@@ -38,7 +38,7 @@ public class AuthService {
             AuthResponse response = new AuthResponse(user.id(), accessToken);
             CustomLogger.info("Response ready");
 
-            System.out.println("Response : " + response);
+            CustomLogger.info("Returning response :" + response.toString());
             return response;
         }
 

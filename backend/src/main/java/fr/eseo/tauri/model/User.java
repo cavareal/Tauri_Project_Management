@@ -14,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Table(name = "users")
@@ -33,7 +34,6 @@ public class User implements UserDetails {
 	@JsonProperty
 	private String name;
 
-	// TODO: The email must be unique
 	@NonNull
 	@NotNull(groups = { Create.class }, message = "The email field is required")
 	@Email(groups = { Create.class, Update.class }, message = "The email field must be a valid email")
@@ -53,7 +53,7 @@ public class User implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override

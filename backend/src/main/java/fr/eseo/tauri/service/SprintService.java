@@ -1,11 +1,13 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.SprintRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ public class SprintService {
     private final ProjectService projectService;
     private final StudentService studentService;
     private final PresentationOrderService presentationOrderService;
+    private final BonusService bonusService;
 
     public Sprint getSprintById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readSprint"))) {
@@ -35,22 +38,23 @@ public class SprintService {
         return sprintRepository.findAllByProject(projectId);
     }
 
-    public void createSprint(String token, Sprint sprint, Integer projectId) {
-        System.out.println("create sprint");
-
+    public void createSprint(String token, Sprint sprint, int sprintId) {
+        CustomLogger.info("Creating sprint " + sprintId);
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addSprint"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        if(sprint.projectId() != null) sprint.project(projectService.getProjectById(token, sprint.projectId()));
+        sprint.project(projectService.getProjectById(token, sprint.projectId()));
         sprintRepository.save(sprint);
         List<Student> students = studentService.getAllStudentsByProject(token, sprint.projectId());
         if(!students.isEmpty()) {
             for (Student student : students) {
-                PresentationOrder presentationOrder = new PresentationOrder();
-                presentationOrder.sprint(sprint);
-                presentationOrder.student(student);
+                PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
                 presentationOrderService.createPresentationOrder(token, presentationOrder);
+                Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
+                Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
+                bonusService.createBonus(token, limitedBonus);
+                bonusService.createBonus(token, unlimitedBonus);
             }
         }
     }

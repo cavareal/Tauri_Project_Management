@@ -4,75 +4,128 @@ import { CustomDialog } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
-import { ref } from "vue"
 import { Cookies } from "@/utils/cookie"
-import { getTeamByUserId } from "@/services/team-service"
 import { getStudentsByTeamId } from "@/services/student-service"
-import { hasPermission } from "@/services/user-service"
-import { getStudentBonuses } from "@/services/bonus-service"
-import { DialogClose } from "@/components/ui/dialog"
-import { useQuery } from "@tanstack/vue-query"
+import { Label } from "@/components/ui/label"
+import { getStudentBonus, updateBonus } from "@/services/bonus-service"
+import { useMutation, useQuery } from "@tanstack/vue-query"
+import { Skeleton } from "@/components/ui/skeleton"
+import { ErrorText } from "@/components/atoms/texts"
+import { reactive, ref, watch } from "vue"
+import { LoadingButton } from "@/components/molecules/buttons"
+import { createToast } from "@/utils/toast"
+import type { Bonus } from "@/types/bonus"
 
-let bonus = ref(["0", "0", "0", "0", "0", "0", "0", "0"])
-const names = ["Alice", "Bob", "Charlie", "David", "Emma", "Frank", "Grace", "Henry"]
+const props = defineProps<{
+	limited: boolean
+	teamId: string
+}>()
 
-const limitedBonus = hasPermission("LIMITED_BONUS_MALUS")
-const unlimitedBonus = hasPermission("GIVE_UNLIMITED_BONUS_MALUS")
-
+const open = ref(false)
 const currentUserId = Cookies.getUserId()
+let updatedStudentBonuses: Bonus[] = reactive([])
 
-const { data: team } = useQuery({ queryKey: ["team", currentUserId], queryFn: async() => getTeamByUserId(currentUserId) })
+const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => getStudentsByTeamId(Number(props.teamId)) })
 
-const { data: teamStudents } = useQuery({ queryKey: ["team-students", team.value?.id], queryFn: async() => {
-	if (!team.value) return
-	return await getStudentsByTeamId(team.value.id)
-} })
+/*const { data: studentBonuses } = useQuery({ queryKey: ["student-bonuses"], queryFn: async() => {
+	if (!teamStudents.value) return []
+	return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited)))
+}
+//enabled: !!teamStudents.value
+})*/
+const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
+	queryKey: ["student-bonuses"],
+	queryFn: async() => {
+		if (!teamStudents.value) return null
+		return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited)))
+	}
+})
 
-const { data: studentBonuses } = useQuery({ queryKey: ["student-bonuses"], queryFn: async() => {
-	if (!teamStudents.value) return
-	return await Promise.all(teamStudents.value.map(student => getStudentBonuses(student.id)))
-} })
+watch(teamStudents, async(value, _) => {
+	if (value) {
+		await refetchBonuses()
+	}
+})
 
-const handleBonusInput = (event: InputEvent, index: number) => {
+const handleBonusInput = (event: InputEvent, index: number, inputType: "value" | "comment") => {
 	if (!studentBonuses.value) return
 
-	const inputNote = parseInt((event.target as HTMLInputElement).value)
-	if (unlimitedBonus) {
-		studentBonuses.value[index][1].value = inputNote
-	} else if (inputNote > 4) {
-		studentBonuses.value[index][0].value = 4
-	} else if (inputNote < -4) {
-		studentBonuses.value[index][0].value = -4
-	} else {
-		studentBonuses.value[index][0].value = inputNote
+	let updatedBonusIndex = updatedStudentBonuses.findIndex(bonus => bonus.id === studentBonuses.value[index].id)
+
+	if (updatedBonusIndex === -1) {
+		// Clone the bonus and add it to updatedStudentBonuses
+		updatedStudentBonuses.push({ ...studentBonuses.value[index] })
+		updatedBonusIndex = updatedStudentBonuses.length - 1
+	}
+
+	const inputValue = (event.target as HTMLInputElement).value
+
+	if (inputType === "value") {
+		const value = parseFloat(inputValue)
+		if (isNaN(value)) return
+		if (!props.limited) {
+			updatedStudentBonuses[updatedBonusIndex].value = value
+		} else if (value > 4) {
+			updatedStudentBonuses[updatedBonusIndex].value = 4
+		} else if (value < -4) {
+			updatedStudentBonuses[updatedBonusIndex].value = -4
+		} else {
+			updatedStudentBonuses[updatedBonusIndex].value = value
+		}
+	} else if (inputType === "comment") {
+		updatedStudentBonuses[updatedBonusIndex].comment = inputValue
+	}
+
+	// Check if the updated bonus is identical to the original bonus
+	if (JSON.stringify(updatedStudentBonuses[updatedBonusIndex]) === JSON.stringify(studentBonuses.value[index])) {
+		// Remove the bonus from updatedStudentBonuses
+		updatedStudentBonuses.splice(updatedBonusIndex, 1)
 	}
 }
 
-const DIALOG_DESCRIPTION = "Vous pouvez ajuster les bonus et malus des membres de votre équipe. Attention, une fois que vous les avez validés, "
+const { isPending, error, mutate: update } = useMutation({ mutationKey: ["update-bonuses"], mutationFn: async() => {
+	console.log(updatedStudentBonuses)
+	await Promise.all(updatedStudentBonuses.map(studentBonus => updateBonus(studentBonus.id, { value: studentBonus.value, comment: studentBonus.comment, authorId: currentUserId })))
+		.then(() => open.value = false)
+		.then(() => createToast("Les bonus ont été mis à jour."))
+		.then(() => refetchBonuses())
+} })
+
+const DIALOG_DESCRIPTION_LIMITE = "Vous pouvez ajuster les bonus et malus des membres de votre équipe. Attention, une fois que vous les avez validés, "
 	+ "vous ne pouvez plus les modifier. Cependant, si un membre de votre équipe modifie de nouveau les bonus, vous pourrez les valider à nouveau."
+
+const DIALOG_DESCRIPTION_ILLIMITE = "Vous pouvez ajouter des bonus et malus illimités à tous les membres de votre équipe. Cependant, la note finale ne pourra pas être en dessous de 0 ou au dessus de 20."
 
 </script>
 
 <template>
-	<CustomDialog title="Bonus et malus de votre équipe" :description="DIALOG_DESCRIPTION">
+	<CustomDialog title="Bonus et malus de votre équipe" v-model:open="open" :description="props.limited ? DIALOG_DESCRIPTION_LIMITE : DIALOG_DESCRIPTION_ILLIMITE">
 		<template #trigger>
 			<Button variant="default">Voir les bonus</Button>
 		</template>
 
 		<Row v-if="studentBonuses" class="flex-wrap">
-			<Row v-for="(student, index) in teamStudents" :key="student.id" class="grid grid-cols-3 items-center gap-4 mb-2 w-1/2">
-				<Label>{{ student.name }}</Label>
-				<Input v-if="unlimitedBonus" v-model="studentBonuses[index][1].value" type="number"
-					@input="handleBonusInput($event, index)" />
-				<Input v-if="limitedBonus" v-model="studentBonuses[index][0].value" type="number" min="-4" max="4"
-					@input="handleBonusInput($event, index)" />
+			<Row v-for="(student, index) in teamStudents" :key="student.id" class=" mb-3 w-1/2">
+				<Column>
+					<Row class="grid grid-cols-[3fr,1fr] mr-2">
+						<Label :for="student.name" class="whitespace-nowrap mt-3">{{ student.name }}</Label>
+						<Input class="mb-2 " type="number" :default-value="studentBonuses[index]?.value === 0 ? '' : studentBonuses[index]?.value"
+					   		:onchange="(e: InputEvent) => handleBonusInput(e, index, 'value')"/>
+					</Row>
+					<Row class="mr-2">
+						<Input v-if="!props.limited" type="text" :default-value="studentBonuses[index]?.comment ?? ''"
+					   		:onchange="(e: InputEvent) => handleBonusInput(e, index, 'comment')"/>
+					</Row>
+				</Column>
 			</Row>
 		</Row>
+		<Skeleton v-else class="w-full h-56" />
+		<ErrorText v-if="error">Une erreur est survenue.</ErrorText>
 
 		<template #footer>
-			<DialogClose>
-				<Button variant="default">Valider</Button>
-			</DialogClose>
+			<LoadingButton type="submit" @click="update" :loading="isPending">
+				Valider
+			</LoadingButton>
 		</template>
 	</CustomDialog>
 </template>

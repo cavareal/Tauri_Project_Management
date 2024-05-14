@@ -10,7 +10,7 @@ export const BonusSchema = z.object({
 	limited: z.boolean(),
 	sprint: SprintSchema,
 	student: StudentSchema,
-	author: UserSchema
+	author: UserSchema.nullable()
 })
 export type Bonus = z.infer<typeof BonusSchema>
 
@@ -22,7 +22,7 @@ export const CreateBonusSchema = BonusSchema.omit({
 }).extend({
 	sprintId: z.coerce.number(),
 	studentId: z.coerce.number(),
-	authorId: z.coerce.number()
+	authorId: z.coerce.number().nullable()
 })
 export type CreateBonus = z.infer<typeof CreateBonusSchema>
 

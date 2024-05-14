@@ -17,16 +17,16 @@ public class UserSeeder {
 	private final ApplicationSecurity applicationSecurity;
 
 	public void seed(Faker faker) {
-		var userPL = new User("Woodward Richard", "pl@tauri.com", applicationSecurity.passwordEncoder().encode("pl"), faker.number().digits(20));
+		var userPL = new User("WOODWARD Richard", "pl@tauri.com", applicationSecurity.passwordEncoder().encode("pl"), faker.number().digits(20));
 		userRepository.save(userPL);
 
-		var userSS = new User("Clavreul Mickaël", "ss@tauri.com", applicationSecurity.passwordEncoder().encode("ss"), faker.number().digits(20));
+		var userSS = new User("CLAVREUL Mickaël", "ss@tauri.com", applicationSecurity.passwordEncoder().encode("ss"), faker.number().digits(20));
 		userRepository.save(userSS);
 
-		var userOL = new User("Rousseau Sophie", "ol@tauri.com", applicationSecurity.passwordEncoder().encode("ol"), faker.number().digits(20));
+		var userOL = new User("ROUSSEAU Sophie", "ol@tauri.com", applicationSecurity.passwordEncoder().encode("ol"), faker.number().digits(20));
 		userRepository.save(userOL);
 
-		var userTC = new User("Leclaire Clément", "tc@tauri.com", applicationSecurity.passwordEncoder().encode("tc"), faker.number().digits(20));
+		var userTC = new User("LECLAIRE Clément", "tc@tauri.com", applicationSecurity.passwordEncoder().encode("tc"), faker.number().digits(20));
 		userRepository.save(userTC);
 
 
@@ -35,13 +35,10 @@ public class UserSeeder {
 
 			user.name(faker.name().lastName().toUpperCase() + " " + faker.name().firstName());
 			user.email(faker.internet().emailAddress());
-			user.password(applicationSecurity.passwordEncoder().encode(faker.internet().password()));
+			user.password(applicationSecurity.passwordEncoder().encode("password"));
 			user.privateKey(faker.number().digits(20));
 
 			userRepository.save(user);
 		}
 	}
-
-
-
 }

@@ -122,19 +122,12 @@ export const deleteAllTeams = async(): Promise<void> => {
 export const getTeamByUserId = async(userId: number): Promise<Team> => {
 	const response = await queryAndValidate({
 		route: `users/${userId}/team`,
-		responseSchema: z.array(TeamSchema)
+		responseSchema: TeamSchema
 	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
 
-	const currentProjectId = Cookies.getProjectId()
-	const team = response.data.find((team: Team) => team.project.id.toString() === currentProjectId.toString())
-
-	if (!team) {
-		throw new Error("User is not in a team")
-	}
-
-	return team
+	return response.data
 }

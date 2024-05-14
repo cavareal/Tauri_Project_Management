@@ -1,52 +1,35 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import { Cookies } from "@/utils/cookie"
-import AddSprint from "@/components/organisms/sprints/AddSprint.vue"
-import EditSprint from "@/components/organisms/sprints/EditSprint.vue"
 import { Error, NotAuthorized } from "@/components/organisms/errors"
 import { Header } from "@/components/molecules/header"
 import { useQuery } from "@tanstack/vue-query"
-import { getAllSprints } from "@/services/sprint-service"
-import { onMounted, ref } from "vue"
-import { CalendarDate, parseDate } from '@internationalized/date'
+import { getSprints } from "@/services/sprint-service"
+import { ref } from "vue"
+import type { CalendarDate } from "@internationalized/date"
 import { PageSkeleton } from "@/components/atoms/skeletons"
-import { ActionSection } from "@/components/molecules/action-section"
+import { dateToCalendarDate } from "@/utils/date"
+import { hasPermission } from "@/services/user-service"
+import { Column } from "@/components/atoms/containers"
+import { AddSprint, SprintSection } from "@/components/organisms/sprints"
+import { ActionSection } from "../molecules/action-section"
 
-const token = Cookies.getToken()
-const role = Cookies.getRole()
+const lastSprintOrder = ref<number>(0)
+const lastSprintEndDate = ref<CalendarDate | undefined>()
 
-const IS_SPRINT = "Cliquez-ici pour ajouter un sprint"
-const ISNT_SPRINT = "Vous n'avez pas encore crée de sprint, cliquez-ici pour ajouter le premier"
+const { data: sprints, error, refetch: refetchSprints, isLoading, isFetching } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
+	const sprints = await getSprints()
 
-const lastSprintEndDate = ref<CalendarDate>();
-const lastSprintOrder = ref<number>(0);
-
-const { data: sprints, error: error, refetch: getSprints, isLoading, isFetching } = useQuery({ queryKey: ["sprints"], queryFn: async () => {
-		const newSprints = await getAllSprints()
-
-		if(newSprints.length != 0){
-			lastSprintEndDate.value = formatDate(newSprints[newSprints.length - 1].endDate)
-			lastSprintOrder.value = newSprints[newSprints.length - 1].sprintOrder
-		}
-		return newSprints
+	if (sprints.length > 0) {
+		lastSprintOrder.value = sprints[sprints.length - 1].sprintOrder
+		lastSprintEndDate.value = dateToCalendarDate(sprints[sprints.length - 1].endDate)
 	}
-})
 
+	return sprints
+} })
 
-
-
-onMounted(async () => {
-	await getSprints()
-})
-
-
-function formatDate(date: Date) {
-	const day = String(date.getDate()).padStart(2, '0');
-	const month = String(date.getMonth() + 1).padStart(2, '0');
-	const year = date.getFullYear();
-	return new CalendarDate(Number(year), Number(month), Number(day));
-}
+const canEditSprints = hasPermission("MANAGE_SPRINT")
+const canViewSprints = hasPermission("SPRINTS_PAGE")
 
 </script>
 
@@ -54,18 +37,21 @@ function formatDate(date: Date) {
 	<SidebarTemplate>
 		<Header title="Sprints" />
 		<PageSkeleton v-if="isLoading || isFetching" />
-		<div v-else-if="token && (role === 'PROJECT_LEADER' || role === 'OPTION_LEADER')">
-			<EditSprint v-if="sprints && sprints.length > 0" v-for="sprint in sprints" :sprint="sprint"
-				@edit:sprint="getSprints" @delete:sprint="getSprints" />
-			<AddSprint v-if="sprints && sprints.length > 0" :title="IS_SPRINT" :lastSprintEndDate="lastSprintEndDate"
-				:lastSprintOrder="lastSprintOrder" @add:sprint="getSprints" />
-			<AddSprint v-else :title="ISNT_SPRINT" :lastSprintEndDate="undefined" :lastSprintOrder="lastSprintOrder"
-				@add:sprint="getSprints" />
-		</div>
-		<div v-else-if="token && (role === 'OPTION_STUDENT')">
-			<ActionSection class="mb-5" v-for="sprint in sprints" :title="'Sprint ' + sprint.sprintOrder + ' : du ' + formatDate(sprint.startDate) + ' au ' + formatDate(sprint.endDate)" :description="sprint.endType">
-			</ActionSection>
-		</div>
+
+		<Column v-else-if="canViewSprints" class="gap-4">
+			<SprintSection v-for="sprint in sprints" :key="sprint.id" :can-edit-sprints="canEditSprints"
+				:sprint="sprint" @edit:sprint="refetchSprints" @delete:sprint="refetchSprints"
+			/>
+			<AddSprint v-if="canEditSprints"
+				:first-sprint="!sprints || sprints.length === 0" @add:sprint="refetchSprints"
+				:lastSprintOrder="lastSprintOrder" :lastSprintEndDate="lastSprintEndDate"
+			/>
+			<ActionSection v-else-if="!sprints || sprints.length === 0"
+				title="Aucun sprint n'a été créé pour le moment."
+				description="Attendez que le leader de l'option ou le leader du projet crée un sprint."
+			/>
+		</Column>
+
 		<NotAuthorized v-else />
 		<Error v-if="error" />
 	</SidebarTemplate>

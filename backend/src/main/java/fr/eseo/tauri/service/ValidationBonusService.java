@@ -1,11 +1,10 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
-import fr.eseo.tauri.model.Bonus;
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.ValidationBonusRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +15,9 @@ public class ValidationBonusService {
 
     private final AuthService authService;
     private final ValidationBonusRepository validationBonusRepository;
-    private final TeamService teamService;
+    private final UserService userService;
+    @Lazy
+    private final BonusService bonusService;
 
     public ValidationBonus getValidationBonusByAuthorId(String token, Integer bonusId, Integer authorId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationBonus"))) {
@@ -25,37 +26,31 @@ public class ValidationBonusService {
         return validationBonusRepository.findByAuthorIdAndBonusId(bonusId, authorId);
     }
 
-    public List<ValidationBonus> getAllValidationBonuses(String token, Integer projectId) {
+    public List<ValidationBonus> getAllValidationBonuses(String token, Integer bonusId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationBonuses"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return validationBonusRepository.findAllByBonusId(projectId);
+        return validationBonusRepository.findAllByBonusId(bonusId);
     }
 
-    public void createValidationBonuses(String token, Bonus bonus) {
+    public void createValidationBonus(String token, ValidationBonus validationBonus) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        if (Boolean.FALSE.equals(bonus.limited())) return;
+        validationBonus.bonus(bonusService.getBonusById(token, validationBonus.bonusId()));
+        validationBonus.author(userService.getUserById(token, validationBonus.authorId()));
 
-        List<User> members = teamService.getMembersByTeamId(token, bonus.student().team().id());
-        for(User member : members) {
-            ValidationBonus validationBonus = new ValidationBonus();
-            validationBonus.bonus(bonus);
-            validationBonus.author(member);
-            validationBonusRepository.save(validationBonus);
-        }
+        validationBonusRepository.save(validationBonus);
     }
 
-    public void updateValidationBonus(String token, Integer bonusId, Integer authorId, ValidationBonus updatedValidationBonus) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateValidationBonus"))) {
+    public void deleteAllValidationBonuses(String token, Integer bonusId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        var validationBonus = getValidationBonusByAuthorId(token, bonusId, authorId);
-        if (updatedValidationBonus.confirmed() != null) validationBonus.confirmed(updatedValidationBonus.confirmed());
-        validationBonusRepository.save(validationBonus);
+        validationBonusRepository.deleteAllByBonusId(bonusId);
+
     }
 
 }

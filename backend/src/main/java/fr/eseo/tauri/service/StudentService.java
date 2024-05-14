@@ -37,12 +37,14 @@ public class StudentService {
     private final SprintService sprintService;
     private final PresentationOrderService presentationOrderService;
     private final BonusRepository bonusRepository;
+    private final BonusService bonusService;
     private final ApplicationSecurity applicationSecurity;
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
     static final String MAP_KEY_BACHELORS = "bachelors";
     static final String MAP_KEY_GRADES = "grades";
+    private static final String PASSWORD = "password";
 
     public Student getStudentById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readStudent"))) {
@@ -74,10 +76,12 @@ public class StudentService {
         List<Sprint> sprints = sprintService.getAllSprintsByProject(token, student.projectId());
         if(!sprints.isEmpty()) {
             for (Sprint sprint : sprints) {
-                PresentationOrder presentationOrder = new PresentationOrder();
-                presentationOrder.sprint(sprint);
-                presentationOrder.student(student);
+                PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
                 presentationOrderService.createPresentationOrder(token, presentationOrder);
+                Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
+                Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
+                bonusService.createBonus(token, limitedBonus);
+                bonusService.createBonus(token, unlimitedBonus);
             }
         }
     }
@@ -205,7 +209,7 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.project(projectService.getProjectById(token, projectId));
-        student.password(applicationSecurity.passwordEncoder().encode("password"));
+        student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
         student.privateKey("privateKey");
         student.email(name.toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
         return student;
@@ -256,7 +260,8 @@ public class StudentService {
                     grade.gradeType(gradeTypes.get(j));
                     gradeService.createGrade(token, grade);
                 } catch (NumberFormatException ignored) {
-                } // Do nothing // If the grade is not a number, it is ignored
+                    // Do nothing // If the grade is not a number, it is ignored
+                }
             }
         }
         CustomLogger.info(String.format("Successfully populated database with %d students and their associated grades contained in the CSV file.", names.size()));
@@ -397,12 +402,12 @@ public class StudentService {
         csvWriter.writeNext(row);
     }
 
-    public List<Bonus> getStudentBonuses(String token, Integer idStudent) {
+    public Bonus getStudentBonus(String token, Integer idStudent, Boolean limited) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        return bonusRepository.findAllStudentBonuses(idStudent);
+        return bonusRepository.findStudentBonus(idStudent, limited);
     }
 
 }
