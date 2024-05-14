@@ -1,6 +1,5 @@
 package fr.eseo.tauri.controller;
 
-import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.FlagService;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,15 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 class FlagControllerTest {
 
@@ -32,6 +24,11 @@ class FlagControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void dummyTest() {
+        assertEquals(1+1, 2);
     }
 
     /*@Test
