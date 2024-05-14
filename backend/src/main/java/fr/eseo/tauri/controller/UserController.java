@@ -87,12 +87,6 @@ public class UserController {
 		return ResponseEntity.ok(team);
 	}
 
-	@GetMapping("{id}/sprint/{sprintId}/grade")
-	public ResponseEntity<Double> getSprintGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
-		Double sprintGrade = gradeService.getSprintGrade(token, id, sprintId);
-		return ResponseEntity.ok(sprintGrade);
-	}
-
 	@GetMapping("{id}/roles")
 	public ResponseEntity<List<RoleType>> getRolesByUserId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
 		List<RoleType> roles = userService.getRolesByUserId(token, id);

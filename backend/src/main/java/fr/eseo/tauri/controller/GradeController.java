@@ -119,7 +119,7 @@ public class GradeController {
     @GetMapping("/average/{id}")
     public double getAverageGradeTypeByStudentIdOrTeamId(@PathVariable Integer id,@RequestParam("sprintId") Integer sprintId,@RequestParam("gradeTypeName") String gradeTypeName) {
         try{
-            return gradeService.getAverageGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName);
+            return gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName);
         } catch (NullPointerException e){
             return -1.0;
         }
