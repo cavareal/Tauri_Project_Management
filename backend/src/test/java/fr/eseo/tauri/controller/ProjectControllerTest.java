@@ -39,6 +39,14 @@ class ProjectControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    @Test
+    @Order(1)
+    @DisplayName("Dummy test")
+    void dummyTest() {
+        assertEquals(1+1, 2);
+    }
+
+
     /*@Test
     @Order(1)
     @DisplayName("Test getCurrentProject when project exists")
