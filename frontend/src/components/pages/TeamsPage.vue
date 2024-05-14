@@ -2,7 +2,8 @@
 
 import { SidebarTemplate } from "@/components/templates"
 import {
-	RedirectImportStudents, GenerateTeams, PrepublishDialog, DeleteTeamsDialog, TeamAccordion, TeamsNotCreated
+	RedirectImportStudents, GenerateTeams, PrepublishDialog, DeleteTeamsDialog, TeamAccordion, TeamsNotCreated,
+	PublishDialog
 } from "@/components/organisms/teams"
 import { Cookies } from "@/utils/cookie"
 import { Button } from "@/components/ui/button"
@@ -41,25 +42,30 @@ const authorized = hasPermission("TEAMS_PAGE")
 const loading = computed(() => currentPhaseQuery.isLoading.value || nbStudentsQuery.isLoading.value || nbTeamsQuery.isLoading.value)
 const canCreate = hasPermission("TEAM_CREATION")
 const canPreview = hasPermission("PREVIEW_TEAM")
-const displayButtons = computed(() => nbTeams.value && nbTeams.value > 0 && currentPhase.value === "COMPOSING")
-const displayPrepublishedButtons = computed(() => currentPhase.value === "PREPUBLISHED" && !hasValidateTeams.value)
+const displayAdminComposingButtons = computed(() => nbTeams.value && nbTeams.value > 0 && currentPhase.value === "COMPOSING")
+const displayAdminPrepublishedButtons = computed(() => currentPhase.value === "PREPUBLISHED")
+const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPOSING" && !hasValidateTeams.value)
 
 </script>
 
 <template>
 	<SidebarTemplate>
 		<Header title="Équipes">
-			<DeleteTeamsDialog v-if="canCreate && displayButtons" @delete:teams="refetchTeams">
+			<DeleteTeamsDialog v-if="canCreate && displayAdminComposingButtons" @delete:teams="refetchTeams">
 				<Button variant="outline">Supprimer les équipes</Button>
 			</DeleteTeamsDialog>
-			<PrepublishDialog v-if="canCreate && displayButtons" @prepublish:teams="refetchCurrentPhase">
+			<PrepublishDialog v-if="canCreate && displayAdminComposingButtons" @prepublish:teams="refetchCurrentPhase">
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
 
-			<SignalTeamDialog v-if="canPreview && displayPrepublishedButtons">
+			<PublishDialog v-if="canCreate && displayAdminPrepublishedButtons" @publish:teams="refetchCurrentPhase">
+				<Button variant="default">Publier</Button>
+			</PublishDialog>
+
+			<SignalTeamDialog v-if="canPreview && displayComposingFlagButtons">
 				<Button variant="outline">Signaler</Button>
 			</SignalTeamDialog>
-			<ValidTeamDialog v-if="canPreview && displayPrepublishedButtons" @valid:teams="handleValidTeams">
+			<ValidTeamDialog v-if="canPreview && displayComposingFlagButtons" @valid:teams="handleValidTeams">
 				<Button variant="default">Valider</Button>
 			</ValidTeamDialog>
 		</Header>
