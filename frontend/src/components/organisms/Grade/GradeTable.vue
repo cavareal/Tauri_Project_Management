@@ -52,11 +52,9 @@ const gradeTypeIndividualArray = ["Performance individuelle"]
 
 const { data: averageTeam, ...queryAverageTeam } = useQuery({
 	queryKey: ["average", "team", props.teamId],
-	queryFn: async() => {
-		return await getTeamAverage(Number(props.teamId), props.sprintId)
-	}
+	queryFn: () => getTeamAverage(Number(props.teamId), props.sprintId)
 })
-console.log(averageTeam.value)
+// console.log(averageTeam.value)
 const { data: averageStudents, ...queryAverageStudent } = useQuery({
 	queryKey: ["average", "student", props.teamId],
 	queryFn: async() => {
