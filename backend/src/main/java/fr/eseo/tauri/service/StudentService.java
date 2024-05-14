@@ -44,6 +44,7 @@ public class StudentService {
     static final String MAP_KEY_GENDERS = "genders";
     static final String MAP_KEY_BACHELORS = "bachelors";
     static final String MAP_KEY_GRADES = "grades";
+    private static final String PASSWORD = "password";
 
     public Student getStudentById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readStudent"))) {
@@ -208,7 +209,7 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.project(projectService.getProjectById(token, projectId));
-        student.password(applicationSecurity.passwordEncoder().encode("password"));
+        student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
         student.privateKey("privateKey");
         student.email(name.toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
         return student;

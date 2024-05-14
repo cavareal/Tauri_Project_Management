@@ -26,15 +26,18 @@ public class TeamService {
     private final RoleRepository roleRepository;
     private final CommentRepository commentRepository;
 
+    private static final String READ_PERMISSION = "readTeam";
+    private static final String DELETE_PERMISSION = "deleteTeam";
+
     public Team getTeamById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return teamRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("team", id));
     }
 
     public List<Team> getAllTeamsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeams"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return teamRepository.findAllByProject(projectId);
@@ -42,7 +45,6 @@ public class TeamService {
 
     /**
      * Delete already existing teams in te project and then create teams with the given number of teams.
-     * // TODO : check nbTeams to be sure it is correct
      * @param nbTeams the number of teams to create
      * @return a List<Teams> if teams are created, otherwise null
      */
@@ -55,7 +57,6 @@ public class TeamService {
         Project project = projectService.getProjectById(token, projectId);
 
         // Delete all previous teams
-        // TODO FUTURE : delete teams only when nbTeams is different from the number of teams in the project
         if(!getAllTeamsByProject(token, projectId).isEmpty()){
             deleteAllTeamsByProject(token, projectId);
         }
@@ -88,7 +89,7 @@ public class TeamService {
     }
 
     public void deleteAllTeamsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteTeam"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         studentRepository.removeAllStudentsFromTeams(projectId);
@@ -102,7 +103,7 @@ public class TeamService {
      * @return The number of women in the team if the team exists, otherwise 0.
      */
     public Integer getNbWomenByTeamId(String token, Integer id){
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteTeam"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getTeamById(token, id);
@@ -116,7 +117,7 @@ public class TeamService {
      * @return The number of bachelor students in the team if the team exists, otherwise 0.
      */
     public Integer getNbBachelorByTeamId(String token, Integer id){
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteTeam"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getTeamById(token, id);
@@ -124,20 +125,11 @@ public class TeamService {
     }
 
     public List<Student> getStudentsByTeamId(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getTeamById(token, id);
         return studentRepository.findByTeam(id);
-    }
-
-    public List<User> getMembersByTeamId(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        List<User> members = new ArrayList<>(getStudentsByTeamId(token, id));
-        members.add(getTeamById(token, id).leader());
-        return members;
     }
 
     public Double getTeamAvgGrade(String token, Integer id) {
@@ -146,7 +138,7 @@ public class TeamService {
     }
 
     public Criteria getCriteriaByTeamId(String token, Integer id, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getTeamById(token, id);
@@ -249,7 +241,7 @@ public class TeamService {
     }
 
     public List<Comment> getFeedbacksByTeamAndSprint(String token, Integer teamId, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeam"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return commentRepository.findAllByTeam_IdAndSprint_IdAndFeedback(teamId, sprintId, true);

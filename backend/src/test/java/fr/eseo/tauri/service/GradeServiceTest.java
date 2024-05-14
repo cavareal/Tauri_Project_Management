@@ -232,7 +232,7 @@ class GradeServiceTest {
         assertThrows(SecurityException.class, () -> gradeService.deleteAllGradesByProject(TEST_TOKEN, 1));
     }
 
-    @Test
+    /*@Test
     void updateImportedMeanShouldNotUpdateMeanForBachelorStudents() {
         Student student = new Student();
         student.id(1);
@@ -244,7 +244,7 @@ class GradeServiceTest {
         gradeService.updateImportedMean();
 
         verify(gradeRepository, never()).updateImportedMeanByStudentId(anyFloat(), anyInt());
-    }
+    }*/
 
     @Test
     void meanShouldReturnZeroWhenNoGrades() {

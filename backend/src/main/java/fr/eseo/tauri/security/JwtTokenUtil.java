@@ -19,13 +19,13 @@ import java.util.Date;
 public class JwtTokenUtil {
 
     @Value("${app.jwt.secret}")
-    private String SECRET_KEY;
+    private String secretKey;
 
     @Value("${app.jwt.issuer}")
-    private String ISSUER;
+    private String issuer;
 
     @Value("${app.jwt.expiration}")
-    private long EXPIRE_DURATION;
+    private long expireDuration;
 
     public String extractToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
@@ -34,7 +34,7 @@ public class JwtTokenUtil {
 
     public boolean validateAccessToken(String token) {
         try {
-            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -43,7 +43,7 @@ public class JwtTokenUtil {
 
     public UserDetails createUserDetails(String token) {
         User userDetails = new User();
-        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         userDetails.email(claims.getSubject().split(",")[0]);
         return userDetails;
     }
@@ -57,10 +57,10 @@ public class JwtTokenUtil {
     public String generateAccessToken(User user) {
         return Jwts.builder()
                 .setSubject(String.format("%s", user.email()))
-                .setIssuer(ISSUER)
+                .setIssuer(issuer)
                 .setIssuedAt(new Date())
-                .setExpiration(Date.from(Instant.now().plusMillis(EXPIRE_DURATION)))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setExpiration(Date.from(Instant.now().plusMillis(expireDuration)))
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 }
