@@ -14,7 +14,7 @@ export const GradeSchema = z.object({
 	student: StudentSchema.nullable(),
 	team: TeamSchema.nullable(),
 	sprint: SprintSchema.nullable(),
-	isValid: z.boolean(),
+	confirmed: z.boolean()
 })
 export type Grade = z.infer<typeof GradeSchema>
 
@@ -25,7 +25,7 @@ export const CreateGradeSchema = GradeSchema.omit({
 	student: true,
 	team: true,
 	sprint: true,
-	isValid: true
+	confirmed: true
 }).extend({
 	gradeTypeId: z.coerce.number(),
 	authorId: z.coerce.number(),
