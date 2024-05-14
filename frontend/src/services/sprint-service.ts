@@ -25,7 +25,7 @@ export const getSprints = async(): Promise<Sprint[]> => {
 
 	return response.data
 }
-
+  
 export const addSprint = async(sprint: unknown): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
