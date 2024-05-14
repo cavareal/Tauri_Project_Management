@@ -12,6 +12,7 @@ import { dateToCalendarDate } from "@/utils/date"
 import { hasPermission } from "@/services/user-service"
 import { Column } from "@/components/atoms/containers"
 import { AddSprint, SprintSection } from "@/components/organisms/sprints"
+import { ActionSection } from "../molecules/action-section"
 
 const lastSprintOrder = ref<number>(0)
 const lastSprintEndDate = ref<CalendarDate | undefined>()
@@ -44,6 +45,10 @@ const canViewSprints = hasPermission("SPRINTS_PAGE")
 			<AddSprint v-if="canEditSprints"
 				:first-sprint="!sprints || sprints.length === 0" @add:sprint="refetchSprints"
 				:lastSprintOrder="lastSprintOrder" :lastSprintEndDate="lastSprintEndDate"
+			/>
+			<ActionSection v-else-if="!sprints || sprints.length === 0"
+				title="Aucun sprint n'a été créé pour le moment."
+				description="Attendez que le leader de l'option ou le leader du projet crée un sprint."
 			/>
 		</Column>
 
