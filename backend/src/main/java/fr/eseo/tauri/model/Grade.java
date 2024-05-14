@@ -86,4 +86,9 @@ public class Grade {
     @JsonDeserialize
     private Integer sprintId;
 
+    @Transient
+    @NotNull(groups = { Create.class }, message = "The isValid field is required")
+    @JsonDeserialize
+    private Boolean isValid;
+
 }
