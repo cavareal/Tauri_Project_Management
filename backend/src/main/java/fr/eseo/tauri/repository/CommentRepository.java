@@ -18,6 +18,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     @Query(value = "DELETE FROM comments WHERE sprint_id IN (SELECT id FROM sprints WHERE project_id = :projectId)", nativeQuery = true)
     void deleteAllByProject(Integer projectId);
 
+    @Query("SELECT c FROM Comment c WHERE c.team.id = :teamId AND c.sprint.id = :sprintId AND c.feedback = :feedback")
     List<Comment> findAllByTeamIdAndSprintIdAndFeedback(Integer teamId, Integer sprintId, Boolean feedback);
 
 }
