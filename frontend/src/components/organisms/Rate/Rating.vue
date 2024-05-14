@@ -10,7 +10,8 @@ import {
 	Presentation,
 	Package,
 	Blocks,
-	MessageSquareReply
+	MessageSquareReply,
+	LucideCirclePlus
 } from "lucide-vue-next"
 import { DialogRating, DialogViewGrades, DialogBonus } from "@/components/organisms/rating"
 import { hasPermission } from "@/services/user-service"
@@ -159,7 +160,8 @@ const canAddFeedbacks = hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 
 	<ContainerGradeType v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
 		<template #icon>
-			<LucideCircleFadingPlus :size="40" :stroke-width="1"/>
+			<LucideCircleFadingPlus v-if="canGradeLimitedBonus && !canGradeUnlimitedBonus" :size="40" :stroke-width="1"/>
+			<LucideCirclePlus v-if="canGradeUnlimitedBonus" :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
 			<DialogBonus

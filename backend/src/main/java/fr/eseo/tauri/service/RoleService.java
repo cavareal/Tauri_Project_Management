@@ -23,22 +23,27 @@ public class RoleService {
 	private final UserService userService;
 	private final PermissionService permissionService;
 
+	private static final String READ_PERMISSION = "readRole";
+	private static final String ADD_PERMISSION = "addRole";
+	private static final String UPDATE_PERMISSION = "updateRole";
+	private static final String DELETE_PERMISSION = "deleteRole";
+
 	public Role getRoleById(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readRole"))) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 		return roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("role", id));
 	}
 
 	public List<Role> getAllRoles(String token) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readRoles"))) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 		return roleRepository.findAll();
 	}
 
 	public void createRole(String token, Role role) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "addRole"))) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, ADD_PERMISSION))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 		if(role.userId() != null) role.user(userService.getUserById(token, role.userId()));
@@ -46,7 +51,7 @@ public class RoleService {
 	}
 
 	public void updateRole(String token, Integer id, Role updatedRole) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateRole"))) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, UPDATE_PERMISSION))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 
@@ -59,7 +64,7 @@ public class RoleService {
 	}
 
 	public void deleteRoleById(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteRole"))) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 		getRoleById(token, id);
@@ -67,7 +72,7 @@ public class RoleService {
 	}
 
 	public void deleteAllRoles(String token) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteRole"))) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 		roleRepository.deleteAll();
@@ -80,7 +85,7 @@ public class RoleService {
 	 * @return An iterable of users associated with the provided role type.
 	 */
 	public List<User> getUsersByRoleType(String token, RoleType roleType) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteRole"))) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 		var roles = roleRepository.findByType(roleType);

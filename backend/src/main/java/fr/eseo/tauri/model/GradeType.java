@@ -22,7 +22,6 @@ public class GradeType {
     @JsonProperty
     private String name;
 
-    // TODO: Why is this field nullable? //Response : Can be changed later, and isn't needed to identify gradetype, so not needed at creation
     @Min(value = 0, groups = { Create.class, Update.class }, message = "The factor field must be greater than or equal to 0")
     @JsonProperty
     private Float factor;

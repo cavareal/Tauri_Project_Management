@@ -49,7 +49,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		userSeeder.seed(faker);
 		gradeTypeSeeder.seed();
 		permissionSeeder.seed();
-		roleSeeder.seed(faker);
+		roleSeeder.seed();
 		projectSeeder.seed();
 	}
 

@@ -13,18 +13,6 @@ public class GradeTypeSeeder {
 	private final GradeTypeRepository gradeTypeRepository;
 
 	GradeTypeName[] gradeTypeNames = GradeTypeName.values();
-	/*private static final String[] NAMES_TEAM_GRADE = {
-			"Performance Globale",
-			"Support Matériel",
-			"Contenu de la présentation",
-			"Solution technique",
-			"Gestion de projet",
-			"Conformité au sprint"
-	};*/
-
-
-
-
 
 	public void seed() {
 		for(GradeTypeName gradeTypeName : gradeTypeNames) {
@@ -42,16 +30,6 @@ public class GradeTypeSeeder {
 
 			gradeTypeRepository.save(gradeType);
 		}
-		/*for (String name : NAMES_TEAM_GRADE) {
-			var gradeType = new GradeType();
-
-			gradeType.name(name);
-			gradeType.factor(1.f);
-			gradeType.forGroup(true);
-			gradeType.imported(false);
-
-			gradeTypeRepository.save(gradeType);
-		}*/
 	}
 
 }

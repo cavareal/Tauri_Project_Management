@@ -105,13 +105,19 @@ const DIALOG_DESCRIPTION_ILLIMITE = "Vous pouvez ajouter des bonus et malus illi
 		</template>
 
 		<Row v-if="studentBonuses" class="flex-wrap">
-			<Row v-for="(student, index) in teamStudents" :key="student.id" class="grid grid-cols-3 items-center gap-4 mb-2 w-1/2">
-				<Label :for="student.name" class="whitespace-nowrap">{{ student.name }}</Label>
-				<Input type="number" :default-value="studentBonuses[index]?.value === 0 ? '' : studentBonuses[index]?.value"
-					   :onchange="(e: InputEvent) => handleBonusInput(e, index, 'value')"/>
-				<Input type="text" :default-value="studentBonuses[index]?.comment ?? ''"
-					   :onchange="(e: InputEvent) => handleBonusInput(e, index, 'comment')"/>
-				</Row>
+			<Row v-for="(student, index) in teamStudents" :key="student.id" class=" mb-3 w-1/2">
+				<Column>
+					<Row class="grid grid-cols-[3fr,1fr] mr-2">
+						<Label :for="student.name" class="whitespace-nowrap mt-3">{{ student.name }}</Label>
+						<Input class="mb-2 " type="number" :default-value="studentBonuses[index]?.value === 0 ? '' : studentBonuses[index]?.value"
+					   		:onchange="(e: InputEvent) => handleBonusInput(e, index, 'value')"/>
+					</Row>
+					<Row class="mr-2">
+						<Input v-if="!props.limited" type="text" :default-value="studentBonuses[index]?.comment ?? ''"
+					   		:onchange="(e: InputEvent) => handleBonusInput(e, index, 'comment')"/>
+					</Row>
+				</Column>
+			</Row>
 		</Row>
 		<Skeleton v-else class="w-full h-56" />
 		<ErrorText v-if="error">Une erreur est survenue.</ErrorText>

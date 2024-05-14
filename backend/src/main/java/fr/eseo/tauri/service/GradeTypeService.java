@@ -25,37 +25,42 @@ public class GradeTypeService {
     private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
     private final GradeService gradeService;
+    
+    private static final String READ_PERMISSION = "readGradeType";
+    private static final String ADD_PERMISSION = "addGradeType";
+    private static final String UPDATE_PERMISSION = "updateGradeType";
+    private static final String DELETE_PERMISSION = "deleteGradeType";
 
     public GradeType getGradeTypeById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeType"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return gradeTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("gradeType", id));
     }
 
     public List<GradeType> getAllImportedGradeTypes(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return gradeTypeRepository.findAllImported();
     }
 
     public List<GradeType> getAllUnimportedGradeTypes(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeTypes"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return gradeTypeRepository.findAllUnimported();
     }
 
     public void createGradeType(String token, GradeType gradeType) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeType"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, ADD_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         gradeTypeRepository.save(gradeType);
     }
 
     public void updateGradeType(String token, Integer id, GradeType updatedGradeType) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateGradeType"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, UPDATE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
@@ -74,7 +79,7 @@ public class GradeTypeService {
     }
 
     public void deleteGradeTypeById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getGradeTypeById(token, id);
@@ -82,14 +87,14 @@ public class GradeTypeService {
     }
 
     public void deleteAllImportedGradeTypes(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         gradeTypeRepository.deleteAllImported();
     }
 
     public void deleteAllUnimportedGradeTypes(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeType"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         gradeTypeRepository.deleteAllUnimported();
@@ -104,7 +109,7 @@ public class GradeTypeService {
      */
     public List<GradeType> generateImportedGradeTypes(String token, List<String> coefficients, List<String> names) {
 
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeType"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, ADD_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
@@ -210,7 +215,7 @@ public class GradeTypeService {
 
 
     public GradeType findByName(String name, String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGradeType"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         return gradeTypeRepository.findByName(name);

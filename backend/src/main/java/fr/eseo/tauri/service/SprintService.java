@@ -7,6 +7,7 @@ import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.SprintRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,8 @@ public class SprintService {
         return sprintRepository.findAllByProject(projectId);
     }
 
-    public void createSprint(String token, Sprint sprint, Integer projectId) {
+    public void createSprint(String token, Sprint sprint, int sprintId) {
+        CustomLogger.info("Creating sprint " + sprintId);
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addSprint"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
