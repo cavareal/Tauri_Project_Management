@@ -3,6 +3,8 @@ import type { CookieName } from "./cookie.type"
 import { redirect } from "@/utils/router"
 import type { PermissionType } from "@/types/permission"
 
+const COOKIE_EXPIRATION = 60 * 60 * 24 * 7 // in seconds
+
 /**
  * Get the value of a cookie by its name
  * @param name The name of the cookie to get
@@ -29,9 +31,13 @@ const getCookie = <T = string>(name: CookieName): T => {
  * @param value The value of the cookie
  */
 const setCookie = (name: CookieName, value: string): void => {
-	document.cookie = `${name}=${value}; path=/`
+	document.cookie = `${name}=${value}; path=/; max-age=${COOKIE_EXPIRATION}`
 }
 
+/**
+ * Remove a cookie by its name
+ * @param name The name of the cookie to remove
+ */
 const removeCookie = (name: CookieName): void => {
 	document.cookie = `${name}=; expires=Thu, 19 Apr 2001 00:00:00 UTC; path=/;`
 }

@@ -410,4 +410,12 @@ public class StudentService {
         return bonusRepository.findStudentBonus(idStudent, limited);
     }
 
+    public List<Bonus> getStudentBonuses(String token, Integer idStudent) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        return bonusRepository.findAllStudentBonuses(idStudent);
+    }
+
 }

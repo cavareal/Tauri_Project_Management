@@ -40,6 +40,11 @@ public class GradeService {
     @Lazy
     private final GradeTypeService gradeTypeService;
     private final TeamService teamService;
+    @Lazy
+    private final GradeService self;
+
+
+
 
     public Grade getGradeById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
@@ -146,7 +151,7 @@ public class GradeService {
 
     // Non-transactional method to call the transactional one
     public void updateImportedMeanByStudentId(Float value, Integer studentId) {
-        this.updateImportedMeanByStudentIdTransactional(value, studentId);
+        self.updateImportedMeanByStudentIdTransactional(value, studentId);
     }
 
     @Transactional
@@ -182,27 +187,10 @@ public class GradeService {
     }
 
     public Double getSprintGrade(String token, Integer userId, Integer sprintId) {
-    /*    if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-
-        Student student = studentService.getStudentById(token, userId);
-
-        Double sprintGrade;
-
-        var grade1 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.TECHNICAL_SOLUTION.displayName());
-        var grade2 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.PROJECT_MANAGEMENT.displayName());
-        var grade3 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.SPRINT_CONFORMITY.displayName());
-        var grade4 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.CONTENT_PRESENTATION.displayName());
-
-
-
-        var bonuses = bonusRepository.findAllStudentBonuses(userId);
-
-        //Student student = studentService.getStudentById(token, userId);
-        //Sprint sprint = sprintService.getSprintById(token, sprintId);
-
-        return gradeRepository.findSprintGrade(student, sprint);*/
+        CustomLogger.info("Getting sprint grade for user with id " + userId + " and sprint with id " + sprintId);
         return 0.0;
     }
 

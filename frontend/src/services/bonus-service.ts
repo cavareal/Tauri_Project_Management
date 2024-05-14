@@ -45,3 +45,16 @@ export const getStudentBonus = async(studentId: number, limited: boolean): Promi
 
 	return response.data
 }
+
+export const getStudentBonuses = async(studentId: number): Promise<Bonus[]> => {
+	const response = await queryAndValidate({
+		route: `students/${studentId}/bonuses`,
+		responseSchema: z.array(BonusSchema)
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
