@@ -1,43 +1,37 @@
 <script setup lang="ts">
+
 import { Cookies } from "@/utils/cookie"
-import { computed, onMounted, ref } from "vue"
-import type { Team } from "@/types/team"
+import { computed } from "vue"
 import { SidebarTemplate } from "@/components/templates"
-import { NotAuthorized, NotFound } from "@/components/organisms/errors"
-import { getTeamByUserId } from "@/services/team-service"
+import { NotAuthorized } from "@/components/organisms/errors"
 import { getCurrentProject } from "@/services/project-service"
 import { Header } from "@/components/molecules/header"
 import { useQuery } from "@tanstack/vue-query"
 import MyTeamAccordion from "@/components/organisms/my-team/MyTeamAccordion.vue"
+import { getTeamByUserId } from "@/services/team-service"
+import { hasPermission } from "@/services/user-service"
+import { PageSkeleton } from "../atoms/skeletons"
+import { TeamsNotCreated } from "../organisms/teams"
 
-const token = Cookies.getToken()
 const role = Cookies.getRole()
-const currentUser = Cookies.getUserId()
-const team = ref<Team>()
+const userId = Cookies.getUserId()
 
-
-const { data: currentPhase, refetch: refetchCurrentPhase } = useQuery({
+const { data: currentPhase, isLoading: phaseLoading } = useQuery({
 	queryKey: ["project"], queryFn: async() => (await getCurrentProject()).phase
 })
 
-const displayTeam = computed(() => (role === "SUPERVISING_STAFF" || role === "OPTION_STUDENT")
-    && currentPhase.value !== "COMPOSING")
+const { data: team, isLoading: teamLoading } = useQuery({ queryKey: ["current-user"], queryFn: () => getTeamByUserId(userId) })
 
-onMounted(async() => {
-	if (!currentUser) return
-	team.value = await getTeamByUserId(currentUser)
-})
+const canDisplayTeam = computed(() => role === "SUPERVISING_STAFF" || (role === "OPTION_STUDENT" && currentPhase.value !== "COMPOSING"))
+
 </script>
 
 <template>
 	<SidebarTemplate>
 		<Header title="Mon équipe" />
-		<NotAuthorized v-if="!token || !role" />
-    <MyTeamAccordion v-else-if="displayTeam && team"
-                     :phase="currentPhase"
-                     :team="team"/>
-		<NotFound v-else />
+		<NotAuthorized v-if="!hasPermission('MY_TEAM_PAGE')" />
+		<PageSkeleton v-else-if="phaseLoading || teamLoading" />
+		<MyTeamAccordion v-else-if="canDisplayTeam && team" :team="team"/>
+		<TeamsNotCreated v-else />
 	</SidebarTemplate>
 </template>
-
-<style scoped></style>

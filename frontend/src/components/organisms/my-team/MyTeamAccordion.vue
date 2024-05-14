@@ -1,41 +1,53 @@
 <script setup lang="ts">
-import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import TeamAccordionContent from "@/components/organisms/teams/TeamAccordionContent.vue"
+
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Team } from "@/types/team"
-import type { Student } from "@/types/student"
-import { onMounted, ref } from "vue"
 import { getStudentsByTeamId } from "@/services/student-service"
+import { useQuery } from "@tanstack/vue-query"
+import { Column } from "@/components/atoms/containers"
+import { cn } from "@/utils/style"
+import { extractNames } from "@/utils/string"
+import { CheckIcon, GenderIcon } from "@/components/atoms/icons"
 
-const props = defineProps({
-	team: {
-		type: Object as () => Team,
-		required: true
-	},
-	phase: {
-		type: String,
-		required: true
-	}
-})
+const props = defineProps<{
+	team: Team
+}>()
 
-const students = ref<Student[]>([])
+const { data: students } = useQuery({ queryKey: ["team-students", props.team.id], queryFn: () => getStudentsByTeamId(props.team.id) })
 
-onMounted(async() => {
-	students.value = await getStudentsByTeamId(props.team.id)
-})
+const rowClass = cn("py-2 h-auto")
+
 </script>
 
 <template>
-  <Accordion type="multiple">
-    <AccordionItem :value="props.team.name" class="flex-1">
-      <AccordionTrigger>
-        {{ props.team.name }}
-        {{ props.team.leader?.name ? `(${props.team.leader.name})` : "" }}
-      </AccordionTrigger>
-      <TeamAccordionContent :teamId="props.team.id" :students="students"/>
-    </AccordionItem>
-  </Accordion>
+	<Column class="gap-2">
+		<p class="font-medium">
+			{{ props.team.name }}
+			{{ props.team.leader?.name ? `(${props.team.leader.name})` : "" }}
+		</p>
+
+		<Table class="flex-1">
+		<TableHeader>
+			<TableRow>
+				<TableHead :class="rowClass" class="min-w-28">Nom</TableHead>
+				<TableHead :class="rowClass" class="min-w-28">Prénom</TableHead>
+				<TableHead :class="rowClass" class="min-w-16">Genre</TableHead>
+				<TableHead :class="rowClass" class="min-w-16">Bachelor</TableHead>
+			</TableRow>
+		</TableHeader>
+
+		<TableBody v-if="students">
+			<TableRow v-for="student in students" :key="student.id">
+				<TableCell :class="rowClass">{{ extractNames(student.name).lastName }}</TableCell>
+				<TableCell :class="rowClass">{{ extractNames(student.name).firstName }}</TableCell>
+				<TableCell :class="rowClass">
+					<GenderIcon :gender="student.gender" />
+				</TableCell>
+				<TableCell :class="rowClass">
+					<CheckIcon :checked="student.bachelor ?? false" />
+				</TableCell>
+			</TableRow>
+		</TableBody>
+	</Table>
+	</Column>
 </template>
-
-<style scoped>
-
-</style>

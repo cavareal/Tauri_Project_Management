@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
-import { getAllSprints } from "@/services/sprint-service"
+import { getSprints } from "@/services/sprint-service"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
 import { Text } from "@/components/atoms/texts"
@@ -29,7 +29,7 @@ const componentKey = ref(0)
 const authorized = hasPermission("RATING_PAGE")
 
 const { data: teams, isLoading, error } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
-const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getAllSprints })
+const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
 const ratedSprints = computed(() => {
 	return sprints.value?.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT") || []
 })

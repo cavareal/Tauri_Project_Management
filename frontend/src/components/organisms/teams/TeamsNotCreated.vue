@@ -2,8 +2,8 @@
 
 import { ActionSection } from "@/components/molecules/action-section"
 
-const ACTION_TITLE = "Il n'y a pas encore d'équipes"
-const ACTION_DESCRIPTION = "Les équipes n'ont pas encore été créées par le project leader."
+const ACTION_TITLE = "Les équipes ne sont pas encore composées."
+const ACTION_DESCRIPTION = "Veuillez patienter jusqu'à ce que les équipes soient composées par le leader du projet."
 
 </script>
 
