@@ -32,3 +32,29 @@ export type CreateSprint = z.infer<typeof CreateSprintSchema>
 
 export const UpdateSprintSchema = CreateSprintSchema.partial()
 export type UpdateSprint = z.infer<typeof UpdateSprintSchema>
+
+export const formatSprintEndType = (sprintEndType: SprintEndType): string => {
+	switch (sprintEndType) {
+	case "NORMAL_SPRINT":
+		return "Sprint normal"
+	case "UNGRADED_SPRINT":
+		return "Sprint non noté"
+	case "FINAL_SPRINT":
+		return "Sprint final"
+	}
+}
+
+export const getSprintEndTypeDescription = (sprintEndType: SprintEndType): string => {
+	switch (sprintEndType) {
+	case "NORMAL_SPRINT":
+		return "Sprint planning, sprint, sprint review avec présentation et démonstration [soutenance], sprint retrospective"
+	case "UNGRADED_SPRINT":
+		return "Sprint planning, sprint, possibilité de sprint review avec le client [non noté], sprint retrospective"
+	case "FINAL_SPRINT":
+		return "Sprint planning, sprint, sprint review avec présentation et démonstration [soutenance], sprint retrospective, présentation vidéo"
+	}
+}
+
+export const formatSprintEndTypeWithDescription = (sprintEndType: SprintEndType): string => {
+	return `${formatSprintEndType(sprintEndType)} : ${getSprintEndTypeDescription(sprintEndType)}`
+}

@@ -1,10 +1,11 @@
 import { AuthResponseSchema } from "@/types/auth-response"
-import { apiQuery, mutateAndValidateWithReturn } from "@/utils/api"
+import { mutateAndValidateWithReturn } from "@/utils/api"
 import { Cookies } from "@/utils/cookie"
 import { getAllPermissions, getAllRoles } from "@/services/user-service"
 import { AuthRequestSchema } from "@/types/auth-request"
 
 export const login = async(login: string, password: string) => {
+	Cookies.removeAll()
 	// TODO: set the project id
 	Cookies.setProjectId(1)
 

@@ -7,6 +7,7 @@ import { ref } from "vue"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
+import { createToast } from "@/utils/toast"
 
 const open = ref(false)
 const emits = defineEmits(["delete:sprint"])
@@ -16,17 +17,15 @@ const props = defineProps<{
 	sprintOrder: number,
 }>()
 
-const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-sprint"], mutationFn: async() => {
+const { mutate, isPending, error } = useMutation({ mutationFn: async() => {
 	await deleteSprint(props.sprintId)
 		.then(() => open.value = false)
 		.then(() => emits("delete:sprint"))
+		.then(() => createToast(`Le sprint ${props.sprintOrder} a bien été supprimé.`))
 } })
 
-
-
-
 const DIALOG_TITLE = "Supprimer un sprint"
-const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de supprimer le sprint numéro " + props.sprintOrder + " ?"
+const DIALOG_DESCRIPTION = `Êtes-vous bien sûr de supprimer le sprint ${props.sprintOrder} ?`
 
 </script>
 
