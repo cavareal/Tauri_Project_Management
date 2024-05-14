@@ -61,6 +61,9 @@ public class Grade {
     @JsonProperty
     private Sprint sprint;
 
+    @JsonProperty
+    private Boolean confirmed = false;
+
     @NotNull(groups = { Create.class }, message = "The gradeTypeId field is required")
     @Transient
     @JsonDeserialize
@@ -85,10 +88,5 @@ public class Grade {
     @Transient
     @JsonDeserialize
     private Integer sprintId;
-
-    @Transient
-    @NotNull(groups = { Create.class }, message = "The isValid field is required")
-    @JsonDeserialize
-    private Boolean isValid;
 
 }
