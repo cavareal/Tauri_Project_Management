@@ -22,6 +22,6 @@ public interface FlagRepository extends JpaRepository<Flag, Integer> {
     @Query("SELECT f FROM Flag f WHERE f.author.id = :authorId AND f.description = :description")
     List<Flag> findByAuthorIdAndDescription(Integer authorId, String description);
 
-    List<Flag> findByAuthor_IdAndType(Integer authorId, FlagType type);
+    List<Flag> findByAuthorIdAndType(Integer authorId, FlagType type);
 
 }

@@ -244,6 +244,6 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return commentRepository.findAllByTeam_IdAndSprint_IdAndFeedback(teamId, sprintId, true);
+        return commentRepository.findAllByTeamIdAndSprintIdAndFeedback(teamId, sprintId, true);
     }
 }
