@@ -94,8 +94,8 @@ const handleTriggerClick = async() => {
 		</template>
 		<div class="flex">
 			<Row class="flex-wrap">
-				<Row v-for="(student, index) in teamStudents" :key="student.id" class="grid grid-cols-[2fr,1fr] items-center mb-2 w-1/2 ">
-				<Label class="ml-2">{{ student.name }}</Label>
+				<Row v-for="(student, index) in teamStudents" :key="student.id" class="grid grid-cols-[2fr,1fr] items-center mb-2 w-1/2">
+				<Label :for="student.name" class="ml-2">{{ student.name }}</Label>
 					<Input type="number" min="0" max="20"  @input="handleInput($event, index, student.id)" />
 				</Row>
 			</Row>
