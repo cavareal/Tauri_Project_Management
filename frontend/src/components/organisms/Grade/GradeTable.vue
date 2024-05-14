@@ -17,6 +17,7 @@ import {
 } from "lucide-vue-next"
 import { watch } from "vue"
 import { getAverageByGradeType } from "@/services/grade-service"
+import { getStudentBonus } from "@/services/bonus-service"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
 const props = defineProps<{
@@ -43,6 +44,30 @@ const useAverageQuery = (id: number, gradeTypeName: string) => {
 		average.value = -1
 	}
 	return average
+}
+
+const getBonus = (id: number) => {
+	let { data: bonusLimited } = useQuery({
+		queryKey: ["bonus", id, true],
+		queryFn: async() => {
+			return await getStudentBonus(id, true)
+		}
+	})
+
+	let { data: bonusUnlimited } = useQuery({
+		queryKey: ["bonus", id, false],
+		queryFn: async() => {
+			return await getStudentBonus(id, false)
+		}
+	})
+
+	let bonusLimitedValue = bonusLimited?.value?.value ?? 0
+	let bonusUnlimitedValue = bonusUnlimited?.value?.value ?? 0
+
+	// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+	let bonusSum = bonusLimitedValue + bonusUnlimitedValue
+
+	return [bonusLimitedValue, bonusUnlimitedValue, bonusSum]
 }
 
 watch(() => props.teamId, async() => {
@@ -82,9 +107,9 @@ watch(() => props.teamId, async() => {
 				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Contenu de la présentation').value >= 0 ? useAverageQuery(Number(props.teamId), 'Contenu de la présentation').value : '' }}</TableCell>
 				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), 'Support de présentation').value >= 0 ? useAverageQuery(Number(props.teamId), 'Support de présentation').value : ''}}</TableCell>
 				<TableCell :class="rowClass">  </TableCell>
-				<TableCell :class="rowClass">  </TableCell>
-				<TableCell :class="rowClass">  </TableCell>
-				<TableCell :class="rowClass">  </TableCell>
+				<TableCell :class="rowClass">{{ getBonus(Number(student.id))[0] }}</TableCell>
+				<TableCell :class="rowClass">{{ getBonus(Number(student.id))[1] }}</TableCell>
+				<TableCell :class="rowClass">{{ getBonus(Number(student.id))[2] }}</TableCell>
 				<TableCell :class="rowClass">{{ useAverageQuery(Number(props.teamId), "Performance globale de l'équipe").value >= 0 ? useAverageQuery(Number(props.teamId), "Performance globale de l'équipe").value : ''}}</TableCell>
 				<TableCell :class="rowClass">  </TableCell>
 				<TableCell :class="rowClass">{{ useAverageQuery(Number(student.id), "Performance individuelle").value >= 0 ? useAverageQuery(Number(student.id), "Performance individuelle").value : ''}}</TableCell>
