@@ -51,8 +51,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"]
 			teamId: null,
 			sprintId: Number(props.sprintId),
 			comment: null,
-			studentId: marks.value[i].studentId,
-			isValid: false
+			studentId: marks.value[i].studentId
 		})
 			.then(() => {
 				marks.value[i].mark = 0

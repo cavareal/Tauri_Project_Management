@@ -30,13 +30,12 @@ const { data: gradeType, refetch } = useQuery<GradeType, Error>({
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
 	await createGrade({
-	    value: Number(mark.value),
+		value: Number(mark.value),
 		gradeTypeId: gradeType.value.id,
 		teamId: Number(props.teamId),
 		sprintId: Number(props.sprintId),
 		comment: null,
-		studentId: null,
-		isValid: false,
+		studentId: null
 	})
 		.then(() => mark.value = "")
 		.then(() => createToast("La note a bien été enregistrée."))
