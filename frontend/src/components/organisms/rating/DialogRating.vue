@@ -35,7 +35,8 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"]
 		teamId: Number(props.teamId),
 		sprintId: Number(props.sprintId),
 		comment: null,
-		studentId: null
+		studentId: null,
+		isValid: false,
 	})
 		.then(() => mark.value = "")
 		.then(() => createToast("La note a bien été enregistrée."))
