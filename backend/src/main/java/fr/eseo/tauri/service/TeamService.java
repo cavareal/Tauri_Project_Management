@@ -7,6 +7,7 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
@@ -28,6 +29,7 @@ public class TeamService {
     private final CommentRepository commentRepository;
     private final GradeRepository gradeRepository;
     private final GradeTypeRepository gradeTypeRepository;
+    @Lazy
     private final StudentService studentService;
 
     private static final String READ_PERMISSION = "readTeam";
