@@ -60,8 +60,8 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 	List<GradeType> findAllUnimportedGradeTypesByProjectId(int projectId);
 
 
-	@Query("SELECT g.confirmed FROM Grade g WHERE g.sprint.id = :sprintId AND g.student.id = :studentId AND g.gradeType.id = :gradeType")
-	Boolean findIsConfirmedBySprindAndStudent(Integer sprintId, Integer studentId, Integer gradeType);
+	@Query("SELECT g FROM Grade g WHERE g.sprint.id = :sprintId AND g.student.id = :studentId AND g.gradeType.id = :gradeType")
+	Grade findIsConfirmedBySprindAndStudent(Integer sprintId, Integer studentId, Integer gradeType);
 
 	@Modifying
 	@Query("UPDATE Grade g SET g.confirmed = true WHERE g.sprint.id = :sprintId AND g.student.id = :studentId AND g.gradeType.id = :gradeType")
