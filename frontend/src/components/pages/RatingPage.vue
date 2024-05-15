@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { computed, ref } from "vue"
+import { ref } from "vue"
 import { SidebarTemplate } from "@/components/templates"
 import NotAutorized from "@/components/organisms/errors/NotAuthorized.vue"
 import { Header } from "@/components/molecules/header"
@@ -28,10 +28,10 @@ const componentKey = ref(0)
 const authorized = hasPermission("RATING_PAGE")
 
 const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
-const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
-const ratedSprints = computed(() => {
-	return sprints.value?.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT") || []
-})
+const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
+	const sprints = await getSprints()
+	return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
+} })
 
 const forceRerender = () => {
 	componentKey.value += 1
@@ -50,7 +50,7 @@ const forceRerender = () => {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="sprint in ratedSprints" :key="sprint.id" :value="sprint.id" @click="forceRerender">{{sprint.id}}</SelectItem>
+							<SelectItem v-for="sprint in sprints" :key="sprint.id" :value="sprint.id.toString()" @click="forceRerender">Sprint {{sprint.sprintOrder}}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>

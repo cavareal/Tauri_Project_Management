@@ -37,6 +37,7 @@ public class JwtTokenUtil {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            System.out.println("Validate token : " + e);
             return false;
         }
     }
