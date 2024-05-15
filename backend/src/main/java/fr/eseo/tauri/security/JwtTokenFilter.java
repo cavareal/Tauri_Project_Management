@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
 @AllArgsConstructor
@@ -27,10 +28,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         if (token != null && jwtTokenUtil.validateAccessToken(token)) {
             UserDetails userDetails = jwtTokenUtil.createUserDetails(token);
             jwtTokenUtil.setAuthenticationContext(userDetails, request);
-
             filterChain.doFilter(request, response);
+
         } else if (request.getRequestURI().equals("/api/auth/login")) {
             filterChain.doFilter(request, response);
+
+        } else if (!Objects.equals(request.getRequestURI(), "/api")) {
+            filterChain.doFilter(request, response);
+
         } else {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
