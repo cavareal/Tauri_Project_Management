@@ -194,4 +194,35 @@ class CommentServiceTest {
         assertThrows(SecurityException.class, () -> commentService.deleteAllCommentsByProject(token, projectId));
     }
 
+    @Test
+    void updateCommentShouldThrowSecurityExceptionWhenPermissionDoesNotExist() {
+        String token = "validToken";
+        Integer id = 1;
+        Comment updatedComment = new Comment();
+
+        when(authService.checkAuth(token, "updateComment")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> commentService.updateComment(token, id, updatedComment));
+    }
+
+    @Test
+    void updateCommentShouldNotUpdateCommentWhenUpdatedCommentFieldsAreNull() {
+        String token = "validToken";
+        Integer id = 1;
+        Comment updatedComment = new Comment();
+        Comment existingComment = new Comment();
+        existingComment.content("Existing Content");
+        existingComment.feedback(false);
+
+        when(authService.checkAuth(token, "updateComment")).thenReturn(true);
+        when(authService.checkAuth(token, "readComment")).thenReturn(true);
+        when(commentRepository.findById(id)).thenReturn(Optional.of(existingComment));
+        commentService.updateComment(token, id, updatedComment);
+
+        assertEquals("Existing Content", existingComment.content());
+        verify(commentRepository, times(1)).save(any(Comment.class));
+    }
+
 }
+
+
