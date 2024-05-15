@@ -15,13 +15,21 @@ import {
 	Blocks
 } from "lucide-vue-next"
 import { watch } from "vue"
-import { getStudentsAverageByTeam, getTeamAverage } from "@/services/grade-service"
+import {
+	getStudentsAverageByTeam,
+	getTeamAverage,
+	getSprintGrade,
+	getTeamTotalGrade,
+	getIndividualTotalGrades
+} from "@/services/grade-service"
 import { getStudentBonus, getStudentBonuses } from "@/services/bonus-service"
 import { hasPermission } from "@/services/user-service"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId } from "@/services/team-service"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
+import FeedbackContainer from "@/components/organisms/rating/FeedbackContainer.vue"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
 const props = defineProps<{
@@ -29,9 +37,9 @@ const props = defineProps<{
 	sprintId : string,
 }>()
 
-let oldTeamId = props.teamId
+let oldTeamId = ""
 
-const { data: teamStudents, refetch } = useQuery({ queryKey: ["team-students"], queryFn: async() => {
+const { data: teamStudents, ...queryTeamStudents } = useQuery({ queryKey: ["team-students"], queryFn: async() => {
 	if (!props.teamId) return
 	return await getStudentsByTeamId(Number(props.teamId))
 } })
@@ -59,16 +67,33 @@ const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
 	}
 })
 
+const { data: sprintGrade, ...querySprintGrade } = useQuery({
+	queryKey: ["sprint-grades", props.teamId, props.sprintId],
+	queryFn: () => getSprintGrade(Number(props.teamId), Number(props.sprintId))
+})
+
+const { data: totalGrade, ...queryTotalGrade } = useQuery({
+	queryKey: ["sprint-grades", props.teamId, props.sprintId],
+	queryFn: () => getTeamTotalGrade(Number(props.teamId), Number(props.sprintId))
+})
+
+const { data: totalIndividualGrades, ...queryTotalIndividualGrades } = useQuery({
+	queryKey: ["sprint-grades", props.teamId, props.sprintId],
+	queryFn: () => getIndividualTotalGrades(Number(props.teamId), Number(props.sprintId))
+})
 
 const currentUserId = Cookies.getUserId()
 const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], queryFn: async() => getTeamByUserId(currentUserId) })
 
 watch(() => props.teamId, async() => {
 	if (props.teamId !== oldTeamId) {
-		await refetch()
+		await queryTeamStudents.refetch()
 		await queryAverageTeam.refetch()
-		await queryAverageStudent.refetch()
 		await refetchBonuses()
+		await queryAverageStudent.refetch()
+		await querySprintGrade.refetch()
+		await queryTotalGrade.refetch()
+		await queryTotalIndividualGrades.refetch()
 		oldTeamId = props.teamId
 	}
 })
@@ -102,7 +127,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 				<TableHead v-if="canView" :class="rowClass" title="Performance globale de l'équipe"><Users :stroke-width="1"/></TableHead>
 				<TableHead v-if="canView" :class="rowClass" title="Performance individuelle"><User :stroke-width="1"/></TableHead>
 				<TableHead v-if="canView" :class="rowClass" >Total individuel</TableHead>
-				<TableHead v-if="canViewAllOg || canViewOwnSg" :class="rowClass" >Note finale</TableHead>
+				<TableHead v-if="canView" :class="rowClass" >Note finale</TableHead>
 			</TableRow>
 		</TableHeader>
 		<TableBody>
@@ -112,14 +137,14 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
 				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
 				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Support de présentation"]}}</TableCell>
-				<TableCell :class="rowClass"> / </TableCell>
-				<TableCell v-if="canView && studentBonuses" :class="rowClass">{{ studentBonuses[index][1].value ? studentBonuses[index][1].value : ''}} </TableCell>
-				<TableCell v-if="(canViewAllWg || canViewAllOg || Number(student.id) === Number(currentUserId)) && studentBonuses" :class="rowClass">{{ studentBonuses[index][0].value ? studentBonuses[index][0].value : ''}} </TableCell>
-				<TableCell v-if="canViewAllWg || canViewAllOg || Number(student.id) === Number(currentUserId)" :class="rowClass">  / </TableCell>
+				<TableCell :class="rowClass"> {{totalGrade}} </TableCell>
+				<TableCell v-if="canView && studentBonuses" :class="rowClass">{{ studentBonuses[index][1].value ? studentBonuses[index][1].value : 0}} </TableCell>
+				<TableCell v-if="(canViewAllWg || canViewAllOg ) && studentBonuses" :class="rowClass">{{ studentBonuses[index][0].value ? studentBonuses[index][0].value : 0}} </TableCell>
+				<TableCell v-if="(canViewAllWg || canViewAllOg ) && studentBonuses" :class="rowClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
 				<TableCell v-if="canView && averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
-				<TableCell v-if="(canViewAllWg || canViewAllOg || Number(student.id) === Number(currentUserId)) && averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
-				<TableCell v-if="canViewAllWg || canViewAllOg || student.id === currentUserId" :class="rowClass">  </TableCell>
-				<TableCell v-if="canViewAllSg || (canViewOwnSg && student.id === currentUserId)" :class="rowClass">  </TableCell>
+				<TableCell v-if="(canViewAllWg || canViewAllOg ) && averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
+				<TableCell v-if="(canViewAllWg || canViewAllOg || student.id === currentUserId) && totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index] ? totalIndividualGrades[index] : 0}} </TableCell>
+				<TableCell v-if="canViewAllSg || (canViewOwnSg && student.id === currentUserId)" :class="rowClass"> {{sprintGrade}} </TableCell>
 			</TableRow>
 		</TableBody>
 	</Table>
@@ -145,25 +170,28 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 				</TableHeader>
 				<TableBody>
 					<TableRow v-for="(student, index) in teamStudents" >
+						<Skeleton v-if="!averageTeam || !studentBonuses || !totalGrade || !totalIndividualGrades" class="w-5/6 h-5" />
+						<span v-else>
 							<TableCell v-if="Number(student.id) === Number(currentUserId)" class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 							<TableCell v-if="averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
 							<TableCell v-if="averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
 							<TableCell v-if="averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
 							<TableCell v-if=" averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageTeam["Support de présentation"]}}</TableCell>
-							<TableCell v-if="Number(student.id) === Number(currentUserId)":class="rowClass"> / </TableCell>
+							<TableCell v-if="Number(student.id) === Number(currentUserId) && totalGrade" :class="rowClass"> {{totalGrade}} </TableCell>
 							<TableCell v-if="studentBonuses && Number(student.id) === Number(currentUserId)" :class="rowClass">{{ studentBonuses[index][1].value ? studentBonuses[index][1].value : ''}} </TableCell>
 							<TableCell v-if="studentBonuses && Number(student.id) === Number(currentUserId)" :class="rowClass">{{ studentBonuses[index][0].value ? studentBonuses[index][0].value : ''}} </TableCell>
-							<TableCell v-if="Number(student.id) === Number(currentUserId)" :class="rowClass">  / </TableCell>
+							<TableCell v-if="Number(student.id) === Number(currentUserId) && studentBonuses" :class="rowClass">   {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
 							<TableCell v-if="averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 							<TableCell v-if=" averageStudents && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
-							<TableCell v-if="Number(student.id) === Number(currentUserId)" :class="rowClass">  </TableCell>
-							<TableCell v-if="Number(student.id) === Number(currentUserId)" :class="rowClass">  </TableCell>
+							<TableCell v-if="Number(student.id) === Number(currentUserId) && totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index] ? totalIndividualGrades[index] : 0}} </TableCell>
+							<TableCell v-if="Number(student.id) === Number(currentUserId)" :class="rowClass"> {{sprintGrade}} </TableCell>
+						</span>
 					</TableRow>
 				</TableBody>
 			</Table>
 		</Tab>
 		<Tab title="Mon équipe">
-			coucou la team
+      <FeedbackContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId"/>
 		</Tab>
 
 	</Tabs>

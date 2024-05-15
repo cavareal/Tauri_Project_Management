@@ -17,7 +17,7 @@ const props = defineProps<{
 	selectedSprintId: number
 }>()
 
-const emits = defineEmits(["feedback:added"])
+const emits = defineEmits(["add-feedback"])
 const client = useQueryClient()
 
 const open = ref(false)
@@ -29,7 +29,7 @@ const { mutate, isPending, error } = useMutation({
 	mutationKey: ["add-feedback"], mutationFn: async() => {
 		await createFeedback(props.selectedTeamId, feedback.value, props.selectedSprintId)
 			.then(() => open.value = false)
-			.then(() => emits("feedback:added"))
+			.then(() => emits("add-feedback"))
 			.then(() => client.invalidateQueries({
 				queryKey: ["feedbacks", props.selectedTeamId, props.selectedSprintId]
 			}))
