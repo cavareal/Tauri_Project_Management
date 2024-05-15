@@ -125,12 +125,6 @@ public class GradeController {
         }
     }
 
-    @GetMapping("/confirmation")
-    public ResponseEntity<Boolean> getGradesConfirmation(@RequestParam("sprintId") Integer sprintId, @RequestParam("teamId") Integer teamId) {
-        return ResponseEntity.ok(gradeService.getGradesConfirmation(sprintId, teamId));
-    }
-
-
     @GetMapping("/average-team/{teamId}")
     public ResponseEntity<Map<String, Double>> getTeamGrades(@PathVariable Integer teamId, @RequestParam("sprintId") Integer sprintId) {
         Map<String, Double> teamGrades = gradeService.getTeamGrades(teamId, sprintId);
@@ -142,4 +136,10 @@ public class GradeController {
         Map<String, Double> teamStudentGrades = gradeService.getTeamStudentGrades(teamId, sprintId);
         return ResponseEntity.ok(teamStudentGrades);
     }
+
+    @GetMapping("/confirmation")
+    public ResponseEntity<Boolean> getGradesConfirmation(@RequestParam("sprintId") Integer sprintId, @RequestParam("teamId") Integer teamId) {
+        return ResponseEntity.ok(gradeService.getGradesConfirmation(sprintId, teamId));
+    }
+
 }

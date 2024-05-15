@@ -31,13 +31,12 @@ const ratedSprints = computed(() => {
 
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({ queryKey: ["grades-confirmation"], queryFn: async() => {
-	if(selectedSprint.value != '' && selectedTeam.value != '') return
+	if(selectedSprint.value === '' || selectedTeam.value === '') return false
 	return await getGradesConfirmation(selectedSprint.value, selectedTeam.value)
-	
 }})
 
-const forceRerender = () => {
-	componentKey.value += 1
+function forceRerender() {
+	refetchGradesConfirmation()
 }
 
 </script>
@@ -52,31 +51,30 @@ const forceRerender = () => {
 					<Button variant="default">Valider les notes individuelles</Button>
 				</ValidGradesDialog>
 
-				<Select v-model="selectedSprint">
+				<Select v-model="selectedSprint" @update:modelValue="forceRerender()">
 					<SelectTrigger class="w-[180px]">
 						<SelectValue placeholder="Sprint par défaut" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="sprint in ratedSprints" :key="sprint.id" :value="sprint.id"
-								@click="forceRerender">{{ sprint.id }}</SelectItem>
+							<SelectItem v-for="sprint in ratedSprints" :key="sprint.id" :value="sprint.id">{{ sprint.id }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>
-				<Select v-model="selectedTeam">
+				<Select v-model="selectedTeam" @update:modelValue="forceRerender()">
 					<SelectTrigger class="w-[180px]">
 						<SelectValue placeholder="Selectionner l'équipe" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="team in teams" :key="team.id" :value="team.id" @click="forceRerender">{{
+							<SelectItem v-for="team in teams" :key="team.id" :value="team.id">{{
 								team.name }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>
 			</Header>
 			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
-				<Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey" />
+				<Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint"/>
 				<NotAutorized v-else />
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
