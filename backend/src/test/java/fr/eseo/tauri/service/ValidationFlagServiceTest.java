@@ -82,4 +82,34 @@ class ValidationFlagServiceTest {
 
         assertThrows(SecurityException.class, () -> validationFlagService.createValidationFlags("token", flag));
     }
+
+    @Test
+    void updateValidationFlagShouldUpdateFlagWhenAuthorizedAndConfirmedIsNotNull() {
+        String token = "validToken";
+        Integer flagId = 1;
+        Integer authorId = 1;
+        ValidationFlag updatedValidationFlag = new ValidationFlag();
+        updatedValidationFlag.confirmed(true);
+
+        when(authService.checkAuth(token, "updateValidationFlag")).thenReturn(true);
+        when(authService.checkAuth(token, "readValidationFlag")).thenReturn(true);
+        when(validationFlagService.getValidationFlagByAuthorId(token, flagId, authorId)).thenReturn(new ValidationFlag());
+
+        validationFlagService.updateValidationFlag(token, flagId, authorId, updatedValidationFlag);
+
+        verify(validationFlagRepository, times(1)).save(any(ValidationFlag.class));
+    }
+
+    @Test
+    void updateValidationFlagShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer flagId = 1;
+        Integer authorId = 1;
+        ValidationFlag updatedValidationFlag = new ValidationFlag();
+
+        when(authService.checkAuth(token, "updateValidationFlag")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> validationFlagService.updateValidationFlag(token, flagId, authorId, updatedValidationFlag));
+    }
+
 }
