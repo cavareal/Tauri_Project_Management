@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -49,8 +50,8 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 
 	@Modifying
 	@Transactional
-	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported AND g.gradeType.name = :gradeTypeName")
-	void updateImportedMeanByStudentId(Float value, Integer studentId, String gradeTypeName);
+	@Query("UPDATE Grade g SET g.value = :value WHERE g.student.id = :studentId AND g.gradeType.imported AND g.gradeType.name = 'Moyenne'")
+	void updateImportedMeanByStudentId(Float value, Integer studentId);
 
 	@Query("SELECT g.value FROM Grade g WHERE g.student = :student AND g.gradeType = :gradeType")
 	Float findValueByStudentAndGradeType(Student student, GradeType gradeType);
@@ -60,7 +61,12 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 	List<GradeType> findAllUnimportedGradeTypesByProjectId(int projectId);
 
 
-	@Query("SELECT g.confirmed FROM Grade g WHERE g.sprint = :sprintId AND g.student = :studentId")
-	List<Student> findIsConfirmedBySprindAndStudent(Integer sprintId, Integer studentId);
+	@Query("SELECT g FROM Grade g WHERE g.sprint.id = :sprintId AND g.student.id = :studentId AND g.gradeType.id = :gradeType")
+	Grade findIsConfirmedBySprindAndStudent(Integer sprintId, Integer studentId, Integer gradeType);
+
+	@Modifying
+	@Query("UPDATE Grade g SET g.confirmed = true WHERE g.sprint.id = :sprintId AND g.student.id = :studentId AND g.gradeType.id = :gradeType")
+	void setConfirmedBySprintAndStudent(Integer sprintId, Integer studentId, Integer gradeType);
+
 
 }

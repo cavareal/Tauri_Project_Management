@@ -2,7 +2,7 @@
 import { SidebarTemplate } from "@/components/templates"
 import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
-import { computed, ref } from "vue"
+import { ref } from "vue"
 import { hasPermission } from "@/services/user-service"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
@@ -20,26 +20,27 @@ import ExportGrades from "../organisms/Grade/ExportGrades.vue"
 
 const selectedTeam = ref("")
 const selectedSprint = ref("")
-const componentKey = ref(0)
 const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
 
 const authorized = hasPermission("GRADES_PAGE")
 
 const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
-const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
-const ratedSprints = computed(() => {
-	return sprints.value?.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT") || []
-})
-
-
-const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({ queryKey: ["grades-confirmation"], queryFn: async() => {
-	if (selectedSprint.value != "" && selectedTeam.value != "") return
-	return await getGradesConfirmation(selectedSprint.value, selectedTeam.value)
-
+const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
+	const sprints = await getSprints()
+	return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
 } })
 
-const forceRerender = () => {
-	componentKey.value += 1
+
+const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
+	queryKey: ["grades-confirmation", selectedSprint.value, selectedTeam.value],
+	queryFn: async () => {
+		if (selectedSprint.value === '' || selectedTeam.value === '') return false
+		return await getGradesConfirmation(parseInt(selectedSprint.value), parseInt(selectedTeam.value))
+	}
+})
+
+function forceRerender() {
+	refetchGradesConfirmation()
 }
 
 </script>
@@ -50,28 +51,30 @@ const forceRerender = () => {
 		<Column v-else class="gap-4">
 			<Header title="Notes">
 
-				<ValidGradesDialog v-if="selectedTeam !== '' && selectedSprint !== '' && isGradesConfirmed" @valid:individual-grades="forceRerender()" :selectedTeam="selectedTeam" :selectedSprint="selectedSprint" >
+				<ValidGradesDialog v-if="selectedTeam !== '' && selectedSprint !== '' && isGradesConfirmed"
+					@valid:individual-grades="forceRerender()" :selectedTeam="selectedTeam"
+					:selectedSprint="selectedSprint">
 					<Button variant="default">Valider les notes individuelles</Button>
 				</ValidGradesDialog>
 
-				<Select v-model="selectedSprint">
+				<Select v-model="selectedSprint" @update:modelValue="forceRerender()">
 					<SelectTrigger class="w-[180px]">
 						<SelectValue placeholder="Sprint par défaut" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="sprint in ratedSprints" :key="sprint.id" :value="sprint.id"
-								@click="forceRerender">{{ sprint.id }}</SelectItem>
+							<SelectItem v-for="sprint in sprints" :key="sprint.id" :value="sprint.id.toString()"
+								@click="forceRerender">Sprint {{ sprint.sprintOrder }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>
-				<Select v-model="selectedTeam">
+				<Select v-model="selectedTeam" @update:modelValue="forceRerender()">
 					<SelectTrigger class="w-[180px]">
 						<SelectValue placeholder="Selectionner l'équipe" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="team in teams" :key="team.id" :value="team.id" @click="forceRerender">{{
+							<SelectItem v-for="team in teams" :key="team.id" :value="team.id.toString()" @click="forceRerender">{{
 								team.name }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
@@ -82,7 +85,7 @@ const forceRerender = () => {
 				</ExportGrades>
 			</Header>
 			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
-          <Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
+          <Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint"/>
         <NotAutorized v-else/>
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">

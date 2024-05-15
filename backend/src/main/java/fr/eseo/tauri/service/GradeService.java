@@ -14,7 +14,6 @@ import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.GradeRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,11 +38,8 @@ public class GradeService {
     @Lazy
     private final GradeTypeService gradeTypeService;
     private final TeamService teamService;
-    @Lazy
-    private final GradeService self;
 
-
-
+    private static final int MAX_RETRY_COUNT = 20;
 
     public Grade getGradeById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
@@ -74,6 +70,7 @@ public class GradeService {
         if (grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
         if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
         if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
+
         if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
             grade.student(null);
             if (grade.teamId() != null) grade.team(teamService.getTeamById(token, grade.teamId()));
@@ -148,14 +145,8 @@ public class GradeService {
         return total / factors;
     }
 
-    // Non-transactional method to call the transactional one
     public void updateImportedMeanByStudentId(Float value, Integer studentId) {
-        self.updateImportedMeanByStudentIdTransactional(value, studentId);
-    }
-
-    @Transactional
-    public void updateImportedMeanByStudentIdTransactional(Float value, Integer studentId) {
-        gradeRepository.updateImportedMeanByStudentId(value, studentId, GradeTypeName.AVERAGE.displayName());
+        gradeRepository.updateImportedMeanByStudentId(value, studentId);
     }
 
     public Double getAverageGradesByGradeTypeByRoleType(int userId, RoleType roleType, String gradeTypeName) {
@@ -275,16 +266,50 @@ public class GradeService {
     public Boolean getGradesConfirmation(Integer teamId, Integer sprintId) {
         try {
             List<Student> students = studentRepository.findByTeam(teamId);
+            if (students.isEmpty()) {
+                return false;
+            }
+
             for (Student student : students) {
-                Grade grade = (Grade) gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id());
+                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
+                Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
+
                 if (Boolean.FALSE.equals(grade.confirmed())) {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         } catch (NullPointerException e) {
             CustomLogger.info("No student or no grades found");
-            return null;
+            return false;
         }
     }
+
+
+    public Boolean setGradesConfirmation(Integer teamId, Integer sprintId) {
+        try {
+            List<Student> students = studentRepository.findByTeam(teamId);
+            if (students.isEmpty()) {
+                return false;
+            }
+
+            for (Student student : students) {
+                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
+                Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
+                grade.confirmed(true);
+                gradeRepository.save(grade);
+            }
+            return false;
+        } catch (NullPointerException e) {
+            CustomLogger.info("No student or no grades found");
+            return false;
+        }
+
+
+
+
+
+    }
 }
+
+

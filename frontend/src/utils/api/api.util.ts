@@ -5,6 +5,7 @@ import type {
 } from "./api.type"
 import { wait } from "@/utils/time"
 import type { SafeParseReturnType } from "zod"
+import { redirect } from "@/utils/router"
 
 
 const getApiUrl = () => {
@@ -68,10 +69,11 @@ export const queryAndValidate = async <T>({
 		headers: getHeaders(jsonContent)
 	})
 	if (!response.ok) {
+		if (response.status === 401) redirect("/login")
 		console.error(`Failed to fetch GET ${route}: ${response.status} ${response.statusText}`)
 		return {
 			status: "error",
-			error: `Fai}led to fetch GET ${route}: ${response.status} ${response.statusText}`
+			error: `Failed to fetch GET ${route}: ${response.status} ${response.statusText}`
 		}
 	}
 
@@ -142,6 +144,7 @@ export const mutateAndValidate = async <T>({
 		headers: getHeaders(jsonContent)
 	})
 	if (!response.ok) {
+		if (response.status === 401) redirect("/login")
 		console.error(`Failed to fetch ${method} ${route}: ${response.status} ${response.statusText}`)
 		return {
 			status: "error",
