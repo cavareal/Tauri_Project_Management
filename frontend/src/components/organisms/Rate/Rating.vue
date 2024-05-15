@@ -132,12 +132,7 @@ const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermi
 			<User :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogViewGrades title="Voir les notes" description=""></DialogViewGrades>
-			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance individuelle">
-				<template #trigger>
-					<Button variant="outline">Noter une équipe</Button>
-				</template>
-			</DialogIndividualRate>
+			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance individuelle"></DialogIndividualRate>
 		</template>
 	</ContainerGradeType>
 

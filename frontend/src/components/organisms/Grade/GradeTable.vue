@@ -28,7 +28,6 @@ import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId } from "@/services/team-service"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
-import { Skeleton } from "@/components/ui/skeleton"
 import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
@@ -43,9 +42,6 @@ const { data: teamStudents, ...queryTeamStudents } = useQuery({ queryKey: ["team
 	if (!props.teamId) return
 	return await getStudentsByTeamId(Number(props.teamId))
 } })
-
-const gradeTypeGroupNameArray = ["Solution Technique", "Gestion de projet", "Contenu de la présentation", "Support de présentation", "Performance globale de l'équipe"]
-const gradeTypeIndividualArray = ["Performance individuelle"]
 
 const { data: averageTeam, ...queryAverageTeam } = useQuery({
 	queryKey: ["average", "team", props.teamId],
@@ -94,20 +90,15 @@ watch(() => props.teamId, async() => {
 		await querySprintGrade.refetch()
 		await queryTotalGrade.refetch()
 		await queryTotalIndividualGrades.refetch()
-		console.log(sprintGrades.value)
-		console.log(totalGrade.value)
-		console.log(totalIndividualGrades.value)
 		oldTeamId = props.teamId
 	}
 })
 
 
-const canViewOwnWg = hasPermission("VIEW_OWN_GRADES_WG")
 const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 const canViewOwnSg = hasPermission("VIEW_OWN_SPRINT_GRADE")
 const canViewAllSg = hasPermission("VIEW_ALL_SPRINTS_GRADES")
 const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
-const canViewTeamGrade = hasPermission("VIEW_TEAM_GRADE")
 const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
 
 const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.value?.id) === Number(props.teamId)) || canViewAllWg
@@ -186,7 +177,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 						<TableCell v-if="studentBonuses" :class="rowClass">   {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
 						<TableCell v-if="averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 						<TableCell v-if=" averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
-						<TableCell v-if="totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index] ? totalIndividualGrades[index] : 0}} </TableCell>
+						<TableCell v-if="totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
 						<TableCell v-if="sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4)}} </TableCell>
 					</TableRow>
 				</TableBody>

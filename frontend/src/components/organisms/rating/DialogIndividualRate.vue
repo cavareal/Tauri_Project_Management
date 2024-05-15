@@ -51,7 +51,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"]
 			teamId: null,
 			sprintId: Number(props.sprintId),
 			comment: null,
-			studentId: marks.value[i].studentId,
+			studentId: marks.value[i].studentId
 		})
 			.then(() => {
 				marks.value[i].mark = 0
@@ -90,7 +90,7 @@ const handleTriggerClick = async() => {
 <template>
 	<CustomDialog title="Notes individuelles" :description="DIALOG_DESCRIPTION" class="w-full">
 		<template #trigger>
-			<Button variant="default" @click="handleTriggerClick">Voir les notes</Button>
+			<Button variant="default" @click="handleTriggerClick">Noter les étudiants</Button>
 		</template>
 		<div class="flex">
 			<Row class="flex-wrap">

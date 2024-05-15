@@ -39,8 +39,6 @@ public class GradeService {
     private final GradeTypeService gradeTypeService;
     private final TeamService teamService;
 
-    private static final int MAX_RETRY_COUNT = 20;
-
     public Grade getGradeById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);

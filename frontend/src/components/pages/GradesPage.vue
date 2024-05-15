@@ -33,8 +33,8 @@ const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => 
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", selectedSprint.value, selectedTeam.value],
-	queryFn: async () => {
-		if (selectedSprint.value === '' || selectedTeam.value === '') return false
+	queryFn: async() => {
+		if (selectedSprint.value === "" || selectedTeam.value === "") return false
 		return await getGradesConfirmation(parseInt(selectedSprint.value), parseInt(selectedTeam.value))
 	}
 })
@@ -90,7 +90,7 @@ function forceRerender() {
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
 				<ListChecks class="size-12 stroke-1 text-dark-blue" />
-				<p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer.</p>
+				<p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe.</p>
 			</Column>
 		</Column>
 	</SidebarTemplate>

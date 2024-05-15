@@ -1,8 +1,11 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
+import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -11,10 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,6 +28,11 @@ class UserServiceTest {
     @Mock
     UserRepository userRepository;
 
+    @Mock
+    RoleRepository roleRepository;
+
+    @Mock
+    PermissionService permissionService;
 
     @Mock
     AuthService authService;
@@ -211,6 +216,18 @@ class UserServiceTest {
 
         assertThrows(SecurityException.class, () -> userService.hasPermission(token, id, permission));
     }
+
+
+    @Test
+    void getPermissionsByUserShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+
+        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> userService.getPermissionsByUser(token, id));
+    }
+
 
 }
 

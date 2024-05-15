@@ -9,7 +9,9 @@ import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,9 +37,6 @@ class StudentServiceTest {
     private StudentRepository studentRepository;
 
     @Mock
-    private GradeTypeService gradeTypeService;
-
-    @Mock
     private GradeService gradeService;
 
     @Mock
@@ -53,7 +52,7 @@ class StudentServiceTest {
     private SprintService sprintService;
 
     @Mock
-    private PresentationOrderService presentationOrderService;
+    private UserService userService;
 
     @Mock
     private RoleService roleService;
@@ -491,4 +490,105 @@ class StudentServiceTest {
                 Arguments.of("", 5, "\"\",\"\",\"5\"\n")
         );
     }
+
+    @Test
+    void getStudentBonusShouldReturnBonusWhenAuthorizedAndBonusExists() {
+        String token = "validToken";
+        Integer idStudent = 1;
+        Boolean limited = true;
+        Bonus bonus = new Bonus();
+
+        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
+        when(bonusRepository.findStudentBonus(idStudent, limited)).thenReturn(bonus);
+
+        Bonus result = studentService.getStudentBonus(token, idStudent, limited);
+
+        assertEquals(bonus, result);
+    }
+
+    @Test
+    void getStudentBonusShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer idStudent = 1;
+        Boolean limited = true;
+
+        when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> studentService.getStudentBonus(token, idStudent, limited));
+    }
+
+    @Test
+    void getStudentBonusShouldReturnNullWhenNoBonusFound() {
+        String token = "validToken";
+        Integer idStudent = 1;
+        Boolean limited = true;
+
+        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
+        when(bonusRepository.findStudentBonus(idStudent, limited)).thenReturn(null);
+
+        Bonus result = studentService.getStudentBonus(token, idStudent, limited);
+
+        assertNull(result);
+    }
+
+    @Test
+    void getStudentBonusesShouldReturnBonusesWhenAuthorizedAndBonusesExist() {
+        String token = "validToken";
+        Integer idStudent = 1;
+        List<Bonus> bonuses = Arrays.asList(new Bonus(), new Bonus());
+
+        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
+        when(bonusRepository.findAllStudentBonuses(idStudent)).thenReturn(bonuses);
+
+        List<Bonus> result = studentService.getStudentBonuses(token, idStudent);
+
+        assertEquals(bonuses, result);
+    }
+
+    @Test
+    void getStudentBonusesShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer idStudent = 1;
+
+        when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> studentService.getStudentBonuses(token, idStudent));
+    }
+
+    @Test
+    void getStudentBonusesShouldReturnEmptyListWhenNoBonusesFound() {
+        String token = "validToken";
+        Integer idStudent = 1;
+
+        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
+        when(bonusRepository.findAllStudentBonuses(idStudent)).thenReturn(Collections.emptyList());
+
+        List<Bonus> result = studentService.getStudentBonuses(token, idStudent);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getIndividualTotalGradeShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+        Integer sprintId = 1;
+
+        when(authService.checkAuth(token, "readGrades")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> studentService.getIndividualTotalGrade(token, id, sprintId));
+    }
+
+    @Test
+    void getSprintGradeShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer studentId = 1;
+        Integer sprintId = 1;
+
+        when(authService.checkAuth(token, "readGrade")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> studentService.getSprintGrade(token, studentId, sprintId));
+    }
+
+
 }
