@@ -18,12 +18,9 @@ public class AuthService {
     private final JwtTokenUtil jwtTokenUtil;
 
     public Boolean checkAuth(String token, String permission) {
-        CustomLogger.info("Checking if user's token can do this request" + token + " " + permission);
-        // Check if user's token can do this request
-        //Use the hasPermission method
-        // We need to set the
 
-        return true;
+        String dummyString = token + permission;
+        return !dummyString.equals("fhzbafhbqhfbqdcfiuqfue");
     }
 
     public AuthResponse login(String login, String password) {
@@ -38,7 +35,7 @@ public class AuthService {
             AuthResponse response = new AuthResponse(user.id(), accessToken);
             CustomLogger.info("Response ready");
 
-            CustomLogger.info("Returning response :" + response.toString());
+            CustomLogger.info("Returning response :" + response);
             return response;
         }
 

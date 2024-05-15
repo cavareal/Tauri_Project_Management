@@ -230,3 +230,31 @@ export const getSprintGrades = async(teamId: number, sprintId: number): Promise<
 
 	return response.data
 }
+
+export const getGradesConfirmation = async(sprintId: string, teamId: string): Promise<number> => {
+	const response = await queryAndValidate({
+		route: `grades/confirmation`,
+		params: { sprintId: sprintId, teamId: teamId },
+		responseSchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const setGradesConfirmation = async(teamId: number, sprintId: number) => {
+
+	const response = await mutateAndValidate({
+		method: "POST",
+		route: `grades/confirmation`,
+		body: { sprintId: sprintId.toString(), teamId: teamId.toString() },
+		bodySchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
