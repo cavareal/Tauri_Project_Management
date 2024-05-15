@@ -27,7 +27,6 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private final PermissionSeeder permissionSeeder;
 	private final RoleSeeder roleSeeder;
 	private final ProjectSeeder projectSeeder;
-	private final NotificationSeeder notificationSeeder;
 
 	@Value("${spring.jpa.hibernate.ddl-auto}")
 	private String hibernateMode;
@@ -41,7 +40,6 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		this.permissionSeeder = permissionSeeder;
 		this.roleSeeder = roleSeeder;
 		this.projectSeeder = projectSeeder;
-		this.notificationSeeder = notificationSeeder;
 	}
 
 	@Override
@@ -52,7 +50,6 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		gradeTypeSeeder.seed();
 		permissionSeeder.seed();
 		roleSeeder.seed();
-//		notificationSeeder.seed(faker);
 		projectSeeder.seed();
 	}
 
