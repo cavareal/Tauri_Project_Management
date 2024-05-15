@@ -7,7 +7,7 @@ import { changeStateChecked } from "@/services/notification-service"
 const emits = defineEmits(["open:notifications", "read:notifications"])
 
 defineProps<{
-  notifications: Notification[] | null
+	notifications: Notification[] | null
 }>()
 
 const markNotificationAsRead = async(notificationId: number) => {
@@ -17,8 +17,10 @@ const markNotificationAsRead = async(notificationId: number) => {
 </script>
 
 <template>
-  <div v-for="(notification, i) in notifications" :key="i">
-    <NotificationElement v-if="!notification.checked" :title="notification.userFrom.name"
-:description="notification.message" @read:notifications="markNotificationAsRead(notification.id)"/>
-  </div>
+	<div v-for="(notification, i) in notifications" :key="i" class="w-full">
+		<NotificationElement
+			:title="notification.userFrom.name" :description="notification.message ?? ''"
+			@read:notifications="markNotificationAsRead(notification.id)" class="w-full"
+		/>
+	</div>
 </template>

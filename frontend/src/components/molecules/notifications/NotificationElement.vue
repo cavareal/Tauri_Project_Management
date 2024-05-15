@@ -10,8 +10,8 @@ import { LinkButton, LoadingButton } from "@/components/molecules/buttons"
 const emits = defineEmits(["read:notifications"])
 
 defineProps<{
-  title: string
-  description: string
+	title: string
+	description: string
 }>()
 
 const clickButton = () => {
@@ -21,22 +21,22 @@ const clickButton = () => {
 </script>
 
 <template>
-  <Column class="mb-5 mr-5 border rounded-lg p-6">
-    <Row >
-      <Column class="items-start justify-center flex-1 gap-1">
-        <Subtitle>{{ title }}</Subtitle>
-        <InfoText>{{ description }}</InfoText>
-      </Column>
-    </Row>
-    <Row class ="mt-2.5 justify-end">
-      <SheetClose>
-        <LinkButton variant="outline" link="/teams">
-          <ExternalLink/>Voir
-        </LinkButton>
-      </SheetClose>
-      <LoadingButton class="ml-4" variant="outline" @click="clickButton">
-        <Check/>
-      </LoadingButton>
-    </Row>
-  </Column>
+	<Column class="mb-5 mr-5 border rounded-lg p-6">
+		<Row>
+			<Column class="items-start justify-center flex-1 gap-1">
+				<Subtitle>{{ title }}</Subtitle>
+				<InfoText>{{ description }}</InfoText>
+			</Column>
+		</Row>
+		<Row class="mt-2.5 justify-end">
+			<SheetClose>
+				<LinkButton variant="outline" link="/teams">
+					<ExternalLink />Voir
+				</LinkButton>
+			</SheetClose>
+			<LoadingButton class="ml-4" variant="outline" @click="clickButton">
+				<Check />
+			</LoadingButton>
+		</Row>
+	</Column>
 </template>

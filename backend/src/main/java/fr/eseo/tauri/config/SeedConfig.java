@@ -33,7 +33,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private String hibernateMode;
 
 	@Autowired
-	public SeedConfig(UserSeeder userSeeder, GradeTypeSeeder gradeTypeSeeder, PermissionSeeder permissionSeeder, RoleSeeder roleSeeder, ProjectSeeder projectSeeder) {
+	public SeedConfig(UserSeeder userSeeder, GradeTypeSeeder gradeTypeSeeder, PermissionSeeder permissionSeeder, RoleSeeder roleSeeder, ProjectSeeder projectSeeder, NotificationSeeder notificationSeeder) {
 		this.faker = new Faker(Locale.forLanguageTag(FAKER_LANGUAGE));
 
 		this.userSeeder = userSeeder;
@@ -52,7 +52,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		gradeTypeSeeder.seed();
 		permissionSeeder.seed();
 		roleSeeder.seed();
-		notificationSeeder.seed(faker);
+//		notificationSeeder.seed(faker);
 		projectSeeder.seed();
 	}
 
