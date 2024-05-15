@@ -15,6 +15,7 @@ import Grade from "@/components/organisms/Grade/GradeTable.vue"
 import { Button } from "@/components/ui/button"
 import ValidGradesDialog from "@/components/organisms/Grade/ValidGradesDialog.vue"
 import { getGradesConfirmation } from "@/services/grade-service"
+import ExportGrades from "../organisms/Grade/ExportGrades.vue"
 
 
 const selectedTeam = ref("")
@@ -75,6 +76,10 @@ const forceRerender = () => {
 						</SelectGroup>
 					</SelectContent>
 				</Select>
+
+				<ExportGrades v-if="hasPermission('EXPORT_INDIVIDUAL_GRADES')">
+					<Button variant="default">Exporter</Button>
+				</ExportGrades>
 			</Header>
 			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
           <Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>

@@ -233,7 +233,7 @@ export const getSprintGrades = async(teamId: number, sprintId: number): Promise<
 
 export const getGradesConfirmation = async(sprintId: string, teamId: string): Promise<number> => {
 	const response = await queryAndValidate({
-		route: `grades/confirmation`,
+		route: "grades/confirmation",
 		params: { sprintId: sprintId, teamId: teamId },
 		responseSchema: z.any()
 	})
@@ -246,10 +246,9 @@ export const getGradesConfirmation = async(sprintId: string, teamId: string): Pr
 }
 
 export const setGradesConfirmation = async(teamId: number, sprintId: number) => {
-
 	const response = await mutateAndValidate({
 		method: "POST",
-		route: `grades/confirmation`,
+		route: "grades/confirmation",
 		body: { sprintId: sprintId.toString(), teamId: teamId.toString() },
 		bodySchema: z.any()
 	})
@@ -257,4 +256,23 @@ export const setGradesConfirmation = async(teamId: number, sprintId: number) => 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+}
+
+export const downloadGradesFile = async() => {
+	const response = await queryAndValidate({
+		route: "grades/download",
+		responseSchema: z.string()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	const url = window.URL.createObjectURL(new Blob([response.data]))
+	const link = document.createElement("a")
+	link.href = url
+	link.setAttribute("download", "grades.csv")
+	document.body.appendChild(link)
+	link.click()
+	document.body.removeChild(link)
 }
