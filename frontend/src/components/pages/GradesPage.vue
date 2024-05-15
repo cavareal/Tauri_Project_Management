@@ -2,7 +2,7 @@
 import { SidebarTemplate } from "@/components/templates"
 import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
-import { computed, ref } from "vue"
+import { ref } from "vue"
 import { hasPermission } from "@/services/user-service"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
@@ -26,10 +26,10 @@ const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
 const authorized = hasPermission("GRADES_PAGE")
 
 const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
-const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: getSprints })
-const ratedSprints = computed(() => {
-	return sprints.value?.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT") || []
-})
+const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
+	const sprints = await getSprints()
+	return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
+} })
 
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({ queryKey: ["grades-confirmation"], queryFn: async() => {
@@ -60,8 +60,8 @@ const forceRerender = () => {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="sprint in ratedSprints" :key="sprint.id" :value="sprint.id"
-								@click="forceRerender">{{ sprint.id }}</SelectItem>
+							<SelectItem v-for="sprint in sprints" :key="sprint.id" :value="sprint.id.toString()"
+								@click="forceRerender">Sprint {{ sprint.sprintOrder }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>
@@ -71,7 +71,7 @@ const forceRerender = () => {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="team in teams" :key="team.id" :value="team.id" @click="forceRerender">{{
+							<SelectItem v-for="team in teams" :key="team.id" :value="team.id.toString()" @click="forceRerender">{{
 								team.name }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
