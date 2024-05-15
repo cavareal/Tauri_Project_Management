@@ -1,22 +1,5 @@
 import type { z } from "zod"
 
-export type ApiQueryRequest<T> = {
-	route: string
-	method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
-	body?: unknown
-	responseSchema: z.ZodType<T>
-	delay?: number
-	textResponse?: boolean
-}
-
-export type ApiQueryResponse<T> = {
-    status: "success"
-    data: T
-} | {
-    status: "error"
-    error: string
-}
-
 export type QueryAndValidateRequest<T> = {
 	route: string
 	params?: Record<string, string>
@@ -51,18 +34,14 @@ export type MutateAndValidateResponse = {
 }
 
 
-export type MutateAndValidateRequestWithReturn<T, R> = {
-	method: "POST" | "PUT" | "PATCH" | "DELETE"
+export type LoginAndValidateRequest<T, R> = {
 	route: string
-	params?: Record<string, string>
-	jsonContent?: boolean
-	delay?: number
 	bodySchema?: z.ZodType<T>
 	body?: T
 	responseSchema: z.ZodType<R>
 }
 
-export type MutateAndValidateResponseWithReturn<R> = {
+export type LoginAndValidateResponse<R> = {
 	status: "success"
 	data: R
 } | {
