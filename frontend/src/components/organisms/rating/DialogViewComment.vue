@@ -14,7 +14,6 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 const props = defineProps<{
 	teamId: number,
 	sprintId: number,
-  feedback: boolean
 }>()
 const authorsComments = ref<User[]>([])
 const commentsFiltered = ref<Feedback[]>([])
@@ -23,11 +22,11 @@ const { data: comments, refetch: refetchFeedbacks } = useQuery<Feedback[], Error
 	queryKey: ["comments", props.teamId, props.sprintId],
 	queryFn: async() => {
 		const comments = await getCommentsBySprintAndTeam(props.teamId, props.sprintId)
-		authorsComments.value = comments.map(comment => comment.author)
+		commentsFiltered.value = comments.filter(comment => !comment.feedback)
+		authorsComments.value = commentsFiltered.value.map(comment => comment.author)
 			.filter((author, index, self) => index === self.findIndex((t) => (
 				t.id === author.id
 			)))
-		commentsFiltered.value = comments.filter(comment => comment.feedback === props.feedback)
 		return comments
 	}
 })
@@ -41,9 +40,9 @@ const getCommentsFromAuthor = (authorId: string) => {
 watch(() => props.teamId, () => refetchFeedbacks())
 watch(() => props.sprintId, () => refetchFeedbacks())
 
-const DIALOG_TITLE = props.feedback ? "Feedbacks" : "Commentaires"
-const DIALOG_DESCRIPTION = props.feedback ? "Feedbacks donnés à l'équipe durant le sprint" : "Commentaires donnés à l'équipe durant le sprint"
-const noComments = props.feedback ? "Aucun feedback donné" : "Aucun commentaire donné"
+const DIALOG_TITLE = "Commentaires"
+const DIALOG_DESCRIPTION = "Commentaires donnés à l'équipe durant le sprint"
+const noComments = "Aucun commentaire donné"
 
 </script>
 

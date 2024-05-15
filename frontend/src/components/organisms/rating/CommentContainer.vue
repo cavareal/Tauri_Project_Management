@@ -9,6 +9,7 @@ import { ContainerGradeType } from "@/components/molecules/rateContainer"
 import { hasPermission } from "@/services/user-service"
 import DialogComment from "@/components/organisms/rating/DialogComment.vue"
 import DialogViewComment from "@/components/organisms/rating/DialogViewComment.vue"
+import DialogViewFeedback from "@/components/organisms/rating/DialogViewFeedback.vue"
 
 const props = defineProps<{
   teamId: number,
@@ -31,9 +32,12 @@ const canAddComments = props.feedback ? hasPermission("ADD_ALL_TEAMS_FEEDBACK") 
       <MessageCircleMore v-else :size="40" :stroke-width="1"/>
     </template>
     <template #dialog>
-      <DialogViewComment :teamId="props.teamId" :sprintId="props.sprintId" :feedback="props.feedback">
+      <DialogViewComment v-if="!props.feedback" :teamId="props.teamId" :sprintId="props.sprintId">
         <Button variant="outline">{{ viewButtonTitle }}</Button>
       </DialogViewComment>
+      <DialogViewFeedback v-else :teamId="props.teamId" :sprintId="props.sprintId">
+        <Button variant="outline">{{ viewButtonTitle }}</Button>
+      </DialogViewFeedback>
       <DialogComment v-if="canAddComments" :selectedTeamId="props.teamId" :selectedSprintId="props.sprintId" :feedback="props.feedback">
         <Button variant="default">{{ addButtonTitle }}</Button>
       </DialogComment>

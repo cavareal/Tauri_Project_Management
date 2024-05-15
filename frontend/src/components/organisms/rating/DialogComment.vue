@@ -22,6 +22,7 @@ const client = useQueryClient()
 
 const open = ref(false)
 const comment = ref("")
+const queryType = props.feedback ? "feedbacks" : "comments"
 
 const isDisabled = computed(() => comment.value === "")
 
@@ -31,7 +32,7 @@ const { mutate, isPending, error } = useMutation({
 			.then(() => open.value = false)
 			.then(() => emits("add-comment"))
 			.then(() => client.invalidateQueries({
-				queryKey: ["comments", props.selectedTeamId, props.selectedSprintId]
+				queryKey: [queryType, props.selectedTeamId, props.selectedSprintId]
 			}))
 			.then(() => comment.value = "")
 			.then(() => createToast("Le feedback a été enregistré."))
