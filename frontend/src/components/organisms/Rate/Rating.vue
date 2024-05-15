@@ -10,20 +10,15 @@ import {
 	Presentation,
 	Package,
 	Blocks,
-	MessageSquareReply,
 	LucideCirclePlus
 } from "lucide-vue-next"
 import { DialogRating, DialogViewGrades, DialogBonus } from "@/components/organisms/rating"
 import { hasPermission } from "@/services/user-service"
-import { onMounted, ref } from "vue"
 import { getTeamByUserId } from "@/services/team-service"
 import { Cookies } from "@/utils/cookie"
-import type { Team } from "@/types/team"
 import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
-import DialogViewFeedback from "@/components/organisms/rating/DialogViewFeedback.vue"
-import DialogFeedback from "@/components/organisms/rating/DialogFeedback.vue"
 import { useQuery } from "@tanstack/vue-query"
-import FeedbackContainer from "@/components/organisms/rating/FeedbackContainer.vue"
+import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
 
 const props = defineProps<{
 	teamId : string,
@@ -49,6 +44,7 @@ const canGradeTechnicalSolution = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeSprintConformity = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canSeeFeedbacks = hasPermission("VIEW_FEEDBACK") && hasPermission("ADD_ALL_TEAMS_FEEDBACK")
+const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermission("VIEW_COMMENT")
 
 </script>
 
@@ -145,7 +141,8 @@ const canSeeFeedbacks = hasPermission("VIEW_FEEDBACK") && hasPermission("ADD_ALL
 		</template>
 	</ContainerGradeType>
 
-  <FeedbackContainer v-if="canSeeFeedbacks" title="Feedbacks" infoText="Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId"/>
+  <CommentContainer v-if="canSeeFeedbacks" title="Feedbacks" infoText="Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId" :feedback="true"/>
+  <CommentContainer v-if="canSeePrivateComments" title="Commentaires" info-text="Vous pouvez faire des commentaires sur les performances de l'équipe durant le sprint" :feedback="false" :sprintId="props.sprintId" :teamId="props.teamId"/>
 
 	<ContainerGradeType v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
 		<template #icon>

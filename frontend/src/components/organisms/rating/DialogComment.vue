@@ -9,51 +9,39 @@ import { Textarea } from "@/components/ui/textarea"
 import { ref, computed } from "vue"
 import { useMutation, useQueryClient } from "@tanstack/vue-query"
 import { createToast } from "@/utils/toast"
-import type { Team } from "@/types/team"
-import { createFeedback } from "@/services/feedback-service"
+import { createComment } from "@/services/feedback-service"
 
 const props = defineProps<{
 	selectedTeamId: number,
-	selectedSprintId: number
+	selectedSprintId: number,
+  feedback: boolean
 }>()
 
-const emits = defineEmits(["add-feedback"])
+const emits = defineEmits(["add-comment"])
 const client = useQueryClient()
 
 const open = ref(false)
-const feedback = ref("")
+const comment = ref("")
 
-const isDisabled = computed(() => feedback.value === "")
+const isDisabled = computed(() => comment.value === "")
 
 const { mutate, isPending, error } = useMutation({
-	mutationKey: ["add-feedback"], mutationFn: async() => {
-		await createFeedback(props.selectedTeamId, feedback.value, props.selectedSprintId)
+	mutationKey: ["add-comment"], mutationFn: async() => {
+		await createComment(props.selectedTeamId, comment.value, props.selectedSprintId, props.feedback)
 			.then(() => open.value = false)
-			.then(() => emits("add-feedback"))
+			.then(() => emits("add-comment"))
 			.then(() => client.invalidateQueries({
-				queryKey: ["feedbacks", props.selectedTeamId, props.selectedSprintId]
+				queryKey: ["comments", props.selectedTeamId, props.selectedSprintId]
 			}))
-			.then(() => feedback.value = "")
+			.then(() => comment.value = "")
 			.then(() => createToast("Le feedback a été enregistré."))
 	}
 })
 
-const DIALOG_TITLE = "Donner un feedback"
-const DIALOG_DESCRIPTION = "Envoyer un feedback à l'équipe sélectionné sur le déroulement du sprint"
-
-const getTeamName = (team: Team) => {
-	if (team) {
-		return team.name!
-	}
-	return ""
-}
-
-const getTeamID = (team: Team) => {
-	if (team) {
-		return team.id.toString()
-	}
-	return ""
-}
+const DIALOG_TITLE = props.feedback ? "Donner un feedback" : "Faire un commentaire"
+const DIALOG_DESCRIPTION = props.feedback ? "Envoyer un feedback à l'équipe sélectionné sur le déroulement du sprint" : "Faire un commentaire sur l'équipe sélectionné sur le déroulement du sprint"
+const textAreaTitle = props.feedback ? "Votre feedback" : "Votre commentaire"
+const placeholder = props.feedback ? "Ajouter un feedback" : "Ajouter un commentaire"
 </script>
 
 <template>
@@ -62,8 +50,8 @@ const getTeamID = (team: Team) => {
 			<slot />
 		</template>
 
-		<Text class="-mb-2">Votre feedback</Text>
-		<Textarea v-model="feedback" placeholder="Ajouter un feedback" class="max-h-64"></Textarea>
+		<Text class="-mb-2">{{ textAreaTitle }}</Text>
+		<Textarea v-model="comment" :placeholder="placeholder" class="max-h-64"></Textarea>
 		<ErrorText v-if="error" class="mt-2">Une erreur est survenue.</ErrorText>
 
 		<template #footer>
