@@ -25,15 +25,17 @@ const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
 const authorized = hasPermission("GRADES_PAGE")
 
 const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
-const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
-	const sprints = await getSprints()
-	return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
-} })
+const { data: sprints } = useQuery({
+	queryKey: ["sprints"], queryFn: async () => {
+		const sprints = await getSprints()
+		return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
+	}
+})
 
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", selectedSprint.value, selectedTeam.value],
-	queryFn: async() => {
+	queryFn: async () => {
 		if (selectedSprint.value === "" || selectedTeam.value === "") return false
 		return await getGradesConfirmation(parseInt(selectedSprint.value), parseInt(selectedTeam.value))
 	}
@@ -74,8 +76,8 @@ function forceRerender() {
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
-							<SelectItem v-for="team in teams" :key="team.id" :value="team.id.toString()" @click="forceRerender">{{
-								team.name }}</SelectItem>
+							<SelectItem v-for="team in teams" :key="team.id" :value="team.id.toString()"
+								@click="forceRerender">{{ team.name }}</SelectItem>
 						</SelectGroup>
 					</SelectContent>
 				</Select>
@@ -85,8 +87,8 @@ function forceRerender() {
 				</ExportGrades>
 			</Header>
 			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
-          <Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint"/>
-        <NotAutorized v-else/>
+				<Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" />
+				<NotAutorized v-else />
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
 				<ListChecks class="size-12 stroke-1 text-dark-blue" />

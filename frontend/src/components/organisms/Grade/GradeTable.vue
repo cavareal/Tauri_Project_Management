@@ -14,7 +14,7 @@ import {
 	Play,
 	Blocks
 } from "lucide-vue-next"
-import { watch } from "vue"
+import { ref, watch } from "vue"
 import {
 	getStudentsAverageByTeam,
 	getTeamAverage,
@@ -29,6 +29,7 @@ import { getTeamByUserId } from "@/services/team-service"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
 import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
+import type { Bonus } from "@/types/bonus"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
 const props = defineProps<{
@@ -36,32 +37,39 @@ const props = defineProps<{
 	sprintId : string,
 }>()
 
+const studentBonuses = ref<Bonus[][] | null>(null)
+
 let oldTeamId = ""
 
-const { data: teamStudents, ...queryTeamStudents } = useQuery({ queryKey: ["team-students"], queryFn: async() => {
-	if (!props.teamId) return
-	return await getStudentsByTeamId(Number(props.teamId))
-} })
+const { data: teamStudents, ...queryTeamStudents } = useQuery({
+	queryKey: ["team-students", props.teamId],
+	queryFn: async() => {
+		if (props.teamId === "") return
+		const students = await getStudentsByTeamId(Number(props.teamId))
+		studentBonuses.value = await Promise.all(students.map(student => getStudentBonuses(student.id)))
+		return students
+	}
+})
 
 const { data: averageTeam, ...queryAverageTeam } = useQuery({
-	queryKey: ["average", "team", props.teamId],
+	queryKey: ["average", "team", props.teamId, props.sprintId],
 	queryFn: () => getTeamAverage(Number(props.teamId), props.sprintId)
 })
 
 const { data: averageStudents, ...queryAverageStudent } = useQuery({
-	queryKey: ["average", "student", props.teamId],
+	queryKey: ["average", "student", props.teamId, props.sprintId],
 	queryFn: async() => {
 		return await getStudentsAverageByTeam(Number(props.teamId), props.sprintId)
 	}
 })
 
-const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
-	queryKey: ["student-bonuses"],
-	queryFn: async() => {
-		if (!teamStudents.value) return null
-		return await Promise.all(teamStudents.value.map(student => getStudentBonuses(student.id)))
-	}
-})
+// const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
+// 	queryKey: ["student-bonuses", teamStudents.value],
+// 	queryFn: async() => {
+// 		if (!teamStudents.value) return null
+// 		return await Promise.all(teamStudents.value.map(student => getStudentBonuses(student.id)))
+// 	}
+// })
 
 const { data: sprintGrades, ...querySprintGrade } = useQuery({
 	queryKey: ["sprint-grades", props.teamId, props.sprintId],
@@ -79,13 +87,16 @@ const { data: totalIndividualGrades, ...queryTotalIndividualGrades } = useQuery(
 })
 
 const currentUserId = Cookies.getUserId()
-const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], queryFn: async() => getTeamByUserId(currentUserId) })
+const { data: currentUserTeam } = useQuery({
+	queryKey: ["team", currentUserId],
+	queryFn: async() => getTeamByUserId(currentUserId)
+})
 
 watch(() => props.teamId, async() => {
 	if (props.teamId !== oldTeamId) {
 		await queryTeamStudents.refetch()
 		await queryAverageTeam.refetch()
-		await refetchBonuses()
+		// await refetchBonuses()
 		await queryAverageStudent.refetch()
 		await querySprintGrade.refetch()
 		await queryTotalGrade.refetch()
@@ -124,7 +135,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="(student, index) in teamStudents" >
+			<TableRow v-for="(student, index) in teamStudents">
 				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
 				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
