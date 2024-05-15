@@ -61,6 +61,7 @@ public class Grade {
     @JsonProperty
     private Sprint sprint;
 
+    @Column(name = "confirmed", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     @JsonProperty
     private Boolean confirmed = false;
 

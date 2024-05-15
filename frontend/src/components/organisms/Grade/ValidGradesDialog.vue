@@ -6,8 +6,9 @@ import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
-import {  } from "@/services/grade-service"
+import { setGradesConfirmation } from "@/services/grade-service"
 import { createToast } from "@/utils/toast"
+import { number } from "zod"
 
 const emits = defineEmits(["valid:individual-grades"])
 const open = ref(false)
@@ -20,10 +21,10 @@ const props = defineProps<{
 const { mutate, isPending, error } = useMutation({
 	mutationKey: ["individual-grades"], mutationFn: async() => {
 		console.log(props)
-		// await createValidationFlag()
-		// 	.then(() => open.value = false)
-		// 	.then(() => emits("valid:individual-grades"))
-		// 	.then(() => createToast("Les notes individuelles ont été validées."))
+		await setGradesConfirmation(Number(props.selectedTeam), Number(props.selectedSprint))
+			.then(() => open.value = false)
+			.then(() => emits("valid:individual-grades"))
+			.then(() => createToast("Les notes individuelles ont été validées."))
 	}
 })
 
