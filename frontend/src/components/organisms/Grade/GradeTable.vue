@@ -186,7 +186,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 						<TableCell v-if="studentBonuses" :class="rowClass">   {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
 						<TableCell v-if="averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 						<TableCell v-if=" averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
-						<TableCell v-if="totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index] ? totalIndividualGrades[index] : 0}} </TableCell>
+						<TableCell v-if="totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
 						<TableCell v-if="sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4)}} </TableCell>
 					</TableRow>
 				</TableBody>
