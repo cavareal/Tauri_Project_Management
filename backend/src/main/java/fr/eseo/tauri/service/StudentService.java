@@ -96,10 +96,6 @@ public class StudentService {
 
         Student student = getStudentById(token, id);
 
-        student.name(updatedStudent.name());
-        student.email(updatedStudent.email());
-        student.password(updatedStudent.password());
-        student.privateKey(updatedStudent.privateKey());
         if (updatedStudent.gender() != null) student.gender(updatedStudent.gender());
         if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
         if (updatedStudent.teamRole() != null) student.teamRole(updatedStudent.teamRole());

@@ -14,11 +14,15 @@ import { updateStudent, getStudentsByTeamId } from "@/services/student-service"
 import { cn } from "@/utils/style"
 import { Loading } from "@/components/organisms/loading"
 import { hasPermission } from "@/services/user-service"
+import { sendManyNotifications } from "@/services/notification-service"
+import { getCurrentPhase } from "@/services/project-service"
 
 const queryClient = useQueryClient()
 
 const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()
+
+const { data: currentPhase } = useQuery({ queryKey: ["current-phase"], queryFn: getCurrentPhase })
 
 const { data: teams, refetch: refetchTeams, isLoading } = useQuery({ queryKey: ["teams"], queryFn: async() => {
 	const teams = await getTeams()
@@ -35,7 +39,7 @@ const { data: teams, refetch: refetchTeams, isLoading } = useQuery({ queryKey: [
 const handleDrop = async(event: DragEvent, teamId: number) => {
 	event.preventDefault()
 	dragging.value = null
-	if (!students.value) return
+	if (!students.value || !currentPhase) return
 
 	const data = event.dataTransfer?.getData("text/plain")
 	if (!data) return
@@ -56,15 +60,13 @@ const handleDrop = async(event: DragEvent, teamId: number) => {
 		.then(() => queryClient.invalidateQueries({ queryKey: ["criteria", originTeam.id] }))
 		.then(() => queryClient.invalidateQueries({ queryKey: ["average", teamId] }))
 		.then(() => queryClient.invalidateQueries({ queryKey: ["average", originTeam.id] }))
+		.then(() => {
+			if (currentPhase.value === "COMPOSING") return
+			void sendManyNotifications(`L'étudiant ${student.name} a été déplacé de l'équipe "${originTeam.name}" à l'équipe "${teams.value?.find(t => t.id === teamId)?.name}".`)
+		})
 }
 
 const handleDragEnter = (event: DragEvent, teamId: number) => {
-	event.preventDefault()
-	if (event.dataTransfer) event.dataTransfer.dropEffect = "move"
-	dragging.value = teamId
-}
-
-const handleDragOver = (event: DragEvent, teamId: number) => {
 	event.preventDefault()
 	if (event.dataTransfer) event.dataTransfer.dropEffect = "move"
 	dragging.value = teamId
@@ -92,7 +94,7 @@ const canEdit = hasPermission("TEAM_MANAGEMENT")
 			<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
 				v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"
 				v-on:dragenter="(e: DragEvent) => handleDragEnter(e, team.id)"
-				v-on:dragover="(e: DragEvent) => handleDragOver(e, team.id)"
+				v-on:dragover="(e: DragEvent) => handleDragEnter(e, team.id)"
 				v-on:dragleave="handleDragLeave"
 			>
 				<AccordionTrigger>

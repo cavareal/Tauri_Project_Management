@@ -238,6 +238,7 @@ export const getGradesConfirmation = async(sprintId: number, teamId: number): Pr
 		responseSchema: z.any()
 	})
 
+
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}

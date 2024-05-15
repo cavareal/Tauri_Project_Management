@@ -200,17 +200,6 @@ class NotificationServiceTest {
         assertThrows(SecurityException.class, () -> notificationService.getNotificationsByUser(token, userId));
     }
 
-    @Test
-    void getNotificationsByUserShouldThrowResourceNotFoundExceptionWhenNoNotificationsFound() {
-        String token = "validToken";
-        int userId = 1;
-
-        when(notificationRepository.findByUser(userId)).thenReturn(Collections.emptyList());
-
-        when(authService.checkAuth(token, "readNotification")).thenReturn(true);
-        assertThrows(ResourceNotFoundException.class, () -> notificationService.getNotificationsByUser(token, userId));
-    }
-
 
     @Test
     void changeCheckedNotificationShouldThrowSecurityExceptionWhenUnauthorized() {

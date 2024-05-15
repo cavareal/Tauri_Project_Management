@@ -9,6 +9,9 @@ import { Column } from "@/components/atoms/containers"
 import Title from "@/components/atoms/texts/Title.vue"
 import Row from "@/components/atoms/containers/Row.vue"
 import NotificationView from "@/components/organisms/notifications/NotificationView.vue"
+import { useQuery } from "@tanstack/vue-query"
+import { Cookies } from "@/utils/cookie"
+import { getAllNotificationsFromUser } from "@/services/notification-service"
 
 const props = defineProps<{
 	class?: string
@@ -20,6 +23,12 @@ const style = cn(
 	"bg-dark-blue drop-shadow-sidebar",
 	props.class
 )
+
+const currentUserId = Cookies.getUserId()
+const { data: notifications } = useQuery({ queryKey: ["notifications"], queryFn: async() => {
+	const notifications = await getAllNotificationsFromUser(currentUserId)
+	return notifications.filter(notification => !notification.checked)
+} })
 
 </script>
 
@@ -69,12 +78,17 @@ const style = cn(
 		<Column>
 			<Separator class="my-2" />
 
-      <NotificationView>
-        <SidebarLink>
-          <Bell /> Notifications
-          <div class="absolute top-0 right-0  bg-red-600 rounded-full"></div>
-        </SidebarLink>
-      </NotificationView>
+			<NotificationView>
+				<SidebarLink>
+					<Bell /> Notifications
+					<Row
+						class="relative -top-2 -left-32 size-5 bg-primary rounded-full items-center justify-center text-sm"
+						v-if="notifications && notifications.length > 0"
+					>
+						{{ notifications.length }}
+					</Row>
+				</SidebarLink>
+			</NotificationView>
 
 			<SidebarLink link="/login">
 				<LogOut /> Déconnexion
