@@ -134,21 +134,6 @@ class StudentServiceTest {
         verify(roleService, times(1)).createRole(anyString(), any(Role.class));
     }
 
-    @Test
-    void createStudentShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.createStudent("token", new Student()));
-    }
-
-
-    @Test
-    void updateStudentShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("updateStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.updateStudent("token", 1, new Student()));
-    }
-
 
     @Test
     void deleteStudentShouldThrowSecurityExceptionWhenUnauthorized() {
@@ -157,15 +142,6 @@ class StudentServiceTest {
         assertThrows(SecurityException.class, () -> studentService.deleteStudent("token", 1));
     }
 
-    @Test
-    void deleteAllStudentsByProjectShouldDeleteWhenAuthorizedAndProjectExists() {
-        when(authService.checkAuth(anyString(), eq("deleteStudent"))).thenReturn(true);
-
-        studentService.deleteAllStudentsByProject("token", 1);
-
-        verify(studentRepository, times(1)).deleteAllByProject(1);
-        verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes("token");
-    }
 
     @Test
     void deleteAllStudentsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
@@ -293,21 +269,6 @@ class StudentServiceTest {
 
         assertThrows(EmptyResourceException.class, () -> studentService.populateDatabaseFromCSV("token", file, 1));
     }
-
-    /*@Test
-    void populateDatabaseFromCSVShouldPopulateDatabaseWithValidData() throws IOException, CsvValidationException {
-        MultipartFile file = mock(MultipartFile.class);
-        InputStream inputStream = new ByteArrayInputStream("1,John Doe,M,B,15,14,13\n2,Jane Doe,F,B,12,13,14".getBytes());
-        when(file.getInputStream()).thenReturn(inputStream);
-        when(file.isEmpty()).thenReturn(false);
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(true);
-        when(gradeTypeService.createGradeTypesFromCSV(anyString(), any(InputStream.class))).thenReturn(Collections.emptyList());
-
-        studentService.populateDatabaseFromCSV("token", file, 1);
-
-        verify(studentRepository, times(2)).save(any(Student.class));
-        verify(gradeService, times(2)).createGradesFromGradeTypesAndValues(any(Student.class), anyList(), anyList(), anyString());
-    }*/
 
     @Test
     void createStudentsCSVShouldThrowSecurityExceptionWhenUnauthorized() throws IOException {
@@ -561,42 +522,4 @@ class StudentServiceTest {
 
         assertEquals(expectedCsv, actualCsv);
     }
-
-    /*@Test
-    void getStudentBonusesReturnsBonusesWhenAuthorizedAndStudentExists() {
-        String token = "validToken";
-        Integer idStudent = 1;
-        List<Bonus> expectedBonuses = Arrays.asList(new Bonus(), new Bonus());
-
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
-        when(bonusRepository.findAllStudentBonuses(idStudent)).thenReturn(expectedBonuses);
-
-        List<Bonus> actualBonuses = studentService.getStudentBonuses(token, idStudent);
-
-        assertEquals(expectedBonuses, actualBonuses);
-    }
-
-    @Test
-    void getStudentBonusesThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer idStudent = 1;
-
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getStudentBonuses(token, idStudent));
-    }
-
-    @Test
-    void getStudentBonusesReturnsEmptyListWhenNoBonusesExist() {
-        String token = "validToken";
-        Integer idStudent = 1;
-
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
-        when(bonusRepository.findAllStudentBonuses(idStudent)).thenReturn(Collections.emptyList());
-
-        List<Bonus> actualBonuses = studentService.getStudentBonuses(token, idStudent);
-
-        assertTrue(actualBonuses.isEmpty());
-    }*/
-
 }

@@ -299,13 +299,11 @@ public class GradeService {
                 grade.confirmed(true);
                 gradeRepository.save(grade);
             }
-            return false;
+            return true;
         } catch (NullPointerException e) {
             CustomLogger.info("No student or no grades found");
             return false;
         }
-
-
 
 
 

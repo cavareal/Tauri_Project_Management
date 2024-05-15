@@ -34,12 +34,6 @@ public class Comment {
     private Team team;
 
     @ManyToOne
-    @JoinColumn(name = "sprint_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonProperty
-    private Sprint sprint;
-
-    @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
@@ -59,5 +53,11 @@ public class Comment {
     @Transient
     @JsonDeserialize
     private Integer authorId;
+
+    @ManyToOne
+    @JoinColumn(name = "sprint_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
+    private Sprint sprint;
 
 }
