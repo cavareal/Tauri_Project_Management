@@ -176,5 +176,51 @@ class NotificationServiceTest {
 
         assertThrows(SecurityException.class, () -> notificationService.deleteAllNotifications(token));
     }
+    @Test
+    void getNotificationsByUserShouldReturnNotificationsWhenAuthorizedAndNotificationsExist() {
+        String token = "validToken";
+        int userId = 1;
+        List<Notification> notifications = Arrays.asList(new Notification(), new Notification());
+
+        when(authService.checkAuth(token, "readNotification")).thenReturn(true);
+        when(notificationRepository.findByUser(userId)).thenReturn(notifications);
+
+        List<Notification> result = notificationService.getNotificationsByUser(token, userId);
+
+        assertEquals(notifications, result);
+    }
+
+    @Test
+    void getNotificationsByUserShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer userId = 1;
+
+        when(authService.checkAuth(token, "readNotification")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> notificationService.getNotificationsByUser(token, userId));
+    }
+
+    @Test
+    void getNotificationsByUserShouldThrowResourceNotFoundExceptionWhenNoNotificationsFound() {
+        String token = "validToken";
+        int userId = 1;
+
+        when(notificationRepository.findByUser(userId)).thenReturn(Collections.emptyList());
+
+        when(authService.checkAuth(token, "readNotification")).thenReturn(true);
+        assertThrows(ResourceNotFoundException.class, () -> notificationService.getNotificationsByUser(token, userId));
+    }
+
+
+    @Test
+    void changeCheckedNotificationShouldThrowSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
+        Integer id = 1;
+
+        when(authService.checkAuth(token, "updateNotification")).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> notificationService.changeCheckedNotification(token, id));
+    }
+
 
 }
