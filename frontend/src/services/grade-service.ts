@@ -42,7 +42,7 @@ export const getAllUnimportedGrades = async(): Promise<Grade[]> => {
 	const response = await queryAndValidate({
 		route: "grades/unimported",
 		responseSchema: GradeSchema.array()
-	})
+	}) 
 
 	if (response.status === "error") {
 		throw new Error(response.error)
