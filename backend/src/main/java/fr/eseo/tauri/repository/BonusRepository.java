@@ -18,10 +18,10 @@ public interface BonusRepository extends JpaRepository<Bonus, Integer> {
     @Query(value = "DELETE FROM bonuses WHERE sprint_id IN (SELECT id FROM sprints WHERE project_id = :projectId)", nativeQuery = true)
     void deleteAllByProject(Integer projectId);
 
-    @Query("SELECT b FROM Bonus b WHERE b.student.id = :studentId ORDER BY b.limited ASC")
-    List<Bonus> findAllStudentBonuses(Integer studentId);
+    @Query("SELECT b FROM Bonus b WHERE b.student.id = :studentId AND b.sprint.id = :sprintId ORDER BY b.limited ASC")
+    List<Bonus> findAllStudentBonuses(Integer studentId, Integer sprintId);
 
-    @Query("SELECT b FROM Bonus b WHERE b.student.id = :studentId AND b.limited = :limited")
-    Bonus findStudentBonus(Integer studentId, Boolean limited);
+    @Query("SELECT b FROM Bonus b WHERE b.student.id = :studentId AND b.limited = :limited AND b.sprint.id = :sprintId")
+    Bonus findStudentBonus(Integer studentId, Boolean limited, Integer sprintId);
 
 }

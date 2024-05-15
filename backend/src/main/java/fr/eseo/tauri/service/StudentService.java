@@ -404,20 +404,20 @@ public class StudentService {
         csvWriter.writeNext(row);
     }
 
-    public Bonus getStudentBonus(String token, Integer idStudent, Boolean limited) {
+    public Bonus getStudentBonus(String token, Integer idStudent, Boolean limited, Integer sprintId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        return bonusRepository.findStudentBonus(idStudent, limited);
+        return bonusRepository.findStudentBonus(idStudent, limited, sprintId);
     }
 
-    public List<Bonus> getStudentBonuses(String token, Integer idStudent) {
+    public List<Bonus> getStudentBonuses(String token, Integer idStudent, Integer sprintId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        return bonusRepository.findAllStudentBonuses(idStudent);
+        return bonusRepository.findAllStudentBonuses(idStudent, sprintId);
     }
 
     public Double getIndividualTotalGrade(String token, Integer id, Integer sprintId) {
@@ -443,7 +443,7 @@ public class StudentService {
 
         double teamGrade = teamService.getTeamTotalGrade(token, teamId, sprintId);
 
-        List<Bonus> studentBonuses = getStudentBonuses(token, studentId);
+        List<Bonus> studentBonuses = getStudentBonuses(token, studentId, sprintId);
 
         return 0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrade(token, studentId, sprintId));
     }

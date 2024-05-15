@@ -148,6 +148,7 @@ const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermi
 			<DialogBonus
 				:limited="canGradeLimitedBonus && !canGradeUnlimitedBonus"
 				:teamId="props.teamId"
+				:sprintId="props.sprintId"
 			></DialogBonus>
 		</template>
 	</ContainerGradeType>

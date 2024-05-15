@@ -32,11 +32,11 @@ export const updateBonus = async(id: number, body: UpdateBonus): Promise<void> =
 	}
 }
 
-export const getStudentBonus = async(studentId: number, limited: boolean): Promise<Bonus> => {
+export const getStudentBonus = async(studentId: number, limited: boolean, sprintId: string): Promise<Bonus> => {
 	const response = await queryAndValidate({
 		route: `students/${studentId}/bonus`,
 		responseSchema: BonusSchema,
-		params: { limited: limited.toString() }
+		params: { limited: limited.toString(), sprintId }
 	})
 
 	if (response.status === "error") {
@@ -46,10 +46,11 @@ export const getStudentBonus = async(studentId: number, limited: boolean): Promi
 	return response.data
 }
 
-export const getStudentBonuses = async(studentId: number): Promise<Bonus[]> => {
+export const getStudentBonuses = async(studentId: number, sprintId: string): Promise<Bonus[]> => {
 	const response = await queryAndValidate({
 		route: `students/${studentId}/bonuses`,
-		responseSchema: z.array(BonusSchema)
+		responseSchema: z.array(BonusSchema),
+		params: { sprintId }
 	})
 
 	if (response.status === "error") {
