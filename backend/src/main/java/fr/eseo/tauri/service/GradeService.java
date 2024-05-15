@@ -263,20 +263,14 @@ public class GradeService {
 
     public Boolean getGradesConfirmation(Integer sprintId, Integer teamId) {
         try {
-            System.out.println(teamId);
             List<Student> students = studentRepository.findByTeam(teamId);
             if (students.isEmpty()) {
                 return false;
             }
-            System.out.println(students);
 
             for (Student student : students) {
                 GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
                 Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
-                System.out.println(sprintId);
-                System.out.println(student.id());
-                System.out.println(gradeType.id());
-                System.out.println(grade);
 
                 if (Boolean.FALSE.equals(grade.confirmed())) {
                     return true;
