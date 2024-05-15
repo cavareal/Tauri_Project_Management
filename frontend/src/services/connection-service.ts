@@ -1,5 +1,5 @@
 import { AuthResponseSchema } from "@/types/auth-response"
-import { mutateAndValidateWithReturn } from "@/utils/api"
+import { loginAndValidate } from "@/utils/api"
 import { Cookies } from "@/utils/cookie"
 import { getAllPermissions, getAllRoles } from "@/services/user-service"
 import { AuthRequestSchema } from "@/types/auth-request"
@@ -9,11 +9,10 @@ export const login = async(login: string, password: string) => {
 	// TODO: set the project id
 	Cookies.setProjectId(1)
 
-	const response = await mutateAndValidateWithReturn({
+	const response = await loginAndValidate({
 		route: "auth/login",
 		responseSchema: AuthResponseSchema,
 		bodySchema: AuthRequestSchema,
-		method: "POST",
 		body: { login, password }
 	})
 

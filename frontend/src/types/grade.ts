@@ -3,6 +3,7 @@ import { SprintSchema } from "@/types/sprint"
 import { StudentSchema } from "@/types/student"
 import { TeamSchema } from "@/types/team"
 import { UserSchema } from "@/types/user"
+import { isValid } from "date-fns"
 import { z } from "zod"
 
 export const GradeSchema = z.object({
@@ -38,4 +39,6 @@ export type CreateGrade = z.infer<typeof CreateGradeSchema>
 export const UpdateGradeSchema = CreateGradeSchema.partial()
 export type UpdateGrade = z.infer<typeof UpdateGradeSchema>
 
-export const GradeDoubleArraySchema = z.array(z.array(z.number()))
+export const GradeDoubleArraySchema = z.array(z.array(z.number().nullable()))
+
+export const GradeMapSchema = z.record(z.number().nullable())

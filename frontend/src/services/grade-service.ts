@@ -1,4 +1,4 @@
-import { GradeDoubleArraySchema, GradeSchema, type Grade, CreateGradeSchema } from "@/types/grade"
+import { GradeDoubleArraySchema, GradeSchema, type Grade, CreateGradeSchema, GradeMapSchema } from "@/types/grade"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { type CreateGrade } from "@/types/grade"
 import { z } from "zod"
@@ -137,4 +137,124 @@ export const getAverageByGradeType = async(id: number, sprintId: number, gradeTy
 	}
 
 	return response.data
+}
+
+export const getTeamAverage = async(teamId: number, sprintId: string): Promise<z.infer<typeof GradeMapSchema>> => {
+	const response = await queryAndValidate({
+		route: `grades/average-team/${teamId}`,
+		params: { sprintId: sprintId },
+		responseSchema: GradeMapSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+	return response.data
+}
+
+export const getStudentsAverageByTeam = async(teamId: number, sprintId: string): Promise<z.infer<typeof GradeMapSchema>> => {
+	const response = await queryAndValidate({
+		route: `grades/average-students/${teamId}`,
+		params: { sprintId: sprintId },
+		responseSchema: GradeMapSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getTeamTotalGrade = async(teamId: number, sprintId: number): Promise<number> => {
+	const response = await queryAndValidate({
+		route: `teams/${teamId}/sprint/${sprintId}/total`,
+		responseSchema: z.number()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getIndividualTotalGrade = async(studentId: number, sprintId: number): Promise<number> => {
+	const response = await queryAndValidate({
+		route: `students/${studentId}/sprint/${sprintId}/total`,
+		responseSchema: z.number()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getSprintGrade = async(studentId: number, sprintId: number): Promise<number> => {
+	const response = await queryAndValidate({
+		route: `students/${studentId}/sprint/${sprintId}/grade`,
+		responseSchema: z.number()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getIndividualTotalGrades = async(teamId: number, sprintId: number): Promise<number[]> => {
+	const response = await queryAndValidate({
+		route: `teams/${teamId}/sprint/${sprintId}/totals`,
+		responseSchema: z.number().array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getSprintGrades = async(teamId: number, sprintId: number): Promise<number[]> => {
+	const response = await queryAndValidate({
+		route: `teams/${teamId}/sprint/${sprintId}/grades`,
+		responseSchema: z.number().array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getGradesConfirmation = async(sprintId: string, teamId: string): Promise<number> => {
+	const response = await queryAndValidate({
+		route: `grades/confirmation`,
+		params: { sprintId: sprintId, teamId: teamId },
+		responseSchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const setGradesConfirmation = async(teamId: number, sprintId: number) => {
+
+	const response = await mutateAndValidate({
+		method: "POST",
+		route: `grades/confirmation`,
+		body: { sprintId: sprintId.toString(), teamId: teamId.toString() },
+		bodySchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }

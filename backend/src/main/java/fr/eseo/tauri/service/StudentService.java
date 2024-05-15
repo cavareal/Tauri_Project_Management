@@ -11,6 +11,7 @@ import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.BonusRepository;
+import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.security.ApplicationSecurity;
 import fr.eseo.tauri.util.CustomLogger;
@@ -39,6 +40,8 @@ public class StudentService {
     private final BonusRepository bonusRepository;
     private final BonusService bonusService;
     private final ApplicationSecurity applicationSecurity;
+    private final GradeRepository gradeRepository;
+    private final UserService userService;
 
     static final String MAP_KEY_NAMES = "names";
     static final String MAP_KEY_GENDERS = "genders";
@@ -416,6 +419,34 @@ public class StudentService {
         }
 
         return bonusRepository.findAllStudentBonuses(idStudent);
+    }
+
+    public Double getIndividualTotalGrade(String token, Integer id, Integer sprintId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        Integer teamId = userService.getTeamByMemberId(token, id, getStudentById(token, id).projectId()).id();
+
+        Double studentGradedTeamGrade = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName());
+
+        Double individualGrade = gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
+
+        return 2*individualGrade + studentGradedTeamGrade;
+    }
+
+    public Double getSprintGrade(String token, Integer studentId, Integer sprintId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        Integer teamId = userService.getTeamByMemberId(token, studentId, getStudentById(token, studentId).projectId()).id();
+
+        double teamGrade = teamService.getTeamTotalGrade(token, teamId, sprintId);
+
+        List<Bonus> studentBonuses = getStudentBonuses(token, studentId);
+
+        return 0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrade(token, studentId, sprintId));
     }
 
 }
