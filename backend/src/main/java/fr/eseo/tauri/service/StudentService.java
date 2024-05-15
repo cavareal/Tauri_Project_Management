@@ -121,7 +121,10 @@ public class StudentService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteStudent"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        studentRepository.deleteAllByProject(projectId);
+        var students = getAllStudentsByProject(token, projectId);
+        for (var student : students) {
+            userService.deleteUserById(token, student.id());
+        }
         gradeTypeService.deleteAllImportedGradeTypes(token);
         teamService.deleteAllTeamsByProject(token, projectId);
     }
