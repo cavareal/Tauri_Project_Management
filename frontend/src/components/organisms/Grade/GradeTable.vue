@@ -152,6 +152,9 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 	</Table>
 	<Tabs v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) === Number(props.teamId))">
 		<Tab title="Mes notes" >
+
+		</Tab>
+		<Tab title="Mon équipe">
 			<Table>
 				<TableHeader>
 					<TableRow>
@@ -172,31 +175,39 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 				</TableHeader>
 				<TableBody>
 					<TableRow v-for="(student, index) in teamStudents" >
-						<Skeleton v-if="!averageTeam || !studentBonuses || !totalGrade || !totalIndividualGrades" class="w-5/6 h-5" />
-						<span v-else>
-							<TableCell v-if="Number(student.id) === Number(currentUserId)" class="font-medium" :class="rowClass">{{student.name}}</TableCell>
-							<TableCell v-if="averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
-							<TableCell v-if="averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
-							<TableCell v-if="averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
-							<TableCell v-if=" averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageTeam["Support de présentation"]}}</TableCell>
-							<TableCell v-if="Number(student.id) === Number(currentUserId) && totalGrade" :class="rowClass"> {{totalGrade}} </TableCell>
-							<TableCell v-if="studentBonuses && Number(student.id) === Number(currentUserId)" :class="rowClass">{{ studentBonuses[index][1].value ? studentBonuses[index][1].value : ''}} </TableCell>
-							<TableCell v-if="studentBonuses && Number(student.id) === Number(currentUserId)" :class="rowClass">{{ studentBonuses[index][0].value ? studentBonuses[index][0].value : ''}} </TableCell>
-							<TableCell v-if="Number(student.id) === Number(currentUserId) && studentBonuses" :class="rowClass">   {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
-							<TableCell v-if="averageTeam && Number(student.id) === Number(currentUserId)" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
-							<TableCell v-if=" averageStudents && Number(student.id) === Number(currentUserId)" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
-							<TableCell v-if="Number(student.id) === Number(currentUserId) && totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index] ? totalIndividualGrades[index] : 0}} </TableCell>
-							<TableCell v-if="Number(student.id) === Number(currentUserId) && sprintGrades" :class="rowClass"> {{sprintGrades[index]}} </TableCell>
-						</span>
+						<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
+						<TableCell v-if="averageTeam" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
+						<TableCell v-if="averageTeam" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
+						<TableCell v-if="averageTeam" :class="rowClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
+						<TableCell v-if=" averageTeam" :class="rowClass">{{averageTeam["Support de présentation"]}}</TableCell>
+						<TableCell v-if="totalGrade" :class="rowClass"> {{totalGrade}} </TableCell>
+						<TableCell v-if="studentBonuses" :class="rowClass">{{ studentBonuses[index][1].value ? studentBonuses[index][1].value : ''}} </TableCell>
+						<TableCell v-if="studentBonuses" :class="rowClass">{{ studentBonuses[index][0].value ? studentBonuses[index][0].value : ''}} </TableCell>
+						<TableCell v-if="studentBonuses" :class="rowClass">   {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
+						<TableCell v-if="averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
+						<TableCell v-if=" averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
+						<TableCell v-if="totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index] ? totalIndividualGrades[index] : 0}} </TableCell>
+						<TableCell v-if="sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4)}} </TableCell>
 					</TableRow>
 				</TableBody>
 			</Table>
+			<CommentContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId" :feedback="true"/>
 		</Tab>
-		<Tab title="Mon équipe">
-      <CommentContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId" :feedback="true"/>
-		</Tab>
-
 	</Tabs>
+	<Table  v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) !== Number(props.teamId))">
+		<TableHeader>
+			<TableRow>
+				<TableHead :class="rowClass" >Nom</TableHead>
+				<TableHead :class="rowClass" >Note finale</TableHead>
+			</TableRow>
+		</TableHeader>
+		<TableBody>
+			<TableRow v-for="(student, index) in teamStudents" >
+				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
+				<TableCell v-if="sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4)}}</TableCell>
+			</TableRow>
+		</TableBody>
+	</Table>
 </template>
 
 <style scoped>
