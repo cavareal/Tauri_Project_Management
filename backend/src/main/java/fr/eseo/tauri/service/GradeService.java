@@ -19,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static fr.eseo.tauri.util.ListUtil.filter;
 
@@ -40,6 +39,11 @@ public class GradeService {
     @Lazy
     private final GradeTypeService gradeTypeService;
     private final TeamService teamService;
+    @Lazy
+    private final GradeService self;
+
+
+
 
     public Grade getGradeById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
@@ -146,7 +150,7 @@ public class GradeService {
 
     // Non-transactional method to call the transactional one
     public void updateImportedMeanByStudentId(Float value, Integer studentId) {
-        this.updateImportedMeanByStudentIdTransactional(value, studentId);
+        self.updateImportedMeanByStudentIdTransactional(value, studentId);
     }
 
     @Transactional
@@ -170,7 +174,7 @@ public class GradeService {
         }
     }
 
-    public Double getAverageGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
+    public Double getAverageByGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
         GradeType gradeType = gradeTypeRepository.findByName(gradeTypeName);
         Double grade;
         if (Boolean.TRUE.equals(gradeType.forGroup())) {
@@ -179,31 +183,6 @@ public class GradeService {
             grade = gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, gradeTypeName);
         }
         return grade;
-    }
-
-    public Double getSprintGrade(String token, Integer userId, Integer sprintId) {
-    /*    if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        Student student = studentService.getStudentById(token, userId);
-
-        Double sprintGrade;
-
-        var grade1 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.TECHNICAL_SOLUTION.displayName());
-        var grade2 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.PROJECT_MANAGEMENT.displayName());
-        var grade3 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.SPRINT_CONFORMITY.displayName());
-        var grade4 = gradeRepository.findAverageByGradeTypeForTeam(student.teamId(), GradeTypeName.CONTENT_PRESENTATION.displayName());
-
-
-
-        var bonuses = bonusRepository.findAllStudentBonuses(userId);
-
-        //Student student = studentService.getStudentById(token, userId);
-        //Sprint sprint = sprintService.getSprintById(token, sprintId);
-
-        return gradeRepository.findSprintGrade(student, sprint);*/
-        return 0.0;
     }
 
     /**
@@ -265,6 +244,32 @@ public class GradeService {
 
             return byteArrayOutputStream.toByteArray();
         }
+    }
+
+    public Map<String, Double> getTeamGrades(Integer teamId, Integer sprintId) {
+        Map<String, Double> allGrades = new HashMap<>();
+
+        List<GradeType> gradeTypes = gradeTypeRepository.findAllUnimportedAndForGroup();
+
+        for (GradeType gradeType : gradeTypes) {
+            Double averageGrade = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, gradeType.name());
+            allGrades.put(gradeType.name(), averageGrade);
+        }
+
+        return allGrades;
+    }
+
+    public Map<String, Double> getTeamStudentGrades(Integer teamId, Integer sprintId) {
+        Map<String, Double> allGrades = new HashMap<>();
+
+        List<Student> teamStudents = studentRepository.findByTeam(teamId);
+
+        for (Student student : teamStudents) {
+            Double averageGrade = gradeRepository.findAverageByGradeTypeForStudent(student.id(), sprintId, "Performance individuelle");
+            allGrades.put(String.valueOf(student.id()), averageGrade);
+        }
+
+        return allGrades;
     }
 
     public Boolean getGradesConfirmation(Integer teamId, Integer sprintId) {

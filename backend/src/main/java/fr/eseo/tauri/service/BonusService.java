@@ -75,10 +75,10 @@ public class BonusService {
 
         Bonus bonus = getBonusById(token, id);
 
-        if (updatedBonus.value() != null) {
-            bonus.value(updatedBonus.value());
-            if(updatedBonus.authorId() != null) bonus.author(userService.getUserById(token, updatedBonus.authorId()));
-        }
+
+        bonus.value(updatedBonus.value());
+        if(updatedBonus.authorId() != null) bonus.author(userService.getUserById(token, updatedBonus.authorId()));
+
         if (updatedBonus.comment() != null) bonus.comment(updatedBonus.comment());
 
         bonusRepository.save(bonus);
