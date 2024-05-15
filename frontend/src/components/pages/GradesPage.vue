@@ -33,10 +33,10 @@ const ratedSprints = computed(() => {
 
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({ queryKey: ["grades-confirmation"], queryFn: async() => {
-	if(selectedSprint.value != '' && selectedTeam.value != '') return
+	if (selectedSprint.value != "" && selectedTeam.value != "") return
 	return await getGradesConfirmation(selectedSprint.value, selectedTeam.value)
 
-}})
+} })
 
 const forceRerender = () => {
 	componentKey.value += 1
@@ -78,13 +78,8 @@ const forceRerender = () => {
 				</Select>
 			</Header>
 			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
-        <div v-if="authorized">
-          <Grade :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
-          <div class="pt-5" v-if="canViewOwnTeamGrade">
-            <FeedbackContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="selectedSprint" :teamId="selectedTeam"/>
-          </div>
-        </div>
-				<NotAutorized v-else/>
+          <Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
+        <NotAutorized v-else/>
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
 				<ListChecks class="size-12 stroke-1 text-dark-blue" />
