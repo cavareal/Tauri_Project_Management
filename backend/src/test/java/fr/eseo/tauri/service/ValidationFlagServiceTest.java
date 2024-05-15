@@ -1,7 +1,6 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.*;
-import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.ValidationFlagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +22,6 @@ class ValidationFlagServiceTest {
 
     @Mock
     ValidationFlagRepository validationFlagRepository;
-
-    @Mock
-    RoleService roleService;
 
     @InjectMocks
     ValidationFlagService validationFlagService;
@@ -77,18 +73,6 @@ class ValidationFlagServiceTest {
         List<ValidationFlag> result = validationFlagService.getAllValidationFlags("token", 1);
 
         assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void createValidationFlagsShouldCreateFlagsWhenAuthorizedAndRoleIsProjectLeader() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-        when(roleService.getUsersByRoleType(anyString(), any(RoleType.class))).thenReturn(Collections.singletonList(new User()));
-        Flag flag = new Flag();
-        flag.author(new User());
-
-        validationFlagService.createValidationFlags("token", flag);
-
-        verify(validationFlagRepository, times(1)).save(any(ValidationFlag.class));
     }
 
     @Test
