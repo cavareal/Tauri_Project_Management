@@ -23,6 +23,7 @@ import DialogIndividualRate from "@/components/organisms/rating/DialogIndividual
 import DialogViewFeedback from "@/components/organisms/rating/DialogViewFeedback.vue"
 import DialogFeedback from "@/components/organisms/rating/DialogFeedback.vue"
 import { useQuery } from "@tanstack/vue-query"
+import FeedbackContainer from "@/components/organisms/rating/FeedbackContainer.vue"
 
 const props = defineProps<{
 	teamId : string,
@@ -47,7 +48,7 @@ const gradeOwnTeam = hasPermission("GRADE_OWN_TEAM")
 const canGradeTechnicalSolution = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeSprintConformity = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
-const canAddFeedbacks = hasPermission("ADD_ALL_TEAMS_FEEDBACK")
+const canSeeFeedbacks = hasPermission("VIEW_FEEDBACK") && hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 
 </script>
 
@@ -144,19 +145,7 @@ const canAddFeedbacks = hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 		</template>
 	</ContainerGradeType>
 
-  <ContainerGradeType v-if="canAddFeedbacks" title="Feedbacks" infotext="Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint">
-    <template #icon>
-      <MessageSquareReply :size="40" :stroke-width="1"/>
-    </template>
-    <template #dialog>
-      <DialogViewFeedback :teamId="props.teamId" :sprintId="props.sprintId">
-        <Button variant="outline">Voir les feedbacks</Button>
-      </DialogViewFeedback>
-      <DialogFeedback :selectedTeamId="props.teamId" :selectedSprintId="props.sprintId">
-          <Button variant="default">Donner un feedback</Button>
-      </DialogFeedback>
-    </template>
-  </ContainerGradeType>
+  <FeedbackContainer v-if="canSeeFeedbacks" title="Feedbacks" infoText="Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId"/>
 
 	<ContainerGradeType v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
 		<template #icon>

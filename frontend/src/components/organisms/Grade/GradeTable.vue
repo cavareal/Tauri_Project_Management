@@ -16,12 +16,13 @@ import {
 } from "lucide-vue-next"
 import { watch } from "vue"
 import { getStudentsAverageByTeam, getTeamAverage } from "@/services/grade-service"
-import { getStudentBonus, getStudentBonuses } from "@/services/bonus-service"
+import { getStudentBonuses } from "@/services/bonus-service"
 import { hasPermission } from "@/services/user-service"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId } from "@/services/team-service"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
+import FeedbackContainer from "@/components/organisms/rating/FeedbackContainer.vue"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
 const props = defineProps<{
@@ -163,7 +164,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 			</Table>
 		</Tab>
 		<Tab title="Mon équipe">
-			coucou la team
+      <FeedbackContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId"/>
 		</Tab>
 
 	</Tabs>

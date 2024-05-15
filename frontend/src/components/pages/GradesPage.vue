@@ -12,6 +12,7 @@ import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
 import Grade from "@/components/organisms/Grade/GradeTable.vue"
+import FeedbackContainer from "@/components/organisms/rating/FeedbackContainer.vue"
 import { Button } from "@/components/ui/button"
 import ValidGradesDialog from "@/components/organisms/Grade/ValidGradesDialog.vue"
 import { getGradesConfirmation } from "@/services/grade-service"
@@ -20,6 +21,7 @@ import { getGradesConfirmation } from "@/services/grade-service"
 const selectedTeam = ref("")
 const selectedSprint = ref("")
 const componentKey = ref(0)
+const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
 
 const authorized = hasPermission("GRADES_PAGE")
 
@@ -31,10 +33,10 @@ const ratedSprints = computed(() => {
 
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({ queryKey: ["grades-confirmation"], queryFn: async() => {
-	if(selectedSprint.value != '' && selectedTeam.value != '') return
+	if (selectedSprint.value != "" && selectedTeam.value != "") return
 	return await getGradesConfirmation(selectedSprint.value, selectedTeam.value)
-	
-}})
+
+} })
 
 const forceRerender = () => {
 	componentKey.value += 1
@@ -76,8 +78,8 @@ const forceRerender = () => {
 				</Select>
 			</Header>
 			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
-				<Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey" />
-				<NotAutorized v-else />
+          <Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
+        <NotAutorized v-else/>
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
 				<ListChecks class="size-12 stroke-1 text-dark-blue" />
