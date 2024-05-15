@@ -21,10 +21,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         String token = jwtTokenUtil.extractToken(request);
 
+        System.out.println(request.getRequestURI());
+
         if (token != null && jwtTokenUtil.validateAccessToken(token)) {
             UserDetails userDetails = jwtTokenUtil.createUserDetails(token);
             jwtTokenUtil.setAuthenticationContext(userDetails, request);
+
+            filterChain.doFilter(request, response);
+        } else if (request.getRequestURI().equals("/api/auth/login")) {
+            filterChain.doFilter(request, response);
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-        filterChain.doFilter(request, response);
     }
 }
