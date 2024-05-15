@@ -74,6 +74,7 @@ public class GradeService {
         if (grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
         if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
         if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
+
         if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
             grade.student(null);
             if (grade.teamId() != null) grade.team(teamService.getTeamById(token, grade.teamId()));
@@ -275,16 +276,47 @@ public class GradeService {
     public Boolean getGradesConfirmation(Integer teamId, Integer sprintId) {
         try {
             List<Student> students = studentRepository.findByTeam(teamId);
+            if (students.isEmpty()) {
+                return false;
+            }
+
             for (Student student : students) {
-                Grade grade = (Grade) gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id());
-                if (Boolean.FALSE.equals(grade.confirmed())) {
-                    return false;
+                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
+                Boolean grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
+
+                if (Boolean.FALSE.equals(grade)) {
+                    return true;
                 }
             }
-            return true;
+            return false;
         } catch (NullPointerException e) {
             CustomLogger.info("No student or no grades found");
-            return null;
+            return false;
+        }
+    }
+
+
+    public Boolean setGradesConfirmation(Integer teamId, Integer sprintId) {
+        try {
+            List<Student> students = studentRepository.findByTeam(teamId);
+            if (students.isEmpty()) {
+                return false;
+            }
+
+            for (Student student : students) {
+                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
+                Boolean grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
+
+                if (Boolean.FALSE.equals(grade)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (NullPointerException e) {
+            CustomLogger.info("No student or no grades found");
+            return false;
         }
     }
 }
+
+

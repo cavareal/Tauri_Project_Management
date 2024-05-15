@@ -137,9 +137,14 @@ public class GradeController {
         return ResponseEntity.ok(teamStudentGrades);
     }
 
-    @GetMapping("/confirmation")
-    public ResponseEntity<Boolean> getGradesConfirmation(@RequestParam("sprintId") Integer sprintId, @RequestParam("teamId") Integer teamId) {
+    @GetMapping("/confirmation/{sprintId}/team/{teamId}")
+    public ResponseEntity<Boolean> getGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId) {
         return ResponseEntity.ok(gradeService.getGradesConfirmation(sprintId, teamId));
+    }
+
+    @PostMapping("/confirmation/{sprintId}/team/{teamId}")
+    public ResponseEntity<Boolean> setGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId) {
+        return ResponseEntity.ok(gradeService.setGradesConfirmation(sprintId, teamId));
     }
 
 }
