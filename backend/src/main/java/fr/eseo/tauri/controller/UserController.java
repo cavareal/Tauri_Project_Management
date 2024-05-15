@@ -18,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class UserController {
 	private final ResponseMessage responseMessage = new ResponseMessage("user");
 	private final RoleService roleService;
 	private final GradeService gradeService;
+	private final NotificationService notificationService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -91,6 +93,12 @@ public class UserController {
 	public ResponseEntity<List<RoleType>> getRolesByUserId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
 		List<RoleType> roles = userService.getRolesByUserId(token, id);
 		return ResponseEntity.ok(roles);
+	}
+
+	@GetMapping("/{userId}/notifications")
+	public ResponseEntity<List<Notification>> getAllNotificationsUser(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
+		List<Notification> notifications = notificationService.getNotificationsByUser(token, userId);
+		return ResponseEntity.ok(notifications);
 	}
 
 
