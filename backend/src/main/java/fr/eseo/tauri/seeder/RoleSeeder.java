@@ -43,7 +43,7 @@ public class RoleSeeder {
 			roleRepository.save(roleOL);
 		}
 
-		// Create an technocal coach role for the technical coach user
+		// Create a technocal coach role for the technical coach user
 		var roleTC = new Role();
 		var userTC = userRepository.findByEmail("tc@tauri.com");
 		if (userTC.isPresent()) {
