@@ -19,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static fr.eseo.tauri.util.ListUtil.filter;
 
@@ -175,7 +174,7 @@ public class GradeService {
         }
     }
 
-    public Double getAverageGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
+    public Double getAverageByGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
         GradeType gradeType = gradeTypeRepository.findByName(gradeTypeName);
         Double grade;
         if (Boolean.TRUE.equals(gradeType.forGroup())) {
@@ -184,14 +183,6 @@ public class GradeService {
             grade = gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, gradeTypeName);
         }
         return grade;
-    }
-
-    public Double getSprintGrade(String token, Integer userId, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        CustomLogger.info("Getting sprint grade for user with id " + userId + " and sprint with id " + sprintId);
-        return 0.0;
     }
 
     /**
@@ -253,6 +244,32 @@ public class GradeService {
 
             return byteArrayOutputStream.toByteArray();
         }
+    }
+
+    public Map<String, Double> getTeamGrades(Integer teamId, Integer sprintId) {
+        Map<String, Double> allGrades = new HashMap<>();
+
+        List<GradeType> gradeTypes = gradeTypeRepository.findAllUnimportedAndForGroup();
+
+        for (GradeType gradeType : gradeTypes) {
+            Double averageGrade = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, gradeType.name());
+            allGrades.put(gradeType.name(), averageGrade);
+        }
+
+        return allGrades;
+    }
+
+    public Map<String, Double> getTeamStudentGrades(Integer teamId, Integer sprintId) {
+        Map<String, Double> allGrades = new HashMap<>();
+
+        List<Student> teamStudents = studentRepository.findByTeam(teamId);
+
+        for (Student student : teamStudents) {
+            Double averageGrade = gradeRepository.findAverageByGradeTypeForStudent(student.id(), sprintId, "Performance individuelle");
+            allGrades.put(String.valueOf(student.id()), averageGrade);
+        }
+
+        return allGrades;
     }
 
 }

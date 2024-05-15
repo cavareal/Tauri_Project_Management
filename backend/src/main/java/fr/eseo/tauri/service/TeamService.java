@@ -2,10 +2,12 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
@@ -25,6 +27,10 @@ public class TeamService {
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
     private final CommentRepository commentRepository;
+    private final GradeRepository gradeRepository;
+    private final GradeTypeRepository gradeTypeRepository;
+    @Lazy
+    private final StudentService studentService;
 
     private static final String READ_PERMISSION = "readTeam";
     private static final String DELETE_PERMISSION = "deleteTeam";
@@ -246,4 +252,57 @@ public class TeamService {
         }
         return commentRepository.findAllByTeamIdAndSprintIdAndFeedback(teamId, sprintId, true);
     }
+
+    public Double getTeamTotalGrade(String token, Integer teamId, Integer sprintId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        List<GradeType> teacherGradedTeamGradeTypes = gradeTypeRepository.findTeacherGradedTeamGradeTypes();
+        List<Double> teamGrades = new ArrayList<>();
+
+        for (GradeType gradeType : teacherGradedTeamGradeTypes) {
+            teamGrades.add(gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, gradeType.name()));
+        }
+
+        return teamGrades.stream().mapToDouble(Double::doubleValue).sum() / teamGrades.size();
+
+    }
+
+    public List<Double> getIndividualTotalGrades(String token, Integer id, Integer sprintId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        List<Student> students = getStudentsByTeamId(token, id);
+        List<Double> individualGrades = new ArrayList<>();
+
+        for(Student student : students){
+            Double studentGradedTeamGrade = gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName());
+            Double individualGrade = gradeRepository.findAverageByGradeTypeForStudent(student.id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
+
+            individualGrades.add(2*individualGrade + studentGradedTeamGrade);
+
+        }
+        return individualGrades;
+    }
+
+    public List<Double> getSprintGrades(String token, Integer id, Integer sprintId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        double teamGrade = getTeamTotalGrade(token, id, sprintId);
+
+        List<Student> students = getStudentsByTeamId(token, id);
+        List<Double> sprintGrades = new ArrayList<>();
+
+        for(int i = 0; i < students.size(); i++){
+            List<Bonus> studentBonuses = studentService.getStudentBonuses(token, students.get(i).id());
+            sprintGrades.add(0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrades(token, students.get(i).id(), sprintId)).get(i));
+        }
+
+        return sprintGrades;
+    }
+
 }
