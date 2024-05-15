@@ -2,20 +2,24 @@
 import { SidebarTemplate } from "@/components/templates"
 import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { hasPermission } from "@/services/user-service"
 import { useQuery } from "@tanstack/vue-query"
-import { getTeams } from "@/services/team-service"
+import { getTeamByUserId, getTeams } from "@/services/team-service"
 import { getSprints } from "@/services/sprint-service"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
 import Grade from "@/components/organisms/Grade/GradeTable.vue"
+import FeedbackContainer from "@/components/organisms/rating/FeedbackContainer.vue"
+import { Cookies } from "@/utils/cookie"
 
 const selectedTeam = ref("")
 const selectedSprint = ref("")
 const componentKey = ref(0)
+const isMyTeam = ref(false)
+const currentUserId = Cookies.getUserId()
 
 const authorized = hasPermission("GRADES_PAGE")
 
@@ -27,6 +31,11 @@ const ratedSprints = computed(() => {
 const forceRerender = () => {
 	componentKey.value += 1
 }
+
+watch(() => selectedTeam, async() => {
+	const team = await getTeamByUserId(currentUserId)
+	isMyTeam.value = team.id.toString() === selectedTeam.value
+})
 
 </script>
 
@@ -57,7 +66,12 @@ const forceRerender = () => {
 				</Select>
 			</Header>
 			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
-				<Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
+        <div v-if="authorized">
+          <Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
+          <div class="pt-5" v-if="isMyTeam">
+            <FeedbackContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="selectedSprint" :teamId="selectedTeam"/>
+          </div>
+        </div>
 				<NotAutorized v-else/>
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
