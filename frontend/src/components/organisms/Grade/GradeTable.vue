@@ -16,7 +16,7 @@ import {
 } from "lucide-vue-next"
 import { watch } from "vue"
 import { getStudentsAverageByTeam, getTeamAverage } from "@/services/grade-service"
-import { getStudentBonus, getStudentBonuses } from "@/services/bonus-service"
+import { getStudentBonuses } from "@/services/bonus-service"
 import { hasPermission } from "@/services/user-service"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId } from "@/services/team-service"

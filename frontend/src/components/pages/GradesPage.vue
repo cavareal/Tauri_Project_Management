@@ -18,7 +18,7 @@ import { Cookies } from "@/utils/cookie"
 const selectedTeam = ref("")
 const selectedSprint = ref("")
 const componentKey = ref(0)
-const isMyTeam = ref(false)
+const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
 const currentUserId = Cookies.getUserId()
 
 const authorized = hasPermission("GRADES_PAGE")
@@ -31,11 +31,6 @@ const ratedSprints = computed(() => {
 const forceRerender = () => {
 	componentKey.value += 1
 }
-
-watch(() => selectedTeam, async() => {
-	const team = await getTeamByUserId(currentUserId)
-	isMyTeam.value = team.id.toString() === selectedTeam.value
-})
 
 </script>
 
@@ -67,8 +62,8 @@ watch(() => selectedTeam, async() => {
 			</Header>
 			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
         <div v-if="authorized">
-          <Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
-          <div class="pt-5" v-if="isMyTeam">
+          <Grade :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
+          <div class="pt-5" v-if="canViewOwnTeamGrade">
             <FeedbackContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="selectedSprint" :teamId="selectedTeam"/>
           </div>
         </div>
