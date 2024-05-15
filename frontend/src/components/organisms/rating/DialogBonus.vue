@@ -19,13 +19,14 @@ import type { Bonus } from "@/types/bonus"
 const props = defineProps<{
 	limited: boolean
 	teamId: string
+	sprintId: string
 }>()
 
 const open = ref(false)
 const currentUserId = Cookies.getUserId()
 let updatedStudentBonuses: Bonus[] = reactive([])
 
-const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => getStudentsByTeamId(Number(props.teamId)) })
+const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async () => getStudentsByTeamId(Number(props.teamId)) })
 
 /*const { data: studentBonuses } = useQuery({ queryKey: ["student-bonuses"], queryFn: async() => {
 	if (!teamStudents.value) return []
@@ -35,13 +36,13 @@ const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.team
 })*/
 const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
 	queryKey: ["student-bonuses"],
-	queryFn: async() => {
+	queryFn: async () => {
 		if (!teamStudents.value) return null
-		return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited)))
+		return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited, props.sprintId)))
 	}
 })
 
-watch(teamStudents, async(value, _) => {
+watch(teamStudents, async (value, _) => {
 	if (value) {
 		await refetchBonuses()
 	}
@@ -83,13 +84,15 @@ const handleBonusInput = (event: InputEvent, index: number, inputType: "value" |
 	}
 }
 
-const { isPending, error, mutate: update } = useMutation({ mutationKey: ["update-bonuses"], mutationFn: async() => {
-	console.log(updatedStudentBonuses)
-	await Promise.all(updatedStudentBonuses.map(studentBonus => updateBonus(studentBonus.id, { value: studentBonus.value, comment: studentBonus.comment, authorId: currentUserId })))
-		.then(() => open.value = false)
-		.then(() => createToast("Les bonus ont été mis à jour."))
-		.then(() => refetchBonuses())
-} })
+const { isPending, error, mutate: update } = useMutation({
+	mutationKey: ["update-bonuses"], mutationFn: async () => {
+		console.log(updatedStudentBonuses)
+		await Promise.all(updatedStudentBonuses.map(studentBonus => updateBonus(studentBonus.id, { value: studentBonus.value, comment: studentBonus.comment, authorId: currentUserId })))
+			.then(() => open.value = false)
+			.then(() => createToast("Les bonus ont été mis à jour."))
+			.then(() => refetchBonuses())
+	}
+})
 
 const DIALOG_DESCRIPTION_LIMITE = "Vous pouvez ajuster les bonus et malus des membres de votre équipe. Attention, une fois que vous les avez validés, "
 	+ "vous ne pouvez plus les modifier. Cependant, si un membre de votre équipe modifie de nouveau les bonus, vous pourrez les valider à nouveau."
@@ -99,7 +102,8 @@ const DIALOG_DESCRIPTION_ILLIMITE = "Vous pouvez ajouter des bonus et malus illi
 </script>
 
 <template>
-	<CustomDialog title="Bonus et malus de votre équipe" v-model:open="open" :description="props.limited ? DIALOG_DESCRIPTION_LIMITE : DIALOG_DESCRIPTION_ILLIMITE">
+	<CustomDialog title="Bonus et malus de votre équipe" v-model:open="open"
+		:description="props.limited ? DIALOG_DESCRIPTION_LIMITE : DIALOG_DESCRIPTION_ILLIMITE">
 		<template #trigger>
 			<Button variant="default">Voir les bonus</Button>
 		</template>
@@ -109,12 +113,13 @@ const DIALOG_DESCRIPTION_ILLIMITE = "Vous pouvez ajouter des bonus et malus illi
 				<Column>
 					<Row class="grid grid-cols-[3fr,1fr] mr-2">
 						<Label :for="student.name" class="whitespace-nowrap mt-3">{{ student.name }}</Label>
-						<Input class="mb-2 " type="number" :default-value="studentBonuses[index]?.value === 0 ? '' : studentBonuses[index]?.value"
-					   		:onchange="(e: InputEvent) => handleBonusInput(e, index, 'value')"/>
+						<Input class="mb-2 " type="number"
+							:default-value="studentBonuses[index]?.value === 0 ? '' : studentBonuses[index]?.value"
+							:onchange="(e: InputEvent) => handleBonusInput(e, index, 'value')" />
 					</Row>
 					<Row class="mr-2">
 						<Input v-if="!props.limited" type="text" :default-value="studentBonuses[index]?.comment ?? ''"
-					   		:onchange="(e: InputEvent) => handleBonusInput(e, index, 'comment')"/>
+							:onchange="(e: InputEvent) => handleBonusInput(e, index, 'comment')" />
 					</Row>
 				</Column>
 			</Row>

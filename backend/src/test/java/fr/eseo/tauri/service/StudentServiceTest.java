@@ -497,11 +497,12 @@ class StudentServiceTest {
         Integer idStudent = 1;
         Boolean limited = true;
         Bonus bonus = new Bonus();
+        Integer idSprint = 1;
 
         when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
-        when(bonusRepository.findStudentBonus(idStudent, limited)).thenReturn(bonus);
+        when(bonusRepository.findStudentBonus(idStudent, limited, idSprint)).thenReturn(bonus);
 
-        Bonus result = studentService.getStudentBonus(token, idStudent, limited);
+        Bonus result = studentService.getStudentBonus(token, idStudent, limited, idSprint);
 
         assertEquals(bonus, result);
     }
@@ -511,10 +512,11 @@ class StudentServiceTest {
         String token = "validToken";
         Integer idStudent = 1;
         Boolean limited = true;
+        Integer idSprint = 1;
 
         when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
 
-        assertThrows(SecurityException.class, () -> studentService.getStudentBonus(token, idStudent, limited));
+        assertThrows(SecurityException.class, () -> studentService.getStudentBonus(token, idStudent, limited, idSprint));
     }
 
     @Test
@@ -522,11 +524,12 @@ class StudentServiceTest {
         String token = "validToken";
         Integer idStudent = 1;
         Boolean limited = true;
+        Integer idSprint = 1;
 
         when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
-        when(bonusRepository.findStudentBonus(idStudent, limited)).thenReturn(null);
+        when(bonusRepository.findStudentBonus(idStudent, limited, idSprint)).thenReturn(null);
 
-        Bonus result = studentService.getStudentBonus(token, idStudent, limited);
+        Bonus result = studentService.getStudentBonus(token, idStudent, limited, idSprint);
 
         assertNull(result);
     }
@@ -536,11 +539,12 @@ class StudentServiceTest {
         String token = "validToken";
         Integer idStudent = 1;
         List<Bonus> bonuses = Arrays.asList(new Bonus(), new Bonus());
+        Integer idSprint = 1;
 
         when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
-        when(bonusRepository.findAllStudentBonuses(idStudent)).thenReturn(bonuses);
+        when(bonusRepository.findAllStudentBonuses(idStudent, idSprint)).thenReturn(bonuses);
 
-        List<Bonus> result = studentService.getStudentBonuses(token, idStudent);
+        List<Bonus> result = studentService.getStudentBonuses(token, idStudent, idSprint);
 
         assertEquals(bonuses, result);
     }
@@ -549,21 +553,23 @@ class StudentServiceTest {
     void getStudentBonusesShouldThrowSecurityExceptionWhenUnauthorized() {
         String token = "validToken";
         Integer idStudent = 1;
+        Integer idSprint = 1;
 
         when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
 
-        assertThrows(SecurityException.class, () -> studentService.getStudentBonuses(token, idStudent));
+        assertThrows(SecurityException.class, () -> studentService.getStudentBonuses(token, idStudent, idSprint));
     }
 
     @Test
     void getStudentBonusesShouldReturnEmptyListWhenNoBonusesFound() {
         String token = "validToken";
         Integer idStudent = 1;
+        Integer idSprint = 1;
 
         when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
-        when(bonusRepository.findAllStudentBonuses(idStudent)).thenReturn(Collections.emptyList());
+        when(bonusRepository.findAllStudentBonuses(idStudent, idSprint)).thenReturn(Collections.emptyList());
 
-        List<Bonus> result = studentService.getStudentBonuses(token, idStudent);
+        List<Bonus> result = studentService.getStudentBonuses(token, idStudent, idSprint);
 
         assertTrue(result.isEmpty());
     }
