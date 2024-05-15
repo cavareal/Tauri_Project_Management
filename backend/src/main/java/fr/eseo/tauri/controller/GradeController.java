@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -76,7 +77,6 @@ public class GradeController {
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 
-    //TODO : Handle the token
     //@GetMapping("/unimported/averages") => On peut récup le user dans le token ?
     @GetMapping("/average-grades-by-grade-type-by-role/{userId}")
     public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
@@ -117,11 +117,23 @@ public class GradeController {
     }
 
     @GetMapping("/average/{id}")
-    double getAverageGradeTypeByStudentIdOrTeamId(@PathVariable Integer id,@RequestParam("sprintId") Integer sprintId,@RequestParam("gradeTypeName") String gradeTypeName) {
+    public double getAverageGradeTypeByStudentIdOrTeamId(@PathVariable Integer id,@RequestParam("sprintId") Integer sprintId,@RequestParam("gradeTypeName") String gradeTypeName) {
         try{
-            return gradeService.getAverageGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName);
+            return gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName);
         } catch (NullPointerException e){
             return -1.0;
         }
+    }
+
+    @GetMapping("/average-team/{teamId}")
+    public ResponseEntity<Map<String, Double>> getTeamGrades(@PathVariable Integer teamId, @RequestParam("sprintId") Integer sprintId) {
+        Map<String, Double> teamGrades = gradeService.getTeamGrades(teamId, sprintId);
+        return ResponseEntity.ok(teamGrades);
+    }
+
+    @GetMapping("/average-students/{teamId}")
+    public ResponseEntity<Map<String, Double>> getTeamStudentGrades(@PathVariable Integer teamId, @RequestParam("sprintId") Integer sprintId) {
+        Map<String, Double> teamStudentGrades = gradeService.getTeamStudentGrades(teamId, sprintId);
+        return ResponseEntity.ok(teamStudentGrades);
     }
 }

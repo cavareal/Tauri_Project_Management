@@ -2,6 +2,7 @@ package fr.eseo.tauri.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,4 +33,13 @@ public interface GradeTypeRepository extends JpaRepository<GradeType, Integer> {
 	@Query("DELETE FROM GradeType gt WHERE gt.imported = false")
 	void deleteAllUnimported();
 
+	@Query("SELECT gt FROM GradeType gt WHERE gt.imported = false AND gt.forGroup = true")
+	List<GradeType> findAllUnimportedAndForGroup();
+
+	@Query("SELECT gt FROM GradeType gt WHERE gt.forGroup = true AND gt.imported = false AND gt.name != :globalTeamPerformance")
+	List<GradeType> findTeacherGradedTeamGradeTypesWithoutGTPGrade(String globalTeamPerformance);
+
+	default List<GradeType> findTeacherGradedTeamGradeTypes(){
+		return findTeacherGradedTeamGradeTypesWithoutGTPGrade(GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName());
+	}
 }

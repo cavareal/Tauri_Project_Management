@@ -85,6 +85,6 @@ public class FlagService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readFlags"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return flagRepository.findByAuthor_IdAndType(authorId, type);
+        return flagRepository.findByAuthorIdAndType(authorId, type);
 	}
 }

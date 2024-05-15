@@ -90,9 +90,27 @@ public class StudentController {
 	}
 
 	@GetMapping("/{id}/bonus")
-	public ResponseEntity<Bonus> getStudentBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("limited") Boolean limited) {
+	public ResponseEntity<Bonus> getStudentBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("limited") Boolean limited) {
 		Bonus bonus = studentService.getStudentBonus(token, id, limited);
 		return ResponseEntity.ok(bonus);
+	}
+
+	@GetMapping("/{id}/bonuses")
+	public ResponseEntity<List<Bonus>> getStudentBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+		List<Bonus> bonuses = studentService.getStudentBonuses(token, id);
+		return ResponseEntity.ok(bonuses);
+	}
+
+	@GetMapping("/{id}/sprint/{sprintId}/total")
+	public ResponseEntity<Double> getIndividualTotalGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
+		Double totalGrade = studentService.getIndividualTotalGrade(token, id, sprintId);
+		return ResponseEntity.ok(totalGrade);
+	}
+
+	@GetMapping("{id}/sprint/{sprintId}/grade")
+	public ResponseEntity<Double> getSprintGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
+		Double sprintGrade = studentService.getSprintGrade(token, id, sprintId);
+		return ResponseEntity.ok(sprintGrade);
 	}
 
 }

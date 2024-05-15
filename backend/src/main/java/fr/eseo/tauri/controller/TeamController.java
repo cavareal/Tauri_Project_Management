@@ -90,4 +90,22 @@ public class TeamController {
         return ResponseEntity.ok(comment);
     }
 
+    @GetMapping("/{id}/sprint/{sprintId}/total")
+    public ResponseEntity<Double> getTeamTotalGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
+        Double totalGrade = teamService.getTeamTotalGrade(token, id, sprintId);
+        return ResponseEntity.ok(totalGrade);
+    }
+
+    @GetMapping("/{id}/sprint/{sprintId}/individual/totals")
+    public ResponseEntity<List<Double>> getIndividualTotalGrades(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
+        List<Double> studentsTotalGrades = teamService.getIndividualTotalGrades(token, id, sprintId);
+        return ResponseEntity.ok(studentsTotalGrades);
+    }
+
+    @GetMapping("{id}/sprint/{sprintId}/grades")
+    public ResponseEntity<List<Double>> getSprintGrades(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
+        List<Double> sprintGrade = teamService.getSprintGrades(token, id, sprintId);
+        return ResponseEntity.ok(sprintGrade);
+    }
+
 }

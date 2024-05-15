@@ -166,7 +166,7 @@ class FlagServiceTest {
         FlagType type = FlagType.REPORTING;
 
         when(authService.checkAuth(token, "readFlags")).thenReturn(true);
-        when(flagRepository.findByAuthor_IdAndType(authorId, type)).thenReturn(Collections.singletonList(new Flag()));
+        when(flagRepository.findByAuthorIdAndType(authorId, type)).thenReturn(Collections.singletonList(new Flag()));
 
         List<Flag> result = flagService.getFlagsByAuthorAndType(token, authorId, type);
 
@@ -191,7 +191,7 @@ class FlagServiceTest {
         FlagType type = FlagType.REPORTING;
 
         when(authService.checkAuth(token, "readFlags")).thenReturn(true);
-        when(flagRepository.findByAuthor_IdAndType(authorId, type)).thenReturn(Collections.emptyList());
+        when(flagRepository.findByAuthorIdAndType(authorId, type)).thenReturn(Collections.emptyList());
 
         List<Flag> result = flagService.getFlagsByAuthorAndType(token, authorId, type);
 

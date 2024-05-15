@@ -33,7 +33,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 
 	@Autowired
 	public SeedConfig(UserSeeder userSeeder, GradeTypeSeeder gradeTypeSeeder, PermissionSeeder permissionSeeder, RoleSeeder roleSeeder, ProjectSeeder projectSeeder) {
-		this.faker = new Faker(new Locale(FAKER_LANGUAGE));
+		this.faker = new Faker(Locale.forLanguageTag(FAKER_LANGUAGE));
 
 		this.userSeeder = userSeeder;
 		this.gradeTypeSeeder = gradeTypeSeeder;

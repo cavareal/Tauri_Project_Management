@@ -13,7 +13,8 @@ export const GradeSchema = z.object({
 	author: UserSchema.nullable(),
 	student: StudentSchema.nullable(),
 	team: TeamSchema.nullable(),
-	sprint: SprintSchema.nullable()
+	sprint: SprintSchema.nullable(),
+	confirmed: z.boolean()
 })
 export type Grade = z.infer<typeof GradeSchema>
 
@@ -23,7 +24,8 @@ export const CreateGradeSchema = GradeSchema.omit({
 	author: true,
 	student: true,
 	team: true,
-	sprint: true
+	sprint: true,
+	confirmed: true
 }).extend({
 	gradeTypeId: z.coerce.number(),
 	authorId: z.coerce.number(),
@@ -36,4 +38,6 @@ export type CreateGrade = z.infer<typeof CreateGradeSchema>
 export const UpdateGradeSchema = CreateGradeSchema.partial()
 export type UpdateGrade = z.infer<typeof UpdateGradeSchema>
 
-export const GradeDoubleArraySchema = z.array(z.array(z.number()))
+export const GradeDoubleArraySchema = z.array(z.array(z.number().nullable()))
+
+export const GradeMapSchema = z.record(z.number().nullable())
