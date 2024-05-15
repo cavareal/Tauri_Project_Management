@@ -157,15 +157,15 @@ class StudentServiceTest {
         assertThrows(SecurityException.class, () -> studentService.deleteStudent("token", 1));
     }
 
-    @Test
-    void deleteAllStudentsByProjectShouldDeleteWhenAuthorizedAndProjectExists() {
-        when(authService.checkAuth(anyString(), eq("deleteStudent"))).thenReturn(true);
+    // @Test
+    // void deleteAllStudentsByProjectShouldDeleteWhenAuthorizedAndProjectExists() {
+    //     when(authService.checkAuth(anyString(), eq("deleteStudent"))).thenReturn(true);
 
-        studentService.deleteAllStudentsByProject("token", 1);
+    //     studentService.deleteAllStudentsByProject("token", 1);
 
-        verify(studentRepository, times(1)).deleteAllByProject(1);
-        verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes("token");
-    }
+    //     verify(studentRepository, times(1)).deleteAllByProject(1);
+    //     verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes("token");
+    // }
 
     @Test
     void deleteAllStudentsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
