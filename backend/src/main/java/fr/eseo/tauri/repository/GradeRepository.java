@@ -65,4 +65,9 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 
 	@Query("SELECT g.gradeType FROM Grade g WHERE g.gradeType.imported = false and g.student.project.id = :projectId")
 	List<GradeType> findAllUnimportedGradeTypesByProjectId(int projectId);
+
+
+	@Query("SELECT g.confirmed FROM Grade g WHERE g.sprint = :sprintId AND g.student = :studentId")
+	List<Student> findIsConfirmedBySprindAndStudent(Integer sprintId, Integer studentId);
+
 }

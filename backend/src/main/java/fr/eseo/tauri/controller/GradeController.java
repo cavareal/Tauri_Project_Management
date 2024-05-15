@@ -124,4 +124,10 @@ public class GradeController {
             return -1.0;
         }
     }
+
+    @GetMapping("/confirmation")
+    public ResponseEntity<Boolean> getGradesConfirmation(@RequestParam("sprintId") Integer sprintId, @RequestParam("teamId") Integer teamId) {
+        return ResponseEntity.ok(gradeService.getGradesConfirmation(sprintId, teamId));
+    }
+
 }

@@ -267,4 +267,19 @@ public class GradeService {
         }
     }
 
+    public Boolean getGradesConfirmation(Integer teamId, Integer sprintId) {
+        try {
+            List<Student> students = studentRepository.findByTeam(teamId);
+            for (Student student : students) {
+                Grade grade = (Grade) gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id());
+                if (Boolean.FALSE.equals(grade.confirmed())) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (NullPointerException e) {
+            CustomLogger.info("No student or no grades found");
+            return null;
+        }
+    }
 }
