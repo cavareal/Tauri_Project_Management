@@ -87,11 +87,6 @@ const DIALOG_DESCRIPTION = "Vous pouvez modifier les dates de début et de fin, 
 			</Row>
 
 			<Row class="items-center justify-between my-2">
-				<Label>Ordre de ce sprint</Label>
-				<Input v-model="sprintOrder" type="number" min="1" class="w-[250px]" />
-			</Row>
-
-			<Row class="items-center justify-between my-2">
 				<Label class="flex gap-1">Type de sprint
 					<TooltipProvider>
 						<Tooltip>

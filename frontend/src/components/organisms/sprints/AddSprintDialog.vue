@@ -35,8 +35,8 @@ const endType = ref<string>()
 const sprintOrder = ref<number>(props.lastSprintOrder + 1)
 const valuesEmpty = ref<boolean>(false)
 
-var minDate = new CalendarDate(1900, 1, 1)
-var maxDate = new CalendarDate(2100, 1, 1)
+const minDate = new CalendarDate(1900, 1, 1)
+const maxDate = new CalendarDate(2100, 1, 1)
 
 const nextDayAfterStartDate = (date: CalendarDate | undefined) => {
 	if (date === undefined) return
@@ -95,10 +95,10 @@ const DIALOG_DESCRIPTION = "Pour ajouter un sprint, vous devez spécifier les da
 				/>
 			</Row>
 
-			<Row class="items-center justify-between my-2">
+			<!-- <Row class="items-center justify-between my-2">
 				<Label>Ordre de ce sprint</Label>
 				<Input v-model="sprintOrder" type="number" min="1" class="w-[250px]" />
-			</Row>
+			</Row> -->
 
 			<Row class="items-center justify-between my-2">
 				<Label class="flex gap-1">Type de fin de sprint

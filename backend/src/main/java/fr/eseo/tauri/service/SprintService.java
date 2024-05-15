@@ -79,8 +79,17 @@ public class SprintService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteSprint"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        getSprintById(token, id);
+
+        var deletedSprint = getSprintById(token, id);
         sprintRepository.deleteById(id);
+
+        var sprints = sprintRepository.findAllByProject(id);
+        for (var sprint : sprints) {
+            if (sprint.sprintOrder() > deletedSprint.sprintOrder()) {
+                sprint.sprintOrder(sprint.sprintOrder() - 1);
+                sprintRepository.save(sprint);
+            }
+        }
     }
 
     public void deleteAllSprintsByProject(String token, Integer projectId) {
