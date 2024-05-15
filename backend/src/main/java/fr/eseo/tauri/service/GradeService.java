@@ -14,7 +14,6 @@ import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.GradeRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,11 +38,8 @@ public class GradeService {
     @Lazy
     private final GradeTypeService gradeTypeService;
     private final TeamService teamService;
-    @Lazy
-    private final GradeService self;
 
-
-
+    private static final int MAX_RETRY_COUNT = 20;
 
     public Grade getGradeById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
@@ -149,14 +145,8 @@ public class GradeService {
         return total / factors;
     }
 
-    // Non-transactional method to call the transactional one
     public void updateImportedMeanByStudentId(Float value, Integer studentId) {
-        self.updateImportedMeanByStudentIdTransactional(value, studentId);
-    }
-
-    @Transactional
-    public void updateImportedMeanByStudentIdTransactional(Float value, Integer studentId) {
-        gradeRepository.updateImportedMeanByStudentId(value, studentId, GradeTypeName.AVERAGE.displayName());
+        gradeRepository.updateImportedMeanByStudentId(value, studentId);
     }
 
     public Double getAverageGradesByGradeTypeByRoleType(int userId, RoleType roleType, String gradeTypeName) {

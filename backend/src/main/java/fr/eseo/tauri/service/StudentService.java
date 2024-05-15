@@ -96,10 +96,10 @@ public class StudentService {
 
         Student student = getStudentById(token, id);
 
-        if (updatedStudent.name() != null) student.name(updatedStudent.name());
-        if (updatedStudent.email() != null) student.email(updatedStudent.email());
-        if (updatedStudent.password() != null) student.password(updatedStudent.password());
-        if (updatedStudent.privateKey() != null) student.privateKey(updatedStudent.privateKey());
+        student.name(updatedStudent.name());
+        student.email(updatedStudent.email());
+        student.password(updatedStudent.password());
+        student.privateKey(updatedStudent.privateKey());
         if (updatedStudent.gender() != null) student.gender(updatedStudent.gender());
         if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
         if (updatedStudent.teamRole() != null) student.teamRole(updatedStudent.teamRole());
