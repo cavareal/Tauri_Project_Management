@@ -14,6 +14,7 @@ import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.TeamRepository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -262,7 +263,11 @@ public class TeamService {
         List<Double> teamGrades = new ArrayList<>();
 
         for (GradeType gradeType : teacherGradedTeamGradeTypes) {
-            teamGrades.add(gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, gradeType.name()));
+            Double average = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, gradeType.name());
+            if (average != null) {
+                teamGrades.add(average);
+            }
+
         }
 
         return teamGrades.stream().mapToDouble(Double::doubleValue).sum() / teamGrades.size();
@@ -303,7 +308,9 @@ public class TeamService {
             List<Bonus> studentBonuses = studentService.getStudentBonuses(token, students.get(i).id());
             sprintGrades.add(0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrades(token, id, sprintId)).get(i));
         }
-
+        if (sprintGrades.isEmpty()) {
+            return Collections.singletonList(-1.0);
+        }
         return sprintGrades;
     }
 
