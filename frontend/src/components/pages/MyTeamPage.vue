@@ -20,7 +20,7 @@ const { data: currentPhase, isLoading: phaseLoading } = useQuery({
 	queryKey: ["project"], queryFn: async() => (await getCurrentProject()).phase
 })
 
-const { data: team, isLoading: teamLoading } = useQuery({ queryKey: ["current-user"], queryFn: () => getTeamByUserId(userId) })
+const { data: team, isLoading: teamLoading } = useQuery({ queryKey: ["team", userId], queryFn: () => getTeamByUserId(userId) })
 
 const canDisplayTeam = computed(() => role === "SUPERVISING_STAFF" || (role === "OPTION_STUDENT" && currentPhase.value !== "COMPOSING"))
 
