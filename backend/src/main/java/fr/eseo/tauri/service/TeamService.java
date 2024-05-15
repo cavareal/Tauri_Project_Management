@@ -250,7 +250,7 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return commentRepository.findAllByTeamIdAndSprintIdAndFeedback(teamId, sprintId, true);
+        return commentRepository.findAllByTeamIdAndSprintId(teamId, sprintId);
     }
 
     public Double getTeamTotalGrade(String token, Integer teamId, Integer sprintId) {
