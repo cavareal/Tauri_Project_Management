@@ -10,6 +10,9 @@ import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -445,81 +449,46 @@ class StudentServiceTest {
         assertEquals(expectedCsv, actualCsv);
     }
 
-    @Test
-    void writeEmptyRowsShouldWriteCorrectNumberOfEmptyRows() {
+    @ParameterizedTest
+    @MethodSource("provideParametersForWriteEmptyRowsTest")
+    void writeEmptyRowsTest(int rows, int rowLength, String expectedCsv) {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
 
-        studentService.writeEmptyRows(csvWriter, 3, 2);
+        studentService.writeEmptyRows(csvWriter, rows, rowLength);
 
-        String expectedCsv = "\"\",\"\"\n\"\",\"\"\n\"\",\"\"\n";
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
     }
 
-    @Test
-    void writeEmptyRowsShouldHandleZeroRows() {
+    private static Stream<Arguments> provideParametersForWriteEmptyRowsTest() {
+        return Stream.of(
+                Arguments.of(3, 2, "\"\",\"\"\n\"\",\"\"\n\"\",\"\"\n"),
+                Arguments.of(0, 2, ""),
+                Arguments.of(3, 0, "\n\n\n")
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("provideParametersForWriteCountRowTest")
+    void writeCountRowTest(String label, int count, String expectedCsv) {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
 
-        studentService.writeEmptyRows(csvWriter, 0, 2);
+        studentService.writeCountRow(csvWriter, label, count, 3);
 
-        String expectedCsv = "";
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
     }
 
-    @Test
-    void writeEmptyRowsShouldHandleZeroRowLength() {
-        StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        studentService.writeEmptyRows(csvWriter, 3, 0);
-
-        String expectedCsv = "\n\n\n";
-        String actualCsv = stringWriter.toString();
-
-        assertEquals(expectedCsv, actualCsv);
-    }
-
-    @Test
-    void writeCountRowShouldWriteCorrectDataWithValidInput() {
-        StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        studentService.writeCountRow(csvWriter, "Nombre F", 5, 3);
-
-        String expectedCsv = "\"\",\"Nombre F\",\"5\"\n";
-        String actualCsv = stringWriter.toString();
-
-        assertEquals(expectedCsv, actualCsv);
-    }
-
-    @Test
-    void writeCountRowShouldHandleZeroCount() {
-        StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        studentService.writeCountRow(csvWriter, "Nombre F", 0, 3);
-
-        String expectedCsv = "\"\",\"Nombre F\",\"0\"\n";
-        String actualCsv = stringWriter.toString();
-
-        assertEquals(expectedCsv, actualCsv);
-    }
-
-    @Test
-    void writeCountRowShouldHandleEmptyLabel() {
-        StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        studentService.writeCountRow(csvWriter, "", 5, 3);
-
-        String expectedCsv = "\"\",\"\",\"5\"\n";
-        String actualCsv = stringWriter.toString();
-
-        assertEquals(expectedCsv, actualCsv);
+    private static Stream<Arguments> provideParametersForWriteCountRowTest() {
+        return Stream.of(
+                Arguments.of("Nombre F", 5, "\"\",\"Nombre F\",\"5\"\n"),
+                Arguments.of("Nombre F", 0, "\"\",\"Nombre F\",\"0\"\n"),
+                Arguments.of("", 5, "\"\",\"\",\"5\"\n")
+        );
     }
 }
