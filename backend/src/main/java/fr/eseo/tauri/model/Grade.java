@@ -55,15 +55,15 @@ public class Grade {
     @JsonProperty
     private Team team;
 
+    @Column(name = "confirmed", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @JsonProperty
+    private Boolean confirmed = false;
+
     @ManyToOne
     @JoinColumn(name = "sprint_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Sprint sprint;
-
-    @Column(name = "confirmed", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    @JsonProperty
-    private Boolean confirmed = false;
 
     @NotNull(groups = { Create.class }, message = "The gradeTypeId field is required")
     @Transient

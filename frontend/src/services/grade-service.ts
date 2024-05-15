@@ -207,7 +207,7 @@ export const getSprintGrade = async(studentId: number, sprintId: number): Promis
 
 export const getIndividualTotalGrades = async(teamId: number, sprintId: number): Promise<number[]> => {
 	const response = await queryAndValidate({
-		route: `teams/${teamId}/sprint/${sprintId}/totals`,
+		route: `teams/${teamId}/sprint/${sprintId}/individual/totals`,
 		responseSchema: z.number().array()
 	})
 
@@ -230,8 +230,6 @@ export const getSprintGrades = async(teamId: number, sprintId: number): Promise<
 
 	return response.data
 }
-
-
 
 
 export const getGradesConfirmation = async(sprintId: number, teamId: number): Promise<number> => {

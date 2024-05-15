@@ -1,5 +1,6 @@
 package fr.eseo.tauri.security;
 
+import fr.eseo.tauri.util.CustomLogger;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
         String token = jwtTokenUtil.extractToken(request);
 
-        System.out.println(request.getRequestURI());
+        CustomLogger.info(request.getRequestURI());
 
         if (token != null && jwtTokenUtil.validateAccessToken(token)) {
             UserDetails userDetails = jwtTokenUtil.createUserDetails(token);

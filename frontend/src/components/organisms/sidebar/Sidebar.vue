@@ -8,6 +8,7 @@ import { cn } from "@/utils/style"
 import { Column } from "@/components/atoms/containers"
 import Title from "@/components/atoms/texts/Title.vue"
 import Row from "@/components/atoms/containers/Row.vue"
+import NotificationView from "@/components/organisms/notifications/NotificationView.vue"
 
 const props = defineProps<{
 	class?: string
@@ -68,9 +69,12 @@ const style = cn(
 		<Column>
 			<Separator class="my-2" />
 
-			<SidebarLink>
-				<Bell /> Notifications
-			</SidebarLink>
+      <NotificationView>
+        <SidebarLink>
+          <Bell /> Notifications
+          <div class="absolute top-0 right-0  bg-red-600 rounded-full"></div>
+        </SidebarLink>
+      </NotificationView>
 
 			<SidebarLink link="/login">
 				<LogOut /> Déconnexion

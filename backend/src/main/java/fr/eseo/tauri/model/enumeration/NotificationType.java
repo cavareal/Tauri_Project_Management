@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public enum NotificationType {
 
-    BONUS_MALUS
+    BONUS_MALUS,
+	CREATE_TEAMS;
 
 }

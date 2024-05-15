@@ -1,6 +1,7 @@
 package fr.eseo.tauri.security;
 
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.util.CustomLogger;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,7 +38,7 @@ public class JwtTokenUtil {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            System.out.println("Validate token : " + e);
+            CustomLogger.error("Validate token : " + e);
             return false;
         }
     }

@@ -1,10 +1,12 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.service.GradeService;
+import fr.eseo.tauri.service.NotificationService;
 import fr.eseo.tauri.service.RoleService;
 import fr.eseo.tauri.service.UserService;
 import fr.eseo.tauri.util.CustomLogger;
@@ -29,6 +31,7 @@ public class UserController {
 	private final ResponseMessage responseMessage = new ResponseMessage("user");
 	private final RoleService roleService;
 	private final GradeService gradeService;
+	private final NotificationService notificationService;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
@@ -93,5 +96,10 @@ public class UserController {
 		return ResponseEntity.ok(roles);
 	}
 
+	@GetMapping("/{userId}/notifications")
+	public ResponseEntity<List<Notification>> getAllNotificationsUser(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
+		List<Notification> notifications = notificationService.getNotificationsByUser(token, userId);
+		return ResponseEntity.ok(notifications);
+	}
 
 }

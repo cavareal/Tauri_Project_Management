@@ -4,6 +4,7 @@ import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.NotificationRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,26 @@ public class NotificationService {
 	}
 
 	/**
+	 * Get a notification by the user id
+	 * @param token the token of the user
+	 * @param userId the id of the user who receive the notifications (userTo)
+	 * @return the notifications
+	 */
+	public List<Notification> getNotificationsByUser(String token, Integer userId) {
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotification"))) {
+			CustomLogger.error("there is no authorization !");
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+
+		List<Notification> notifications = notificationRepository.findByUser(userId);
+		if (notifications.isEmpty()){
+			CustomLogger.error("there is no notifications found !");
+			throw new ResourceNotFoundException("notification (searched by user)", userId);
+		}
+		return notifications;
+	}
+
+	/**
 	 * Create a notification
 	 * @param token the token of the user
 	 * @param notification the notification to create
@@ -78,6 +99,21 @@ public class NotificationService {
 		if (updatedNotification.userToId() != null) notification.userTo(userService.getUserById(token, updatedNotification.userToId()));
 		if (updatedNotification.userFromId() != null) notification.userFrom(userService.getUserById(token, updatedNotification.userFromId()));
 
+		notificationRepository.save(notification);
+	}
+
+
+	/**
+	 * Change the checked state of a notification
+	 * @param token the token of the user
+	 * @param id the id of the notification
+	 */
+	public void changeCheckedNotification(String token, Integer id){
+		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateNotification"))) {
+			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+		}
+		var notification = getNotificationById(token, id);
+		notification.checked(!notification.checked());
 		notificationRepository.save(notification);
 	}
 

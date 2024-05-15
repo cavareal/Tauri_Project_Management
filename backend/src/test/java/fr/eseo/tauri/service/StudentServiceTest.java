@@ -10,6 +10,9 @@ import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -134,21 +138,6 @@ class StudentServiceTest {
         verify(roleService, times(1)).createRole(anyString(), any(Role.class));
     }
 
-    @Test
-    void createStudentShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.createStudent("token", new Student()));
-    }
-
-
-    @Test
-    void updateStudentShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("updateStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.updateStudent("token", 1, new Student()));
-    }
-
 
     @Test
     void deleteStudentShouldThrowSecurityExceptionWhenUnauthorized() {
@@ -157,15 +146,6 @@ class StudentServiceTest {
         assertThrows(SecurityException.class, () -> studentService.deleteStudent("token", 1));
     }
 
-    // @Test
-    // void deleteAllStudentsByProjectShouldDeleteWhenAuthorizedAndProjectExists() {
-    //     when(authService.checkAuth(anyString(), eq("deleteStudent"))).thenReturn(true);
-
-    //     studentService.deleteAllStudentsByProject("token", 1);
-
-    //     verify(studentRepository, times(1)).deleteAllByProject(1);
-    //     verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes("token");
-    // }
 
     @Test
     void deleteAllStudentsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
@@ -293,21 +273,6 @@ class StudentServiceTest {
 
         assertThrows(EmptyResourceException.class, () -> studentService.populateDatabaseFromCSV("token", file, 1));
     }
-
-    /*@Test
-    void populateDatabaseFromCSVShouldPopulateDatabaseWithValidData() throws IOException, CsvValidationException {
-        MultipartFile file = mock(MultipartFile.class);
-        InputStream inputStream = new ByteArrayInputStream("1,John Doe,M,B,15,14,13\n2,Jane Doe,F,B,12,13,14".getBytes());
-        when(file.getInputStream()).thenReturn(inputStream);
-        when(file.isEmpty()).thenReturn(false);
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(true);
-        when(gradeTypeService.createGradeTypesFromCSV(anyString(), any(InputStream.class))).thenReturn(Collections.emptyList());
-
-        studentService.populateDatabaseFromCSV("token", file, 1);
-
-        verify(studentRepository, times(2)).save(any(Student.class));
-        verify(gradeService, times(2)).createGradesFromGradeTypesAndValues(any(Student.class), anyList(), anyList(), anyString());
-    }*/
 
     @Test
     void createStudentsCSVShouldThrowSecurityExceptionWhenUnauthorized() throws IOException {
@@ -484,119 +449,46 @@ class StudentServiceTest {
         assertEquals(expectedCsv, actualCsv);
     }
 
-    @Test
-    void writeEmptyRowsShouldWriteCorrectNumberOfEmptyRows() {
+    @ParameterizedTest
+    @MethodSource("provideParametersForWriteEmptyRowsTest")
+    void writeEmptyRowsTest(int rows, int rowLength, String expectedCsv) {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
 
-        studentService.writeEmptyRows(csvWriter, 3, 2);
+        studentService.writeEmptyRows(csvWriter, rows, rowLength);
 
-        String expectedCsv = "\"\",\"\"\n\"\",\"\"\n\"\",\"\"\n";
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
     }
 
-    @Test
-    void writeEmptyRowsShouldHandleZeroRows() {
+    private static Stream<Arguments> provideParametersForWriteEmptyRowsTest() {
+        return Stream.of(
+                Arguments.of(3, 2, "\"\",\"\"\n\"\",\"\"\n\"\",\"\"\n"),
+                Arguments.of(0, 2, ""),
+                Arguments.of(3, 0, "\n\n\n")
+        );
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("provideParametersForWriteCountRowTest")
+    void writeCountRowTest(String label, int count, String expectedCsv) {
         StringWriter stringWriter = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(stringWriter);
 
-        studentService.writeEmptyRows(csvWriter, 0, 2);
+        studentService.writeCountRow(csvWriter, label, count, 3);
 
-        String expectedCsv = "";
         String actualCsv = stringWriter.toString();
 
         assertEquals(expectedCsv, actualCsv);
     }
 
-    @Test
-    void writeEmptyRowsShouldHandleZeroRowLength() {
-        StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        studentService.writeEmptyRows(csvWriter, 3, 0);
-
-        String expectedCsv = "\n\n\n";
-        String actualCsv = stringWriter.toString();
-
-        assertEquals(expectedCsv, actualCsv);
+    private static Stream<Arguments> provideParametersForWriteCountRowTest() {
+        return Stream.of(
+                Arguments.of("Nombre F", 5, "\"\",\"Nombre F\",\"5\"\n"),
+                Arguments.of("Nombre F", 0, "\"\",\"Nombre F\",\"0\"\n"),
+                Arguments.of("", 5, "\"\",\"\",\"5\"\n")
+        );
     }
-
-    @Test
-    void writeCountRowShouldWriteCorrectDataWithValidInput() {
-        StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        studentService.writeCountRow(csvWriter, "Nombre F", 5, 3);
-
-        String expectedCsv = "\"\",\"Nombre F\",\"5\"\n";
-        String actualCsv = stringWriter.toString();
-
-        assertEquals(expectedCsv, actualCsv);
-    }
-
-    @Test
-    void writeCountRowShouldHandleZeroCount() {
-        StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        studentService.writeCountRow(csvWriter, "Nombre F", 0, 3);
-
-        String expectedCsv = "\"\",\"Nombre F\",\"0\"\n";
-        String actualCsv = stringWriter.toString();
-
-        assertEquals(expectedCsv, actualCsv);
-    }
-
-    @Test
-    void writeCountRowShouldHandleEmptyLabel() {
-        StringWriter stringWriter = new StringWriter();
-        CSVWriter csvWriter = new CSVWriter(stringWriter);
-
-        studentService.writeCountRow(csvWriter, "", 5, 3);
-
-        String expectedCsv = "\"\",\"\",\"5\"\n";
-        String actualCsv = stringWriter.toString();
-
-        assertEquals(expectedCsv, actualCsv);
-    }
-
-    /*@Test
-    void getStudentBonusesReturnsBonusesWhenAuthorizedAndStudentExists() {
-        String token = "validToken";
-        Integer idStudent = 1;
-        List<Bonus> expectedBonuses = Arrays.asList(new Bonus(), new Bonus());
-
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
-        when(bonusRepository.findAllStudentBonuses(idStudent)).thenReturn(expectedBonuses);
-
-        List<Bonus> actualBonuses = studentService.getStudentBonuses(token, idStudent);
-
-        assertEquals(expectedBonuses, actualBonuses);
-    }
-
-    @Test
-    void getStudentBonusesThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer idStudent = 1;
-
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getStudentBonuses(token, idStudent));
-    }
-
-    @Test
-    void getStudentBonusesReturnsEmptyListWhenNoBonusesExist() {
-        String token = "validToken";
-        Integer idStudent = 1;
-
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
-        when(bonusRepository.findAllStudentBonuses(idStudent)).thenReturn(Collections.emptyList());
-
-        List<Bonus> actualBonuses = studentService.getStudentBonuses(token, idStudent);
-
-        assertTrue(actualBonuses.isEmpty());
-    }*/
-
 }

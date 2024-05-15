@@ -4,7 +4,6 @@ import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

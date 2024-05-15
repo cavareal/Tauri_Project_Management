@@ -4,7 +4,7 @@ import { CreateFeedbackSchema, FeedbackSchema } from "@/types/feedback"
 import { Cookies } from "@/utils/cookie"
 import type { Feedback } from "@/types/feedback"
 
-export const addFeedback = async(feedback: CreateFeedback): Promise<void> => {
+export const addComment = async(feedback: CreateFeedback): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
 		route: "comments",
@@ -17,19 +17,19 @@ export const addFeedback = async(feedback: CreateFeedback): Promise<void> => {
 	}
 }
 
-export const createFeedback = async(teamId: number, feedbackContent: string, sprintId: number): Promise<void> => {
+export const createComment = async(teamId: number, feedbackContent: string, sprintId: number, feedback: boolean): Promise<void> => {
 	const authorId = Cookies.getUserId()
-	const feedback: CreateFeedback = {
+	const comment: CreateFeedback = {
 		teamId,
 		content: feedbackContent,
-		feedback: true,
+		feedback,
 		sprintId,
 		authorId
 	}
-	return await addFeedback(feedback)
+	return await addComment(comment)
 }
 
-export const getFeedbacksBySprintAndTeam = async(teamId: number, sprintId: number): Promise<Feedback[]> => {
+export const getCommentsBySprintAndTeam = async(teamId: number, sprintId: number): Promise<Feedback[]> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/sprints/${sprintId}/feedbacks`,
 		responseSchema: FeedbackSchema.array()

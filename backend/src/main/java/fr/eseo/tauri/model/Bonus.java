@@ -34,6 +34,12 @@ public class Bonus {
     private Boolean limited;
 
     @ManyToOne
+    @JoinColumn(name = "author_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
+    private User author;
+
+    @ManyToOne
     @JoinColumn(name = "sprint_id")
     @NonNull
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -46,12 +52,6 @@ public class Bonus {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Student student;
-
-    @ManyToOne
-    @JoinColumn(name = "author_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonProperty
-    private User author;
 
     @Transient
     @JsonDeserialize
