@@ -145,8 +145,4 @@ public class UserService {
 		return permissions.contains(permission);
 	}
 
-	public User getUserByEmail(String email) {
-		return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User with email " + email + " not found."));
-	}
-
 }
