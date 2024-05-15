@@ -57,12 +57,7 @@ public class NotificationService {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 
-		List<Notification> notifications = notificationRepository.findByUser(userId);
-		if (notifications.isEmpty()){
-			CustomLogger.error("there is no notifications found !");
-			throw new ResourceNotFoundException("notification (searched by user)", userId);
-		}
-		return notifications;
+		return notificationRepository.findByUser(userId);
 	}
 
 	/**

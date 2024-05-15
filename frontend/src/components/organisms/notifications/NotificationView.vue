@@ -26,14 +26,14 @@ const { data: notifications, refetch } = useQuery({ queryKey: ["notifications"],
 		<SheetTrigger asChild>
 			<slot />
 		</SheetTrigger>
-		<SheetContent side="left">
+		<SheetContent side="left" class="flex flex-col items-stretch justify-start">
 			<SheetHeader>
 				<SheetTitle>
 					<Header title="Notifications">
 					</Header>
 				</SheetTitle>
 			</SheetHeader>
-			<div class="mt-5 h-5/6 w-full overflow-y-auto">
+			<div class="flex-1 w-full overflow-y-scroll">
 				<Text v-if="!notifications || notifications.length === 0">Vous n'avez aucune notification pour le moment</Text>
 				<NotificationTable v-else :notifications="notifications" @read:notifications="refetch" />
 			</div>
