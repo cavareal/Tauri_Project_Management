@@ -174,7 +174,7 @@ public class GradeService {
         }
     }
 
-    public Double getAverageGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
+    public Double getAverageByGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
         GradeType gradeType = gradeTypeRepository.findByName(gradeTypeName);
         Double grade;
         if (Boolean.TRUE.equals(gradeType.forGroup())) {
@@ -183,14 +183,6 @@ public class GradeService {
             grade = gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, gradeTypeName);
         }
         return grade;
-    }
-
-    public Double getSprintGrade(String token, Integer userId, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        CustomLogger.info("Getting sprint grade for user with id " + userId + " and sprint with id " + sprintId);
-        return 0.0;
     }
 
     /**
@@ -257,11 +249,11 @@ public class GradeService {
     public Map<String, Double> getTeamGrades(Integer teamId, Integer sprintId) {
         Map<String, Double> allGrades = new HashMap<>();
 
-        List<String> gradeTypeGroupNameArray = Arrays.asList("Solution Technique", "Gestion de projet", "Conformité au sprint", "Support de présentation", "Performance globale de l'équipe");
+        List<GradeType> gradeTypes = gradeTypeRepository.findAllUnimportedAndForGroup();
 
-        for (String gradeType : gradeTypeGroupNameArray) {
-            Double averageGrade = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, gradeType);
-            allGrades.put(gradeType, averageGrade);
+        for (GradeType gradeType : gradeTypes) {
+            Double averageGrade = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, gradeType.name());
+            allGrades.put(gradeType.name(), averageGrade);
         }
 
         return allGrades;
@@ -279,10 +271,5 @@ public class GradeService {
 
         return allGrades;
     }
-
-
-
-
-
 
 }
