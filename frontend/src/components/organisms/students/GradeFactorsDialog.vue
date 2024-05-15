@@ -43,7 +43,16 @@ const emits = defineEmits(["update:factors"])
 //TODO Pour optimiser le code : Envoyer une requête d'update du coeff SEULEMENT s'il a changé (système de old coeff / new coeff ?)
 const { isPending, error, mutate: update } = useMutation({ mutationKey: ["update-grade-factors"], mutationFn: async() => {
 	if (!filteredGradeTypes.value) return
-	await Promise.all(filteredGradeTypes.value.map(gradeType => updateGradeType(gradeType.id, { factor: gradeType.factor })))
+	await Promise.all(filteredGradeTypes.value.map(async(gradeType) => {
+		for (let i = 0; i < 10; i++) {
+			let stop = true
+			await updateGradeType(gradeType.id, { factor: gradeType.factor })
+				.catch(() => stop = false)
+				.finally(() => {
+					if (stop) return
+				})
+		}
+	}))
 		.then(() => open.value = false)
 		.then(() => emits("update:factors"))
 		.then(() => createToast("Les coefficients ont été mis à jour."))

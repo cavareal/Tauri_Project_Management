@@ -27,12 +27,13 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private final PermissionSeeder permissionSeeder;
 	private final RoleSeeder roleSeeder;
 	private final ProjectSeeder projectSeeder;
+	private final NotificationSeeder notificationSeeder;
 
 	@Value("${spring.jpa.hibernate.ddl-auto}")
 	private String hibernateMode;
 
 	@Autowired
-	public SeedConfig(UserSeeder userSeeder, GradeTypeSeeder gradeTypeSeeder, PermissionSeeder permissionSeeder, RoleSeeder roleSeeder, ProjectSeeder projectSeeder) {
+	public SeedConfig(UserSeeder userSeeder, GradeTypeSeeder gradeTypeSeeder, PermissionSeeder permissionSeeder, RoleSeeder roleSeeder, ProjectSeeder projectSeeder, NotificationSeeder notificationSeeder) {
 		this.faker = new Faker(Locale.forLanguageTag(FAKER_LANGUAGE));
 
 		this.userSeeder = userSeeder;
@@ -40,6 +41,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		this.permissionSeeder = permissionSeeder;
 		this.roleSeeder = roleSeeder;
 		this.projectSeeder = projectSeeder;
+		this.notificationSeeder = notificationSeeder;
 	}
 
 	@Override
@@ -50,6 +52,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 		gradeTypeSeeder.seed();
 		permissionSeeder.seed();
 		roleSeeder.seed();
+//		notificationSeeder.seed(faker);
 		projectSeeder.seed();
 	}
 

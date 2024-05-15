@@ -250,7 +250,7 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return commentRepository.findAllByTeamIdAndSprintIdAndFeedback(teamId, sprintId, true);
+        return commentRepository.findAllByTeamIdAndSprintId(teamId, sprintId);
     }
 
     public Double getTeamTotalGrade(String token, Integer teamId, Integer sprintId) {
@@ -299,7 +299,7 @@ public class TeamService {
 
         for(int i = 0; i < students.size(); i++){
             List<Bonus> studentBonuses = studentService.getStudentBonuses(token, students.get(i).id());
-            sprintGrades.add(0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrades(token, students.get(i).id(), sprintId)).get(i));
+            sprintGrades.add(0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrades(token, id, sprintId)).get(i));
         }
 
         return sprintGrades;

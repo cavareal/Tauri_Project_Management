@@ -29,6 +29,7 @@ public class NotificationController {
      * @param id the id of the notification
      * @return the notification
      */
+
     @GetMapping("/{id}")
     public ResponseEntity<Notification> getNotificationById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         var notification = notificationService.getNotificationById(token, id);
@@ -69,6 +70,19 @@ public class NotificationController {
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Notification updatedNotification) {
         notificationService.updateNotification(token, id, updatedNotification);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
+    }
+
+    /**
+     * Update a notification
+     * @param token the token of the user
+     * @param id the id of the notification
+     * @return a message
+     */
+    @PatchMapping("/{id}/changeStateChecked")
+    public ResponseEntity<String> changeStateChecked(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        notificationService.changeCheckedNotification(token, id);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }

@@ -13,15 +13,15 @@ import org.hibernate.annotations.OnDeleteAction;
 @Data
 public class ValidationFlag {
 
-    @JsonProperty
-    private Boolean confirmed = false;
-
     @Id
     @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private User author;
+
+    @JsonProperty
+    private Boolean confirmed = false;
 
     @Id
     @ManyToOne
