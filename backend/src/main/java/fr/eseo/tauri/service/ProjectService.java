@@ -46,7 +46,6 @@ public class ProjectService {
 
         if (updatedProject.nbTeams() != null) project.nbTeams(updatedProject.nbTeams());
         if (updatedProject.nbWomen() != null) project.nbWomen(updatedProject.nbWomen());
-        if (updatedProject.nbSprint() != null) project.nbSprint(updatedProject.nbSprint());
         if (updatedProject.phase() != null) project.phase(updatedProject.phase());
 
         projectRepository.save(project);

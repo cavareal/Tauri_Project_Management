@@ -25,9 +25,6 @@ public class Project {
     @JsonProperty
     private Integer nbWomen;
 
-    @JsonProperty
-    private Integer nbSprint;
-
     @Enumerated(EnumType.STRING)
     @Column(name="phase")
     @JsonProperty

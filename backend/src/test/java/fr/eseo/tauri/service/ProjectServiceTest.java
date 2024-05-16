@@ -101,7 +101,6 @@ class ProjectServiceTest {
         Project updatedProject = new Project();
         updatedProject.nbTeams(5);
         updatedProject.nbWomen(3);
-        updatedProject.nbSprint(2);
         updatedProject.phase(ProjectPhase.COMPOSING);
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(projectRepository.findById(anyInt())).thenReturn(Optional.of(project));
