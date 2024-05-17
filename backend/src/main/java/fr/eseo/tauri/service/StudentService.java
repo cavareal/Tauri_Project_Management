@@ -253,16 +253,16 @@ public class StudentService {
             createStudent(token, student);
             for (int j = 0; j < grades.get(i).size(); j++) {
 
-                if(grades.get(i).get(j).trim().isEmpty()) continue;
-
-                try {
-                    Grade grade = new Grade();
-                    grade.value(Float.parseFloat(grades.get(i).get(j).trim()));
-                    grade.student(student);
-                    grade.gradeType(gradeTypes.get(j));
-                    gradeService.createGrade(token, grade);
-                } catch (NumberFormatException ignored) {
-                    // Do nothing // If the grade is not a number, it is ignored
+                if(!grades.get(i).get(j).trim().isEmpty()) {
+                    try {
+                        Grade grade = new Grade();
+                        grade.value(Float.parseFloat(grades.get(i).get(j).trim()));
+                        grade.student(student);
+                        grade.gradeType(gradeTypes.get(j));
+                        gradeService.createGrade(token, grade);
+                    } catch (NumberFormatException ignored) {
+                        // Do nothing // If the grade is not a number, it is ignored
+                    }
                 }
             }
         }
@@ -315,11 +315,10 @@ public class StudentService {
         headers[2] = "sexe M / F";
         int index = 5;
         for (GradeType gradeType : importedGrades) {
-            if(gradeType.name().equals(GradeTypeName.AVERAGE.displayName())){
-                continue;
+            if(!gradeType.name().equals(GradeTypeName.AVERAGE.displayName())) {
+                headers[index] = gradeType.name();
+                factors[index++] = gradeType.factor().toString();
             }
-            headers[index] = gradeType.name();
-            factors[index++] = gradeType.factor().toString();
         }
         csvWriter.writeNext(factors);
         csvWriter.writeNext(headers);
@@ -446,6 +445,14 @@ public class StudentService {
         List<Bonus> studentBonuses = getStudentBonuses(token, studentId, sprintId);
 
         return 0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrade(token, studentId, sprintId));
+    }
+
+    public Grade getGradeByTypeAndAuthor(String token, Integer id, Integer gradeTypeId, Integer authorId, Integer sprintId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        return gradeRepository.findByStudentAndGradeTypeAndAuthor(id, gradeTypeId, authorId, sprintId);
     }
 
 }

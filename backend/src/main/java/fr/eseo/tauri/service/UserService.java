@@ -127,8 +127,7 @@ public class UserService {
 		for (var role : roles) {
 			var permissionsRoles = permissionService.getAllPermissionsByRole(token, role);
 			for (var permission : permissionsRoles) {
-				if (permissions.contains(permission.type())) continue;
-				permissions.add(permission.type());
+				if (!permissions.contains(permission.type())) permissions.add(permission.type());
 			}
 		}
 

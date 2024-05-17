@@ -93,9 +93,13 @@ public class GradeService {
         if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
         if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, updatedGrade.sprintId()));
         if (updatedGrade.authorId() != null) grade.author(userService.getUserById(token, updatedGrade.authorId()));
-        if (updatedGrade.studentId() != null)
-            grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
+        if (updatedGrade.studentId() != null) grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
         if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(token, updatedGrade.teamId()));
+
+        if ((grade.team() == null) == (grade.student() == null)) {
+            throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
+        }
+
         gradeRepository.save(grade);
     }
 
@@ -121,10 +125,11 @@ public class GradeService {
         var students = studentRepository.findAll();
         var grades = filter(gradeRepository.findAll(), grade -> grade.student() != null);
         for (var student : students) {
-            if (Boolean.TRUE.equals(student.bachelor())) continue;
-            var studentGrades = filter(grades, grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && /*!grade.gradeType().name().equalsIgnoreCase("mean") && !grade.gradeType().name().equalsIgnoreCase("average")*/!grade.gradeType().name().equals(GradeTypeName.AVERAGE.displayName()));
-            var mean = mean(studentGrades);
-            updateImportedMeanByStudentId(mean, student.id());
+            if (Boolean.FALSE.equals(student.bachelor())) {
+                var studentGrades = filter(grades, grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && /*!grade.gradeType().name().equalsIgnoreCase("mean") && !grade.gradeType().name().equalsIgnoreCase("average")*/!grade.gradeType().name().equals(GradeTypeName.AVERAGE.displayName()));
+                var mean = mean(studentGrades);
+                updateImportedMeanByStudentId(mean, student.id());
+            }
         }
         CustomLogger.info("Updated imported mean for all students.");
     }
@@ -263,20 +268,20 @@ public class GradeService {
 
     public Boolean getGradesConfirmation(Integer sprintId, Integer teamId) {
         try {
-            System.out.println(teamId);
+            CustomLogger.info(teamId.toString());
             List<Student> students = studentRepository.findByTeam(teamId);
             if (students.isEmpty()) {
                 return false;
             }
-            System.out.println(students);
+            CustomLogger.info(students.toString());
 
             for (Student student : students) {
                 GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
                 Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
-                System.out.println(sprintId);
-                System.out.println(student.id());
-                System.out.println(gradeType.id());
-                System.out.println(grade);
+                CustomLogger.info(sprintId.toString());
+                CustomLogger.info(student.id().toString());
+                CustomLogger.info(gradeType.id().toString());
+                CustomLogger.info(grade.toString());
 
                 if (Boolean.FALSE.equals(grade.confirmed())) {
                     return true;
