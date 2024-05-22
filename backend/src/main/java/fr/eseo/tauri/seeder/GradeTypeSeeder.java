@@ -17,18 +17,19 @@ public class GradeTypeSeeder {
 	public void seed() {
 		for(GradeTypeName gradeTypeName : gradeTypeNames) {
 
-			if(gradeTypeName == GradeTypeName.AVERAGE) continue;
+			if(gradeTypeName != GradeTypeName.AVERAGE) {
 
-			var gradeType = new GradeType();
+				var gradeType = new GradeType();
 
-			gradeType.name(gradeTypeName.displayName());
-			gradeType.factor(1.f);
-			gradeType.forGroup(true);
-			gradeType.imported(false);
+				gradeType.name(gradeTypeName.displayName());
+				gradeType.factor(1.f);
+				gradeType.forGroup(true);
+				gradeType.imported(false);
 
-			if(gradeTypeName == GradeTypeName.INDIVIDUAL_PERFORMANCE) gradeType.forGroup(false);
+				if (gradeTypeName == GradeTypeName.INDIVIDUAL_PERFORMANCE) gradeType.forGroup(false);
 
-			gradeTypeRepository.save(gradeType);
+				gradeTypeRepository.save(gradeType);
+			}
 		}
 	}
 

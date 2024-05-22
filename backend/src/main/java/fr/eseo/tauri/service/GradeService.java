@@ -96,6 +96,11 @@ public class GradeService {
         if (updatedGrade.studentId() != null)
             grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
         if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(token, updatedGrade.teamId()));
+
+        if ((grade.team() == null) == (grade.student() == null)) {
+            throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
+        }
+
         gradeRepository.save(grade);
     }
 

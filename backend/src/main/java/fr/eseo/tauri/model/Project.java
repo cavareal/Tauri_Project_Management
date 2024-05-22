@@ -7,10 +7,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "projects")
 @Data
-public class Project {
+public class Project implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +28,6 @@ public class Project {
     @NotNull(groups = { Create.class }, message = "The nbWomen field is required")
     @JsonProperty
     private Integer nbWomen;
-
-    @JsonProperty
-    private Integer nbSprint;
 
     @Enumerated(EnumType.STRING)
     @Column(name="phase")

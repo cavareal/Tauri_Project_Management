@@ -12,7 +12,6 @@ export const ProjectSchema = z.object({
 	id: z.number(),
 	nbTeams: z.coerce.number().nullable(),
 	nbWomen: z.coerce.number().nullable(),
-	nbSprint: z.coerce.number().nullable(),
 	phase: ProjectPhaseSchema
 })
 export type Project = z.infer<typeof ProjectSchema>
