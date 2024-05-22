@@ -8,11 +8,10 @@ import {
 	SquareGanttChart,
 	Play,
 	Presentation,
-	Package,
 	Blocks,
 	LucideCirclePlus
 } from "lucide-vue-next"
-import { DialogRating, DialogViewGrades, DialogBonus } from "@/components/organisms/rating"
+import { DialogRating, DialogBonus } from "@/components/organisms/rating"
 import { hasPermission } from "@/services/user-service"
 import { getTeamByUserId } from "@/services/team-service"
 import { Cookies } from "@/utils/cookie"
@@ -32,7 +31,6 @@ const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], 
 const canGradeGlobalPerformance = hasPermission("GRADE_GLOBAL_PERFORMANCE")
 const canGradeLimitedBonus = hasPermission("LIMITED_BONUS_MALUS")
 const canGradeUnlimitedBonus = hasPermission("GIVE_UNLIMITED_BONUS_MALUS")
-const canGradePresentationContent = hasPermission("GRADE_PRESENTATION_CONTENT")
 const canGradeMaterialSupport = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeIndividualPerformance = hasPermission("GRADE_INDIVIDUAL_PERFORMANCE")
 const canAddComment = hasPermission("ADD_GRADE_COMMENT")
@@ -94,19 +92,6 @@ const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermi
 		</template>
 		<template #dialog>
 			<DialogRating title="Note de la gestion du projet" description="Veuillez noter la gestion du projet" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Gestion de projet">
-				<template #trigger>
-					<Button variant="default">Noter une équipe</Button>
-				</template>
-			</DialogRating>
-		</template>
-	</ContainerGradeType>
-
-	<ContainerGradeType v-if="canGradePresentationContent" title="Contenu de la présentation" infotext="Vous devez évaluer chaque équipe sur le contenu de sa présentation.">
-		<template #icon>
-			<Package :size="40" :stroke-width="1"/>
-		</template>
-		<template #dialog>
-			<DialogRating title="Note du contenu de la présentation" description="Veuillez noter le contenu de la présentation" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Contenu de la présentation">
 				<template #trigger>
 					<Button variant="default">Noter une équipe</Button>
 				</template>

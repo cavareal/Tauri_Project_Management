@@ -65,7 +65,7 @@ const handleNoteInput = (event: InputEvent) => {
 		<div class="grid gap-4 py-4">
 			<div class="grid grid-cols-3 items-center gap-4">
 				<Label for="note">Note :</Label>
-				<Input id="note" type="number" min="0" max="20" v-model="mark" @input="handleNoteInput"/>
+				<Input id="note" type="number" min="0" max="20" v-model="mark" @input="handleNoteInput" v-on:blur="mutate"/>
 			</div>
 		</div>
 
@@ -74,7 +74,7 @@ const handleNoteInput = (event: InputEvent) => {
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
 			<DialogClose>
-				<LoadingButton type="submit" :loading="isPending" @click="mutate">
+				<LoadingButton type="submit" :loading="isPending">
 					Confirmer
 				</LoadingButton>
 			</DialogClose>
