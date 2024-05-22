@@ -7,10 +7,14 @@ import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "teams")
 @Data
-public class Team {
+public class Team implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
