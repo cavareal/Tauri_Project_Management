@@ -30,10 +30,10 @@ public class AuthService {
     }
 
 
-    public AuthResponse login(String login, String password) {
+    public AuthResponse login(String email, String password) {
         try {
-            Authentication authentication = authenticate(login, password);
-            CustomLogger.info(login + " is logged in. " + authentication);
+            Authentication authentication = authenticate(email, password);
+            CustomLogger.info(email + " is logged in. " + authentication);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             CustomLogger.info("User from ldap : " + userDetails);
 
@@ -57,12 +57,12 @@ public class AuthService {
         }
     }
 
-    private Authentication authenticate(String username, String password) {
+    private Authentication authenticate(String email, String password) {
 //        return authenticationManager.authenticate(
 //                new UsernamePasswordAuthenticationToken(username, password)
 //        );
 
-        UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(username, password);
+        UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(email, password);
         CustomLogger.info("upat : " + upat);
 
         return authenticationManager.authenticate(upat);

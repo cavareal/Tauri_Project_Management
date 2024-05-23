@@ -49,6 +49,9 @@ public class ApplicationSecurity {
     @Value("${spring.security.ldap.dn-pattern}")
     private String ldapDnPattern;
 
+    @Value("${spring.ldap.user-search-filter}")
+    private String ldapUserSearchFilter;
+
     @Value("${spring.ldap.username}")
     private String ldapUsername;
 
@@ -83,7 +86,7 @@ public class ApplicationSecurity {
                 .managerDn(ldapUsername)
                 .managerPassword(ldapPassword)
                 .and()
-                .userDnPatterns(ldapDnPattern)
+                .userSearchFilter(ldapUserSearchFilter) 
                 .passwordCompare()
                 .passwordEncoder(new BCryptPasswordEncoder())
                 .passwordAttribute("userPassword");
