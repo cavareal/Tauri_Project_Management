@@ -1,30 +1,27 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.security.JwtTokenUtil;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     public Boolean checkAuth(String token, String permission) {
 
@@ -32,17 +29,32 @@ public class AuthService {
         return !dummyString.equals("fhzbafhbqhfbqdcfiuqfue");
     }
 
+
     public AuthResponse login(String login, String password) {
-        Authentication authentication = authenticate(login, password);
-        CustomLogger.info(login + " is logged in" + password + "; " + authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String accessToken = jwtTokenUtil.generateAccessToken((User) userDetails);
+        try {
+            Authentication authentication = authenticate(login, password);
+            CustomLogger.info(login + " is logged in" + password + "; ");
+            CustomLogger.info((String) authentication.getPrincipal());
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String accessToken = jwtTokenUtil.generateAccessToken((User) userDetails);
+            CustomLogger.info("User from ldap : " + userDetails);
 
-        // TODO : try to found user, else create it in DB
-        // For tests, users are already created
-        User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
+            // TODO : try to found user, else create it in DB
+            // For tests, users are already created
 
-        return new AuthResponse(user.id(), accessToken);
+            CustomLogger.info(String.valueOf(userDetailsService.loadUserByUsername(userDetails.getUsername())));
+            User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
+            if(user.id() != null) {
+                return new AuthResponse(user.id(), accessToken);
+            } else {
+                userRepository.save(user);
+                return new AuthResponse(user.id(), accessToken);
+            }
+        } catch (Exception e){
+            CustomLogger.info("Wrong credentials");
+            throw new SecurityException("Wrong credentials");
+
+        }
     }
 
     private Authentication authenticate(String username, String password) {

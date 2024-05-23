@@ -22,8 +22,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        CustomLogger.info(request.login() + " is trying to log in");
         AuthResponse response = authService.login(request.login(), request.password());
+        CustomLogger.info("response : " + response);
         return ResponseEntity.ok(response);
     }
 
