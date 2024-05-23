@@ -37,8 +37,10 @@ public class AuthService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             CustomLogger.info("User from ldap : " + userDetails);
 
+            // Check if user in DB
             User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
             CustomLogger.info("User from db : " + user);
+
             if(user.id() == null) {
                 userRepository.save(user);
             }
