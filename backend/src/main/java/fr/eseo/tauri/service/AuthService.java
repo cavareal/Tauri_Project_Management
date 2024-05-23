@@ -51,15 +51,19 @@ public class AuthService {
                 return new AuthResponse(user.id(), accessToken);
             }
         } catch (Exception e){
-            CustomLogger.info("Wrong credentials");
+            CustomLogger.info("Wrong credentials" + e);
             throw new SecurityException("Wrong credentials");
 
         }
     }
 
     private Authentication authenticate(String username, String password) {
-        return authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
+//        return authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(username, password)
+//        );
+
+        UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(username, password);
+        CustomLogger.info("upat : " + upat);
+        return authenticationManager.authenticate(upat);
     }
 }
