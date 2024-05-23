@@ -179,7 +179,7 @@ public class StudentService {
      * @param index the index to check
      * @return {@code true} if the index contains a non-empty value, {@code false} otherwise
      */
-    static boolean hasNonEmptyValue(String[] line, int index) {
+    public static boolean hasNonEmptyValue(String[] line, int index) {
         return line.length > index && !line[index].trim().isEmpty();
     }
 
