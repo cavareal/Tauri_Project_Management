@@ -3,8 +3,8 @@ package fr.eseo.tauri.selenium;
 import org.junit.jupiter.api.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.safari.SafariOptions;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -24,8 +24,8 @@ public class SeleniumTauriTest {
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
-                SafariOptions options = new SafariOptions();
-                SeleniumTauriTest.webdriver = new SafariDriver(options);
+                ChromeOptions options = new ChromeOptions();
+                SeleniumTauriTest.webdriver = new ChromeDriver(options);
         }
 
         @Test
