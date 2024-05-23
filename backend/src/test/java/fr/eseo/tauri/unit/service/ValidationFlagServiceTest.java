@@ -1,7 +1,9 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.repository.ValidationFlagRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.ValidationFlagService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

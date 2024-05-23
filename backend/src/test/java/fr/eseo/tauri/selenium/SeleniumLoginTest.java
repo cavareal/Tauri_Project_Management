@@ -14,35 +14,34 @@ import java.time.Duration;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class SeleniumTauriTest {
+public class SeleniumLoginTest {
         private static final String URL = "http://localhost:5173/";
         private static final String LOGIN = "pl@tauri.com";
         private static final String PASSWORD = "pl";
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
+        private static WebDriverWait wait;
 
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 SafariOptions options = new SafariOptions();
-                SeleniumTauriTest.webdriver = new SafariDriver(options);
+                SeleniumLoginTest.webdriver = new SafariDriver(options);
+                wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
+                SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");
         }
 
         @Test
         @Order(1)
-        void login(){
-                SeleniumTauriTest.webdriver.get(SeleniumTauriTest.URL+"login");
-
-                WebDriverWait wait = new WebDriverWait(SeleniumTauriTest.webdriver, Duration.ofSeconds(10));
+        void titleIsPresentTest(){
                 WebElement titleElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.className("text-dark-blue")));
-
-                Assertions.assertEquals(SeleniumTauriTest.TITLE,
+                Assertions.assertEquals(SeleniumLoginTest.TITLE,
                         titleElement.getText(), "Title");
         }
 
 
         @AfterAll
         public static void afterTests(){
-                SeleniumTauriTest.webdriver.close();
+                SeleniumLoginTest.webdriver.close();
         }
 }

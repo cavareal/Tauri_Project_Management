@@ -1,10 +1,12 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.unit.service;
 
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.repository.GradeTypeRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.GradeTypeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
