@@ -43,10 +43,10 @@ public class StudentService {
     private final GradeRepository gradeRepository;
     private final UserService userService;
 
-    static final String MAP_KEY_NAMES = "names";
-    static final String MAP_KEY_GENDERS = "genders";
-    static final String MAP_KEY_BACHELORS = "bachelors";
-    static final String MAP_KEY_GRADES = "grades";
+    public static final String MAP_KEY_NAMES = "names";
+    public static final String MAP_KEY_GENDERS = "genders";
+    public static final String MAP_KEY_BACHELORS = "bachelors";
+    public static final String MAP_KEY_GRADES = "grades";
     private static final String PASSWORD = "password";
 
     public Student getStudentById(String token, Integer id) {
