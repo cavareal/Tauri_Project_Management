@@ -38,19 +38,17 @@ public class AuthService {
             CustomLogger.info("User from ldap : " + userDetails);
 
             // Check if user in DB
-            User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
-            CustomLogger.info("User from db : " + user);
 
-            if(user.id() == null) {
-                userRepository.save(user);
-            }
+            User user = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseGet(() -> {
+                        CustomLogger.info("User dopens't exist in DB");
+                        throw new SecurityException("Wrong credentials");
+            });
+            CustomLogger.info("User from db : " + user);
 
             String accessToken = jwtTokenUtil.generateAccessToken((User) userDetails);
             CustomLogger.info("Access : " + accessToken);
             return new AuthResponse(user.id(), accessToken);
-
-            // TODO : try to found user, else create it in DB
-            // For tests, users are already created
 
         } catch (Exception e){
             CustomLogger.info("Wrong credentials" + e);
@@ -60,13 +58,8 @@ public class AuthService {
     }
 
     private Authentication authenticate(String email, String password) {
-//        return authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(username, password)
-//        );
-
-        UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(email, password);
-        CustomLogger.info("upat : " + upat);
-
-        return authenticationManager.authenticate(upat);
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
     }
 }

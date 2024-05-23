@@ -27,13 +27,6 @@ public class ApplicationSecurity {
     private final JwtTokenFilter jwtTokenFilter;
     private final UserRepository userRepository;
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return userEmail -> userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new UsernameNotFoundException("User or password incorrect"));   // Don't return 'User not found
-    }
-
-
     @Autowired
     public ApplicationSecurity(JwtTokenFilter jwtTokenFilter, UserRepository userRepository) {
         this.jwtTokenFilter = jwtTokenFilter;
@@ -45,9 +38,6 @@ public class ApplicationSecurity {
 
     @Value("${spring.ldap.base-dn}")
     private String ldapBaseDn;
-
-    @Value("${spring.security.ldap.dn-pattern}")
-    private String ldapDnPattern;
 
     @Value("${spring.ldap.user-search-filter}")
     private String ldapUserSearchFilter;
@@ -80,20 +70,26 @@ public class ApplicationSecurity {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         auth
-                .ldapAuthentication()
+            .ldapAuthentication()
                 .contextSource()
-                .url(ldapUrl + ldapBaseDn)
-                .managerDn(ldapUsername)
-                .managerPassword(ldapPassword)
+                    .url(ldapUrl + ldapBaseDn)
+                    .managerDn(ldapUsername)
+                    .managerPassword(ldapPassword)
                 .and()
-                .userSearchFilter(ldapUserSearchFilter) 
+                .userSearchFilter(ldapUserSearchFilter)
                 .passwordCompare()
-                .passwordEncoder(new BCryptPasswordEncoder())
-                .passwordAttribute("userPassword");
+                    .passwordEncoder(new BCryptPasswordEncoder())
+                    .passwordAttribute("userPassword");
 
         return auth.build();
     }
 
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return userEmail -> userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User or password incorrect"));
+    }
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
