@@ -72,7 +72,7 @@ public class ApplicationSecurity {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
-        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        PasswordEncoder passwordEncoder = new LdapShaPasswordEncoder();
 
         auth
             .ldapAuthentication()
