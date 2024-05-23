@@ -38,8 +38,10 @@ public class AuthService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String accessToken = jwtTokenUtil.generateAccessToken((User) userDetails);
 
+        // TODO : try to found user, else create it in DB
+        // For tests, users are already created
         User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
-        // TODO : change username to user id
+
         return new AuthResponse(user.id(), accessToken);
     }
 

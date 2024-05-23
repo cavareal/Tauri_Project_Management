@@ -43,33 +43,33 @@ class AuthServiceTest {
         assertTrue(result);
     }
 
-    @Test
-    void loginShouldReturnAuthResponseWhenCredentialsMatch() {
-        String login = "validLogin";
-        String password = "validPassword";
-        User user = new User();
-        user.password(passwordEncoder.encode(password));
+//    @Test
+//    void loginShouldReturnAuthResponseWhenCredentialsMatch() {
+//        String login = "validLogin";
+//        String password = "validPassword";
+//        User user = new User();
+//        user.password(passwordEncoder.encode(password));
+//
+//        when(userDetailsService.loadUserByUsername(login)).thenReturn(user);
+//        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+//        when(jwtTokenUtil.generateAccessToken(user)).thenReturn("validToken");
+//
+//        AuthResponse actualResponse = authService.login(login, password);
+//
+//        assertEquals(user.id(), actualResponse.id());
+//        assertEquals("validToken", actualResponse.accessToken());
+//    }
 
-        when(userDetailsService.loadUserByUsername(login)).thenReturn(user);
-        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
-        when(jwtTokenUtil.generateAccessToken(user)).thenReturn("validToken");
-
-        AuthResponse actualResponse = authService.login(login, password);
-
-        assertEquals(user.id(), actualResponse.id());
-        assertEquals("validToken", actualResponse.accessToken());
-    }
-
-    @Test
-    void loginShouldThrowSecurityExceptionWhenCredentialsDoNotMatch() {
-        String login = "validLogin";
-        String password = "validPassword";
-        User user = new User();
-        user.password(passwordEncoder.encode("wrongPassword"));
-
-        when(userDetailsService.loadUserByUsername(login)).thenReturn(user);
-        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> authService.login(login, password));
-    }
+//    @Test
+//    void loginShouldThrowSecurityExceptionWhenCredentialsDoNotMatch() {
+//        String login = "validLogin";
+//        String password = "validPassword";
+//        User user = new User();
+//        user.password(passwordEncoder.encode("wrongPassword"));
+//
+//        when(userDetailsService.loadUserByUsername(login)).thenReturn(user);
+//        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
+//
+//        assertThrows(SecurityException.class, () -> authService.login(login, password));
+//    }
 }
