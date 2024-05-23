@@ -58,7 +58,7 @@ public class AuthService {
             });
             CustomLogger.info("User from db : " + user);
 
-            String accessToken = jwtTokenUtil.generateAccessToken((User) userDetails);
+            String accessToken = jwtTokenUtil.generateAccessToken(user);
             CustomLogger.info("Access : " + accessToken);
             return new AuthResponse(user.id(), accessToken);
 
