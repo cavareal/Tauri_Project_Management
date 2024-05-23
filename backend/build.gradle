@@ -61,7 +61,7 @@ sonarqube {
 		property 'sonar.coverage.jacoco.xmlReportPaths', "build/reports/jacoco/test/jacocoTestReport.xml"
 		property 'sonar.sources', 'src/main/java'
 		property 'sonar.tests', 'src/test/java'
-		property 'sonar.tests.exclusions', 'src/test/java/fr/eseo/tauri/selenium/**'
+		property 'sonar.tests.exclusions', '**/selenium/**'
 		property 'sonar.coverage.exclusions', '**/config/**,**/controller/**,**/model/**,**/seeder/**,**/TauriApplication.java,**/ServletInitializer.java,**/security/**,**/exception/**,**/util/**'
 	}
 }
