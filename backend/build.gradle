@@ -45,7 +45,6 @@ dependencies {
 	testImplementation 'io.github.bonigarcia:webdrivermanager:5.3.2'
 }
 
-
 tasks.named("test") {
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
@@ -59,8 +58,8 @@ sonarqube {
 	properties {
 		property 'sonar.coverage.jacoco.xmlReportPaths', "build/reports/jacoco/test/jacocoTestReport.xml"
 		property 'sonar.sources', 'src/main/java'
-		property 'sonar.tests', 'src/test/java'
-		property 'sonar.coverage.exclusions', '**/config/**,**/controller/**,**/model/**,**/seeder/**,**/TauriApplication,**/ServletInitializer,**/security/**, **/exception/**, **/util/**'
+		property 'sonar.tests', 'src/test/java/fr/eseo/tauri/service'
+		property 'sonar.coverage.exclusions', '**/config/**,**/controller/**,**/model/**,**/seeder/**,**/TauriApplication.java,**/ServletInitializer.java,**/security/**, **/exception/**, **/util/**'
 	}
 }
 
