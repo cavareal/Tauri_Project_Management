@@ -33,23 +33,23 @@ public class AuthService {
     public AuthResponse login(String login, String password) {
         try {
             Authentication authentication = authenticate(login, password);
-            CustomLogger.info(login + " is logged in" + password + "; ");
-            CustomLogger.info((String) authentication.getPrincipal());
+            CustomLogger.info(login + " is logged in. " + authentication);
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            String accessToken = jwtTokenUtil.generateAccessToken((User) userDetails);
             CustomLogger.info("User from ldap : " + userDetails);
+
+            User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
+            CustomLogger.info("User from db : " + user);
+            if(user.id() == null) {
+                userRepository.save(user);
+            }
+
+            String accessToken = jwtTokenUtil.generateAccessToken((User) userDetails);
+            CustomLogger.info("Access : " + accessToken);
+            return new AuthResponse(user.id(), accessToken);
 
             // TODO : try to found user, else create it in DB
             // For tests, users are already created
 
-            CustomLogger.info(String.valueOf(userDetailsService.loadUserByUsername(userDetails.getUsername())));
-            User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
-            if(user.id() != null) {
-                return new AuthResponse(user.id(), accessToken);
-            } else {
-                userRepository.save(user);
-                return new AuthResponse(user.id(), accessToken);
-            }
         } catch (Exception e){
             CustomLogger.info("Wrong credentials" + e);
             throw new SecurityException("Wrong credentials");
