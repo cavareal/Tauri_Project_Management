@@ -17,8 +17,8 @@ public class UserSeeder {
 	private final ApplicationSecurity applicationSecurity;
 
 	public void seed(Faker faker) {
-		var userPL = new User("pl@tauri.com");
-		userRepository.save(userPL);
+//		var userPL = new User("pl@tauri.com");
+//		userRepository.save(userPL);
 
 //		var userSS = new User("ss@tauri.com");
 //		userRepository.save(userSS);

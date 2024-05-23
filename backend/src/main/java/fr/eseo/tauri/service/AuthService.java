@@ -1,6 +1,9 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.security.JwtTokenUtil;
@@ -22,6 +25,7 @@ public class AuthService {
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     public Boolean checkAuth(String token, String permission) {
 
@@ -40,8 +44,16 @@ public class AuthService {
             // Check if user in DB
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseGet(() -> {
+                        // Create user
                         User newUser = new User(userDetails.getUsername());
                         userRepository.save(newUser);
+                        CustomLogger.info("USER CREATEEEDDD : " + newUser.id());
+                        // Add role
+                        var role = new Role();
+                        role.user(newUser);
+                        role.type(RoleType.PROJECT_LEADER);
+                        roleRepository.save(role);
+
                         return newUser;
             });
             CustomLogger.info("User from db : " + user);

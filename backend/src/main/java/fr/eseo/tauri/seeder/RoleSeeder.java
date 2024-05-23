@@ -17,13 +17,13 @@ public class RoleSeeder {
 	public void seed() {
 
 		// Create a project leader role for the admin user
-		var rolePl = new Role();
-		var userPL = userRepository.findByEmail("pl@tauri.com");
-		if (userPL.isPresent()) {
-			rolePl.user(userPL.get());
-			rolePl.type(RoleType.PROJECT_LEADER);
-			roleRepository.save(rolePl);
-		}
+//		var rolePl = new Role();
+//		var userPL = userRepository.findByEmail("pl@tauri.com");
+//		if (userPL.isPresent()) {
+//			rolePl.user(userPL.get());
+//			rolePl.type(RoleType.PROJECT_LEADER);
+//			roleRepository.save(rolePl);
+//		}
 
 //		// Create a supervising staff role for the supervising staff user
 //		var roleSS = new Role();
