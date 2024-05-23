@@ -64,6 +64,7 @@ public class AuthService {
 
         UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(username, password);
         CustomLogger.info("upat : " + upat);
+
         return authenticationManager.authenticate(upat);
     }
 }
