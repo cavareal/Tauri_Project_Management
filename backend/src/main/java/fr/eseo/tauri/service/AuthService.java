@@ -37,9 +37,8 @@ public class AuthService {
     public AuthResponse login(String email, String password) {
         try {
             Authentication authentication = authenticate(email, password);
-            CustomLogger.info(email + " is logged in. " + authentication);
+            CustomLogger.info(email + " is logged in.");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            CustomLogger.info("User from ldap : " + userDetails);
 
             // Check if user in DB
             User user = userRepository.findByEmail(userDetails.getUsername())
@@ -47,7 +46,6 @@ public class AuthService {
                         // Create user
                         User newUser = new User(userDetails.getUsername());
                         userRepository.save(newUser);
-                        CustomLogger.info("USER CREATEEEDDD : " + newUser.id());
                         // Add role
                         var role = new Role();
                         role.user(newUser);
@@ -56,16 +54,12 @@ public class AuthService {
 
                         return newUser;
             });
-            CustomLogger.info("User from db : " + user);
-
             String accessToken = jwtTokenUtil.generateAccessToken(user);
             CustomLogger.info("Access : " + accessToken);
             return new AuthResponse(user.id(), accessToken);
 
         } catch (Exception e){
-            CustomLogger.info("Wrong credentials" + e);
             throw new SecurityException("Wrong credentials");
-
         }
     }
 
