@@ -38,11 +38,11 @@ public class AuthService {
             CustomLogger.info("User from ldap : " + userDetails);
 
             // Check if user in DB
-
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseGet(() -> {
-                        CustomLogger.info("User dopens't exist in DB");
-                        throw new SecurityException("Wrong credentials");
+                        User newUser = new User(userDetails.getUsername());
+                        userRepository.save(newUser);
+                        return newUser;
             });
             CustomLogger.info("User from db : " + user);
 
