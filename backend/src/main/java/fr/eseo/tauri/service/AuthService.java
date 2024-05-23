@@ -5,7 +5,9 @@ import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.security.JwtTokenUtil;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ public class AuthService {
 
     public AuthResponse login(String login, String password) {
 
+
         User user = (User) userDetailsService.loadUserByUsername(login);
         if (passwordEncoder.matches(password, user.getPassword())) {
             CustomLogger.info("Credentials match");
@@ -38,8 +41,6 @@ public class AuthService {
             CustomLogger.info("Returning response :" + response);
             return response;
         }
-
         throw new SecurityException("Wrong credentials");
     }
-
 }
