@@ -14,6 +14,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -69,6 +72,8 @@ public class ApplicationSecurity {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
         auth
             .ldapAuthentication()
                 .contextSource()
@@ -77,9 +82,7 @@ public class ApplicationSecurity {
                     .managerPassword(ldapPassword)
                 .and()
                 .userSearchFilter(ldapUserSearchFilter)
-                .passwordCompare()
-                    .passwordEncoder(new BCryptPasswordEncoder())
-                    .passwordAttribute("userPassword");
+                .passwordEncoder(passwordEncoder);
 
         return auth.build();
     }
