@@ -24,6 +24,7 @@ public class AuthService {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
 
     public Boolean checkAuth(String token, String permission) {
 
@@ -36,8 +37,10 @@ public class AuthService {
         CustomLogger.info(login + " is logged in" + password + "; " + authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String accessToken = jwtTokenUtil.generateAccessToken((User) userDetails);
+
+        User user = (User) userDetailsService.loadUserByUsername(userDetails.getUsername());
         // TODO : change username to user id
-        return new AuthResponse(userDetails.getUsername(), accessToken);
+        return new AuthResponse(user.id(), accessToken);
     }
 
     private Authentication authenticate(String username, String password) {

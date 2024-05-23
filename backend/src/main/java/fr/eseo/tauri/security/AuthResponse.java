@@ -8,7 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class AuthResponse {
     @JsonProperty
-    private String username;
+    private Integer id;
 
     @JsonProperty
     private String accessToken;
