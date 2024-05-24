@@ -33,14 +33,13 @@ const canGradeLimitedBonus = hasPermission("LIMITED_BONUS_MALUS")
 const canGradeUnlimitedBonus = hasPermission("GIVE_UNLIMITED_BONUS_MALUS")
 const canGradeMaterialSupport = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeIndividualPerformance = hasPermission("GRADE_INDIVIDUAL_PERFORMANCE")
-const canAddComment = hasPermission("ADD_GRADE_COMMENT")
-const gradeOwnTeam = hasPermission("GRADE_OWN_TEAM")
-// const canGradeTechnicalSolution = hasPermission("GRADE_TECHNICAL_SOLUTION")
-// const canGradeSprintConformity = hasPermission("GRADE_SPRINT_CONFORMITY")
-// const canGradeProjectManagement = hasPermission("GRADE_PROJECT_MANAGEMENT")
-const canGradeTechnicalSolution = hasPermission("GRADE_SUPPORT_MATERIAL")
-const canGradeSprintConformity = hasPermission("GRADE_SUPPORT_MATERIAL")
-const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
+const canCommentIndividualPerformance = hasPermission("COMMENT_INDIVIDUAL_PERFORMANCE")
+const canGradeTechnicalSolution = hasPermission("GRADE_TECHNICAL_SOLUTION")
+const canGradeSprintConformity = hasPermission("GRADE_SPRINT_CONFORMITY")
+const canGradeProjectManagement = hasPermission("GRADE_PROJECT_MANAGEMENT")
+const canCommentTechnicalSolution = hasPermission("COMMENT_TECHNICAL_SOLUTION")
+const canCommentSprintConformity = hasPermission("COMMENT_SPRINT_CONFORMITY")
+const canCommentProjectManagement = hasPermission("COMMENT_PROJECT_MANAGEMENT")
 const canSeeFeedbacks = hasPermission("VIEW_FEEDBACK") && hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermission("VIEW_COMMENT")
 
@@ -112,12 +111,12 @@ const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermi
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeIndividualPerformance" title="Performance individuelle" infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
+	<ContainerGradeType v-if="canGradeIndividualPerformance || canCommentIndividualPerformance" title="Performance individuelle" infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
 		<template #icon>
 			<User :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance individuelle"></DialogIndividualRate>
+			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" :canGrade="canGradeIndividualPerformance" :canComment="canCommentIndividualPerformance" gradeTypeString="Performance individuelle"></DialogIndividualRate>
 		</template>
 	</ContainerGradeType>
 

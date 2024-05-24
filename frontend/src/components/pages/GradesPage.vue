@@ -2,7 +2,7 @@
 import { SidebarTemplate } from "@/components/templates"
 import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { hasPermission } from "@/services/user-service"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
@@ -17,16 +17,31 @@ import ValidGradesDialog from "@/components/organisms/Grade/ValidGradesDialog.vu
 import { getGradesConfirmation } from "@/services/grade-service"
 import ExportGrades from "../organisms/Grade/ExportGrades.vue"
 
-
 const selectedTeam = ref("")
 const selectedSprint = ref("")
 const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
 
 const authorized = hasPermission("GRADES_PAGE")
 
+// Get the current date
+const currentDate = new Date()
+
+// Determine the current sprint
+const currentSprint = computed(() => {
+	const sprint = sprints.value?.find(sprint => {
+		const startDate = new Date(sprint.startDate)
+		startDate.setHours(0, 0, 0, 0) // Set time to 00:00:00
+		const endDate = new Date(sprint.endDate)
+		endDate.setHours(23, 59, 59, 999) // Set time to end of the day
+		return startDate <= currentDate && currentDate <= endDate
+	})
+	if (sprint) selectedSprint.value = sprint.id.toString()
+	return sprint || null
+})
+
 const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 const { data: sprints } = useQuery({
-	queryKey: ["sprints"], queryFn: async () => {
+	queryKey: ["sprints"], queryFn: async() => {
 		const sprints = await getSprints()
 		return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
 	}
@@ -35,7 +50,7 @@ const { data: sprints } = useQuery({
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", selectedSprint.value, selectedTeam.value],
-	queryFn: async () => {
+	queryFn: async() => {
 		if (selectedSprint.value === "" || selectedTeam.value === "") return false
 		return await getGradesConfirmation(parseInt(selectedSprint.value), parseInt(selectedTeam.value))
 	}
@@ -61,7 +76,7 @@ function forceRerender() {
 
 				<Select v-model="selectedSprint" @update:modelValue="forceRerender()">
 					<SelectTrigger class="w-[180px]">
-						<SelectValue placeholder="Sprint par défaut" />
+						<SelectValue :placeholder="currentSprint ? 'Sprint ' + currentSprint.sprintOrder : 'Sélectionner le sprint'" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
@@ -72,7 +87,7 @@ function forceRerender() {
 				</Select>
 				<Select v-model="selectedTeam" @update:modelValue="forceRerender()">
 					<SelectTrigger class="w-[180px]">
-						<SelectValue placeholder="Selectionner l'équipe" />
+						<SelectValue placeholder="Sélectionner l'équipe" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
