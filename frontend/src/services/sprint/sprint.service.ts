@@ -63,3 +63,20 @@ export const deleteSprint = async(sprintId: number | null): Promise<void> => {
 		throw new Error(response.error)
 	}
 }
+
+
+export const getCurrentSprint = (sprints: Sprint[]) => {
+	const currentDate = new Date()
+
+	const sprint = sprints.find(sprint => {
+		const startDate = new Date(sprint.startDate)
+		startDate.setHours(0, 0, 0, 0) // Set time to 00:00:00
+
+		const endDate = new Date(sprint.endDate)
+		endDate.setHours(23, 59, 59, 999) // Set time to end of the day
+
+		return startDate <= currentDate && currentDate <= endDate
+	})
+
+	return sprint || null
+}

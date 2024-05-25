@@ -119,7 +119,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 	<Table v-if="(canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched">
 		<TableHeader>
 			<TableRow>
-				<TableHead :class="rowClass" >Nom</TableHead>
+				<TableHead :class="rowClass">Nom</TableHead>
 				<TableHead v-if="canView" :class="rowClass" title="Solution Technique"><Blocks :stroke-width="1"/></TableHead>
 				<TableHead v-if="canView" :class="rowClass" title="Gestion de projet"><SquareGanttChart :stroke-width="1"/></TableHead>
 				<TableHead v-if="canView" :class="rowClass" title="Conformité au sprint"><Play :stroke-width="1"/></TableHead>
@@ -176,7 +176,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					<TableRow v-for="(student, index) in teamStudents" >
+					<TableRow v-for="(student, index) in teamStudents" :key="student.id">
 						<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 						<TableCell v-if="averageTeam" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
 						<TableCell v-if="averageTeam" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
@@ -204,7 +204,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="(student, index) in teamStudents" >
+			<TableRow v-for="(student, index) in teamStudents" :key="student.id">
 				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 				<TableCell v-if="sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4)}}</TableCell>
 			</TableRow>

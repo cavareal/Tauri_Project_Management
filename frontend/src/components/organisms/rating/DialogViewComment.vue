@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 const props = defineProps<{
-	teamId: number,
-	sprintId: number,
+	teamId: string,
+	sprintId: string,
 }>()
 const authorsComments = ref<User[]>([])
 const commentsFiltered = ref<Feedback[]>([])
@@ -52,17 +52,17 @@ const noComments = "Aucun commentaire donné"
 			<slot />
 		</template>
 		<div v-if="!comments || commentsFiltered.length === 0">
-			<Text class="text-center">{{ noComments  }}</Text>
+			<Text class="text-center">{{ noComments }}</Text>
 		</div>
 		<div v-else>
-      <ScrollArea class="h-[500px] w-[450px] p-4">
-        <div v-for="author in authorsComments" :key="author.id" class="p-5 flex flex-col">
-          <Text class="bold">{{ author.name }}</Text>
-          <div v-for="comment in getCommentsFromAuthor(author.id.toString())" :key="comment.id" class="p-2">
-            <Input disabled :default-value="comment.content"/>
-          </div>
-        </div>
-      </ScrollArea>
+			<ScrollArea class="h-[500px] w-[450px] p-4">
+				<div v-for="author in authorsComments" :key="author.id" class="p-5 flex flex-col">
+					<Text class="bold">{{ author.name }}</Text>
+					<div v-for="comment in getCommentsFromAuthor(author.id.toString())" :key="comment.id" class="p-2">
+						<Input disabled :default-value="comment.content" />
+					</div>
+				</div>
+			</ScrollArea>
 		</div>
 
 		<template #footer>

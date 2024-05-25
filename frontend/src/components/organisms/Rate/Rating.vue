@@ -37,9 +37,6 @@ const canCommentIndividualPerformance = hasPermission("COMMENT_INDIVIDUAL_PERFOR
 const canGradeTechnicalSolution = hasPermission("GRADE_TECHNICAL_SOLUTION")
 const canGradeSprintConformity = hasPermission("GRADE_SPRINT_CONFORMITY")
 const canGradeProjectManagement = hasPermission("GRADE_PROJECT_MANAGEMENT")
-const canCommentTechnicalSolution = hasPermission("COMMENT_TECHNICAL_SOLUTION")
-const canCommentSprintConformity = hasPermission("COMMENT_SPRINT_CONFORMITY")
-const canCommentProjectManagement = hasPermission("COMMENT_PROJECT_MANAGEMENT")
 const canSeeFeedbacks = hasPermission("VIEW_FEEDBACK") && hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermission("VIEW_COMMENT")
 

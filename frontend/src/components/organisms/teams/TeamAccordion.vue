@@ -81,7 +81,7 @@ const handleDragLeave = (event: DragEvent) => {
 }
 
 const style = (teamId: number) => cn(
-	"border-[1px] rounded-md border px-4 bg-white",
+	"rounded-md border px-4 bg-white",
 	{ "border-dashed border-x-light-blue border-t-light-blue border-b-light-blue": dragging.value === teamId }
 )
 
@@ -104,7 +104,7 @@ const canEdit = hasPermission("TEAM_MANAGEMENT")
 							{{ team.leader?.name ? `(${team.leader.name})` : "" }}
 						</p>
 						<EditTeamDialog v-if="canEdit" :team="team" @edit:team="refetchTeams">
-							<Button variant="ghost" size="icon">
+							<Button variant="ghost" size="icon" @click="e => e.preventDefault()">
 								<Pencil class="w-4" />
 							</Button>
 						</EditTeamDialog>

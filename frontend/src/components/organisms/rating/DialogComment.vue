@@ -12,9 +12,9 @@ import { createToast } from "@/utils/toast"
 import { createComment } from "@/services/feedback"
 
 const props = defineProps<{
-	selectedTeamId: number,
-	selectedSprintId: number,
-  feedback: boolean
+	selectedTeamId: string,
+	selectedSprintId: string,
+	feedback: boolean
 }>()
 
 const emits = defineEmits(["add-comment"])
