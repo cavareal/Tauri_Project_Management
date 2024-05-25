@@ -36,10 +36,9 @@ public class AuthService {
 
     public AuthResponse login(String email, String password) {
         try {
-            Authentication authentication = authenticate(email, password);
+            Authentication authentication = authenticate(email, password);  // Auth with LDAP
             CustomLogger.info(email + " is logged in.");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
             // Check if user in DB
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseGet(() -> {
@@ -54,6 +53,7 @@ public class AuthService {
 
                         return newUser;
             });
+
             String accessToken = jwtTokenUtil.generateAccessToken(user);
             CustomLogger.info("Access : " + accessToken);
             return new AuthResponse(user.id(), accessToken);
