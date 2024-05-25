@@ -24,17 +24,19 @@ const students = ref<Record<number, Student[]>>()
 
 const { data: currentPhase } = useQuery({ queryKey: ["current-phase"], queryFn: getCurrentPhase })
 
-const { data: teams, refetch: refetchTeams, isLoading } = useQuery({ queryKey: ["teams"], queryFn: async() => {
-	const teams = await getTeams()
+const { data: teams, refetch: refetchTeams, isLoading } = useQuery({
+	queryKey: ["teams"], queryFn: async() => {
+		const teams = await getTeams()
 
-	students.value = {}
-	await Promise.all(teams.map(async(team) => {
-		const teamStudents = await getStudentsByTeamId(team.id)
-		students.value = { ...students.value, [team.id]: teamStudents }
-	}))
+		students.value = {}
+		await Promise.all(teams.map(async(team) => {
+			const teamStudents = await getStudentsByTeamId(team.id)
+			students.value = { ...students.value, [team.id]: teamStudents }
+		}))
 
-	return teams
-} })
+		return teams
+	}
+})
 
 const handleDrop = async(event: DragEvent, teamId: number) => {
 	event.preventDefault()
@@ -79,8 +81,8 @@ const handleDragLeave = (event: DragEvent) => {
 }
 
 const style = (teamId: number) => cn(
-	"border-[1px] border-x-transparent border-t-transparent px-4",
-	{ "border-dashed rounded-md border-x-light-blue border-t-light-blue border-b-light-blue": dragging.value === teamId }
+	"border-[1px] rounded-md border px-4 bg-white",
+	{ "border-dashed border-x-light-blue border-t-light-blue border-b-light-blue": dragging.value === teamId }
 )
 
 const canEdit = hasPermission("TEAM_MANAGEMENT")
@@ -89,26 +91,27 @@ const canEdit = hasPermission("TEAM_MANAGEMENT")
 
 <template>
 	<Loading v-if="isLoading" />
-	<Accordion v-else type="multiple" :default-value="teams && teams.map(team => team.id.toString())">
+	<Accordion v-else type="multiple" :default-value="teams && teams.map(team => team.id.toString())" class="space-y-4">
 		<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
 			<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
 				v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"
 				v-on:dragenter="(e: DragEvent) => handleDragEnter(e, team.id)"
-				v-on:dragover="(e: DragEvent) => handleDragEnter(e, team.id)"
-				v-on:dragleave="handleDragLeave"
-			>
+				v-on:dragover="(e: DragEvent) => handleDragEnter(e, team.id)" v-on:dragleave="handleDragLeave">
 				<AccordionTrigger>
-					{{ team.name }}
-					{{ team.leader?.name ? `(${team.leader.name})` : "" }}
+					<Row class="items-center justify-between w-full mr-4">
+						<p>
+							{{ team.name }}
+							{{ team.leader?.name ? `(${team.leader.name})` : "" }}
+						</p>
+						<EditTeamDialog v-if="canEdit" :team="team" @edit:team="refetchTeams">
+							<Button variant="ghost" size="icon">
+								<Pencil class="w-4" />
+							</Button>
+						</EditTeamDialog>
+					</Row>
 				</AccordionTrigger>
 				<TeamAccordionContent :team-id="team.id" :students="(students && students[team.id]) ?? null" />
 			</AccordionItem>
-
-			<EditTeamDialog v-if="canEdit" :team="team" @edit:team="refetchTeams">
-				<Button variant="outline" size="icon" class="mt-2">
-					<Pencil class="w-4" />
-				</Button>
-			</EditTeamDialog>
 		</Row>
 	</Accordion>
 </template>

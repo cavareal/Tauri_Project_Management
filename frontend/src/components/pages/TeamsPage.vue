@@ -61,10 +61,10 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 				<Button variant="default">Publier</Button>
 			</PublishDialog>
 
-			<SignalTeamDialog v-if="canPreview && displayComposingFlagButtons">
+			<SignalTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons">
 				<Button variant="outline">Signaler</Button>
 			</SignalTeamDialog>
-			<ValidTeamDialog v-if="canPreview && displayComposingFlagButtons" @valid:teams="handleValidTeams">
+			<ValidTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons" @valid:teams="handleValidTeams">
 				<Button variant="default">Valider</Button>
 			</ValidTeamDialog>
 		</Header>
