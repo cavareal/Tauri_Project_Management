@@ -1,7 +1,7 @@
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { FlagSchema, type CreateFlag, CreateFlagSchema } from "@/types/flag"
 import { z } from "zod"
-import { getConnectedUser } from "@/services/user-service"
+import { getConnectedUser } from "@/services/user"
 import { Cookies } from "@/utils/cookie"
 
 export const createFlag = async(body: Omit<CreateFlag, "authorId" | "projectId">): Promise<void> => {

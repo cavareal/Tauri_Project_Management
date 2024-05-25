@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Feedback } from "@/types/feedback"
 import { ref, watch } from "vue"
-import { getCommentsBySprintAndTeam } from "@/services/feedback-service"
+import { getCommentsBySprintAndTeam } from "@/services/feedback"
 import { Text } from "@/components/atoms/texts"
 import { DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"

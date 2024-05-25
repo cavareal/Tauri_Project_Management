@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { useQuery } from "@tanstack/vue-query"
-import { getStudentsByTeamId } from "@/services/student-service"
+import { getStudentsByTeamId } from "@/services/student/student.service"
 import { cn } from "@/utils/style"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
@@ -21,11 +21,11 @@ import {
 	getSprintGrades,
 	getTeamTotalGrade,
 	getIndividualTotalGrades
-} from "@/services/grade-service"
-import { getStudentBonuses } from "@/services/bonus-service"
-import { hasPermission } from "@/services/user-service"
+} from "@/services/grade/grade.service"
+import { getStudentBonuses } from "@/services/bonus/bonus.service"
+import { hasPermission } from "@/services/user/user.service"
 import { Cookies } from "@/utils/cookie"
-import { getTeamByUserId } from "@/services/team-service"
+import { getTeamByUserId } from "@/services/team/team.service"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
 import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"

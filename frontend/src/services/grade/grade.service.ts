@@ -6,7 +6,7 @@ import type { GradeType } from "@/types/grade-type"
 import type { User } from "@/types/user"
 import type { Student } from "@/types/student"
 import type { Team } from "@/types/team"
-import { getConnectedUser } from "@/services/user-service"
+import { getConnectedUser } from "@/services/user"
 
 
 export const createGrade = async(body : Omit<CreateGrade, "authorId">): Promise<void> => {

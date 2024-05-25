@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { Button } from "@/components/ui/button"
-import { deleteAllStudents } from "@/services/student-service"
+import { deleteAllStudents } from "@/services/student/student.service"
 import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
 import { ref } from "vue"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"

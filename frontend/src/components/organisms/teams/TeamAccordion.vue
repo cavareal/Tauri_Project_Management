@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { getTeams } from "@/services/team-service"
+import { getTeams } from "@/services/team/team.service"
 import TeamAccordionContent from "@/components/organisms/teams/TeamAccordionContent.vue"
 import { Button } from "@/components/ui/button"
 import { Pencil } from "lucide-vue-next"
@@ -10,12 +10,12 @@ import { Row } from "@/components/atoms/containers"
 import { useQuery, useQueryClient } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { StudentSchema, type Student } from "@/types/student"
-import { updateStudent, getStudentsByTeamId } from "@/services/student-service"
+import { updateStudent, getStudentsByTeamId } from "@/services/student/student.service"
 import { cn } from "@/utils/style"
 import { Loading } from "@/components/organisms/loading"
-import { hasPermission } from "@/services/user-service"
-import { sendManyNotifications } from "@/services/notification-service"
-import { getCurrentPhase } from "@/services/project-service"
+import { hasPermission } from "@/services/user/user.service"
+import { sendManyNotifications } from "@/services/notification/notification.service"
+import { getCurrentPhase } from "@/services/project/project.service"
 
 const queryClient = useQueryClient()
 

@@ -12,13 +12,13 @@ import {
 	Blocks,
 	LucideCirclePlus
 } from "lucide-vue-next"
-import { DialogRating, DialogViewGrades, DialogBonus } from "@/components/organisms/rating"
-import { hasPermission } from "@/services/user-service"
-import { getTeamByUserId } from "@/services/team-service"
-import { Cookies } from "@/utils/cookie"
+import { DialogRating, DialogBonus } from "@/components/organisms/rating"
+import { hasPermission } from "@/services/user/user.service"
+import { getTeamByUserId } from "@/services/team/team.service"
 import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
 import { useQuery } from "@tanstack/vue-query"
 import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
+import { Cookies } from "@/utils/cookie"
 
 const props = defineProps<{
 	teamId : string,

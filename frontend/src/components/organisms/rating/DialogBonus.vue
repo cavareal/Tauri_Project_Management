@@ -4,10 +4,9 @@ import { CustomDialog } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
-import { Cookies } from "@/utils/cookie"
-import { getStudentsByTeamId } from "@/services/student-service"
+import { getStudentsByTeamId } from "@/services/student"
 import { Label } from "@/components/ui/label"
-import { getStudentBonus, updateBonus } from "@/services/bonus-service"
+import { getStudentBonus, updateBonus } from "@/services/bonus"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ErrorText } from "@/components/atoms/texts"
@@ -15,6 +14,7 @@ import { reactive, ref, watch } from "vue"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { createToast } from "@/utils/toast"
 import type { Bonus } from "@/types/bonus"
+import { Cookies } from "@/utils/cookie"
 
 const props = defineProps<{
 	limited: boolean
@@ -26,7 +26,7 @@ const open = ref(false)
 const currentUserId = Cookies.getUserId()
 let updatedStudentBonuses: Bonus[] = reactive([])
 
-const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async () => getStudentsByTeamId(Number(props.teamId)) })
+const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => getStudentsByTeamId(Number(props.teamId)) })
 
 /*const { data: studentBonuses } = useQuery({ queryKey: ["student-bonuses"], queryFn: async() => {
 	if (!teamStudents.value) return []
@@ -36,13 +36,13 @@ const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.team
 })*/
 const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
 	queryKey: ["student-bonuses"],
-	queryFn: async () => {
+	queryFn: async() => {
 		if (!teamStudents.value) return null
 		return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited, props.sprintId)))
 	}
 })
 
-watch(teamStudents, async (value, _) => {
+watch(teamStudents, async(value, _) => {
 	if (value) {
 		await refetchBonuses()
 	}
@@ -85,7 +85,7 @@ const handleBonusInput = (event: InputEvent, index: number, inputType: "value" |
 }
 
 const { isPending, error, mutate: update } = useMutation({
-	mutationKey: ["update-bonuses"], mutationFn: async () => {
+	mutationKey: ["update-bonuses"], mutationFn: async() => {
 		console.log(updatedStudentBonuses)
 		await Promise.all(updatedStudentBonuses.map(studentBonus => updateBonus(studentBonus.id, { value: studentBonus.value, comment: studentBonus.comment, authorId: currentUserId })))
 			.then(() => open.value = false)

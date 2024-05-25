@@ -5,7 +5,7 @@ import { cn } from "@/utils/style"
 import { useRoute } from "vue-router"
 import { LinkButton } from "@/components/molecules/buttons"
 import type { PermissionType } from "@/types/permission"
-import { hasPermission } from "@/services/user-service"
+import { hasPermission } from "@/services/user"
 
 const route = useRoute()
 

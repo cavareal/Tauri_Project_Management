@@ -4,14 +4,13 @@ import { UserSchema, type UpdateUser, type User } from "@/types/user"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { Cookies } from "@/utils/cookie"
 import { z } from "zod"
-import type { Team } from "@/types/team"
 import { RoleTypeSchema } from "@/types/role"
 
 export const getConnectedUser = async(): Promise<User> => {
-	const id = Cookies.getUserId()
+	const userId = Cookies.getUserId()
 
 	const response = await queryAndValidate({
-		route: `users/${id}`,
+		route: `users/${userId}`,
 		responseSchema: UserSchema
 	})
 
@@ -81,9 +80,9 @@ export const hasPermission = (permission: PermissionType): boolean => {
 }
 
 export const getCurrentUser = async(): Promise<User> => {
-	const id = Cookies.getUserId()
+	const userId = Cookies.getUserId()
 
-	return await getUserById(id)
+	return await getUserById(userId)
 }
 
 export const getAllRoles = async(id: number): Promise<RoleType[]> => {

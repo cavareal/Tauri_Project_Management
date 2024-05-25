@@ -4,11 +4,11 @@ import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
-import { updateProject } from "@/services/project-service"
+import { updateProject } from "@/services/project/project.service"
 import { useMutation } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { createToast } from "@/utils/toast"
-import { sendManyNotifications } from "@/services/notification-service"
+import { sendManyNotifications } from "@/services/notification"
 
 const emits = defineEmits(["prepublish:teams"])
 const open = ref(false)

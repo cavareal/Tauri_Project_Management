@@ -6,7 +6,7 @@ import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
-import { createValidationFlag } from "@/services/flag-service"
+import { createValidationFlag } from "@/services/flag"
 import { createToast } from "@/utils/toast"
 
 const emits = defineEmits(["valid:teams"])

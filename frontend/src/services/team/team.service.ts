@@ -4,13 +4,11 @@ import { TeamSchema } from "@/types/team"
 import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
-import { Cookies } from "@/utils/cookie"
 
 export const getTeams = async(): Promise<Team[]> => {
 	const response = await queryAndValidate({
 		route: "teams",
-		responseSchema: TeamSchema.array(),
-		params: { projectId: Cookies.getProjectId().toString() }
+		responseSchema: TeamSchema.array()
 	})
 
 	if (response.status === "error") {

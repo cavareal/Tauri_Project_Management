@@ -3,7 +3,6 @@ import { SprintSchema } from "@/types/sprint"
 import { StudentSchema } from "@/types/student"
 import { TeamSchema } from "@/types/team"
 import { UserSchema } from "@/types/user"
-import { isValid } from "date-fns"
 import { z } from "zod"
 
 export const GradeSchema = z.object({

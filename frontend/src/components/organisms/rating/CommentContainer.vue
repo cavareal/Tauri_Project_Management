@@ -6,7 +6,7 @@ import {
 } from "lucide-vue-next"
 import { Button } from "@/components/ui/button"
 import { ContainerGradeType } from "@/components/molecules/rateContainer"
-import { hasPermission } from "@/services/user-service"
+import { hasPermission } from "@/services/user/user.service"
 import DialogComment from "@/components/organisms/rating/DialogComment.vue"
 import DialogViewComment from "@/components/organisms/rating/DialogViewComment.vue"
 import DialogViewFeedback from "@/components/organisms/rating/DialogViewFeedback.vue"

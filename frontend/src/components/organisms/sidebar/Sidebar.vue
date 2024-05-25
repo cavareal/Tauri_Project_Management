@@ -11,7 +11,7 @@ import Row from "@/components/atoms/containers/Row.vue"
 import NotificationView from "@/components/organisms/notifications/NotificationView.vue"
 import { useQuery } from "@tanstack/vue-query"
 import { Cookies } from "@/utils/cookie"
-import { getAllNotificationsFromUser } from "@/services/notification-service"
+import { getAllNotificationsFromUser } from "@/services/notification/notification.service"
 
 const props = defineProps<{
 	class?: string

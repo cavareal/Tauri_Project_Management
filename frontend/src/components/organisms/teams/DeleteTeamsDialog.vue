@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { Button } from "@/components/ui/button"
-import { deleteAllTeams } from "@/services/team-service"
+import { deleteAllTeams } from "@/services/team"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"

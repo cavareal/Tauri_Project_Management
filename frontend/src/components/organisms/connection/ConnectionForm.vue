@@ -3,7 +3,7 @@
 import { useForm } from "vee-validate"
 import { toTypedSchema } from "@vee-validate/zod"
 
-import { login } from "@/services/connection-service"
+import { login } from "@/services/auth"
 
 import { FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -23,14 +23,16 @@ const { handleSubmit, setErrors } = useForm({
 })
 
 const { mutate, isPending } = useMutation({ mutationKey: ["login"], mutationFn: async(values: z.infer<typeof AuthRequestSchema>) => {
-	await login(values.login, values.password).then(() => {
-		redirect("/")
-	}).catch(() => {
-		setErrors({
-			login: "L'email ou le mot de passe est invalide.",
-			password: "L'email ou le mot de passe est invalide."
+	await login(values.login, values.password)
+		.then(() => {
+			redirect("/")
 		})
-	})
+		.catch(() => {
+			setErrors({
+				login: "L'email ou le mot de passe est invalide.",
+				password: "L'email ou le mot de passe est invalide."
+			})
+		})
 } })
 
 const onSubmit = handleSubmit((values) => {

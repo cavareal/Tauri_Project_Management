@@ -13,11 +13,11 @@ import {
 	SelectValue
 } from "@/components/ui/select"
 import { useQuery } from "@tanstack/vue-query"
-import { getTeams } from "@/services/team-service"
-import { getSprints } from "@/services/sprint-service"
+import { getTeams } from "@/services/team/team.service"
+import { getSprints } from "@/services/sprint/sprint.service"
 import { Column } from "@/components/atoms/containers"
 import { ListChecks } from "lucide-vue-next"
-import { hasPermission } from "@/services/user-service"
+import { hasPermission } from "@/services/user/user.service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import Rating from "@/components/organisms/Rate/Rating.vue"
 

@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ref, computed } from "vue"
 import { useMutation, useQueryClient } from "@tanstack/vue-query"
 import { createToast } from "@/utils/toast"
-import { createComment } from "@/services/feedback-service"
+import { createComment } from "@/services/feedback"
 
 const props = defineProps<{
 	selectedTeamId: number,
