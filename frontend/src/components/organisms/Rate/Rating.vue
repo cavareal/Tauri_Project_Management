@@ -8,17 +8,16 @@ import {
 	SquareGanttChart,
 	Play,
 	Presentation,
-	Package,
 	Blocks,
 	LucideCirclePlus
 } from "lucide-vue-next"
 import { DialogRating, DialogBonus } from "@/components/organisms/rating"
-import { hasPermission } from "@/services/user/user.service"
-import { getTeamByUserId } from "@/services/team/team.service"
+import { hasPermission } from "@/services/user-service"
+import { getTeamByUserId } from "@/services/team-service"
+import { Cookies } from "@/utils/cookie"
 import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
 import { useQuery } from "@tanstack/vue-query"
 import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
-import { Cookies } from "@/utils/cookie"
 
 const props = defineProps<{
 	teamId : string,
@@ -32,17 +31,15 @@ const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], 
 const canGradeGlobalPerformance = hasPermission("GRADE_GLOBAL_PERFORMANCE")
 const canGradeLimitedBonus = hasPermission("LIMITED_BONUS_MALUS")
 const canGradeUnlimitedBonus = hasPermission("GIVE_UNLIMITED_BONUS_MALUS")
-const canGradePresentationContent = hasPermission("GRADE_PRESENTATION_CONTENT")
 const canGradeMaterialSupport = hasPermission("GRADE_SUPPORT_MATERIAL")
 const canGradeIndividualPerformance = hasPermission("GRADE_INDIVIDUAL_PERFORMANCE")
-const canAddComment = hasPermission("ADD_GRADE_COMMENT")
-const gradeOwnTeam = hasPermission("GRADE_OWN_TEAM")
-// const canGradeTechnicalSolution = hasPermission("GRADE_TECHNICAL_SOLUTION")
-// const canGradeSprintConformity = hasPermission("GRADE_SPRINT_CONFORMITY")
-// const canGradeProjectManagement = hasPermission("GRADE_PROJECT_MANAGEMENT")
-const canGradeTechnicalSolution = hasPermission("GRADE_SUPPORT_MATERIAL")
-const canGradeSprintConformity = hasPermission("GRADE_SUPPORT_MATERIAL")
-const canGradeProjectManagement = hasPermission("GRADE_SUPPORT_MATERIAL")
+const canCommentIndividualPerformance = hasPermission("COMMENT_INDIVIDUAL_PERFORMANCE")
+const canGradeTechnicalSolution = hasPermission("GRADE_TECHNICAL_SOLUTION")
+const canGradeSprintConformity = hasPermission("GRADE_SPRINT_CONFORMITY")
+const canGradeProjectManagement = hasPermission("GRADE_PROJECT_MANAGEMENT")
+const canCommentTechnicalSolution = hasPermission("COMMENT_TECHNICAL_SOLUTION")
+const canCommentSprintConformity = hasPermission("COMMENT_SPRINT_CONFORMITY")
+const canCommentProjectManagement = hasPermission("COMMENT_PROJECT_MANAGEMENT")
 const canSeeFeedbacks = hasPermission("VIEW_FEEDBACK") && hasPermission("ADD_ALL_TEAMS_FEEDBACK")
 const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermission("VIEW_COMMENT")
 
@@ -101,19 +98,6 @@ const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermi
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradePresentationContent" title="Contenu de la présentation" infotext="Vous devez évaluer chaque équipe sur le contenu de sa présentation.">
-		<template #icon>
-			<Package :size="40" :stroke-width="1"/>
-		</template>
-		<template #dialog>
-			<DialogRating title="Note du contenu de la présentation" description="Veuillez noter le contenu de la présentation" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Contenu de la présentation">
-				<template #trigger>
-					<Button variant="default">Noter une équipe</Button>
-				</template>
-			</DialogRating>
-		</template>
-	</ContainerGradeType>
-
 	<ContainerGradeType v-if="canGradeMaterialSupport" title="Support de présentation" infotext="Vous devez évaluer chaque équipe sur son support de présentation.">
 		<template #icon>
 			<Presentation :size="40" :stroke-width="1"/>
@@ -127,12 +111,12 @@ const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermi
 		</template>
 	</ContainerGradeType>
 
-	<ContainerGradeType v-if="canGradeIndividualPerformance" title="Performance individuelle" infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
+	<ContainerGradeType v-if="canGradeIndividualPerformance || canCommentIndividualPerformance" title="Performance individuelle" infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
 		<template #icon>
 			<User :size="40" :stroke-width="1"/>
 		</template>
 		<template #dialog>
-			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" gradeTypeString="Performance individuelle"></DialogIndividualRate>
+			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" :canGrade="canGradeIndividualPerformance" :canComment="canCommentIndividualPerformance" gradeTypeString="Performance individuelle"></DialogIndividualRate>
 		</template>
 	</ContainerGradeType>
 

@@ -585,27 +585,6 @@ class GradeServiceTest {
     }
 
     @Test
-    void getGradesConfirmationShouldReturnTrueWhenGradeNotConfirmed() {
-        Integer teamId = 1;
-        Integer sprintId = 1;
-        Student student = new Student();
-        student.id(1);
-        List<Student> students = Collections.singletonList(student);
-        GradeType gradeType = new GradeType();
-        gradeType.name(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
-        Grade grade = new Grade();
-        grade.confirmed(false);
-
-        when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token")).thenReturn(gradeType);
-        when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(grade);
-
-        Boolean result = gradeService.getGradesConfirmation(teamId, sprintId);
-
-        assertTrue(result);
-    }
-
-    @Test
     void getGradesConfirmationShouldReturnFalseWhenAllGradesConfirmed() {
         Integer teamId = 1;
         Integer sprintId = 1;

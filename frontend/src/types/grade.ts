@@ -7,7 +7,7 @@ import { z } from "zod"
 
 export const GradeSchema = z.object({
 	id: z.number(),
-	value: z.coerce.number(),
+	value: z.coerce.number().nullable(),
 	comment: z.string().nullable(),
 	gradeType: GradeTypeSchema,
 	author: UserSchema.nullable(),

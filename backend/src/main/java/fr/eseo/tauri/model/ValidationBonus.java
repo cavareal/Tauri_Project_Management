@@ -16,9 +16,6 @@ import org.hibernate.annotations.OnDeleteAction;
 @Data
 public class ValidationBonus {
 
-    @JsonProperty
-    private Boolean confirmed = false;
-
     @Id
     @ManyToOne
     @JoinColumn(name = "author_id")
