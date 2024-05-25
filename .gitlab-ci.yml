@@ -90,8 +90,8 @@ java-build:
     - cd backend
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
-    - export DATABASE_USERNAME=$DATABASE_USERNAME
-    - export DATABASE_PASSWORD=$DATABASE_PASSWORD
+    - echo "DATABASE_USERNAME=${DATABASE_USERNAME}" >> .env
+    - echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> .env
     - gradle --no-daemon clean build -Pprod -x test
   retry: 2
   dependencies:    
