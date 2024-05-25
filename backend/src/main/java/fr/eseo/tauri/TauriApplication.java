@@ -12,6 +12,10 @@ public class TauriApplication {
 	public static void main(String[] args) {
 		// Run the application
 		SpringApplication.run(TauriApplication.class, args);
+		String username = System.getenv("DATABASE_USERNAME");
+		String password = System.getenv("DATABASE_PASSWORD");
+		System.out.println("Database Username: " + username);
+		System.out.println("Database Password: " + password);
 	}
 }
 
