@@ -47,6 +47,14 @@ dependencies {
 
 }
 
+task printEnv {
+	doLast {
+		println "DATABASE_USERNAME: ${System.getenv('DATABASE_USERNAME')}"
+		println "DATABASE_PASSWORD: ${System.getenv('DATABASE_PASSWORD')}"
+	}
+}
+
+
 tasks.named("test") {
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
