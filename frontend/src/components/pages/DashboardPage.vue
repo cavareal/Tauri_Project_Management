@@ -22,7 +22,7 @@ const { data: user } = useQuery({ queryKey: ["current-user"], queryFn: getCurren
 	<SidebarTemplate>
 		<Header :title="`Bonjour ${user ? extractNames(user?.name).firstName : ''} 👋`" />
 
-		<Column class="border rounded-lg p-6 items-center">
+		<Column class="border rounded-md p-6 items-center bg-white">
 			<Title class="text-dark-blue text-xl">
 				Bienvenue sur Tauri !
 			</Title>

@@ -36,8 +36,8 @@ const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir supprimer toutes les
 			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" @click="mutate" :loading="isPending">
-				Confirmer
+			<LoadingButton type="submit" @click="mutate" :loading="isPending" variant="destructive">
+				Supprimer
 			</LoadingButton>
 		</template>
 	</CustomDialog>
