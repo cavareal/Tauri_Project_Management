@@ -9,7 +9,7 @@ import {
 } from "@/types/grade"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
-import { getConnectedUser } from "@/services/user-service"
+import { getConnectedUser } from "@/services/user"
 
 
 export const createGrade = async(body : Omit<CreateGrade, "authorId">): Promise<void> => {

@@ -17,7 +17,6 @@ import { Cookies } from "@/utils/cookie"
 import { serializeCalendarDate } from "@/utils/date"
 import { createToast } from "@/utils/toast"
 import { SprintEndTypeSchema, formatSprintEndType, getSprintEndTypeDescription } from "@/types/sprint"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 const open = ref(false)

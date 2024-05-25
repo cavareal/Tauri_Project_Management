@@ -12,8 +12,8 @@ import {
 	LucideCirclePlus
 } from "lucide-vue-next"
 import { DialogRating, DialogBonus } from "@/components/organisms/rating"
-import { hasPermission } from "@/services/user-service"
-import { getTeamByUserId } from "@/services/team-service"
+import { hasPermission } from "@/services/user"
+import { getTeamByUserId } from "@/services/team"
 import { Cookies } from "@/utils/cookie"
 import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
 import { useQuery } from "@tanstack/vue-query"

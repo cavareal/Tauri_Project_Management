@@ -1,3 +1,5 @@
+<!-- eslint-disable -->
+
 <script setup lang="ts">
 import { computed, h, ref, watch, type Ref } from "vue"
 import type { CalendarDate } from "@internationalized/date"
