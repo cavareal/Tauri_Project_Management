@@ -92,9 +92,9 @@ java-build:
     - cp -r ../frontend/dist/* src/main/resources/static/
     - export DATABASE_USERNAME=$DATABASE_USERNAME
     - export DATABASE_PASSWORD=$DATABASE_PASSWORD
-    - echo "DATABASE_USERNAME=${DATABASE_USERNAME}" >> .env
-    - echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> .env
-    - gradle --no-daemon clean build -Pprod -x test 
+    - echo $DATABASE_USERNAME
+    - echo $DATABASE_PASSWORD
+    - gradle --no-daemon clean build -Pprod -x test -DDATABASE_USERNAME=$DATABASE_USERNAME -DDATABASE_PASSWORD=$DATABASE_PASSWORD
   retry: 2
   dependencies:    
     - vuejs-build-dev

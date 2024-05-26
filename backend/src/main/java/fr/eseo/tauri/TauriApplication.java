@@ -1,5 +1,6 @@
 package fr.eseo.tauri;
 
+import fr.eseo.tauri.util.CustomLogger;
 import me.paulschwarz.springdotenv.DotenvPropertySource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,7 @@ public class TauriApplication {
 		// Run the application
 		SpringApplication app = new SpringApplication(TauriApplication.class);
 		ConfigurableEnvironment env = app.run(args).getEnvironment();
-		DotenvPropertySource.addToEnvironment(env);	}
+		DotenvPropertySource.addToEnvironment(env);
+	}
 }
 
