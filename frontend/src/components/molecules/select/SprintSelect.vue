@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Skeleton from "@/components/ui/skeleton/Skeleton.vue"
 import { cn } from "@/utils/style"
 import { getCurrentSprint, getSprints } from "@/services/sprint"
+import { formatSprintEndType } from "@/types/sprint"
 
 defineProps<{
 	modelValue: string | null
@@ -45,7 +46,7 @@ const style = cn("w-56")
 		</SelectTrigger>
 		<SelectContent>
 			<SelectItem v-for="sprint in sprints" :key="sprint.id" :value="sprint.id.toString()">
-				Sprint {{ sprint.sprintOrder }}
+				Sprint {{ sprint.sprintOrder }} ({{ formatSprintEndType(sprint.endType) }})
 			</SelectItem>
 		</SelectContent>
 	</Select>

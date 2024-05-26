@@ -1,0 +1,1 @@
+export { default as WaitingTeams } from "./WaitingTeams.vue"

@@ -1,4 +1,4 @@
-import { GradeTypeSchema } from "@/types/grade-type"
+import { GradeTypeNameSchema, GradeTypeSchema } from "@/types/grade-type"
 import { SprintSchema } from "@/types/sprint"
 import { StudentSchema } from "@/types/student"
 import { TeamSchema } from "@/types/team"
@@ -37,6 +37,16 @@ export type CreateGrade = z.infer<typeof CreateGradeSchema>
 
 export const UpdateGradeSchema = CreateGradeSchema.partial()
 export type UpdateGrade = z.infer<typeof UpdateGradeSchema>
+
+export const IdentifyGradeSchema = CreateGradeSchema.omit({
+	value: true,
+	comment: true,
+	gradeTypeId: true,
+	authorId: true
+}).extend({
+	gradeTypeName: GradeTypeNameSchema
+})
+export type IdentifyGrade = z.infer<typeof IdentifyGradeSchema>
 
 export const GradeDoubleArraySchema = z.array(z.array(z.number().nullable()))
 

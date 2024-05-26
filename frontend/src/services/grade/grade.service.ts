@@ -5,29 +5,85 @@ import {
 	CreateGradeSchema,
 	type CreateGrade,
 	GradeMapSchema,
-	UpdateGradeSchema, type UpdateGrade
+	UpdateGradeSchema, type UpdateGrade,
+	type IdentifyGrade
 } from "@/types/grade"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
 import { getConnectedUser } from "@/services/user"
+import type { GradeTypeName } from "@/types/grade-type"
+import { getGradeTypeByName } from "@/services/grade-type"
 
 
-export const createGrade = async(body : Omit<CreateGrade, "authorId">): Promise<void> => {
+export const getAllRatedGradesFromConnectedUser = async(): Promise<Grade[]> => {
 	const user = await getConnectedUser()
+
+	const response = await queryAndValidate({
+		route: `users/${user.id}/rated-grades`,
+		responseSchema: GradeSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getRatedGrade = (allGrades: Grade[], body: IdentifyGrade): Grade | null => {
+	const grade = allGrades.find(grade => grade.gradeType.name === body.gradeTypeName
+			&& grade.sprint?.id === body.sprintId
+			&& ((grade.student !== null && grade.student?.id === body.studentId) || (grade.team !== null && grade.team?.id === body.teamId)))
+
+	return grade ?? null
+}
+
+export const createGrade = async(body: Omit<CreateGrade, "authorId" | "gradeTypeId"> & { gradeTypeName: GradeTypeName }): Promise<void> => {
+	const user = await getConnectedUser()
+	const gradeType = await getGradeTypeByName(body.gradeTypeName)
 
 	const response	= await mutateAndValidate({
 		method: "POST",
 		route: "grades",
 		body: {
 			...body,
-			authorId: user.id
+			authorId: user.id,
+			gradeTypeId: gradeType.id
 		},
 		bodySchema: CreateGradeSchema
 	})
+
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
 }
+
+export const updateGrade = async(id: number, body: UpdateGrade): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "PATCH",
+		route: `grades/${id}`,
+		body,
+		bodySchema: UpdateGradeSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const createOrUpdateGrade = async(body: Omit<CreateGrade, "authorId" | "gradeTypeId"> & { gradeTypeName: GradeTypeName }): Promise<void> => {
+	const allGrades = await getAllRatedGradesFromConnectedUser()
+	const grade = await getRatedGrade(allGrades, body)
+
+	console.log(grade)
+
+	if (grade) {
+		await updateGrade(grade.id, body)
+	} else {
+		await createGrade(body)
+	}
+}
+
 
 export const getAllImportedGrades = async(): Promise<Grade[]> => {
 	const response = await queryAndValidate({
@@ -67,19 +123,6 @@ export const getAverageGrades = async(userId: number): Promise<z.infer<typeof Gr
 	}
 
 	return response.data
-}
-
-export const updateGrade = async(id: number, body: UpdateGrade): Promise<void> => {
-	const response = await mutateAndValidate({
-		method: "PATCH",
-		route: `grades/${id}`,
-		body,
-		bodySchema: UpdateGradeSchema
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
 }
 
 export const getAverageByGradeType = async(id: number, sprintId: number, gradeTypeName: string): Promise<number> => {
@@ -241,8 +284,6 @@ export const getGradeByGradeTypeAndAuthorAndSprint = async(studentId: number, gr
 		params: { sprintId: sprintId.toString() },
 		responseSchema: GradeSchema.nullable()
 	})
-
-	console.log(response)
 
 	if (response.status === "error") {
 		return null

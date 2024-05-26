@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import { ActionSection } from "@/components/molecules/action-section"
+import { WaitingTeams } from "@/components/atoms/illustration"
+import { PlaceholderSection } from "@/components/molecules/placeholder-section"
 
 const ACTION_TITLE = "Les équipes ne sont pas encore composées."
 const ACTION_DESCRIPTION = "Veuillez patienter jusqu'à ce que les équipes soient composées par le leader du projet."
@@ -8,5 +9,7 @@ const ACTION_DESCRIPTION = "Veuillez patienter jusqu'à ce que les équipes soie
 </script>
 
 <template>
-	<ActionSection :title="ACTION_TITLE" :description="ACTION_DESCRIPTION" />
+	<PlaceholderSection :title="ACTION_TITLE" :description="ACTION_DESCRIPTION">
+		<WaitingTeams class="w-96" />
+	</PlaceholderSection>
 </template>
