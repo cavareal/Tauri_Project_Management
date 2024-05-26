@@ -39,6 +39,7 @@ public class AuthService {
             Authentication authentication = authenticate(email, password);  // Auth with LDAP
             CustomLogger.info(email + " is logged in.");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            CustomLogger.info(userDetails + " is logged");
             // Check if user in DB
             User user = userRepository.findByEmail(userDetails.getUsername())
                     .orElseGet(() -> {

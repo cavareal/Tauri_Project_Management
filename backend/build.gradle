@@ -73,3 +73,9 @@ jacocoTestReport {
 		html.required = true
 	}
 }
+
+
+ext {
+	DATABASE_USERNAME = findProperty('DATABASE_USERNAME')
+	DATABASE_PASSWORD = findProperty('DATABASE_PASSWORD')
+}
