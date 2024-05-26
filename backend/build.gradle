@@ -38,13 +38,14 @@ dependencies {
 	implementation 'com.opencsv:opencsv:5.8'
 	implementation 'net.datafaker:datafaker:2.1.0'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.5'
 	testImplementation 'org.seleniumhq.selenium:selenium-java:4.8.0'
+	testImplementation 'io.github.bonigarcia:webdrivermanager:5.3.2'
 	implementation 'org.springframework.ldap:spring-ldap-core'
 	implementation 'org.springframework.security:spring-security-ldap'
-	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
-}
 
+}
 
 tasks.named("test") {
 	useJUnitPlatform()
@@ -73,7 +74,23 @@ jacocoTestReport {
 }
 
 
-ext {
-	DATABASE_USERNAME = findProperty('DATABASE_USERNAME') ?: System.getenv('DATABASE_USERNAME')
-	DATABASE_PASSWORD = findProperty('DATABASE_PASSWORD') ?: System.getenv('DATABASE_PASSWORD')
+// Define a custom task to replace database credentials in application.properties
+tasks.register('setLoginDb') {
+	doLast {
+		// Assuming you have already obtained the databaseUsername as shown previously
+		def databaseUsername = project.hasProperty('databaseUsername') ? project.property('databaseUsername') : ''
+		System.out.print("databaseUsername: " + databaseUsername)
+//		// Path to your application.properties file
+//		def propertiesFile = new File("${project.rootDir}/src/main/resources/application.properties")
+//
+//		// Read the existing content of the file
+//		def originalContent = FileUtils.readFileToString(propertiesFile, TEXT)
+//
+//		// Replace the placeholder with the actual database username
+//		def updatedContent = originalContent.replaceAll("\\$\\{DATABASE_USERNAME\\}", databaseUsername)
+//
+//		// Write the updated content back to the file
+//		FileUtils.writeStringToFile(propertiesFile, updatedContent, TEXT)
+	}
 }
+
