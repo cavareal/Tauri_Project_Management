@@ -92,8 +92,6 @@ java-build:
     - cp -r ../frontend/dist/* src/main/resources/static/
     - export DATABASE_USERNAME=$DATABASE_USERNAME
     - export DATABASE_PASSWORD=$DATABASE_PASSWORD
-    - echo $DATABASE_USERNAME
-    - echo $DATABASE_PASSWORD
     - gradle --no-daemon clean build -Pprod -x test -DDATABASE_USERNAME=$DATABASE_USERNAME -DDATABASE_PASSWORD=$DATABASE_PASSWORD
   retry: 2
   dependencies:    
@@ -111,9 +109,6 @@ java-build:
     - main
     - dev
     - gitlab-ci
-  variables:
-    DATABASE_USERNAME: "admin_tauriiiii"
-    DATABASE_PASSWORD: "admin"
 
 
 ###############
