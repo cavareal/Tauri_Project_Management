@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { SidebarTemplate } from "@/components/templates"
 import NotAutorized from "@/components/organisms/errors/NotAuthorized.vue"
 import { Header } from "@/components/molecules/header"
@@ -20,38 +20,113 @@ import { ListChecks } from "lucide-vue-next"
 import { hasPermission } from "@/services/user-service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import Rating from "@/components/organisms/Rate/Rating.vue"
+import type { Sprint } from "@/types/sprint"
+import type { Team } from "@/types/team"
 
-const selectedTeam = ref("")
-const selectedSprint = ref("")
-const componentKey = ref(0)
-
+// Get the current date
+const currentDate = new Date()
 const authorized = hasPermission("RATING_PAGE")
-
-const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
-const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
-	const sprints = await getSprints()
-	return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
-} })
+const componentKey = ref(0)
 
 const forceRerender = () => {
 	componentKey.value += 1
 }
 
-// Get the current date
-const currentDate = new Date()
+const selectedTeamId = ref("")
+const selectedSprintId = ref("")
+const selectedTeam = ref(null as Team | null)
+const selectedSprint = ref(null as Sprint | null)
+const currentSprint = ref(null as Sprint | null)
 
-// Determine the current sprint
-const currentSprint = computed(() => {
-	const sprint = sprints.value?.find(sprint => {
+const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
+const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
+	const unfilteredSprints = await getSprints()
+
+	let sprint = unfilteredSprints.find(sprint => {
 		const startDate = new Date(sprint.startDate)
-		startDate.setHours(0, 0, 0, 0) // Set time to 00:00:00
+		startDate.setHours(0, 0, 0, 0)
 		const endDate = new Date(sprint.endDate)
-		endDate.setHours(23, 59, 59, 999) // Set time to end of the day
+		endDate.setHours(23, 59, 59, 999)
 		return startDate <= currentDate && currentDate <= endDate
 	})
-	if (sprint) selectedSprint.value = sprint.id.toString()
-	return sprint || null
+
+	// If no current sprint is found, find the next upcoming sprint
+	if (!sprint) {
+		sprint = unfilteredSprints.find(sprint => {
+			const startDate = new Date(sprint.startDate)
+			startDate.setHours(0, 0, 0, 0)
+			return startDate > currentDate
+		})
+	}
+
+	currentSprint.value = sprint || null
+
+	return unfilteredSprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
+} })
+
+const previousSprint = computed(() => {
+	if (!currentSprint.value || !sprints.value) return null
+
+	const previousSprints = sprints.value.filter(sprint => sprint.sprintOrder < currentSprint.value.sprintOrder)
+
+	return previousSprints[previousSprints.length - 1] || null
 })
+
+function initializeSelectedTeamId(teamsList: Team[]) {
+	if (!sessionStorage.getItem("ratingPageSelectedTeamId") || !teamsList.some(team => team.id.toString() === sessionStorage.getItem("ratingPageSelectedTeamId"))) {
+		sessionStorage.setItem("ratingPageSelectedTeamId", "")
+	}
+	selectedTeamId.value = sessionStorage.getItem("ratingPageSelectedTeamId")
+	selectedTeam.value = teams.value.find(team => team.id.toString() === selectedTeamId.value)
+}
+
+function initializeSelectedSprintId(sprintsList: Sprint[]) {
+	if (!sessionStorage.getItem("ratingPageSelectedSprintId") || !sprintsList.some(sprint => sprint.id.toString() === sessionStorage.getItem("ratingPageSelectedSprintId"))) {
+		if (!currentSprint.value || (currentSprint.value.endType === "UNGRADED_SPRINT") && !previousSprint.value) {
+			sessionStorage.setItem("ratingPageSelectedSprintId", "")
+		} else if (!previousSprint.value || currentSprint.value.endType === "FINAL_SPRINT") {
+			sessionStorage.setItem("ratingPageSelectedSprintId", currentSprint.value.id.toString())
+		} else {
+			sessionStorage.setItem("ratingPageSelectedSprintId", previousSprint.value.id.toString())
+		}
+	}
+	selectedSprintId.value = sessionStorage.getItem("ratingPageSelectedSprintId")
+	selectedSprint.value = sprints.value.find(sprint => sprint.id.toString() === selectedSprintId.value)
+}
+
+if (teams.value) initializeSelectedTeamId(teams.value)
+if (sprints.value) initializeSelectedSprintId(sprints.value)
+
+watch(teams, newValue => {
+	if (newValue) {
+		initializeSelectedTeamId(newValue)
+	}
+})
+
+watch(sprints, newValue => {
+	if (newValue) {
+		initializeSelectedSprintId(newValue)
+	}
+})
+
+//TODO remplacer ces 2 watchs par les mêmes actions dans le forceRerender ?
+
+watch(selectedTeamId, newValue => {
+	if (newValue) {
+		sessionStorage.setItem("ratingPageSelectedTeamId", newValue)
+		selectedTeam.value = teams.value.find(team => team.id.toString() === newValue)
+	}
+})
+
+watch(selectedSprintId, newValue => {
+	if (newValue) {
+		sessionStorage.setItem("ratingPageSelectedSprintId", newValue)
+		selectedSprint.value = sprints.value.find(sprint => sprint.id.toString() === newValue)
+	}
+})
+
+console.log(selectedTeamId.value)
+console.log(selectedSprintId.value)
 
 </script>
 
@@ -60,9 +135,9 @@ const currentSprint = computed(() => {
 		<NotAuthorized v-if="!authorized" />
 		<Column v-else class="gap-4">
 			<Header title="Évaluations">
-				<Select v-model="selectedSprint">
+				<Select v-model="selectedSprintId">
 					<SelectTrigger class="w-[180px]">
-						<SelectValue :placeholder="currentSprint ? 'Sprint ' + currentSprint.sprintOrder : 'Sélectionner le sprint'" />
+						<SelectValue :placeholder="selectedSprint ? 'Sprint ' + selectedSprint.sprintOrder : 'Sélectionner le sprint'" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
@@ -70,9 +145,9 @@ const currentSprint = computed(() => {
 						</SelectGroup>
 					</SelectContent>
 				</Select>
-				<Select v-model="selectedTeam">
+				<Select v-model="selectedTeamId">
 					<SelectTrigger class="w-[180px]">
-						<SelectValue placeholder="Sélectionner l'équipe" />
+						<SelectValue :placeholder="selectedTeam ? selectedTeam.name : 'Sélectionner une équipe'" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
@@ -81,8 +156,8 @@ const currentSprint = computed(() => {
 					</SelectContent>
 				</Select>
 			</Header>
-			<Column v-if="selectedTeam !== '' && selectedSprint !== ''" class="gap-4">
-				<Rating v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
+			<Column v-if="selectedTeamId !== '' && selectedSprintId !== ''" class="gap-4">
+				<Rating v-if="authorized" :teamId="selectedTeamId" :sprintId="selectedSprintId" :key="componentKey"/>
 				<NotAutorized v-else/>
 			</Column>
             <Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">

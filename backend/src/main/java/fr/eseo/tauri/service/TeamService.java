@@ -72,9 +72,7 @@ public class TeamService {
 
         // Create the teams
         for (int i = 0; i < nbTeams; i++) {
-            Team team = new Team();
-            team.name("Équipe " + (i + 1));
-            team.project(project);
+            Team team = new Team("Équipe " + (i + 1), project);
             this.teamRepository.save(team);
             teams.add(team);
         }

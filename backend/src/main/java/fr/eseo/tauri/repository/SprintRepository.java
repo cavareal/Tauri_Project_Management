@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface SprintRepository extends JpaRepository<Sprint, Integer> {
 
-    @Query("SELECT s FROM Sprint s WHERE s.project.id = :projectId")
+    @Query("SELECT s FROM Sprint s WHERE s.project.id = :projectId ORDER BY s.sprintOrder ASC")
     List<Sprint> findAllByProject(Integer projectId);
 
     @Transactional

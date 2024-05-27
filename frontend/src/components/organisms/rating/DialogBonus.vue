@@ -27,7 +27,7 @@ let updatedStudentBonuses: Bonus[] = reactive([])
 const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => getStudentsByTeamId(Number(props.teamId)) })
 
 const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
-	queryKey: ["student-bonuses"],
+	queryKey: ["student-bonuses", props.teamId, props.sprintId],
 	queryFn: async() => {
 		if (!teamStudents.value) return
 		return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited, props.sprintId)))
