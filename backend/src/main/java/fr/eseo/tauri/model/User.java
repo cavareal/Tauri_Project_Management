@@ -27,6 +27,9 @@ public class User implements UserDetails {
 		this.password = password;
 		this.privateKey = privateKey;
 	}
+	public User(String email) {
+		this.email = email;
+	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

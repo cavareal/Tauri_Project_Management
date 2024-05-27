@@ -22,7 +22,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        CustomLogger.info(request.login() + " is trying to log in");
         AuthResponse response = authService.login(request.login(), request.password());
         return ResponseEntity.ok(response);
     }
@@ -30,14 +29,12 @@ public class AuthController {
     @PostMapping("/logon")
     public Boolean logon(@RequestBody User user) {
         CustomLogger.info(user.email() + " is trying to log on");
-
         return true;
     }
 
     @PostMapping("/logout")
     public Boolean logout(@RequestBody User user) {
         CustomLogger.info(user.email() + " is trying to log out");
-
         return true;
     }
 

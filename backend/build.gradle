@@ -19,7 +19,6 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
 	implementation "org.springframework.boot:spring-boot-starter-web"
@@ -39,10 +38,13 @@ dependencies {
 	implementation 'com.opencsv:opencsv:5.8'
 	implementation 'net.datafaker:datafaker:2.1.0'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-	implementation 'io.github.cdimascio:dotenv-java:2.2.0'
+	implementation 'me.paulschwarz:spring-dotenv:4.0.0'
 	implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.5'
 	testImplementation 'org.seleniumhq.selenium:selenium-java:4.8.0'
 	testImplementation 'io.github.bonigarcia:webdrivermanager:5.3.2'
+	implementation 'org.springframework.ldap:spring-ldap-core'
+	implementation 'org.springframework.security:spring-security-ldap'
+
 }
 
 tasks.named("test") {
@@ -70,3 +72,25 @@ jacocoTestReport {
 		html.required = true
 	}
 }
+
+
+
+
+tasks.register('setLoginDb') {
+	doLast {
+		def dbUsername = System.getProperty("databaseUsername")
+		def dbPassword = System.getProperty("databasePassword")
+
+		if(dbUsername == null || dbPassword == null) {
+			throw new GradleException("You must provide the database credentials with -PdatabaseUsername=yourUsername -PdatabasePassword=yourPassword")
+		}
+
+		def propertiesFile = file('src/main/resources/application.properties')
+		def properties = new Properties()
+		properties.load(new FileInputStream(propertiesFile))
+		properties.setProperty('spring.datasource.username', dbUsername)
+		properties.setProperty('spring.datasource.password', dbPassword)
+		properties.store(new FileOutputStream(propertiesFile), null)
+	}
+}
+

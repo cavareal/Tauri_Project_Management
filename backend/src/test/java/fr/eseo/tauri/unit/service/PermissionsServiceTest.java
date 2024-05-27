@@ -1,9 +1,11 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.PermissionRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.PermissionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
