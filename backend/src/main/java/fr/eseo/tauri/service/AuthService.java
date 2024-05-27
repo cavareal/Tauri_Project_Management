@@ -52,17 +52,17 @@ public class AuthService {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             // Check if user in DB
             User user = userRepository.findByEmail(userDetails.getUsername())  // getUsername return email
-                    .orElseGet(() -> {
-                        User newUser = new User(userDetails.getUsername());
-                        newUser.name(getNameFromEmail(userDetails.getUsername()));
-                        userRepository.save(newUser);
-                        // Add role
-                        var role = new Role();
-                        role.user(newUser);
-                        role.type(RoleType.PROJECT_LEADER);
-                        roleRepository.save(role);
+                .orElseGet(() -> {
+                    User newUser = new User(userDetails.getUsername());
+                    newUser.name(getNameFromEmail(userDetails.getUsername()));
+                    userRepository.save(newUser);
+                    // Add role
+                    var role = new Role();
+                    role.user(newUser);
+                    role.type(RoleType.PROJECT_LEADER);
+                    roleRepository.save(role);
 
-                        return newUser;
+                    return newUser;
             });
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
