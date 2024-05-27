@@ -65,6 +65,7 @@ vuejs-build-prod:
   image: node:16.19.1-alpine3.17
   script:
     - cd frontend
+    - ls -li /root/.npm/_cacache/tmp/
     - npm install --legacy-peer-deps
     - npm run build-only:prod
   retry: 2
