@@ -92,7 +92,7 @@ java-build:
     - cp -r ../frontend/dist/* src/main/resources/static/
     # - gradle --no-daemon clean build -Pprod -x test 
     # - gradle --no-daemon clean -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build setLoginDb -Pprod -x test 
-    - gradle --no-daemon clean setLoginDb -Dargs=$DATABASE_USERNAME -Pargs=$DATABASE_PASSWORD build -Pprod -x test --stacktrace
+    - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -Pprod -x test --stacktrace
 
   retry: 2
   dependencies:    

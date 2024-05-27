@@ -78,11 +78,8 @@ jacocoTestReport {
 
 tasks.register('setLoginDb') {
 	doLast {
-		if (project.hasProperty("args")) {
-			println "Our input argument with project property ["+project.getProperty("args")+"]"
-		}
-		println "Our input argument with system property ["+System.getProperty("args")+"]"
-
+		println "Username ["+System.getProperty("databaseUsername")+"]"
+		println "Password ["+System.getProperty("databasePassword")+"]"
 	}
 }
 
