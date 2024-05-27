@@ -65,7 +65,7 @@ const { data: averageStudents, ...queryAverageStudent } = useQuery({
 	}
 })
 
-const { data: sprintGrades, ...querySprintGrade } = useQuery({
+const { data: sprintGrades, ...querySprintGrades } = useQuery({
 	queryKey: ["sprint-grades", props.teamId, props.sprintId],
 	queryFn: () => getSprintGrades(Number(props.teamId), Number(props.sprintId))
 })
@@ -75,13 +75,14 @@ const { data: totalGrade, ...queryTotalGrade } = useQuery({
 	queryFn: () => getTeamTotalGrade(Number(props.teamId), Number(props.sprintId))
 })
 
+
 const { data: totalIndividualGrades, ...queryTotalIndividualGrades } = useQuery({
 	queryKey: ["individual", props.teamId, props.sprintId],
 	queryFn: () => getIndividualTotalGrades(Number(props.teamId), Number(props.sprintId))
 })
 
 const { data: averageSprintGrades, ...queryAverageSprintGrades } = useQuery({
-	queryKey: ["averageSprintGrade", "sprint", props.sprintId],
+	queryKey: ["averageSprintGrade", props.sprintId],
 	queryFn: () => getAverageSprintGrades(Number(props.sprintId))
 })
 
@@ -97,7 +98,7 @@ watch(() => props.teamId, async() => {
 		await queryTeamStudents.refetch()
 		await queryAverageTeam.refetch()
 		await queryAverageStudent.refetch()
-		await querySprintGrade.refetch()
+		await querySprintGrades.refetch()
 		await queryTotalGrade.refetch()
 		await queryTotalIndividualGrades.refetch()
 		await queryAverageSprintGrades.refetch()
@@ -148,7 +149,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 				<TableCell v-if="canView && averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 				<TableCell v-if="(canViewAllWg || canViewAllOg ) && averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
 				<TableCell v-if="(canViewAllWg || canViewAllOg || student.id === currentUserId) && totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
-				<TableCell v-if="(canViewAllSg || (canViewOwnSg && student.id === currentUserId)) && sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4)}} </TableCell>
+				<TableCell v-if="(canView) && sprintGrades" :class="rowClass"> {{sprintGrades[index]}} </TableCell>
 			</TableRow>
 		</TableBody>
 	</Table>
@@ -189,7 +190,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 						<TableCell v-if="averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 						<TableCell v-if=" averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
 						<TableCell v-if="totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
-						<TableCell v-if="sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4) }} </TableCell>
+						<TableCell v-if="sprintGrades" :class="rowClass"> {{sprintGrades[index]}} </TableCell>
 					</TableRow>
 				</TableBody>
 			</Table>
