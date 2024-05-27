@@ -63,14 +63,6 @@ const { data: averageStudents, ...queryAverageStudent } = useQuery({
 	}
 })
 
-// const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
-// 	queryKey: ["student-bonuses", teamStudents.value],
-// 	queryFn: async() => {
-// 		if (!teamStudents.value) return null
-// 		return await Promise.all(teamStudents.value.map(student => getStudentBonuses(student.id)))
-// 	}
-// })
-
 const { data: sprintGrades, ...querySprintGrade } = useQuery({
 	queryKey: ["sprint-grades", props.teamId, props.sprintId],
 	queryFn: () => getSprintGrades(Number(props.teamId), Number(props.sprintId))
@@ -96,7 +88,6 @@ watch(() => props.teamId, async() => {
 	if (props.teamId !== oldTeamId) {
 		await queryTeamStudents.refetch()
 		await queryAverageTeam.refetch()
-		// await refetchBonuses()
 		await queryAverageStudent.refetch()
 		await querySprintGrade.refetch()
 		await queryTotalGrade.refetch()

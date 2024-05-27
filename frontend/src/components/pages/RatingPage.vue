@@ -69,10 +69,10 @@ const forceRerender = () => {
 				<Rating v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" :key="componentKey"/>
 				<NotAutorized v-else/>
 			</Column>
-            <Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
+			<Column v-else class="flex flex-col justify-center items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg h-screen">
 				<ListChecks class="size-12 stroke-1 text-dark-blue" />
-                <p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer.</p>
-            </Column>
+				<p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer.</p>
+			</Column>
 		</Column>
 	</SidebarTemplate>
 </template>

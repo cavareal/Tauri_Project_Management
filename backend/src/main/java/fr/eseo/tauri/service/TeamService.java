@@ -255,9 +255,6 @@ public class TeamService {
     }
 
     public Double getTeamTotalGrade(String token, Integer teamId, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
 
         List<GradeType> teacherGradedTeamGradeTypes = gradeTypeRepository.findTeacherGradedTeamGradeTypes();
         List<Double> teamGrades = new ArrayList<>();
@@ -295,9 +292,6 @@ public class TeamService {
     }
 
     public List<Double> getSprintGrades(String token, Integer id, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
 
         double teamGrade = getTeamTotalGrade(token, id, sprintId);
 
@@ -312,6 +306,17 @@ public class TeamService {
             return Collections.singletonList(-1.0);
         }
         return sprintGrades;
+    }
+
+    public List<Double> getAverageSprintGrades(Integer sprintId){
+        List<Team> teams = teamRepository.findAll();
+        List<Double> averageSprintGrades = new ArrayList<>();
+        for(Team team : teams){
+            List<Double> sprintGrades = getSprintGrades("token", team.id(), sprintId);
+            double average = sprintGrades.stream().mapToDouble(Double::doubleValue).sum() / sprintGrades.size();
+            averageSprintGrades.add(average);
+        }
+        return averageSprintGrades;
     }
 
 }
