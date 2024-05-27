@@ -42,7 +42,7 @@ export const getAllUnimportedGrades = async(): Promise<Grade[]> => {
 	const response = await queryAndValidate({
 		route: "grades/unimported",
 		responseSchema: GradeSchema.array()
-	}) 
+	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
@@ -221,6 +221,19 @@ export const getIndividualTotalGrades = async(teamId: number, sprintId: number):
 export const getSprintGrades = async(teamId: number, sprintId: number): Promise<number[]> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/sprint/${sprintId}/grades`,
+		responseSchema: z.number().array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+export const getAverageSprintGrades = async(sprintId: number): Promise<number[]> => {
+	const response = await queryAndValidate({
+		route: `teams/sprint/${sprintId}/average`,
 		responseSchema: z.number().array()
 	})
 

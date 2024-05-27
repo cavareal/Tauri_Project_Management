@@ -282,10 +282,16 @@ public class TeamService {
         for(Student student : students){
             Double studentGradedTeamGrade = gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName());
             Double individualGrade = gradeRepository.findAverageByGradeTypeForStudent(student.id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
-
-            double result = (2*individualGrade + studentGradedTeamGrade)/3;
-            String formattedResult = String.format("%.2f", result);
-            individualGrades.add(Double.parseDouble(formattedResult.replace(',', '.')));
+            double result;
+            if(studentGradedTeamGrade != null && individualGrade != null){
+                result = (2*individualGrade + studentGradedTeamGrade)/3;
+            }
+            else if(studentGradedTeamGrade == null){
+                result = individualGrade;
+            } else {
+                result = studentGradedTeamGrade;
+            }
+            individualGrades.add(formattedResult(result));
 
         }
         return individualGrades;
@@ -314,9 +320,13 @@ public class TeamService {
         for(Team team : teams){
             List<Double> sprintGrades = getSprintGrades("token", team.id(), sprintId);
             double average = sprintGrades.stream().mapToDouble(Double::doubleValue).sum() / sprintGrades.size();
-            averageSprintGrades.add(average);
+            averageSprintGrades.add(formattedResult(average));
         }
         return averageSprintGrades;
+    }
+
+    private Double formattedResult(Double result) {
+        return Double.parseDouble(String.format("%.2f", result).replace(',', '.'));
     }
 
 }
