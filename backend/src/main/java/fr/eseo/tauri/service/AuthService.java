@@ -49,13 +49,10 @@ public class AuthService {
     public AuthResponse login(String email, String password) {
         try {
             Authentication authentication = authenticate(email, password);  // Auth with LDAP
-            CustomLogger.info(email + " is logged in.");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            CustomLogger.info(userDetails + " is logged");
             // Check if user in DB
-            User user = userRepository.findByEmail(userDetails.getUsername())
+            User user = userRepository.findByEmail(userDetails.getUsername())  // getUsername return email
                     .orElseGet(() -> {
-                        // Create user
                         User newUser = new User(userDetails.getUsername());
                         newUser.name(getNameFromEmail(userDetails.getUsername()));
                         userRepository.save(newUser);

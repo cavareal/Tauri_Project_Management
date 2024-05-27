@@ -25,6 +25,7 @@ import { Cookies } from "@/utils/cookie"
 const currentDate = new Date()
 const authorized = hasPermission("GRADES_PAGE")
 const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
+const canConfirmOwnTeamGrade = hasPermission("GRADE_CONFIRMATION")
 
 function forceRerender() {
 	refetchGradesConfirmation()
@@ -128,7 +129,9 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 	queryKey: ["grades-confirmation", selectedSprintId.value, selectedTeamId.value],
 	queryFn: async() => {
 		if (selectedSprintId.value === "" || selectedTeamId.value === "") return false
-		return await getGradesConfirmation(parseInt(selectedSprintId.value), parseInt(selectedTeamId.value))
+		if(ssTeam.value.id != undefined){
+			return await getGradesConfirmation(parseInt(selectedSprintId.value), parseInt(selectedTeamId.value), ssTeam.value?.id)
+		}
 	}
 })
 
@@ -139,8 +142,7 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 		<NotAuthorized v-if="!authorized" />
 		<Column v-else class="gap-4">
 			<Header title="Notes">
-
-				<ValidGradesDialog v-if="selectedTeamId !== '' && selectedSprintId !== '' && isGradesConfirmed && ssTeam?.id.toString() == selectedTeamId"
+				<ValidGradesDialog v-if="selectedTeamId !== '' && selectedSprintId !== '' && canConfirmOwnTeamGrade && isGradesConfirmed && ssTeam?.id.toString() == selectedTeamId"
 					@valid:individual-grades="forceRerender()" :selectedTeam="selectedTeamId"
 					:selectedSprint="selectedSprintId">
 					<Button variant="default">Valider les notes individuelles</Button>
