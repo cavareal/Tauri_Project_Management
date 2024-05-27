@@ -78,6 +78,8 @@ jacocoTestReport {
 
 tasks.register('setLoginDb') {
 	doLast {
+		println("databaseUsername : " + System.getProperty("databaseUsername"))
+		println("databasePassword : " + System.getProperty("databasePassword"))
 		if(System.getProperty("databaseUsername") && System.getProperty("databasePassword")){
 			processResources {
 				filesMatching("**/application.properties") {

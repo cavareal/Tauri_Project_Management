@@ -56,7 +56,6 @@ vuejs-build-dev:
       - frontend/node_modules
   only:
     - dev
-    - gitlab-ci
 
 #########################
 ## BUILD frontend PROD ##
@@ -108,7 +107,6 @@ java-build:
   only:
     - main
     - dev
-    - gitlab-ci
 
 
 ###############
@@ -135,7 +133,6 @@ quality-dev:
       - $CI_PROJECT_DIR/.gradle/caches
   only:
     - dev
-    - gitlab-ci
 
 
 
@@ -190,7 +187,6 @@ push-dev:
   retry: 2
   only:
     - dev
-    - gitlab-ci
      
  
 
