@@ -3,6 +3,7 @@ package fr.eseo.tauri.selenium;
 import org.junit.jupiter.api.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.By;
@@ -16,8 +17,6 @@ import java.time.Duration;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SeleniumLoginTest {
         private static final String URL = "http://localhost:5173/";
-        private static final String LOGIN = "pl@tauri.com";
-        private static final String PASSWORD = "pl";
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
         private static WebDriverWait wait;
@@ -25,7 +24,7 @@ public class SeleniumLoginTest {
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
-            ChromeOptions options = new ChromeOptions();
+                ChromeOptions options = new ChromeOptions();
                 SeleniumLoginTest.webdriver = new ChromeDriver(options);
                 wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
                 SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");
@@ -39,6 +38,35 @@ public class SeleniumLoginTest {
                         titleElement.getText(), "Title");
         }
 
+        @Test
+        @Order(2)
+        void loginPl() {
+                webdriver.findElement(By.id("radix-1-form-item")).sendKeys("pl@tauri.com");
+                webdriver.findElement(By.id("radix-2-form-item")).sendKeys("pl");
+                {
+                        WebElement element = webdriver.findElement(By.id("radix-1-form-item"));
+                        Actions builder = new Actions(webdriver);
+                        builder.moveToElement(element).clickAndHold().perform();
+                }
+                {
+                        WebElement element = webdriver.findElement(By.id("radix-1-form-item"));
+                        Actions builder = new Actions(webdriver);
+                        builder.moveToElement(element).perform();
+                }
+                {
+                        WebElement element = webdriver.findElement(By.id("radix-1-form-item"));
+                        Actions builder = new Actions(webdriver);
+                        builder.moveToElement(element).release().perform();
+                }
+                webdriver.findElement(By.id("radix-1-form-item")).click();
+                webdriver.findElement(By.cssSelector(".bg-white")).click();
+                webdriver.findElement(By.cssSelector(".inline-flex")).click();
+
+                WebElement welcomeElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("welcome-text")));
+                String welcomeText = "Bonjour Richard 👋";
+                Assertions.assertEquals(welcomeText,
+                        welcomeElement.getText(), "Title");
+        }
 
         @AfterAll
         public static void afterTests(){
