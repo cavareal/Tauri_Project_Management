@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { SidebarTemplate } from "@/components/templates"
 import NotAutorized from "@/components/organisms/errors/NotAuthorized.vue"
 import { Header } from "@/components/molecules/header"
@@ -37,6 +37,22 @@ const forceRerender = () => {
 	componentKey.value += 1
 }
 
+// Get the current date
+const currentDate = new Date()
+
+// Determine the current sprint
+const currentSprint = computed(() => {
+	const sprint = sprints.value?.find(sprint => {
+		const startDate = new Date(sprint.startDate)
+		startDate.setHours(0, 0, 0, 0) // Set time to 00:00:00
+		const endDate = new Date(sprint.endDate)
+		endDate.setHours(23, 59, 59, 999) // Set time to end of the day
+		return startDate <= currentDate && currentDate <= endDate
+	})
+	if (sprint) selectedSprint.value = sprint.id.toString()
+	return sprint || null
+})
+
 </script>
 
 <template>
@@ -46,7 +62,7 @@ const forceRerender = () => {
 			<Header title="Évaluations">
 				<Select v-model="selectedSprint">
 					<SelectTrigger class="w-[180px]">
-						<SelectValue placeholder="Sprint par défaut" />
+						<SelectValue :placeholder="currentSprint ? 'Sprint ' + currentSprint.sprintOrder : 'Sélectionner le sprint'" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
@@ -56,7 +72,7 @@ const forceRerender = () => {
 				</Select>
 				<Select v-model="selectedTeam">
 					<SelectTrigger class="w-[180px]">
-						<SelectValue placeholder="Selectionner l'équipe" />
+						<SelectValue placeholder="Sélectionner l'équipe" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
