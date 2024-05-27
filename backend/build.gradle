@@ -78,16 +78,18 @@ jacocoTestReport {
 
 tasks.register('setLoginDb') {
 	doLast {
-		println("databaseUsername : " + System.getProperty("databaseUsername"))
-		println("databasePassword : " + System.getProperty("databasePassword"))
-//		if(System.getProperty("databaseUsername") && System.getProperty("databasePassword")){
-//			processResources {
-//				filesMatching("**/application.properties") {
-//					expand(DATABASE_USERNAME: System.getProperty("databaseUsername"), DATABASE_PASSWORD: System.getProperty("databasePassword"))
-//				}
-//			}
-//		}
+		def dbUsername = System.getProperty("databaseUsername")
+		def dbPassword = System.getProperty("databasePassword")
+		println("databaseUsername : " + dbUsername)
+		println("databasePassword : " + dbPassword)
 
+		// Update application.properties with the database credentials
+		def propertiesFile = file('src/main/resources/application.properties')
+		def properties = new Properties()
+		properties.load(new FileInputStream(propertiesFile))
+		properties.setProperty('spring.datasource.username', dbUsername)
+		properties.setProperty('spring.datasource.password', dbPassword)
+		properties.store(new FileOutputStream(propertiesFile), null)
 	}
 }
 

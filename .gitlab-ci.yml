@@ -91,7 +91,6 @@ java-build:
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
     - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -Pprod -x test --stacktrace
-
   retry: 2
   dependencies:    
     - vuejs-build-dev

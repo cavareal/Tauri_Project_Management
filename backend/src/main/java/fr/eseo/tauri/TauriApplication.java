@@ -13,7 +13,6 @@ public class TauriApplication {
 
 	public static void main(String[] args) {
 		// Run the application
-		CustomLogger.info("Database username : " + System.getProperty("databaseUsername"));
 		SpringApplication.run(TauriApplication.class, args);
 	}
 }
