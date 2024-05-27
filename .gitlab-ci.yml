@@ -91,7 +91,7 @@ java-build:
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
     # - gradle --no-daemon clean -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build setLoginDb -Pprod -x test 
-    - gradlew --no-daemon clean propertyTypes -Dargs=lorem -Pargs=ipsum build -Pprod -x test 
+    - ./gradlew --no-daemon clean propertyTypes -Dargs=lorem -Pargs=ipsum build -Pprod -x test 
     
   retry: 2
   dependencies:    
