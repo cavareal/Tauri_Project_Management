@@ -10,7 +10,7 @@ import { getSprints } from "@/services/sprint-service"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
-import { ListChecks } from "lucide-vue-next"
+import { Cookie, ListChecks } from "lucide-vue-next"
 import Grade from "@/components/organisms/Grade/GradeTable.vue"
 import { Button } from "@/components/ui/button"
 import ValidGradesDialog from "@/components/organisms/Grade/ValidGradesDialog.vue"
@@ -18,6 +18,8 @@ import { getGradesConfirmation } from "@/services/grade-service"
 import ExportGrades from "../organisms/Grade/ExportGrades.vue"
 import type { Team } from "@/types/team"
 import type { Sprint } from "@/types/sprint"
+import { getTeamByUserId } from "@/services/team-service"
+import { Cookies } from "@/utils/cookie"
 
 // Get the current date
 const currentDate = new Date()
@@ -34,6 +36,7 @@ const selectedTeam = ref(null as Team | null)
 const selectedSprint = ref(null as Sprint | null)
 const currentSprint = ref(null as Sprint | null)
 
+const { data: ssTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()], queryFn: () => getTeamByUserId(Cookies.getUserId()) })
 const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
 	const unfilteredSprints = await getSprints()
@@ -137,7 +140,7 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 		<Column v-else class="gap-4">
 			<Header title="Notes">
 
-				<ValidGradesDialog v-if="selectedTeamId !== '' && selectedSprintId !== '' && isGradesConfirmed"
+				<ValidGradesDialog v-if="selectedTeamId !== '' && selectedSprintId !== '' && isGradesConfirmed && ssTeam?.id.toString() == selectedTeamId"
 					@valid:individual-grades="forceRerender()" :selectedTeam="selectedTeamId"
 					:selectedSprint="selectedSprintId">
 					<Button variant="default">Valider les notes individuelles</Button>
