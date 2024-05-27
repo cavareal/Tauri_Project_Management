@@ -74,13 +74,18 @@ jacocoTestReport {
 }
 
 
-// Define a custom task to replace database credentials in application.properties
+
+
 tasks.register('setLoginDb') {
 	doLast {
+		if (project.hasProperty("args")) {
+			println "Our input argument with project property ["+project.getProperty("args")+"]"
+		}
+		println "Our input argument with system property ["+System.getProperty("args")+"]"
 		// Assuming you have already obtained the databaseUsername as shown previously
-		def databaseUsername = project.hasProperty('databaseUsername') ? project.property('databaseUsername') : ''
-		System.out.print("databaseUsername: " + project.property('databaseUsername'))
-		System.out.print(databasePassword)
+//		def databaseUsername = project.hasProperty('databaseUsername') ? project.property('databaseUsername') : ''
+//		System.out.print("databaseUsername: " + project.property('databaseUsername'))
+//		System.out.print(databasePassword)
 //		// Path to your application.properties file
 //		def propertiesFile = new File("${project.rootDir}/src/main/resources/application.properties")
 //
