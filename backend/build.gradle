@@ -80,10 +80,11 @@ tasks.register('setLoginDb') {
 	doLast {
 		def dbUsername = System.getProperty("databaseUsername")
 		def dbPassword = System.getProperty("databasePassword")
-		println("databaseUsername : " + dbUsername)
-		println("databasePassword : " + dbPassword)
 
-		// Update application.properties with the database credentials
+		if(dbUsername == null || dbPassword == null) {
+			throw new GradleException("You must provide the database credentials with -PdatabaseUsername=yourUsername -PdatabasePassword=yourPassword")
+		}
+
 		def propertiesFile = file('src/main/resources/application.properties')
 		def properties = new Properties()
 		properties.load(new FileInputStream(propertiesFile))
