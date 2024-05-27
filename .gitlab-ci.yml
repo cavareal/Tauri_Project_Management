@@ -43,6 +43,7 @@ vuejs-build-dev:
   image: node:16.19.1-alpine3.17
   script:
     - cd frontend
+    - df -h
     - npm install --legacy-peer-deps
     - npm run build-only:dev
   retry: 2
@@ -55,7 +56,6 @@ vuejs-build-dev:
       - frontend/node_modules
   only:
     - dev
-    - gitlab-ci
 
 #########################
 ## BUILD frontend PROD ##
@@ -90,7 +90,7 @@ java-build:
     - cd backend
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
-    - gradle --no-daemon clean build -Pprod -x test -PdatabaseUsername=$DATABASE_USERNAME -PdatabasePassword=$DATABASE_PASSWORD
+    - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -Pprod -x test
   retry: 2
   dependencies:    
     - vuejs-build-dev
@@ -106,8 +106,6 @@ java-build:
   only:
     - main
     - dev
-    - gitlab-ci
-
 
 
 ###############
@@ -134,7 +132,6 @@ quality-dev:
       - $CI_PROJECT_DIR/.gradle/caches
   only:
     - dev
-    - gitlab-ci
 
 
 
@@ -189,7 +186,6 @@ push-dev:
   retry: 2
   only:
     - dev
-    - gitlab-ci
      
  
 
