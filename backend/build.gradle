@@ -79,9 +79,8 @@ tasks.register('setLoginDb') {
 	doLast {
 		// Assuming you have already obtained the databaseUsername as shown previously
 		def databaseUsername = project.hasProperty('databaseUsername') ? project.property('databaseUsername') : ''
-		System.out.print("databaseUsername: " + project.hasProperty('databaseUsername')	)
-		System.out.print(project.getProperties())
-		System.out.print(project)
+		System.out.print("databaseUsername: " + project.property('databaseUsername'))
+		System.out.print(databasePassword)
 //		// Path to your application.properties file
 //		def propertiesFile = new File("${project.rootDir}/src/main/resources/application.properties")
 //
