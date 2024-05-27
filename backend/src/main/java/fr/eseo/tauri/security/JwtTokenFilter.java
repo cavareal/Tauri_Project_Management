@@ -33,11 +33,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         } else if (request.getRequestURI().equals("/api/auth/login")) {
             filterChain.doFilter(request, response);
 
-        } else if (!Objects.equals(request.getRequestURI(), "/api")) {
-            filterChain.doFilter(request, response);
+        } else if (request.getRequestURI().contains(("/api/"))) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            filterChain.doFilter(request, response);
         }
     }
 }
