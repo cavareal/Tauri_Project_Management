@@ -39,9 +39,13 @@ public class AuthService {
         String name = "";
 
         if (indexOfDot!= -1 && indexOfAt!= -1) {
-            name += email.substring(0, indexOfDot);
-            name += " ";
-            name += email.substring(indexOfDot + 1, indexOfAt);
+            String firstName = email.substring(0, indexOfDot).trim();
+            String lastName = email.substring(indexOfDot + 1, indexOfAt).trim();
+
+            firstName = Character.toUpperCase(firstName.charAt(0)) + firstName.substring(1);
+            lastName = Character.toUpperCase(lastName.charAt(0)) + lastName.substring(1);
+
+            name = lastName + " " + firstName;
         }
         return name;
     }

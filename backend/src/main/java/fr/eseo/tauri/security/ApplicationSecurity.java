@@ -20,7 +20,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
-
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity

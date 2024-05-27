@@ -213,7 +213,8 @@ public class StudentService {
         student.project(projectService.getProjectById(token, projectId));
         student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
         student.privateKey("privateKey");
-        student.email(name.toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
+        String[] nameParts = name.split(" "); // Divise le nom en deux parties basées sur l'espace
+        student.email(nameParts[0].toLowerCase() + "." + nameParts[1].toLowerCase() + "@reseau.eseo.fr");
         return student;
     }
 
