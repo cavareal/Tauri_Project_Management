@@ -1,8 +1,9 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.security.JwtTokenUtil;
+import fr.eseo.tauri.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
