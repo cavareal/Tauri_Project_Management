@@ -11,7 +11,7 @@ stages:
 
 variables:
   GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
-  ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
+  ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=300m"
   #### Value of variables setup in gitlab>settings>ci_cd>variables
   #---DB backend
   # $DATABASE_USERNAME
