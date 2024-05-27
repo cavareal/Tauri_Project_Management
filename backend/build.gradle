@@ -82,7 +82,13 @@ tasks.register('setLoginDb') {
 			println "Our input argument with project property ["+project.getProperty("args")+"]"
 		}
 		println "Our input argument with system property ["+System.getProperty("args")+"]"
-		// Assuming you have already obtained the databaseUsername as shown previously
+
+	}
+}
+
+
+
+// Assuming you have already obtained the databaseUsername as shown previously
 //		def databaseUsername = project.hasProperty('databaseUsername') ? project.property('databaseUsername') : ''
 //		System.out.print("databaseUsername: " + project.property('databaseUsername'))
 //		System.out.print(databasePassword)
@@ -97,6 +103,3 @@ tasks.register('setLoginDb') {
 //
 //		// Write the updated content back to the file
 //		FileUtils.writeStringToFile(propertiesFile, updatedContent, TEXT)
-	}
-}
-
