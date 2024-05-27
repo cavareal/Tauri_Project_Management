@@ -1,4 +1,4 @@
-package fr.eseo.tauri;
+package fr.eseo.tauri.unit;
 
 import org.junit.jupiter.api.Test;
 

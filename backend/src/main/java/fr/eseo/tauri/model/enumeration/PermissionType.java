@@ -74,6 +74,6 @@ public enum PermissionType {
     SPRINTS_PAGE,
     GRADES_PAGE,
     RATING_PAGE,
-    GRADE_SCALES_PAGE,
+    GRADE_SCALES_PAGE, ADD_GRADE_COMMENT,
 
 }

@@ -1,9 +1,11 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
 import fr.eseo.tauri.repository.ProjectRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.ProjectService;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

@@ -1,9 +1,13 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.ValidationBonusRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.BonusService;
+import fr.eseo.tauri.service.UserService;
+import fr.eseo.tauri.service.ValidationBonusService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

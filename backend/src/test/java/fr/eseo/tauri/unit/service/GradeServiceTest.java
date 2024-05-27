@@ -1,4 +1,4 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
@@ -9,6 +9,7 @@ import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
+import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

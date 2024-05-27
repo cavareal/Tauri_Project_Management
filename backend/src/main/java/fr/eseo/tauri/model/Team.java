@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -11,6 +14,8 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "teams")
+@NoArgsConstructor
+@RequiredArgsConstructor
 @Data
 public class Team implements Serializable {
 
@@ -21,9 +26,11 @@ public class Team implements Serializable {
     @JsonProperty
     private Integer id;
 
+    @NonNull
     @JsonProperty
     private String name;
 
+    @NonNull
     @ManyToOne
     @JoinColumn(name = "project_id")
     @OnDelete(action = OnDeleteAction.CASCADE)

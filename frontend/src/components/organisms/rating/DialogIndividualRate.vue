@@ -32,7 +32,7 @@ const props = defineProps<{
 
 const { data: gradeType } = useQuery({ queryKey: ["grade-type", props.gradeTypeString], queryFn: () => getGradeTypeByName(props.gradeTypeString) })
 
-const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => {
+const { data: teamStudents, refetch: refetchTeamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => {
 	if (!props.teamId) return
 	return await getStudentsByTeamId(Number(props.teamId))
 } })
@@ -44,7 +44,7 @@ const studentsIndividualGradeRef: StudentGrade[] = Array<StudentGrade>(teamStude
 
 // Update studentsIndividualGrade with actual grades
 const { refetch: refetchIndividualGrades } = useQuery({
-	queryKey: ["student-grades"],
+	queryKey: ["student-grades", props.teamId, props.sprintId],
 	queryFn: async() => {
 		if (!teamStudents.value || !gradeType.value) return
 		console.log(gradeType.value)
@@ -56,22 +56,22 @@ const { refetch: refetchIndividualGrades } = useQuery({
 })
 
 const { refetch: refetchIndividualGrade } = useQuery({
-	queryKey: ["student-grade", selectedStudentIndex],
+	queryKey: ["student-grade", props.sprintId, selectedStudentIndex.value],
 	queryFn: async() => {
 		if (!teamStudents.value || !gradeType.value || !selectedStudentIndex.value) return
 		studentsIndividualGrade[selectedStudentIndex.value] = await getGradeByGradeTypeAndAuthorAndSprint(teamStudents.value[selectedStudentIndex.value].id, gradeType.value.id, currentUserId, Number(props.sprintId))
 		studentsIndividualGradeRef[selectedStudentIndex.value] = JSON.parse(JSON.stringify(studentsIndividualGrade[selectedStudentIndex.value]))
-	},
-	enabled: false
-})
-
-//TODO Faire 2 méthodes globales à la place ? Pour tous les grades en passant le gradeType en param
-
-watch(teamStudents, async(newValue) => {
-	if (newValue) {
-		await refetchIndividualGrades()
 	}
 })
+
+
+watch(() => props.teamId, async() => {
+	await refetchTeamStudents()
+	await refetchIndividualGrades()
+})
+watch(() => props.sprintId, async() => await refetchIndividualGrades())
+
+//TODO placer les watchs dans la RatingPage et exécuter tous les refetchs à cet endroit ?
 
 //TODO Créer un grade ref pour la comparation à la fin de la fonction ?
 
@@ -143,16 +143,12 @@ const handleGradeInput = (event: InputEvent, index: number, inputType: "value" |
 
 const { mutate, isPending } = useMutation({ mutationKey: ["mutate-individual-grade", selectedStudentIndex.value], mutationFn: async(index: number) => {
 	const grade = studentsIndividualGrade[index]
-	console.log(JSON.stringify(grade.value))
-	console.log(JSON.stringify(studentsIndividualGradeRef[index].value))
-	console.log(JSON.stringify(grade) === JSON.stringify(studentsIndividualGradeRef[index]))
 	if (!grade) return
 	if (grade.id === null) await createGrade({ value: grade.value, comment: grade.comment, studentId: grade.studentId, gradeTypeId: gradeType.value.id, teamId: null, sprintId: Number(props.sprintId) })
 		.then(() => open.value = false)
 		.then(() => createToast("La note a été créée."))
 		.then(() => refetchIndividualGrade())
 	else if (JSON.stringify(grade) !== JSON.stringify(studentsIndividualGradeRef[index])) await updateGrade(grade.id, { value: grade.value, comment: grade.comment })
-		.then(() => console.log("test update"))
 		.then(() => open.value = false)
 		.then(() => createToast("La note a été mise à jour."))
 		.then(() => refetchIndividualGrade()) //TODO Faire une méthode refetch unitaire pour réduire le nb de requêtes ?

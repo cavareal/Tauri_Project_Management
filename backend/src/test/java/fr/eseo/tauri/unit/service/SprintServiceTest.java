@@ -1,10 +1,14 @@
-package fr.eseo.tauri.service;
+package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.model.enumeration.SprintEndType;
 import fr.eseo.tauri.repository.SprintRepository;
+import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.ProjectService;
+import fr.eseo.tauri.service.SprintService;
+import fr.eseo.tauri.service.StudentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

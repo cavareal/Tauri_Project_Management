@@ -2,7 +2,7 @@
 import { SidebarTemplate } from "@/components/templates"
 import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import { hasPermission } from "@/services/user-service"
 import { useQuery } from "@tanstack/vue-query"
 import { getTeams } from "@/services/team-service"
@@ -16,49 +16,118 @@ import { Button } from "@/components/ui/button"
 import ValidGradesDialog from "@/components/organisms/Grade/ValidGradesDialog.vue"
 import { getGradesConfirmation } from "@/services/grade-service"
 import ExportGrades from "../organisms/Grade/ExportGrades.vue"
-
-const selectedTeam = ref("")
-const selectedSprint = ref("")
-const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
-
-const authorized = hasPermission("GRADES_PAGE")
+import type { Team } from "@/types/team"
+import type { Sprint } from "@/types/sprint"
 
 // Get the current date
 const currentDate = new Date()
-
-// Determine the current sprint
-const currentSprint = computed(() => {
-	const sprint = sprints.value?.find(sprint => {
-		const startDate = new Date(sprint.startDate)
-		startDate.setHours(0, 0, 0, 0) // Set time to 00:00:00
-		const endDate = new Date(sprint.endDate)
-		endDate.setHours(23, 59, 59, 999) // Set time to end of the day
-		return startDate <= currentDate && currentDate <= endDate
-	})
-	if (sprint) selectedSprint.value = sprint.id.toString()
-	return sprint || null
-})
-
-const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
-const { data: sprints } = useQuery({
-	queryKey: ["sprints"], queryFn: async() => {
-		const sprints = await getSprints()
-		return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
-	}
-})
-
-
-const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
-	queryKey: ["grades-confirmation", selectedSprint.value, selectedTeam.value],
-	queryFn: async() => {
-		if (selectedSprint.value === "" || selectedTeam.value === "") return false
-		return await getGradesConfirmation(parseInt(selectedSprint.value), parseInt(selectedTeam.value))
-	}
-})
+const authorized = hasPermission("GRADES_PAGE")
+const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
 
 function forceRerender() {
 	refetchGradesConfirmation()
 }
+
+const selectedTeamId = ref("")
+const selectedSprintId = ref("")
+const selectedTeam = ref(null as Team | null)
+const selectedSprint = ref(null as Sprint | null)
+const currentSprint = ref(null as Sprint | null)
+
+const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
+const { data: sprints } = useQuery({ queryKey: ["sprints"], queryFn: async() => {
+	const unfilteredSprints = await getSprints()
+
+	let sprint = unfilteredSprints.find(sprint => {
+		const startDate = new Date(sprint.startDate)
+		startDate.setHours(0, 0, 0, 0)
+		const endDate = new Date(sprint.endDate)
+		endDate.setHours(23, 59, 59, 999)
+		return startDate <= currentDate && currentDate <= endDate
+	})
+
+	// If no current sprint is found, find the next upcoming sprint
+	if (!sprint) {
+		sprint = unfilteredSprints.find(sprint => {
+			const startDate = new Date(sprint.startDate)
+			startDate.setHours(0, 0, 0, 0)
+			return startDate > currentDate
+		})
+	}
+
+	currentSprint.value = sprint || null
+
+	return unfilteredSprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
+} })
+
+const previousSprint = computed(() => {
+	if (!currentSprint.value || !sprints.value) return null
+
+	const previousSprints = sprints.value.filter(sprint => sprint.sprintOrder < currentSprint.value.sprintOrder)
+
+	return previousSprints[previousSprints.length - 1] || null
+})
+
+function initializeSelectedTeamId(teamsList: Team[]) {
+	if (!sessionStorage.getItem("gradesPageSelectedTeamId") || !teamsList.some(team => team.id.toString() === sessionStorage.getItem("gradesPageSelectedTeamId"))) {
+		sessionStorage.setItem("gradesPageSelectedTeamId", "")
+	}
+	selectedTeamId.value = sessionStorage.getItem("gradesPageSelectedTeamId")
+	selectedTeam.value = teams.value.find(team => team.id.toString() === selectedTeamId.value)
+}
+
+function initializeSelectedSprintId(sprintsList: Sprint[]) {
+	if (!sessionStorage.getItem("gradesPageSelectedSprintId") || !sprintsList.some(sprint => sprint.id.toString() === sessionStorage.getItem("gradesPageSelectedSprintId"))) {
+		if (!currentSprint.value || (currentSprint.value.endType === "UNGRADED_SPRINT") && !previousSprint.value) {
+			sessionStorage.setItem("gradesPageSelectedSprintId", "")
+		} else if (!previousSprint.value || currentSprint.value.endType === "FINAL_SPRINT") {
+			sessionStorage.setItem("gradesPageSelectedSprintId", currentSprint.value.id.toString())
+		} else {
+			sessionStorage.setItem("gradesPageSelectedSprintId", previousSprint.value.id.toString())
+		}
+	}
+	selectedSprintId.value = sessionStorage.getItem("gradesPageSelectedSprintId")
+	selectedSprint.value = sprints.value.find(sprint => sprint.id.toString() === selectedSprintId.value)
+}
+
+if (teams.value) initializeSelectedTeamId(teams.value)
+if (sprints.value) initializeSelectedSprintId(sprints.value)
+
+watch(teams, newValue => {
+	if (newValue) {
+		initializeSelectedTeamId(newValue)
+	}
+})
+
+watch(sprints, newValue => {
+	if (newValue) {
+		initializeSelectedSprintId(newValue)
+	}
+})
+
+//TODO remplacer ces 2 watchs par les mêmes actions dans le forceRerender ?
+
+watch(selectedTeamId, newValue => {
+	if (newValue) {
+		sessionStorage.setItem("gradesPageSelectedTeamId", newValue)
+		selectedTeam.value = teams.value.find(team => team.id.toString() === newValue)
+	}
+})
+
+watch(selectedSprintId, newValue => {
+	if (newValue) {
+		sessionStorage.setItem("gradesPageSelectedSprintId", newValue)
+		selectedSprint.value = sprints.value.find(sprint => sprint.id.toString() === newValue)
+	}
+})
+
+const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
+	queryKey: ["grades-confirmation", selectedSprintId.value, selectedTeamId.value],
+	queryFn: async() => {
+		if (selectedSprintId.value === "" || selectedTeamId.value === "") return false
+		return await getGradesConfirmation(parseInt(selectedSprintId.value), parseInt(selectedTeamId.value))
+	}
+})
 
 </script>
 
@@ -68,15 +137,15 @@ function forceRerender() {
 		<Column v-else class="gap-4">
 			<Header title="Notes">
 
-				<ValidGradesDialog v-if="selectedTeam !== '' && selectedSprint !== '' && isGradesConfirmed"
-					@valid:individual-grades="forceRerender()" :selectedTeam="selectedTeam"
-					:selectedSprint="selectedSprint">
+				<ValidGradesDialog v-if="selectedTeamId !== '' && selectedSprintId !== '' && isGradesConfirmed"
+					@valid:individual-grades="forceRerender()" :selectedTeam="selectedTeamId"
+					:selectedSprint="selectedSprintId">
 					<Button variant="default">Valider les notes individuelles</Button>
 				</ValidGradesDialog>
 
-				<Select v-model="selectedSprint" @update:modelValue="forceRerender()">
+				<Select v-model="selectedSprintId" @update:modelValue="forceRerender()">
 					<SelectTrigger class="w-[180px]">
-						<SelectValue :placeholder="currentSprint ? 'Sprint ' + currentSprint.sprintOrder : 'Sélectionner le sprint'" />
+						<SelectValue :placeholder="selectedSprint ? 'Sprint ' + selectedSprint.sprintOrder : 'Sélectionner le sprint'" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
@@ -85,9 +154,9 @@ function forceRerender() {
 						</SelectGroup>
 					</SelectContent>
 				</Select>
-				<Select v-model="selectedTeam" @update:modelValue="forceRerender()">
+				<Select v-model="selectedTeamId" @update:modelValue="forceRerender()">
 					<SelectTrigger class="w-[180px]">
-						<SelectValue placeholder="Sélectionner l'équipe" />
+						<SelectValue :placeholder="selectedTeam ? selectedTeam.name : 'Sélectionner une équipe'" />
 					</SelectTrigger>
 					<SelectContent>
 						<SelectGroup>
@@ -101,8 +170,8 @@ function forceRerender() {
 					<Button variant="default">Exporter</Button>
 				</ExportGrades>
 			</Header>
-			<Column v-if="selectedTeam !== '' && selectedSprint !== ''">
-				<Grade v-if="authorized" :teamId="selectedTeam" :sprintId="selectedSprint" />
+			<Column v-if="selectedTeamId !== '' && selectedSprintId !== ''">
+				<Grade v-if="authorized" :teamId="selectedTeamId" :sprintId="selectedSprintId" />
 				<NotAutorized v-else />
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
