@@ -171,7 +171,7 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 				</ExportGrades>
 			</Header>
 			<Column v-if="selectedTeamId !== '' && selectedSprintId !== ''">
-				<Grade v-if="authorized" :teamId="selectedTeamId" :sprintId="selectedSprintId" />
+				<Grade v-if="authorized" :isGradesConfirmed="isGradesConfirmed" :teamId="selectedTeamId" :sprintId="selectedSprintId" />
 				<NotAutorized v-else />
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">

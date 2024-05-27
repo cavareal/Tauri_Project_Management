@@ -189,12 +189,11 @@ export const getSprintGrades = async(teamId: number, sprintId: number): Promise<
 }
 
 
-export const getGradesConfirmation = async(sprintId: number, teamId: number): Promise<number> => {
+export const getGradesConfirmation = async(sprintId: number, teamId: number): Promise<boolean> => {
 	const response = await queryAndValidate({
 		route: `grades/confirmation/${sprintId}/team/${teamId}`,
 		responseSchema: z.any()
 	})
-
 
 	if (response.status === "error") {
 		throw new Error(response.error)

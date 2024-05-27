@@ -284,7 +284,7 @@ public class TeamService {
             Double studentGradedTeamGrade = gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName());
             Double individualGrade = gradeRepository.findAverageByGradeTypeForStudent(student.id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
-            double result = (2*individualGrade + studentGradedTeamGrade)/3;
+            double result = (2*(individualGrade) + studentGradedTeamGrade)/3;
             String formattedResult = String.format("%.2f", result);
             individualGrades.add(Double.parseDouble(formattedResult.replace(',', '.')));
 

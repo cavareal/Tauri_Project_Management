@@ -62,6 +62,7 @@ public class RoleController {
     @GetMapping("/{roleType}/users")
     public ResponseEntity<List<User>> getUsersByRole(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType) {
         var users = roleService.getUsersByRoleType(token, roleType);
+        CustomLogger.info("Retrieved users by role type: " + users);
         return ResponseEntity.ok(users);
     }
 

@@ -33,6 +33,18 @@ public class AuthService {
         return !dummyString.equals("fhzbafhbqhfbqdcfiuqfue");
     }
 
+    public String getNameFromEmail(String email) {
+        int indexOfDot = email.indexOf(".");
+        int indexOfAt = email.indexOf("@");
+        String name = "";
+
+        if (indexOfDot!= -1 && indexOfAt!= -1) {
+            name += email.substring(0, indexOfDot);
+            name += " ";
+            name += email.substring(indexOfDot + 1, indexOfAt);
+        }
+        return name;
+    }
 
     public AuthResponse login(String email, String password) {
         try {
@@ -45,6 +57,7 @@ public class AuthService {
                     .orElseGet(() -> {
                         // Create user
                         User newUser = new User(userDetails.getUsername());
+                        newUser.name(getNameFromEmail(userDetails.getUsername()));
                         userRepository.save(newUser);
                         // Add role
                         var role = new Role();

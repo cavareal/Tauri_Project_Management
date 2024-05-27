@@ -268,6 +268,7 @@ public class GradeService {
 
     public Boolean getGradesConfirmation(Integer sprintId, Integer teamId) {
         try {
+            // TODO check if team is ss's team
             List<Student> students = studentRepository.findByTeam(teamId);
             if (students.isEmpty()) {
                 return false;

@@ -32,9 +32,12 @@ import CommentContainer from "@/components/organisms/rating/CommentContainer.vue
 import type { Bonus } from "@/types/bonus"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
+const gradeConfirmed = cn("bg-green-100")
+const gradeNotConfirmed = cn("bg-red-100")
 const props = defineProps<{
 	teamId : string,
 	sprintId : string,
+	isGradesConfirmed: boolean,
 }>()
 
 const studentBonuses = ref<Bonus[][] | null>(null)
@@ -146,7 +149,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 				<TableCell v-if="(canViewAllWg || canViewAllOg ) && studentBonuses" :class="rowClass">{{ studentBonuses[index][0].value }} </TableCell>
 				<TableCell v-if="(canViewAllWg || canViewAllOg ) && studentBonuses" :class="rowClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
 				<TableCell v-if="canView && averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
-				<TableCell v-if="(canViewAllWg || canViewAllOg ) && averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
+				<TableCell v-if="(canViewAllWg || canViewAllOg ) && averageStudents" :class="[rowClass, averageStudents[student.id] ? (isGradesConfirmed? gradeNotConfirmed : gradeConfirmed): null]">{{averageStudents[student.id]}}</TableCell>
 				<TableCell v-if="(canViewAllWg || canViewAllOg || student.id === currentUserId) && totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
 				<TableCell v-if="(canViewAllSg || (canViewOwnSg && student.id === currentUserId)) && sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4)}} </TableCell>
 			</TableRow>
