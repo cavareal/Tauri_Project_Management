@@ -90,8 +90,6 @@ java-build:
     - cd backend
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
-    # - gradle --no-daemon clean build -Pprod -x test 
-    # - gradle --no-daemon clean -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build setLoginDb -Pprod -x test 
     - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -Pprod -x test --stacktrace
 
   retry: 2

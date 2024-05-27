@@ -83,20 +83,3 @@ tasks.register('setLoginDb') {
 	}
 }
 
-
-
-// Assuming you have already obtained the databaseUsername as shown previously
-//		def databaseUsername = project.hasProperty('databaseUsername') ? project.property('databaseUsername') : ''
-//		System.out.print("databaseUsername: " + project.property('databaseUsername'))
-//		System.out.print(databasePassword)
-//		// Path to your application.properties file
-//		def propertiesFile = new File("${project.rootDir}/src/main/resources/application.properties")
-//
-//		// Read the existing content of the file
-//		def originalContent = FileUtils.readFileToString(propertiesFile, TEXT)
-//
-//		// Replace the placeholder with the actual database username
-//		def updatedContent = originalContent.replaceAll("\\$\\{DATABASE_USERNAME\\}", databaseUsername)
-//
-//		// Write the updated content back to the file
-//		FileUtils.writeStringToFile(propertiesFile, updatedContent, TEXT)
