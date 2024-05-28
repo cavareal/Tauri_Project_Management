@@ -12,7 +12,8 @@ import {
 	SquareGanttChart,
 	Presentation,
 	Play,
-	Blocks
+	Blocks,
+	Info
 } from "lucide-vue-next"
 import { ref, watch } from "vue"
 import {
@@ -26,10 +27,10 @@ import { getStudentBonuses } from "@/services/bonus/bonus.service"
 import { hasPermission } from "@/services/user/user.service"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId, getTeams } from "@/services/team/team.service"
-import Tabs from "@/components/molecules/tab/Tabs.vue"
-import Tab from "@/components/molecules/tab/Tab.vue"
 import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
 import type { Bonus } from "@/types/bonus"
+import Tooltip from "@/components/molecules/tooltip/Tooltip.vue"
+import { Row } from "@/components/atoms/containers"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2")
 const gradeConfirmed = cn("bg-green-100")
@@ -136,7 +137,14 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 					<TableHead v-if="canView" :class="rowClass" title="Performance globale de l'équipe"><Users :stroke-width="1"/></TableHead>
 					<TableHead v-if="canView" :class="rowClass" title="Performance individuelle"><User :stroke-width="1"/></TableHead>
 					<TableHead v-if="canView" :class="rowClass" >Total individuel</TableHead>
-					<TableHead v-if="canView" :class="rowClass" >Note finale</TableHead>
+					<TableHead v-if="canView" :class="rowClass" >
+						<Row>
+							<div class="mr-4">Note finale</div>
+							<Tooltip expression="\text{Note finale}= \\ 0.7 \times (\text{Totale équipes + Total Bonus}) \\ + \ 0.3 \times \text{Total Individuel}">
+								<Info :stroke-width="1"/>
+							</Tooltip>
+						</Row>
+					</TableHead>
 				</TableRow>
 			</TableHeader>
 			<TableBody>
