@@ -15,8 +15,6 @@ RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_R
     mv chromedriver /usr/local/bin && \
     rm chromedriver_linux64.zip
 
-USER gradle
-
 WORKDIR /home/gradle/project
 
 CMD ["gradle", "--version"]
