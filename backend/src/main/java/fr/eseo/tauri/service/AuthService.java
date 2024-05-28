@@ -59,7 +59,6 @@ public class AuthService {
                 .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
-            CustomLogger.info("Access : " + accessToken);
             return new AuthResponse(user.id(), accessToken);
 
         } catch (Exception e){
