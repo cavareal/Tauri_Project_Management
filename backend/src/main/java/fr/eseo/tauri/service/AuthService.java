@@ -39,9 +39,13 @@ public class AuthService {
         String name = "";
 
         if (indexOfDot!= -1 && indexOfAt!= -1) {
-            name += email.substring(0, indexOfDot);
-            name += " ";
-            name += email.substring(indexOfDot + 1, indexOfAt);
+            String firstName = email.substring(0, indexOfDot).trim();
+            String lastName = email.substring(indexOfDot + 1, indexOfAt).trim();
+
+            firstName = Character.toUpperCase(firstName.charAt(0)) + firstName.substring(1);
+            lastName = Character.toUpperCase(lastName.charAt(0)) + lastName.substring(1);
+
+            name = lastName + " " + firstName;
         }
         return name;
     }
@@ -49,24 +53,10 @@ public class AuthService {
     public AuthResponse login(String email, String password) {
         try {
             Authentication authentication = authenticate(email, password);  // Auth with LDAP
-            CustomLogger.info(email + " is logged in.");
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            CustomLogger.info(userDetails + " is logged");
             // Check if user in DB
             User user = userRepository.findByEmail(userDetails.getUsername())
-                    .orElseGet(() -> {
-                        // Create user
-                        User newUser = new User(userDetails.getUsername());
-                        newUser.name(getNameFromEmail(userDetails.getUsername()));
-                        userRepository.save(newUser);
-                        // Add role
-                        var role = new Role();
-                        role.user(newUser);
-                        role.type(RoleType.PROJECT_LEADER);
-                        roleRepository.save(role);
-
-                        return newUser;
-            });
+                .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
             CustomLogger.info("Access : " + accessToken);

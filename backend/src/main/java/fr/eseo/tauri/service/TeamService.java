@@ -267,7 +267,6 @@ public class TeamService {
             }
 
         }
-
         return teamGrades.stream().mapToDouble(Double::doubleValue).sum() / teamGrades.size();
 
     }

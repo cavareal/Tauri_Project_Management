@@ -20,12 +20,18 @@ const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
 
 const authorized = hasPermission("GRADES_PAGE")
+const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
+const canConfirmOwnTeamGrade = hasPermission("GRADE_CONFIRMATION")
+
+const { data: ssTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()], queryFn: () => getTeamByUserId(Cookies.getUserId()) })
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
-	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
+	queryKey: ["grades-confirmation", selectedSprintId.value, selectedTeamId.value],
 	queryFn: async() => {
-		if (sprintId.value === null || teamId.value === null) return false
-		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
+		if (selectedSprintId.value === "" || selectedTeamId.value === "") return false
+		if(ssTeam.value.id != undefined){
+			return await getGradesConfirmation(parseInt(selectedSprintId.value), parseInt(selectedTeamId.value), ssTeam.value?.id)
+		}
 	}
 })
 
@@ -39,9 +45,9 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 				<SprintSelect v-model="sprintId" />
 				<TeamSelect v-model="teamId" />
 
-				<ValidGradesDialog v-if="teamId !== null && sprintId !== null && isGradesConfirmed"
-					@valid:individual-grades="refetchGradesConfirmation()" :selectedTeam="teamId"
-					:selectedSprint="sprintId">
+				<ValidGradesDialog v-if="selectedTeamId !== '' && selectedSprintId !== '' && canConfirmOwnTeamGrade && isGradesConfirmed && ssTeam?.id.toString() == selectedTeamId"
+								   @valid:individual-grades="forceRerender()" :selectedTeam="selectedTeamId"
+								   :selectedSprint="selectedSprintId">
 					<Button variant="default">Valider les notes individuelles</Button>
 				</ValidGradesDialog>
 
