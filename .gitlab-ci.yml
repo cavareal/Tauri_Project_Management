@@ -170,7 +170,7 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x./gradlew
-    -./gradlew --no-daemon seleniumTest
+    - ./gradlew --no-daemon seleniumTest
   dependencies:
     - quality-dev
   cache:
@@ -189,7 +189,7 @@ selenium-prod:
   script:
     - cd backend
     - chmod +x./gradlew
-    -./gradlew --no-daemon seleniumTest
+    - ./gradlew --no-daemon seleniumTest
   dependencies:
     - quality-prod
   cache:
