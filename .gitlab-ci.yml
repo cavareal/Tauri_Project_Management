@@ -218,23 +218,10 @@ push-prod:
 ##################
 selenium-dev:
   stage: selenium
-  image: gradle:8.4-jdk17
+  image: charlo56/pgl-gradlew-chrome:latest
   script:
     - cd backend
     - chmod +x ./gradlew
-    # Install GnuPG
-    - apt-get update
-    - apt-get install -y gnupg
-    # Installation de ChromeDriver
-    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-    - sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-    - apt-get update
-    - apt-get install -y google-chrome-stable
-    - CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
-    - wget -q "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-    - unzip chromedriver_linux64.zip
-    - mv chromedriver /usr/local/bin
-    - rm chromedriver_linux64.zip
     - |
       echo "Waiting for the server to be ready..."
       RETRY_COUNT=0
@@ -250,7 +237,7 @@ selenium-dev:
         sleep $WAIT_SECONDS
       done
       echo "Server is ready!"
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/bin/chromedriver -Dwebdriver.chrome.args=--headless
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless
   dependencies:
     - push-dev
   cache:
@@ -265,7 +252,7 @@ selenium-dev:
 ###################
 selenium-prod:
   stage: selenium
-  image: selenium/standalone-chrome:latest
+  image: charlo56/pgl-gradlew-chrome:latest
   script:
     - cd backend
     - chmod +x ./gradlew
@@ -284,7 +271,7 @@ selenium-prod:
         sleep $WAIT_SECONDS
       done
       echo "Server is ready!"
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/bin/chromedriver -Dwebdriver.chrome.args=--headless
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless
   dependencies:
     - push-prod
   cache:
