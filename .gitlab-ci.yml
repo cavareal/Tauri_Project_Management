@@ -169,7 +169,7 @@ selenium-dev:
   image: gradle:8.4-jdk17
   script:
     - cd backend
-    - chmod +x./gradlew
+    - chmod +x ./gradlew
     - ./gradlew --no-daemon seleniumTest
   dependencies:
     - quality-dev
@@ -188,7 +188,7 @@ selenium-prod:
   image: gradle:8.4-jdk17
   script:
     - cd backend
-    - chmod +x./gradlew
+    - chmod +x ./gradlew
     - ./gradlew --no-daemon seleniumTest
   dependencies:
     - quality-prod
