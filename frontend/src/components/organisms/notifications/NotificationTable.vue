@@ -2,7 +2,7 @@
 
 import type { Notification } from "@/types/notification"
 import NotificationElement from "@/components/molecules/notifications/NotificationElement.vue"
-import { changeStateChecked } from "@/services/notification-service"
+import { changeStateChecked } from "@/services/notification/notification.service"
 
 const emits = defineEmits(["open:notifications", "read:notifications"])
 

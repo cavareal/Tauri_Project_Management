@@ -17,19 +17,19 @@ export const addComment = async(feedback: CreateFeedback): Promise<void> => {
 	}
 }
 
-export const createComment = async(teamId: number, feedbackContent: string, sprintId: number, feedback: boolean): Promise<void> => {
+export const createComment = async(teamId: string, feedbackContent: string, sprintId: string, feedback: boolean): Promise<void> => {
 	const authorId = Cookies.getUserId()
 	const comment: CreateFeedback = {
-		teamId,
+		teamId: Number(teamId),
 		content: feedbackContent,
 		feedback,
-		sprintId,
+		sprintId: Number(sprintId),
 		authorId
 	}
 	return await addComment(comment)
 }
 
-export const getCommentsBySprintAndTeam = async(teamId: number, sprintId: number): Promise<Feedback[]> => {
+export const getCommentsBySprintAndTeam = async(teamId: string, sprintId: string): Promise<Feedback[]> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/sprints/${sprintId}/feedbacks`,
 		responseSchema: FeedbackSchema.array()

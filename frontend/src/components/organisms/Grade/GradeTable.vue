@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { useQuery } from "@tanstack/vue-query"
-import { getStudentsByTeamId } from "@/services/student-service"
+import { getStudentsByTeamId } from "@/services/student/student.service"
 import { cn } from "@/utils/style"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
@@ -21,11 +21,11 @@ import {
 	getSprintGrades,
 	getTeamTotalGrade,
 	getIndividualTotalGrades
-} from "@/services/grade-service"
-import { getStudentBonuses } from "@/services/bonus-service"
-import { hasPermission } from "@/services/user-service"
+} from "@/services/grade/grade.service"
+import { getStudentBonuses } from "@/services/bonus/bonus.service"
+import { hasPermission } from "@/services/user/user.service"
 import { Cookies } from "@/utils/cookie"
-import { getTeamByUserId } from "@/services/team-service"
+import { getTeamByUserId } from "@/services/team/team.service"
 import Tabs from "@/components/molecules/tab/Tabs.vue"
 import Tab from "@/components/molecules/tab/Tab.vue"
 import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
@@ -122,7 +122,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 	<Table v-if="(canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched">
 		<TableHeader>
 			<TableRow>
-				<TableHead :class="rowClass" >Nom</TableHead>
+				<TableHead :class="rowClass">Nom</TableHead>
 				<TableHead v-if="canView" :class="rowClass" title="Solution Technique"><Blocks :stroke-width="1"/></TableHead>
 				<TableHead v-if="canView" :class="rowClass" title="Gestion de projet"><SquareGanttChart :stroke-width="1"/></TableHead>
 				<TableHead v-if="canView" :class="rowClass" title="Conformité au sprint"><Play :stroke-width="1"/></TableHead>
@@ -138,7 +138,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="(student, index) in teamStudents">
+			<TableRow v-for="(student, index) in teamStudents" :key="student.id">
 				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
 				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
@@ -179,7 +179,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					<TableRow v-for="(student, index) in teamStudents" >
+					<TableRow v-for="(student, index) in teamStudents" :key="student.id">
 						<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 						<TableCell v-if="averageTeam" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
 						<TableCell v-if="averageTeam" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
@@ -207,7 +207,7 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="(student, index) in teamStudents" >
+			<TableRow v-for="(student, index) in teamStudents" :key="student.id">
 				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
 				<TableCell v-if="sprintGrades" :class="rowClass"> {{sprintGrades[index].toPrecision(4)}}</TableCell>
 			</TableRow>

@@ -2,7 +2,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { Team } from "@/types/team"
-import { getStudentsByTeamId } from "@/services/student-service"
+import { getStudentsByTeamId } from "@/services/student"
 import { useQuery } from "@tanstack/vue-query"
 import { Column } from "@/components/atoms/containers"
 import { cn } from "@/utils/style"

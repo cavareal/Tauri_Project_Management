@@ -22,62 +22,62 @@ defineProps<{
 </script>
 
 <template>
-	<Table v-if="gradeTypes">
-		<TableHeader>
-			<TableRow>
-				<TableHead :class="rowClass" class="min-w-36">Nom</TableHead>
-				<TableHead :class="rowClass" class="min-w-36">Prénom</TableHead>
-				<TableHead :class="rowClass" class="min-w-28">Genre</TableHead>
-				<TableHead :class="rowClass" class="min-w-28">Bachelor</TableHead>
-				<TableHead v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass" class="min-w-32">
-					<span v-if="gradeType.name === 'Moyenne'">Moyenne</span>
-					<span v-else>{{ gradeType.name }} ({{ gradeType.factor }})</span>
-				</TableHead>
-			</TableRow>
-		</TableHeader>
+	<div class="border bg-white rounded-md">
+		<Table v-if="gradeTypes">
+			<TableHeader class="h-fit">
+				<TableRow class="h-10 pb-1">
+					<TableHead :class="rowClass" class="min-w-36">Nom</TableHead>
+					<TableHead :class="rowClass" class="min-w-36">Prénom</TableHead>
+					<TableHead :class="rowClass" class="min-w-28">Genre</TableHead>
+					<TableHead :class="rowClass" class="min-w-28">Bachelor</TableHead>
+					<TableHead v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass" class="min-w-32">
+						<span v-if="gradeType.name === 'Moyenne'">Moyenne</span>
+						<span v-else>{{ gradeType.name }} ({{ gradeType.factor }})</span>
+					</TableHead>
+				</TableRow>
+			</TableHeader>
 
-		<TableBody v-if="students">
-			<TableRow v-for="student in students" :key="student.id">
-				<TableCell class="font-medium" :class="rowClass">
-					{{ extractNames(student.name).lastName }}
-				</TableCell>
-				<TableCell class="font-medium" :class="rowClass">
-					{{ extractNames(student.name).firstName }}
-				</TableCell>
-				<TableCell :class="rowClass">
-					<GenderIcon :gender="student.gender" />
-				</TableCell>
-				<TableCell :class="rowClass">
-					<CheckIcon :checked="student.bachelor ?? false" />
-				</TableCell>
-				<TableCell v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass">
-					<Skeleton v-if="!grades" class="w-5/6 h-5" />
-					<span v-else>
-						<!-- eslint-disable-next-line max-len -->
-						{{ grades?.find(grade => grade.student?.id === student.id && grade.gradeType.id ===
-							gradeType.id)?.value.toPrecision(4) ?? "" }}
-					</span>
-				</TableCell>
-			</TableRow>
-		</TableBody>
+			<TableBody v-if="students" >
+				<TableRow v-for="student in students" :key="student.id">
+					<TableCell class="font-medium min-w-36" :class="rowClass">
+						{{ extractNames(student.name).lastName }}
+					</TableCell>
+					<TableCell class="font-medium min-w-36" :class="rowClass">
+						{{ extractNames(student.name).firstName }}
+					</TableCell>
+					<TableCell class="min-w-28" :class="rowClass">
+						<GenderIcon :gender="student.gender" />
+					</TableCell>
+					<TableCell class="min-w-28" :class="rowClass">
+						<CheckIcon :checked="student.bachelor ?? false" />
+					</TableCell>
+					<TableCell v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass" class="min-w-32">
+						<Skeleton v-if="!grades" class="w-5/6 h-5" />
+						<span v-else>
+							{{ grades?.find(grade => grade.student?.id === student.id && grade.gradeType.id === gradeType.id)?.value?.toPrecision(4) ?? "" }}
+						</span>
+					</TableCell>
+				</TableRow>
+			</TableBody>
 
-		<TableBody v-else>
-			<TableRow v-for="i in 10" :key="i">
-				<TableCell :class="rowClass">
-					<Skeleton class="w-5/6 h-5" />
-				</TableCell>
-				<TableCell :class="rowClass">
-					<Skeleton class="w-5/6 h-5" />
-				</TableCell>
-				<TableCell :class="rowClass">
-					<Skeleton class="w-5/6 h-5" />
-				</TableCell>
-				<TableCell v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass">
-					<Skeleton class="w-5/6 h-5" />
-				</TableCell>
-			</TableRow>
-		</TableBody>
-	</Table>
+			<TableBody v-else>
+				<TableRow v-for="i in 10" :key="i">
+					<TableCell :class="rowClass">
+						<Skeleton class="w-5/6 h-5" />
+					</TableCell>
+					<TableCell :class="rowClass">
+						<Skeleton class="w-5/6 h-5" />
+					</TableCell>
+					<TableCell :class="rowClass">
+						<Skeleton class="w-5/6 h-5" />
+					</TableCell>
+					<TableCell v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass">
+						<Skeleton class="w-5/6 h-5" />
+					</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
 
-	<Loading v-else />
+		<Loading v-else />
+	</div>
 </template>

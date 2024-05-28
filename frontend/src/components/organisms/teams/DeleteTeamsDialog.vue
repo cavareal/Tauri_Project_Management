@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { Button } from "@/components/ui/button"
-import { deleteAllTeams } from "@/services/team-service"
+import { deleteAllTeams } from "@/services/team"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
@@ -36,8 +36,8 @@ const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir supprimer toutes les
 			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" @click="mutate" :loading="isPending">
-				Confirmer
+			<LoadingButton type="submit" @click="mutate" :loading="isPending" variant="destructive">
+				Supprimer
 			</LoadingButton>
 		</template>
 	</CustomDialog>

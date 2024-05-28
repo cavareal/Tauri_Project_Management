@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
+import static fr.eseo.tauri.util.ListUtil.contains;
 import static fr.eseo.tauri.util.ListUtil.filter;
 
 @Service
 @RequiredArgsConstructor
 public class GradeService {
+
     private final AuthService authService;
     private final GradeRepository gradeRepository;
     private final UserService userService;
@@ -63,6 +65,18 @@ public class GradeService {
     public void createGrade(String token, Grade grade) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGrade"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+
+        var ratedGrades = gradeRepository.findAllByAuthorId(grade.authorId());
+        if (!ratedGrades.isEmpty()) {
+            for (Grade ratedGrade : ratedGrades) {
+                if (ratedGrade.sprint().id().equals(grade.sprintId())
+                        && ratedGrade.gradeType().id().equals(grade.gradeTypeId())
+                        && ((ratedGrade.student() != null && ratedGrade.student().id().equals(grade.studentId())) || (ratedGrade.team() != null && ratedGrade.team().id().equals(grade.teamId())))
+                ) {
+                    throw new IllegalArgumentException("A grade with the same author, sprint, grade type, student and team already exists");
+                }
+            }
         }
 
         if (grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
@@ -308,8 +322,12 @@ public class GradeService {
             CustomLogger.info("No student or no grades found");
             return false;
         }
-
     }
+
+    public List<Grade> getRatedGradesByAuthorId(Integer authorId) {
+        return gradeRepository.findAllByAuthorId(authorId);
+    }
+
 }
 
 

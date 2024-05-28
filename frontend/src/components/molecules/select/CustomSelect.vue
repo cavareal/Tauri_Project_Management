@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const props = defineProps<{
 	class?: string
-	placeholder: string
+	placeholder?: string
 	data: T[]
 	getId:(item: T) => string
 	getName:(item: T) => string

@@ -6,9 +6,8 @@ import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
-import { setGradesConfirmation } from "@/services/grade-service"
+import { setGradesConfirmation } from "@/services/grade"
 import { createToast } from "@/utils/toast"
-import { number } from "zod"
 
 const emits = defineEmits(["valid:individual-grades"])
 const open = ref(false)

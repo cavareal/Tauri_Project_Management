@@ -2,7 +2,7 @@
 
 import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@/components/ui/table"
 import { AccordionContent } from "@/components/ui/accordion"
-import { getCriteria, getTeamAverage } from "@/services/team-service"
+import { getCriteria, getTeamAverage } from "@/services/team"
 import { extractNames } from "@/utils/string"
 import { CheckIcon, GenderIcon } from "@/components/atoms/icons"
 import { useQuery } from "@tanstack/vue-query"
@@ -12,7 +12,7 @@ import { Subtitle, Text } from "@/components/atoms/texts"
 import { cn } from "@/utils/style"
 import type { Student } from "@/types/student"
 import { GripVertical } from "lucide-vue-next"
-import { hasPermission } from "@/services/user-service"
+import { hasPermission } from "@/services/user"
 
 const props = defineProps<{
 	teamId: number
