@@ -17,17 +17,21 @@ public class UserSeeder {
 	private final ApplicationSecurity applicationSecurity;
 
 	public void seed(Faker faker) {
-//		var userPL = new User("pl@tauri.com");
-//		userRepository.save(userPL);
+		var userPL = new User("p.l@tauri.com");
+		userPL.name("WOODWARD Richard");
+		userRepository.save(userPL);
 
-//		var userSS = new User("ss@tauri.com");
-//		userRepository.save(userSS);
-//
-//		var userOL = new User("ol@tauri.com");
-//		userRepository.save(userOL);
-//
-//		var userTC = new User("tc@tauri.com");
-//		userRepository.save(userTC);
+		var userSS = new User("s.s@tauri.com");
+		userSS.name("CLAVREUL Michael");
+		userRepository.save(userSS);
+
+		var userOL = new User("o.l@tauri.com");
+		userOL.name("ROUSSEAU Sophie");
+		userRepository.save(userOL);
+
+		var userTC = new User("t.c@tauri.com");
+		userTC.name("Technique Coach");
+		userRepository.save(userTC);
 
 
 //		for (int i = 0; i < NB_USERS; i++) {
