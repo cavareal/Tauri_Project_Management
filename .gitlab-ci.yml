@@ -218,7 +218,7 @@ push-prod:
 ##################
 selenium-dev:
   stage: selenium
-  image: gradle:8.4-jdk17
+  image: selenium/standalone-chrome:latest
   script:
     - cd backend
     - chmod +x ./gradlew
@@ -227,7 +227,7 @@ selenium-dev:
       RETRY_COUNT=0
       MAX_RETRIES=20
       WAIT_SECONDS=10
-      until $(curl --output /dev/null --silent --head --fail http://$SERVER_IP_DEV); do
+      until $(curl --output /dev/null --silent --head --fail https://$SERVER_IP_DEV); do
         RETRY_COUNT=$(($RETRY_COUNT+1))
         if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
           echo "Server did not become ready in time. Exiting."
@@ -237,7 +237,7 @@ selenium-dev:
         sleep $WAIT_SECONDS
       done
       echo "Server is ready!"
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=http://$SERVER_IP_DEV
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/bin/chromedriver -Dwebdriver.chrome.args=--headless
   dependencies:
     - push-dev
   cache:
@@ -252,7 +252,7 @@ selenium-dev:
 ###################
 selenium-prod:
   stage: selenium
-  image: gradle:8.4-jdk17
+  image: selenium/standalone-chrome:latest
   script:
     - cd backend
     - chmod +x ./gradlew
@@ -261,7 +261,7 @@ selenium-prod:
       RETRY_COUNT=0
       MAX_RETRIES=20
       WAIT_SECONDS=10
-      until $(curl --output /dev/null --silent --head --fail http://$SERVER_IP_PROD); do
+      until $(curl --output /dev/null --silent --head --fail https://$SERVER_IP_PROD); do
         RETRY_COUNT=$(($RETRY_COUNT+1))
         if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
           echo "Server did not become ready in time. Exiting."
@@ -271,7 +271,7 @@ selenium-prod:
         sleep $WAIT_SECONDS
       done
       echo "Server is ready!"
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=http://$SERVER_IP_PROD
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/bin/chromedriver -Dwebdriver.chrome.args=--headless
   dependencies:
     - push-prod
   cache:
