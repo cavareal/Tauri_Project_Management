@@ -55,19 +55,8 @@ public class AuthService {
             Authentication authentication = authenticate(email, password);  // Auth with LDAP
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             // Check if user in DB
-            User user = userRepository.findByEmail(userDetails.getUsername())  // getUsername return email
-                .orElseGet(() -> {
-                    User newUser = new User(userDetails.getUsername());
-                    newUser.name(getNameFromEmail(userDetails.getUsername()));
-                    userRepository.save(newUser);
-                    // Add role
-                    var role = new Role();
-                    role.user(newUser);
-                    role.type(RoleType.PROJECT_LEADER);
-                    roleRepository.save(role);
-
-                    return newUser;
-            });
+            User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
             CustomLogger.info("Access : " + accessToken);
