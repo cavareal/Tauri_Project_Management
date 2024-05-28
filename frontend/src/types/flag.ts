@@ -14,7 +14,8 @@ export const FlagSchema = z.object({
 	type: FlagTypeSchema,
 	firstStudent: StudentSchema.nullable(),
 	secondStudent: StudentSchema.nullable(),
-	author: UserSchema
+	author: UserSchema,
+	status: z.boolean().nullable()
 })
 export type Flag = z.infer<typeof FlagSchema>
 
@@ -23,7 +24,8 @@ export const CreateFlagSchema = FlagSchema.omit({
 	firstStudent: true,
 	secondStudent: true,
 	author: true,
-	project: true
+	project: true,
+	status: true
 }).extend({
 	firstStudent: z.coerce.number().optional(),
 	secondStudent: z.coerce.number().optional(),

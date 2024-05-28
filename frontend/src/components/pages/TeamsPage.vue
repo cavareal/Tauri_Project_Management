@@ -3,7 +3,7 @@
 import { SidebarTemplate } from "@/components/templates"
 import {
 	RedirectImportStudents, GenerateTeams, PrepublishDialog, DeleteTeamsDialog, TeamAccordion, TeamsNotCreated,
-	PublishDialog
+	PublishDialog, SeeReportsDialog
 } from "@/components/organisms/teams"
 import { Cookies } from "@/utils/cookie"
 import { Button } from "@/components/ui/button"
@@ -54,6 +54,9 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 			<DeleteTeamsDialog v-if="canCreate && displayAdminComposingButtons" @delete:teams="refetchTeams">
 				<Button variant="outline">Supprimer les équipes</Button>
 			</DeleteTeamsDialog>
+      <SeeReportsDialog v-if="canCreate && displayAdminComposingButtons">
+        <Button variant="outline">Voir les avis</Button>
+      </SeeReportsDialog>
 			<PrepublishDialog v-if="canCreate && displayAdminComposingButtons" @prepublish:teams="refetchCurrentPhase">
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
