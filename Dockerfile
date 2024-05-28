@@ -4,6 +4,7 @@ USER root
 
 # Install GnuPG
 RUN apt-get update && apt-get install -y gnupg
+RUN apt-get update && apt-get install -y sudo
 
 # Install ChromeDriver
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -16,5 +17,6 @@ RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_R
     rm chromedriver_linux64.zip
 
 WORKDIR /home/gradle/project
+RUN apt-get update && apt-get install -y sudo
 
 CMD ["gradle", "--version"]
