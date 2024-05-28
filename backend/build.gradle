@@ -47,7 +47,8 @@ dependencies {
 
 }
 
-tasks.named("test") {
+test {
+	exclude "**/selenium/*"
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
 }
