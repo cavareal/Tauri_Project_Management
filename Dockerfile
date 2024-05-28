@@ -17,6 +17,6 @@ RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_R
     rm chromedriver_linux64.zip
 
 WORKDIR /home/gradle/project
-RUN apt-get update && apt-get install -y sudo
+USER gradle
 
 CMD ["gradle", "--version"]
