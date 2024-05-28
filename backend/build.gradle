@@ -47,7 +47,8 @@ dependencies {
 
 }
 
-tasks.named("test") {
+test {
+	exclude "**/selenium/*"
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
 }
@@ -60,8 +61,8 @@ sonarqube {
 	properties {
 		property 'sonar.coverage.jacoco.xmlReportPaths', "build/reports/jacoco/test/jacocoTestReport.xml"
 		property 'sonar.sources', 'src/main/java'
-		property 'sonar.tests', 'src/test/java/**/unit'
-		property 'sonar.exclusions', 'src/test/java/**/selenium'
+		property 'sonar.tests', 'src/test/java'
+		property 'sonar.exclusions', '**/selenium/**'
 		property 'sonar.coverage.exclusions', '**/config/**,**/controller/**,**/model/**,**/seeder/**,**/TauriApplication.java,**/ServletInitializer.java,**/security/**,**/exception/**,**/util/**'
 	}
 }
