@@ -5,7 +5,7 @@ export const NotificationSchema = z.object({
 	id: z.number(),
 	message: z.string().optional().nullable(),
 	checked: z.boolean().optional().nullable(),
-	type: z.enum(["CREATE_TEAMS", "BONUS_MALUS", "MOVE_STUDENT"]),
+	type: z.enum(["CREATE_TEAMS", "BONUS_MALUS", "MOVE_STUDENT", "DELETE_STUDENTS", "IMPORT_STUDENTS"]),
 	userTo: UserSchema,
 	userFrom: UserSchema
 })

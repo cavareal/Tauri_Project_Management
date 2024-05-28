@@ -107,7 +107,6 @@ export const sendNotifications = async(message: string, roles: RoleType[], type:
 	const userFromId = Cookies.getUserId()
 
 	await Promise.all(users.map(async(userTo) => {
-		console.log(userTo)
 		const notification: CreateNotification = {
 			message: message,
 			checked: false,

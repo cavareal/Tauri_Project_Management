@@ -9,9 +9,11 @@ const emits = defineEmits(["open:notifications", "read:notifications"])
 const searchLinkByType = (notification: Notification) => {
 	const types = {
 		CREATE_TEAMS: "/teams",
-		BONUS_MALUS: "/grades"
+		BONUS_MALUS: "/grades",
+		MOVE_STUDENT: "/teams",
+		DELETE_STUDENTS: "/students",
+		IMPORT_STUDENTS: "/students"
 	}
-	console.log(notification.type)
 	return types[notification.type]
 }
 
