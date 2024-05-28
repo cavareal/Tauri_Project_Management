@@ -108,4 +108,10 @@ public class TeamController {
         return ResponseEntity.ok(sprintGrade);
     }
 
+    @GetMapping("/sprint/{sprintId}/average")
+    public ResponseEntity<List<Double>> getAverageSprintGrades(@PathVariable Integer sprintId) {
+        List<Double> sprintGrade = teamService.getAverageSprintGrades(sprintId);
+        return ResponseEntity.ok(sprintGrade);
+    }
+
 }

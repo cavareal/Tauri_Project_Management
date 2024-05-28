@@ -231,6 +231,19 @@ export const getSprintGrades = async(teamId: number, sprintId: number): Promise<
 	return response.data
 }
 
+export const getAverageSprintGrades = async(sprintId: number): Promise<number[]> => {
+	const response = await queryAndValidate({
+		route: `teams/sprint/${sprintId}/average`,
+		responseSchema: z.number().array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
 
 export const getGradesConfirmation = async(sprintId: number, teamId: number, ssTeam: number): Promise<boolean> => {
 	const response = await queryAndValidate({
