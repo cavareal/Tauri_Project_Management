@@ -47,32 +47,36 @@ dependencies {
 
 }
 
-tasks.register('unitTest', Test) {
-	description = "Runs the unit tests."
 
-	exclude "**/selenium/*"
-	useJUnitPlatform()
-	finalizedBy 'jacocoTestReport'
-}
-
-tasks.register('seleniumTest', Test) {
-	description = "Runs the Selenium tests."
-
-	exclude "**/unit/*"
-	useJUnitPlatform()
-}
-
-
-
+// Unit tests
 test {
+	exclude "**/selenium/*"
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
 }
+
+// Selenium source/config/tests
+sourceSets {
+	seleniumTest {
+		java.srcDir 'src/test/java/fr/eseo/tauri/selenium'
+	}
+}
+configurations {
+	seleniumTestImplementation.extendsFrom testImplementation
+	seleniumTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+tasks.register('seleniumTest', Test) {
+	useJUnitPlatform()
+	testClassesDirs = sourceSets.seleniumTest.output.classesDirs
+	classpath = sourceSets.seleniumTest.runtimeClasspath
+}
+
 
 kotlin {
 	jvmToolchain(17)
 }
 
+// sonarqube configuration
 sonarqube {
 	properties {
 		property 'sonar.coverage.jacoco.xmlReportPaths', "build/reports/jacoco/test/jacocoTestReport.xml"
@@ -83,14 +87,13 @@ sonarqube {
 	}
 }
 
+// To get coverage code in sonarQube
 jacocoTestReport {
 	reports {
 		xml.required = true
 		html.required = true
 	}
 }
-
-
 
 // Function to setup DB login, when build from gitlab pipeline
 tasks.register('setLoginDb') {

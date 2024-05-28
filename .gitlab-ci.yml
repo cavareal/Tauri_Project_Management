@@ -5,8 +5,8 @@ stages:
   - build-frontend
   - build-backend
   - sonar
-  - deploy-server-dev
-  - deploy-server-prod
+  - selenium
+  - deploy-server
 
 
 variables:
@@ -108,6 +108,7 @@ java-build:
     - dev
 
 
+
 ###############
 ## SONAR DEV ##
 ###############
@@ -117,7 +118,7 @@ quality-dev:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon unitTest 
+    - ./gradlew --no-daemon test 
     - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_DevBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
@@ -133,8 +134,6 @@ quality-dev:
   only:
     - dev
 
-
-
 ################
 ## SONAR PROD ##
 ################
@@ -144,7 +143,7 @@ quality-prod:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon unitTest
+    - ./gradlew --no-daemon test
     - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_MasterBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_PROD -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
@@ -162,11 +161,50 @@ quality-prod:
 
 
 
+##################
+## SELENIUM DEV ##
+##################
+selenium-dev:
+  stage: selenium
+  image: gradle:8.4-jdk17
+  script:
+    - cd backend
+    - chmod +x./gradlew
+    -./gradlew --no-daemon seleniumTest
+  dependencies:
+    - quality-dev
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.gradle/caches
+  only:
+    - dev
+  retry: 2
+
+###################
+## SELENIUM PROD ##
+###################
+selenium-prod:
+  stage: sonar
+  image: gradle:8.4-jdk17
+  script:
+    - cd backend
+    - chmod +x./gradlew
+    -./gradlew --no-daemon seleniumTest
+  dependencies:
+    - quality-prod
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.gradle/caches
+  only:
+    - main
+
+
+
 ################
 ## DEPLOY DEV ##
 ################
 push-dev:
-  stage: deploy-server-dev
+  stage: deploy-server
   image: charlo56/pgl-ssh-image:latest    # ESEO Firewall block curl or fetech command to install openssh in an image. So i use docker image with openssh installed
   dependencies:
     - vuejs-build-dev
@@ -193,7 +231,7 @@ push-dev:
 ## DEPLOY PROD ##
 #################
 push-prod:
-  stage: deploy-server-prod
+  stage: deploy-server
   image: charlo56/pgl-ssh-image:latest    # ESEO Firewall block curl or fetch command to install openssh in an image. So i use docker image with openssh pre-installed
   dependencies:
     - vuejs-build-prod
