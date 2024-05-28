@@ -41,7 +41,7 @@ public class SeleniumLoginTest {
         @Test
         @Order(2)
         void loginPl() {
-                webdriver.findElement(By.id("radix-1-form-item")).sendKeys("pl@tauri.com");
+                webdriver.findElement(By.id("radix-1-form-item")).sendKeys("p.l@tauri.com");
                 webdriver.findElement(By.id("radix-2-form-item")).sendKeys("pl");
                 {
                         WebElement element = webdriver.findElement(By.id("radix-1-form-item"));

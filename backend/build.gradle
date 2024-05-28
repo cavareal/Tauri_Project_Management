@@ -3,7 +3,7 @@ plugins {
 	id "war"
 	id "org.springframework.boot" version "3.2.3"
 	id "io.spring.dependency-management" version "1.1.4"
-    id 'org.jetbrains.kotlin.jvm'
+	id 'org.jetbrains.kotlin.jvm'
 	id "org.sonarqube" version "5.0.0.4638"
 	id 'jacoco'		// Use to coverage code in sonarQube
 }
@@ -34,7 +34,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.30'
 	testCompileOnly 'org.projectlombok:lombok:1.18.30'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 	implementation 'com.opencsv:opencsv:5.8'
 	implementation 'net.datafaker:datafaker:2.1.0'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
@@ -47,14 +47,30 @@ dependencies {
 
 }
 
-test {
+tasks.register('unitTest', Test) {
+	description = "Runs the unit tests."
+
 	exclude "**/selenium/*"
+	useJUnitPlatform()
+	finalizedBy 'jacocoTestReport'
+}
+
+tasks.register('seleniumTest', Test) {
+	description = "Runs the Selenium tests."
+
+	exclude "**/unit/*"
+	useJUnitPlatform()
+}
+
+
+
+test {
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
 }
 
 kotlin {
-    jvmToolchain(17)
+	jvmToolchain(17)
 }
 
 sonarqube {
