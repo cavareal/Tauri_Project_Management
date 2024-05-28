@@ -170,9 +170,11 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew
+    - ./gradlew bootRun &
+    - until curl -s http://localhost:8882; do echo "Waiting for the application to be ready..."; sleep 5; done
     - ./gradlew --no-daemon seleniumTest
   dependencies:
-    - quality-dev
+    - java-build
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
