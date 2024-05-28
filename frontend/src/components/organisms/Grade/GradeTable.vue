@@ -120,47 +120,46 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 </script>
 
 <template>
-	<Table v-if="(canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched">
-		<TableHeader>
-			<TableRow>
-				<TableHead :class="rowClass">Nom</TableHead>
-				<TableHead v-if="canView" :class="rowClass" title="Solution Technique"><Blocks :stroke-width="1"/></TableHead>
-				<TableHead v-if="canView" :class="rowClass" title="Gestion de projet"><SquareGanttChart :stroke-width="1"/></TableHead>
-				<TableHead v-if="canView" :class="rowClass" title="Conformité au sprint"><Play :stroke-width="1"/></TableHead>
-				<TableHead v-if="canView" :class="rowClass" title="Support de présentation"><Presentation :stroke-width="1"/></TableHead>
-				<TableHead v-if="canView" :class="rowClass" >Total équipes</TableHead>
-				<TableHead v-if="canView" :class="rowClass" title="Bonus / Malus limités"><LucideCircleFadingPlus :stroke-width="1"/></TableHead>
-				<TableHead v-if="canView" :class="rowClass" title="Bonus / Malus illimités"><LucideCirclePlus :stroke-width="1"/></TableHead>
-				<TableHead v-if="canView" :class="rowClass" >Total bonus</TableHead>
-				<TableHead v-if="canView" :class="rowClass" title="Performance globale de l'équipe"><Users :stroke-width="1"/></TableHead>
-				<TableHead v-if="canView" :class="rowClass" title="Performance individuelle"><User :stroke-width="1"/></TableHead>
-				<TableHead v-if="canView" :class="rowClass" >Total individuel</TableHead>
-				<TableHead v-if="canView" :class="rowClass" >Note finale</TableHead>
-			</TableRow>
-		</TableHeader>
-		<TableBody>
-			<TableRow v-for="(student, index) in teamStudents">
-				<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
-				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
-				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
-				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
-				<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Support de présentation"]}}</TableCell>
-				<TableCell v-if="totalGrade" :class="rowClass"> {{totalGrade}} </TableCell>
-				<TableCell v-if="canView && studentBonuses" :class="rowClass">{{ studentBonuses[index][1].value}} </TableCell>
-				<TableCell v-if="(canViewAllWg || canViewAllOg ) && studentBonuses" :class="rowClass">{{ studentBonuses[index][0].value }} </TableCell>
-				<TableCell v-if="(canViewAllWg || canViewAllOg ) && studentBonuses" :class="rowClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
-				<TableCell v-if="canView && averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
-				<TableCell v-if="(canViewAllWg || canViewAllOg ) && averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
-				<TableCell v-if="(canViewAllWg || canViewAllOg || student.id === currentUserId) && totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
-				<TableCell v-if="(canView) && sprintGrades" :class="rowClass"> {{sprintGrades[index]}} </TableCell>
-			</TableRow>
-		</TableBody>
-	</Table>
-	<Tabs v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) === Number(props.teamId))">
-		<Tab title="Mes notes" >
-
-		</Tab>
-		<Tab title="Mon équipe">
+	<div  v-if="(canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched" class="border bg-white rounded-md">
+		<Table>
+			<TableHeader>
+				<TableRow>
+					<TableHead :class="rowClass">Nom</TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Solution Technique"><Blocks :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Gestion de projet"><SquareGanttChart :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Conformité au sprint"><Play :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Support de présentation"><Presentation :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" >Total équipes</TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Bonus / Malus limités"><LucideCircleFadingPlus :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Bonus / Malus illimités"><LucideCirclePlus :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" >Total bonus</TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Performance globale de l'équipe"><Users :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Performance individuelle"><User :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" >Total individuel</TableHead>
+					<TableHead v-if="canView" :class="rowClass" >Note finale</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				<TableRow v-for="(student, index) in teamStudents">
+					<TableCell class="font-medium" :class="rowClass">{{student.name}}</TableCell>
+					<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Solution Technique"]}}</TableCell>
+					<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Gestion de projet"]}}</TableCell>
+					<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
+					<TableCell v-if="canView && averageTeam" :class="rowClass">{{averageTeam["Support de présentation"]}}</TableCell>
+					<TableCell v-if="totalGrade" :class="rowClass"> {{totalGrade}} </TableCell>
+					<TableCell v-if="canView && studentBonuses" :class="rowClass">{{ studentBonuses[index][1].value}} </TableCell>
+					<TableCell v-if="(canViewAllWg || canViewAllOg ) && studentBonuses" :class="rowClass">{{ studentBonuses[index][0].value }} </TableCell>
+					<TableCell v-if="(canViewAllWg || canViewAllOg ) && studentBonuses" :class="rowClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
+					<TableCell v-if="canView && averageTeam" :class="rowClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
+					<TableCell v-if="(canViewAllWg || canViewAllOg ) && averageStudents" :class="rowClass">{{averageStudents[student.id]}}</TableCell>
+					<TableCell v-if="(canViewAllWg || canViewAllOg || student.id === currentUserId) && totalIndividualGrades" :class="rowClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
+					<TableCell v-if="(canView) && sprintGrades" :class="rowClass"> {{sprintGrades[index]}} </TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
+	</div>
+	<div v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) === Number(props.teamId))" >
+		<div class="border bg-white rounded-md mb-4">
 			<Table>
 				<TableHeader>
 					<TableRow>
@@ -197,23 +196,27 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 					</TableRow>
 				</TableBody>
 			</Table>
+		</div>
+		<div class="border bg-white rounded-md">
 			<CommentContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId" :feedback="true"/>
-		</Tab>
-	</Tabs>
-	<Table  v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) !== Number(props.teamId))">
-		<TableHeader>
-			<TableRow>
-				<TableHead :class="rowClass" >Nom</TableHead>
-				<TableHead :class="rowClass" >Note finale</TableHead>
-			</TableRow>
-		</TableHeader>
-		<TableBody>
-			<TableRow v-for="team in teams" >
-				<TableCell class="font-medium" :class="rowClass">{{team.name}}</TableCell>
-				<TableCell v-if="sprintGrades && averageSprintGrades" :class="rowClass"> {{averageSprintGrades[team.id - 1]}}</TableCell>
-			</TableRow>
-		</TableBody>
-	</Table>
+		</div>
+	</div>
+	<div  v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) !== Number(props.teamId))"  class="border bg-white rounded-md">
+		<Table>
+			<TableHeader>
+				<TableRow>
+					<TableHead :class="rowClass" >Nom</TableHead>
+					<TableHead :class="rowClass" >Note finale</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				<TableRow v-for="team in teams" >
+					<TableCell class="font-medium" :class="rowClass">{{team.name}}</TableCell>
+					<TableCell v-if="sprintGrades && averageSprintGrades" :class="rowClass"> {{averageSprintGrades[team.id - 1]}}</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
+	</div>
 </template>
 
 <style scoped>
