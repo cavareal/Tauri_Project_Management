@@ -16,7 +16,7 @@ import java.time.Duration;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SeleniumLoginTest {
-        private static final String URL = "http://localhost:5173/";
+        private static final String URL = System.getProperty("selenium.server.url", "http://localhost:5173/");
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
         private static WebDriverWait wait;

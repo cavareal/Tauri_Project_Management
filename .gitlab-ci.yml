@@ -5,8 +5,8 @@ stages:
   - build-frontend
   - build-backend
   - sonar
-  - selenium
   - deploy-server
+  - selenium
 
 
 variables:
@@ -50,7 +50,7 @@ vuejs-build-dev:
   artifacts:
     paths:
       - frontend/dist
-    expire_in: 15 mins
+    expire_in: 30 mins
   cache:
     paths:
       - frontend/node_modules
@@ -71,7 +71,7 @@ vuejs-build-prod:
   artifacts:
     paths:
       - frontend/dist
-    expire_in: 15 mins
+    expire_in: 30 mins
   cache:
     paths:
       - frontend/node_modules
@@ -101,7 +101,7 @@ java-build:
   artifacts:
     paths:
       - backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war
-    expire_in: 15 mins
+    expire_in: 30 mins
     when: always
   only:
     - main
@@ -123,7 +123,7 @@ quality-dev:
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
-    expire_in: 15 mins
+    expire_in: 30 mins
     when: always
   retry: 2
   dependencies:
@@ -148,52 +148,11 @@ quality-prod:
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
-    expire_in: 15 mins
+    expire_in: 30 mins
     when: always
   retry: 2
   dependencies:
     - java-build
-  cache:
-    paths:
-      - $CI_PROJECT_DIR/.gradle/caches
-  only:
-    - main
-
-
-
-##################
-## SELENIUM DEV ##
-##################
-selenium-dev:
-  stage: selenium
-  image: gradle:8.4-jdk17
-  script:
-    - cd backend
-    - chmod +x ./gradlew
-    - ./gradlew bootRun &
-    - until curl -s http://localhost:8882; do echo "Waiting for the application to be ready..."; sleep 5; done
-    - ./gradlew --no-daemon seleniumTest
-  dependencies:
-    - java-build
-  cache:
-    paths:
-      - $CI_PROJECT_DIR/.gradle/caches
-  only:
-    - dev
-  retry: 2
-
-###################
-## SELENIUM PROD ##
-###################
-selenium-prod:
-  stage: sonar
-  image: gradle:8.4-jdk17
-  script:
-    - cd backend
-    - chmod +x ./gradlew
-    - ./gradlew --no-daemon seleniumTest
-  dependencies:
-    - quality-prod
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
@@ -227,8 +186,6 @@ push-dev:
   only:
     - dev
      
- 
-
 #################
 ## DEPLOY PROD ##
 #################
@@ -253,3 +210,73 @@ push-prod:
   retry: 2
   only:
     - main
+
+
+
+##################
+## SELENIUM DEV ##
+##################
+selenium-dev:
+  stage: selenium
+  image: gradle:8.4-jdk17
+  script:
+    - cd backend
+    - chmod +x ./gradlew
+    - |
+      echo "Waiting for the server to be ready..."
+      RETRY_COUNT=0
+      MAX_RETRIES=20
+      WAIT_SECONDS=10
+      until $(curl --output /dev/null --silent --head --fail http://$SERVER_IP_DEV); do
+        RETRY_COUNT=$(($RETRY_COUNT+1))
+        if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+          echo "Server did not become ready in time. Exiting."
+          exit 1
+        fi
+        echo "Server is not ready yet. Waiting for $WAIT_SECONDS seconds..."
+        sleep $WAIT_SECONDS
+      done
+      echo "Server is ready!"
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=http://$SERVER_IP_DEV
+  dependencies:
+    - push-dev
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.gradle/caches
+  only:
+    - dev
+  retry: 2
+
+###################
+## SELENIUM PROD ##
+###################
+selenium-prod:
+  stage: selenium
+  image: gradle:8.4-jdk17
+  script:
+    - cd backend
+    - chmod +x ./gradlew
+    - |
+      echo "Waiting for the server to be ready..."
+      RETRY_COUNT=0
+      MAX_RETRIES=20
+      WAIT_SECONDS=10
+      until $(curl --output /dev/null --silent --head --fail http://$SERVER_IP_PROD); do
+        RETRY_COUNT=$(($RETRY_COUNT+1))
+        if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
+          echo "Server did not become ready in time. Exiting."
+          exit 1
+        fi
+        echo "Server is not ready yet. Waiting for $WAIT_SECONDS seconds..."
+        sleep $WAIT_SECONDS
+      done
+      echo "Server is ready!"
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=http://$SERVER_IP_PROD
+  dependencies:
+    - push-prod
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.gradle/caches
+  only:
+    - main
+  retry: 2
