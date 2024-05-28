@@ -35,6 +35,27 @@ const { data: sprints } = useQuery({
 
 const style = cn("w-56")
 
+/*
+let sprint = unfilteredSprints.find(sprint => {
+		const startDate = new Date(sprint.startDate)
+		startDate.setHours(0, 0, 0, 0)
+		const endDate = new Date(sprint.endDate)
+		endDate.setHours(23, 59, 59, 999)
+		return startDate <= currentDate && currentDate <= endDate
+	})
+
+	// If no current sprint is found, find the next upcoming sprint
+	if (!sprint) {
+		sprint = unfilteredSprints.find(sprint => {
+			const startDate = new Date(sprint.startDate)
+			startDate.setHours(0, 0, 0, 0)
+			return startDate > currentDate
+		})
+	}
+
+	currentSprint.value = sprint || null
+*/
+
 </script>
 
 <template>

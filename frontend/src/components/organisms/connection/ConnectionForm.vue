@@ -46,7 +46,7 @@ const CARD_DESCRIPTION = "Entrez votre adresse email et votre mot de passe pour 
 
 <template>
 	<form class="space-y-4 min-h-[440px]" @submit.prevent="onSubmit">
-		<CustomCard class="border-none shadow-none" :title="CARD_TITLE" :description="CARD_DESCRIPTION">
+		<CustomCard class="border shadow-none" :title="CARD_TITLE" :description="CARD_DESCRIPTION">
 
 			<FormField v-slot="{ componentField }" name="login">
 				<FormItem class="space-y-1">
