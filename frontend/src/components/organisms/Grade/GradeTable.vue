@@ -130,18 +130,39 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 					<TableHead v-if="canView" :class="rowClass" title="Gestion de projet"><SquareGanttChart :stroke-width="1"/></TableHead>
 					<TableHead v-if="canView" :class="rowClass" title="Conformité au sprint"><Play :stroke-width="1"/></TableHead>
 					<TableHead v-if="canView" :class="rowClass" title="Support de présentation"><Presentation :stroke-width="1"/></TableHead>
-					<TableHead v-if="canView" :class="rowClass" >Total équipes</TableHead>
-					<TableHead v-if="canView" :class="rowClass" title="Bonus / Malus limités"><LucideCircleFadingPlus :stroke-width="1"/></TableHead>
-					<TableHead v-if="canView" :class="rowClass" title="Bonus / Malus illimités"><LucideCirclePlus :stroke-width="1"/></TableHead>
-					<TableHead v-if="canView" :class="rowClass" >Total bonus</TableHead>
-					<TableHead v-if="canView" :class="rowClass" title="Performance globale de l'équipe"><Users :stroke-width="1"/></TableHead>
-					<TableHead v-if="canView" :class="rowClass" title="Performance individuelle"><User :stroke-width="1"/></TableHead>
-					<TableHead v-if="canView" :class="rowClass" >Total individuel</TableHead>
 					<TableHead v-if="canView" :class="rowClass" >
 						<Row>
-							<div class="mr-4">Note finale</div>
-							<Tooltip expression="\text{Note finale}= \\ 0.7 \times (\text{Totale équipes + Total Bonus}) \\ + \ 0.3 \times \text{Total Individuel}">
-								<Info :stroke-width="1"/>
+						<div class="mr-2">Total équipe</div>
+						<Tooltip expression="\text{Total équipe}= \\ \frac{\text{Solution Technique} + \text{Gestion de projet} + \text{Conformité au sprint + \text{Présentation}} }{4}" position="left-0">
+							<Info :stroke-width="1" :size="20"/>
+						</Tooltip>
+						</Row>
+					</TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Bonus / Malus limités"><LucideCircleFadingPlus :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Bonus / Malus illimités"><LucideCirclePlus :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" >
+						<Row>
+							<div class="mr-2">Total Bonus</div>
+							<Tooltip expression="\text{Total Bonus}= \text{Bonus/Malus limités} + \text{Bonus/Malus illimités}" position="right-0">
+								<Info :stroke-width="1" :size="20"/>
+							</Tooltip>
+						</Row>
+					</TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Performance globale de l'équipe"><Users :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" title="Performance individuelle"><User :stroke-width="1"/></TableHead>
+					<TableHead v-if="canView" :class="rowClass" >
+						<Row>
+							<div class="mr-2">Total individuel</div>
+							<Tooltip expression="\text{Total Individuel}= \\ \frac{\text{Performance Globale} + 2 \times \text{Performance Individuelle}}{3}" position="right-0">
+								<Info :stroke-width="1" :size="20"/>
+							</Tooltip>
+						</Row>
+					</TableHead>
+					<TableHead v-if="canView" :class="rowClass" >
+						<Row>
+							<div class="mr-2">Note finale</div>
+							<Tooltip expression="\text{Note finale}= \\ 0.7 \times (\text{Total équipes + Total Bonus}) + \ 0.3 \times \text{Total Individuel}" position="right-0">
+								<Info :stroke-width="1" :size="20"/>
 							</Tooltip>
 						</Row>
 					</TableHead>
