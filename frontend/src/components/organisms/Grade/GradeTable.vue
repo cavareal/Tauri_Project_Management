@@ -90,13 +90,15 @@ const canView = canViewAllOg || (canViewOwnTeamGrade && currentUserTeam && Numbe
 			<TableHeader>
 				<TableRow>
 					<TableHead :class="rowClass" >Nom</TableHead>
-					<TableHead :class="rowClass" >
-						<Row>
-							<div class="mr-2">Note finale</div>
-							<Tooltip expression="\text{Note finale}= \\ 0.7 \times (\text{Total équipes + Total Bonus}) + \ 0.3 \times \text{Total Individuel}" position="right-0">
-								<Info :stroke-width="1" :size="20"/>
-							</Tooltip>
-						</Row>
+					<TableHead :class="rowClass">
+						<div class="flex items-center justify-center">
+							<Row>
+								<div class="mr-2">Note finale</div>
+								<Tooltip expression="\text{Note finale}= \\ 0.7 \times (\text{Total équipes + Total Bonus}) + \ 0.3 \times \text{Total Individuel}" position="right-0">
+									<Info :stroke-width="1" :size="20"/>
+								</Tooltip>
+							</Row>
+						</div>
 					</TableHead>
 				</TableRow>
 			</TableHeader>
