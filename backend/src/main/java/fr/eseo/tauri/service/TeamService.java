@@ -310,7 +310,7 @@ public class TeamService {
 
         for(int i = 0; i < students.size(); i++){
             List<Bonus> studentBonuses = studentService.getStudentBonuses(token, students.get(i).id(), sprintId);
-            double result = 0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrades(token, id, sprintId)).get(i);
+            double result = 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrades(token, id, sprintId)).get(i);
             sprintGrades.add(formattedResult(result));
         }
         if (sprintGrades.isEmpty()) {
