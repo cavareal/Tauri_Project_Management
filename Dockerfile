@@ -1,7 +1,5 @@
 FROM gradle:8.4-jdk17
 
-USER root
-
 # Install GnuPG
 RUN apt-get update && apt-get install -y gnupg
 RUN apt-get update && apt-get install -y sudo
@@ -16,7 +14,7 @@ RUN CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_R
     mv chromedriver /usr/local/bin && \
     rm chromedriver_linux64.zip
 
-WORKDIR /home/gradle/project
-USER gradle
+WORKDIR /home/gradle
+USER root
 
 CMD ["gradle", "--version"]
