@@ -218,7 +218,7 @@ push-prod:
 ##################
 selenium-dev:
   stage: selenium
-  image: charlo56/pgl-gradlew-chrome:latest
+  image: gradle:8.4-jdk17
   script:
     - cd backend
     - chmod +x ./gradlew  
