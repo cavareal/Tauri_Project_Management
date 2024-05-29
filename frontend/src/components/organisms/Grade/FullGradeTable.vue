@@ -103,7 +103,7 @@ watch(() => props.teamId, async() => {
 				<TableHead :class="rowClass" >
 					<Row>
 						<div class="mr-2">Total équipe</div>
-						<Tooltip expression="\text{Total équipe}= \\ \frac{\text{Solution Technique} + \text{Gestion de projet} + \text{Conformité au sprint + \text{Présentation}} }{4}" position="left-0">
+						<Tooltip expression="\text{Total équipe}=  \frac{\text{Solution Technique} + \text{Gestion de projet} + \text{Conformité au sprint} + \text{Présentation}} {4}" position="left-0">
 							<Info :stroke-width="1" :size="20"/>
 						</Tooltip>
 					</Row>
