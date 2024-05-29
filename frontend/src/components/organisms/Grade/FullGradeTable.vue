@@ -31,7 +31,7 @@ const rowClass = cn("py-2 h-auto mt-2 mb-2")
 const props = defineProps<{
 	teamId : string,
 	sprintId : string,
-	isGradesConfirmed: boolean,
+	isGradesConfirmed: boolean
 }>()
 
 const studentBonuses = ref<Bonus[][] | null>(null)
