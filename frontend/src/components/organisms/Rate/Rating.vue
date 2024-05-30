@@ -18,6 +18,8 @@ import { Cookies } from "@/utils/cookie"
 import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
 import { useQuery } from "@tanstack/vue-query"
 import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
+import CommentsContainer from "@/components/molecules/rateContainer/CommentsContainer.vue"
+import { Row } from "@/components/atoms/containers"
 
 const props = defineProps<{
 	teamId : string,
@@ -122,6 +124,10 @@ const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermi
 
   <CommentContainer v-if="canSeeFeedbacks" title="Feedbacks" infoText="Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId" :feedback="true"/>
   <CommentContainer v-if="canSeePrivateComments" title="Commentaires" info-text="Vous pouvez faire des commentaires sur les performances de l'équipe durant le sprint" :feedback="false" :sprintId="props.sprintId" :teamId="props.teamId"/>
+  <Row>
+    <CommentsContainer class="mr-1" :isFeedback="true" :sprintId="props.sprintId" :teamId="props.teamId"></CommentsContainer>
+    <CommentsContainer :isFeedback="false" :sprintId="props.sprintId" :teamId="props.teamId"></CommentsContainer>
+  </Row>
 
 	<ContainerGradeType v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)" title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
 		<template #icon>
