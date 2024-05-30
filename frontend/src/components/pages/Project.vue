@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
-import { ref } from "vue"
 import { SidebarTemplate } from "@/components/templates"
 import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
 import { hasPermission } from "@/services/user/user.service"
 import { NotAuthorized } from "@/components/organisms/errors"
-import AddUsers from '@/components/organisms/project/AddUsers.vue'
+// import { AddUsers } from "@/components/organisms/project/AddUsers"
+import AddUsers  from "./../organisms/project/AddUsers.vue"
 
 </script>
 

@@ -97,3 +97,19 @@ export const getAllRoles = async(id: number): Promise<RoleType[]> => {
 
 	return response.data
 }
+
+
+export const createUser = async(email: string, name: string, role: RoleType): Promise<void> => {
+	console.log("ouai la tem request")
+	const response = await mutateAndValidate({
+		method: "POST",
+		body: { email, name, role },
+		route: `users`,
+		bodySchema: z.unknown(),
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
