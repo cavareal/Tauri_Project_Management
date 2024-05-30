@@ -223,8 +223,7 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew  
-    ## Check if app available
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless --scan
   dependencies:
     - push-dev
   cache:

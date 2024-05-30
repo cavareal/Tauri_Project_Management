@@ -6,8 +6,7 @@ import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
 import { hasPermission } from "@/services/user/user.service"
 import { NotAuthorized } from "@/components/organisms/errors"
-// import AddUsers from "@/components/organisms/project/AddUsers.vue"
-
+import AddUsers from '@/components/organisms/project/AddUsers.vue'
 
 </script>
 
@@ -18,7 +17,7 @@ import { NotAuthorized } from "@/components/organisms/errors"
 			<Header title="Gestion de projet">
 			</Header>
             <Column>
-                <!-- <AddUsers /> -->
+                <AddUsers />
             </Column>
 		</Column>
 	</SidebarTemplate>
