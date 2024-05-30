@@ -12,6 +12,7 @@ const userMail = ref<string>("");
 
 <template>
     <div class="border border-gray-300 border-dashed rounded-lg hover:bg-gray-100 flex justify-center flex-col items-stretch p-4">
+		<h2 class="text-xl font-semibold text-center mb-4">Ajouter un utilisateur</h2>
         <Column class="items-center gap-4">
 
             <div class="w-full flex flex-col items-start mb-2">
