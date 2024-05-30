@@ -223,22 +223,7 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew  
-    - |
-      echo "Waiting for the server to be ready..."
-      RETRY_COUNT=0
-      MAX_RETRIES=20
-      WAIT_SECONDS=10
-      READY_RESPONSE="Server is ready"
-      until $(curl --output /dev/null --silent --fail https://$SERVER_IP_DEV/ | grep -q "$READY_RESPONSE"); do
-        RETRY_COUNT=$(($RETRY_COUNT+1))
-        if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
-          echo "Server did not become ready in time. Exiting."
-          exit 1
-        fi
-        echo "Server is not ready yet. Waiting for $WAIT_SECONDS seconds..."
-        sleep $WAIT_SECONDS
-      done
-      echo "Server is ready!"
+    ## Check if app available
     - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless
   dependencies:
     - push-dev

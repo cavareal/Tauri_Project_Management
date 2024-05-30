@@ -69,7 +69,9 @@ export const PermissionTypeSchema = z.enum([
 	"SPRINTS_PAGE",
 	"GRADES_PAGE",
 	"RATING_PAGE",
-	"GRADE_SCALES_PAGE"
+	"GRADE_SCALES_PAGE",
+	"ADD_USER",
+	"MANAGE_PROJECT"
 ])
 
 export type PermissionType = z.infer<typeof PermissionTypeSchema>
