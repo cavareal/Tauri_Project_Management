@@ -2,15 +2,16 @@
 import { Column, Row } from "@/components/atoms/containers"
 import { InfoText, Subtitle } from "@/components/atoms/texts"
 import { MessageCircleMore, MessageSquareReply } from "lucide-vue-next"
-import { useQuery } from "@tanstack/vue-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
 import type { Feedback } from "@/types/feedback"
-import { getCommentsBySprintAndTeam } from "@/services/feedback-service"
+import { createComment, getCommentsBySprintAndTeam } from "@/services/feedback-service"
 import type { User } from "@/types/user"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import CommentsView from "@/components/molecules/rateContainer/CommentsView.vue"
-import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { SendHorizontal } from "lucide-vue-next"
 import { Button } from "@/components/ui/button"
+import { createToast } from "@/utils/toast"
 
 const props = defineProps<{
   isFeedback: boolean,
@@ -20,6 +21,9 @@ const props = defineProps<{
 
 const commentsFiltered = ref<Feedback[]>([])
 const authorsComments = ref<User[]>([])
+const comment = ref("")
+
+const client = useQueryClient()
 
 const title = props.isFeedback ? "Feedback" : "Commentaire"
 const infoText = props.isFeedback ? "Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint" : "Vous pouvez faire des commentaires sur les performances de l'équipe durant le sprint"
@@ -38,6 +42,20 @@ const { data: comments, refetch: refetchFeedbacks } = useQuery<Feedback[], Error
 	}
 })
 
+const { mutate } = useMutation({
+	mutationKey: ["add-comment"], mutationFn: async() => {
+		await createComment(props.teamId, comment.value, props.sprintId, props.isFeedback)
+			.then(() => refetchFeedbacks())
+			.then(() => comment.value = "")
+			.then(() => createToast(toastText))
+	}
+})
+
+watch(() => props.teamId, () => refetchFeedbacks())
+watch(() => props.sprintId, () => refetchFeedbacks())
+
+const placeholderText = props.isFeedback ? "saissisez un feedback" : "saissisez un commentaire"
+const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le commentaire a été enregistré."
 </script>
 
 <template>
@@ -52,15 +70,15 @@ const { data: comments, refetch: refetchFeedbacks } = useQuery<Feedback[], Error
       <InfoText>{{infoText}}</InfoText>
       </div>
       <Row>
-        <Input placeholder="saissisez un commentaire" class="w-full mr-2"/>
-        <Button variant="default" size="icon" class="rounded-full h-10 w-14">
+        <Textarea v-model="comment" :placeholder="placeholderText" class="w-full mr-2 resize-none min-h-[10px] max-h-[40px] overflow-auto"/>
+        <Button variant="default" size="icon" class="rounded-full h-10 w-14" @click="mutate">
           <SendHorizontal class="w-5 h-5"/>
         </Button>
       </Row>
     </Column>
     <div class="w-1/2">
       <div class="bg-background">
-        <CommentsView :authors="authorsComments" :comments="commentsFiltered"/>
+        <CommentsView :authors="authorsComments" :comments="commentsFiltered" :isFeedback="props.isFeedback"/>
       </div>
     </div>
   </Row>

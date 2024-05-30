@@ -6,6 +6,7 @@ import { Text } from "@/components/atoms/texts"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 const props = defineProps<{
+  isFeedback: boolean,
   authors: User[]
   comments: Feedback[]
 }>()
@@ -15,14 +16,16 @@ const getCommentsFromAuthor = (authorId: string) => {
 		return props.comments.filter(comment => comment.author.id.toString() === authorId)
 	}
 }
+
+const placeholderText = props.isFeedback ? "Pas de feedbacks" : "Pas de commentaires"
 </script>
 
 <template>
-  <div v-if="!comments || comments.length === 0">
-    <Text class="text-center">Pas de commentaire</Text>
+  <div v-if="!comments || comments.length === 0" class="h-[300px] w-full p-4 bg-gray-50 rounded-lg flex items-center justify-center">
+    <Text class="text-center">{{ placeholderText }}</Text>
   </div>
   <div v-else>
-    <ScrollArea class="h-[300px] w-full p-4 bg-gray-100 rounded-lg">
+    <ScrollArea class="h-[300px] w-full p-4 bg-gray-50 rounded-lg">
       <div v-for="author in authors" :key="author.id" class="p-5 flex flex-col">
         <Text class="bold">{{ author.name }}</Text>
         <div v-for="comment in getCommentsFromAuthor(author.id.toString())" :key="comment.id" class="p-2">
