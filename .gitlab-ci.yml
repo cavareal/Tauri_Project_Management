@@ -13,10 +13,11 @@ variables:
   GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
   #### Value of variables setup in gitlab>settings>ci_cd>variables
-  #---DB backend
+  #---DB
   # $DATABASE_USERNAME
   # $DATABASE_PASSWORD
   #---SONAR
+  # $SONAR_HOST_URL
   # $SONAR_PROJET_KEY_DEV
   # $SONAR_LOGIN_DEV
   # $SONAR_PROJETKEY_PROD
@@ -119,7 +120,7 @@ quality-dev:
     - cd backend
     - chmod +x ./gradlew
     - ./gradlew --no-daemon test 
-    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_DevBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
+    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_DevBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
@@ -144,7 +145,7 @@ quality-prod:
     - cd backend
     - chmod +x ./gradlew
     - ./gradlew --no-daemon test
-    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_MasterBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_PROD -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
+    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_MasterBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_PROD -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war

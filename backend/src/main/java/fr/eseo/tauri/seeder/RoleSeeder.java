@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,11 +15,15 @@ public class RoleSeeder {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 
+
+	@Value("${app.pl.email}")
+	private String plEmail;
+
 	public void seed() {
 
 		// Create a project leader role for the admin user
 		var rolePl = new Role();
-		var userPL = userRepository.findByEmail("p.l@tauri.com");
+		var userPL = userRepository.findByEmail(plEmail);
 		if (userPL.isPresent()) {
 			rolePl.user(userPL.get());
 			rolePl.type(RoleType.PROJECT_LEADER);

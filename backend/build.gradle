@@ -102,7 +102,7 @@ tasks.register('setLoginDb') {
 		def dbUsername = System.getProperty("databaseUsername")
 		def dbPassword = System.getProperty("databasePassword")
 
-		if(dbUsername == null || dbPassword == null) {
+		if(dbUsername == null && dbPassword == null) {
 			throw new GradleException("You must provide the database credentials with -PdatabaseUsername=yourUsername -PdatabasePassword=yourPassword")
 		}
 
