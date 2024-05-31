@@ -24,8 +24,7 @@ public class SeleniumLoginTest {
 
         @BeforeAll
         public static void beforeTest(){
-                WebDriverManager.safaridriver().setup();
-
+                WebDriverManager.chromedriver().setup();
                 ChromeOptions options = new ChromeOptions().addArguments("--headless=new");
                 SeleniumLoginTest.webdriver = new ChromeDriver(options);
                 wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
