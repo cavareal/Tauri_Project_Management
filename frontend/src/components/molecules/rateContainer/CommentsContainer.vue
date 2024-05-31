@@ -2,9 +2,9 @@
 import { Column, Row } from "@/components/atoms/containers"
 import { InfoText, Subtitle } from "@/components/atoms/texts"
 import { MessageCircleMore, MessageSquareReply } from "lucide-vue-next"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
+import { useMutation, useQuery } from "@tanstack/vue-query"
 import type { Feedback } from "@/types/feedback"
-import { createComment, getCommentsBySprintAndTeam } from "@/services/feedback-service"
+import { createComment, getCommentsBySprintAndTeam } from "@/services/feedback"
 import type { User } from "@/types/user"
 import { ref, watch } from "vue"
 import CommentsView from "@/components/molecules/rateContainer/CommentsView.vue"
@@ -23,15 +23,13 @@ const commentsFiltered = ref<Feedback[]>([])
 const authorsComments = ref<User[]>([])
 const comment = ref("")
 
-const client = useQueryClient()
-
 const title = props.isFeedback ? "Feedback" : "Commentaire"
 const infoText = props.isFeedback ? "Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint" : "Vous pouvez faire des commentaires sur les performances de l'équipe durant le sprint"
 
-const { data: comments, refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
+const { refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
 	queryKey: ["comments", props.teamId, props.sprintId, props.isFeedback],
 	queryFn: async() => {
-		const comments = await getCommentsBySprintAndTeam(props.teamId, props.sprintId)
+		const comments = await getCommentsBySprintAndTeam(props.teamId.toString(), props.sprintId.toString())
 		commentsFiltered.value = comments.filter(comment => comment.feedback === props.isFeedback)
 		authorsComments.value = commentsFiltered.value.map(comment => comment.author)
 			.filter((author, index, self) => index === self.findIndex((t) => (
@@ -44,7 +42,7 @@ const { data: comments, refetch: refetchFeedbacks } = useQuery<Feedback[], Error
 
 const { mutate } = useMutation({
 	mutationKey: ["add-comment"], mutationFn: async() => {
-		await createComment(props.teamId, comment.value, props.sprintId, props.isFeedback)
+		await createComment(props.teamId.toString(), comment.value, props.sprintId.toString(), props.isFeedback)
 			.then(() => refetchFeedbacks())
 			.then(() => comment.value = "")
 			.then(() => createToast(toastText))
@@ -59,7 +57,7 @@ const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le co
 </script>
 
 <template>
-  <Row class="border rounded-lg p-2 md:p-6 w-1/2">
+  <Row class="border rounded-lg p-2 md:p-6 w-1/2 bg-white">
     <Column class="w-1/2 pr-5 h-full flex justify-between">
       <div>
         <Row class="pb-5">

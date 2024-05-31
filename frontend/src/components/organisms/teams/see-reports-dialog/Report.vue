@@ -3,7 +3,7 @@ import { LoadingButton } from "@/components/molecules/buttons"
 import { Check, X } from "lucide-vue-next"
 import { defineProps } from "vue"
 import { extractNames } from "@/utils/string"
-import { updateFlag } from "@/services/flag-service"
+import { updateFlag } from "@/services/flag"
 import type { Flag } from "@/types/flag"
 import { useQueryClient } from "@tanstack/vue-query"
 

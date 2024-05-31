@@ -2,7 +2,7 @@
 import { defineProps } from "vue"
 import type { Flag } from "@/types/flag"
 import { useQuery } from "@tanstack/vue-query"
-import { getUsersByRole } from "@/services/user-service"
+import { getUsersByRole } from "@/services/user"
 import type { User } from "@/types/user"
 import { Text } from "@/components/atoms/texts"
 import { Progress } from "@/components/ui/progress"

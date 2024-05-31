@@ -1,25 +1,16 @@
 <script setup lang="ts">
-import { ContainerGradeType } from "@/components/molecules/rateContainer"
-import { Button } from "@/components/ui/button"
 import {
 	Users,
-	LucideCircleFadingPlus,
-	User,
 	SquareGanttChart,
 	Play,
 	Presentation,
-	Blocks,
-	LucideCirclePlus
+	Blocks
 } from "lucide-vue-next"
-import { DialogRating, DialogBonus } from "@/components/organisms/rating"
 import { hasPermission } from "@/services/user"
 import { getTeamByUserId } from "@/services/team"
 import { Cookies } from "@/utils/cookie"
-import DialogIndividualRate from "@/components/organisms/rating/DialogIndividualRate.vue"
 import { useQuery } from "@tanstack/vue-query"
-import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
 import CommentsContainer from "@/components/molecules/rateContainer/CommentsContainer.vue"
-import { Row } from "@/components/atoms/containers"
 import { RatingBox } from "@/components/molecules/rating-box"
 import { Column, Row } from "@/components/atoms/containers"
 import { getAllRatedGradesFromConnectedUser } from "@/services/grade"
@@ -92,7 +83,6 @@ const canSeePrivateComments = hasPermission("ADD_ALL_TEAMS_COMMENT") && hasPermi
       <CommentsContainer v-if="canSeePrivateComments" :isFeedback="false" :sprintId="props.sprintId" :teamId="props.teamId"></CommentsContainer>
     </Row>
 	</Column>
-
 
 
 	<!--
