@@ -68,7 +68,7 @@ public class PresentationOrderService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPresentationOrders"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return presentationOrderRepository.findAllByTeamIdAndSprintId(teamId, sprintId);
+        return presentationOrderRepository.findByTeamIdAndSprintId(teamId, sprintId);
     }
 
 }
