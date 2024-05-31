@@ -122,8 +122,8 @@ public class TeamController {
         return ResponseEntity.ok(sprintGrade);
     }
 
-    @GetMapping("/{id}/sprint/{sprintId}/presentationOrder")
-    public ResponseEntity<List<PresentationOrder>> getPresentationOrderByTeamIdAndSprintId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
+    @GetMapping("/{id}/presentationOrder")
+    public ResponseEntity<List<PresentationOrder>> getPresentationOrderByTeamIdAndSprintId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam Integer sprintId) {
         List<PresentationOrder> presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(token, id, sprintId);
         return ResponseEntity.ok(presentationOrder);
     }

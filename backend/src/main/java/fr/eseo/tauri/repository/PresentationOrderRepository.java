@@ -19,5 +19,5 @@ public interface PresentationOrderRepository extends JpaRepository<PresentationO
     void deleteAllByProject(Integer projectId);
 
     @Query("SELECT po FROM PresentationOrder po WHERE po.student.team.id = :teamId AND po.sprint.id = :sprintId ORDER BY po.value ASC")
-    List<PresentationOrder> findAllByTeamIdAndSprintId(Integer teamId, Integer sprintId);
+    List<PresentationOrder> findByTeamIdAndSprintId(Integer teamId, Integer sprintId);
 }
