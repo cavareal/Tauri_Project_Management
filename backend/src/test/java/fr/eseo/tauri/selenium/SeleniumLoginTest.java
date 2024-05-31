@@ -1,5 +1,6 @@
 package fr.eseo.tauri.selenium;
 
+import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebElement;
@@ -16,7 +17,7 @@ import java.time.Duration;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SeleniumLoginTest {
-        private static final String URL = System.getProperty("selenium.server.url", "http://localhost:5173/");
+        private static final String URL = System.getProperty("selenium.server.url", "http://172.24.1.22/");
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
         private static WebDriverWait wait;

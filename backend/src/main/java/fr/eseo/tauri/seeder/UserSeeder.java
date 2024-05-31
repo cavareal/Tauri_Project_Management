@@ -5,6 +5,7 @@ import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.security.ApplicationSecurity;
 import lombok.RequiredArgsConstructor;
 import net.datafaker.Faker;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,22 +17,30 @@ public class UserSeeder {
 	private final UserRepository userRepository;
 	private final ApplicationSecurity applicationSecurity;
 
+
+	@Value("${app.pl.email}")
+	private String plEmail;
+	@Value("${app.pl.name}")
+	private String plName;
+
 	public void seed(Faker faker) {
-		var userPL = new User("p.l@tauri.com");
-		userPL.name("WOODWARD Richard");
+
+
+		var userPL = new User(plEmail);
+		userPL.name(plName);
 		userRepository.save(userPL);
 
-		var userSS = new User("s.s@tauri.com");
-		userSS.name("CLAVREUL Michael");
-		userRepository.save(userSS);
-
-		var userOL = new User("o.l@tauri.com");
-		userOL.name("ROUSSEAU Sophie");
-		userRepository.save(userOL);
-
-		var userTC = new User("t.c@tauri.com");
-		userTC.name("Technique Coach");
-		userRepository.save(userTC);
+//		var userSS = new User("s.s@tauri.com");
+//		userSS.name("CLAVREUL Michael");
+//		userRepository.save(userSS);
+//
+//		var userOL = new User("o.l@tauri.com");
+//		userOL.name("ROUSSEAU Sophie");
+//		userRepository.save(userOL);
+//
+//		var userTC = new User("t.c@tauri.com");
+//		userTC.name("Technique Coach");
+//		userRepository.save(userTC);
 
 
 //		for (int i = 0; i < NB_USERS; i++) {

@@ -57,9 +57,11 @@ public class AuthService {
             // Check if user in DB
 //            User user = userRepository.findByEmail(userDetails.getUsername())
             User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
+                        .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
+
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
+            CustomLogger.info("Access token generated for user " + user.id() + " : " + accessToken);
             return new AuthResponse(user.id(), accessToken);
 
         } catch (Exception e){

@@ -45,6 +45,13 @@ public class RoleController {
         return ResponseEntity.ok(responseMessage.create());
     }
 
+    @PostMapping(path="/{email}")
+    public ResponseEntity<String> createRoles(@PathVariable String email, @Validated(Create.class) @RequestBody RoleType[] roles) {
+        roleService.createRoles(email, roles);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
+    }
+
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateRole(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Role updatedRole) {
         roleService.updateRole(token, id, updatedRole);

@@ -34,6 +34,12 @@ public class UserController {
 	private final GradeService gradeService;
 	private final NotificationService notificationService;
 
+
+	@GetMapping
+	public List<User> getAllUsers() {
+		return userService.getAllUsers();
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
 		User user = userService.getUserById(token, id);
@@ -46,11 +52,10 @@ public class UserController {
 	}
 
 	@PostMapping
-	public ResponseEntity<String> createUser(@RequestParam String name, @Validated(Create.class) @RequestBody User user) {
-		userService.createUser(name, user);
-		CustomLogger.info(responseMessage.create());
-		return ResponseEntity.ok(responseMessage.create());
+	public ResponseEntity<User> createUser(@Validated(Create.class) @RequestBody User user) {
+		return ResponseEntity.ok(userService.createUser(user));
 	}
+
 
 	@PatchMapping("/{id}")
 	public ResponseEntity<String> updateUser(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody User user) {
