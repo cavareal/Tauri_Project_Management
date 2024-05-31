@@ -218,11 +218,26 @@ push-prod:
 ##################
 selenium-dev:
   stage: selenium
-  services:
-    - selenium/standalone-chrome
+  image: charlo56/pgl-gradlew-chrome:latest
   script:
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV
-    
+    - cd backend
+    - chmod +x ./gradlew  
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless --scan
+  dependencies:
+    - push-dev
+  cache:
+    paths:
+      - $CI_PROJECT_DIR/.gradle/caches
+  only:
+    - dev
+  retry: 2
+
+  # services:
+  #   - selenium/standalone-chrome
+  # script:
+  #   - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV
+
+
 
 
 ###################
