@@ -25,11 +25,9 @@ public class SeleniumLoginTest {
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
-                ChromeOptions options = new ChromeOptions();
-                CustomLogger.info("Selenium URL: " + SeleniumLoginTest.URL);
-                CustomLogger.info("options: " + options);
+
+                ChromeOptions options = new ChromeOptions().addArguments("--headless=new");
                 SeleniumLoginTest.webdriver = new ChromeDriver(options);
-                CustomLogger.info("webdriver: " + SeleniumLoginTest.webdriver);
                 wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
                 SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");
         }
