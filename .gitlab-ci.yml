@@ -220,9 +220,11 @@ selenium-dev:
   stage: selenium
   services:
     - selenium/standalone-chrome
+  image: charlo56/pgl-gradlew-chrome:latest
   script:
     - cd backend
-    - chmod +x ./gradlew
+    - chmod +x ./gradlew  
+    - export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
     - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless --scan
   dependencies:
     - push-dev
@@ -231,7 +233,6 @@ selenium-dev:
       - $CI_PROJECT_DIR/.gradle/caches
   only:
     - dev
-  retry: 2
   retry: 2
 
 ###################
