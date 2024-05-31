@@ -117,6 +117,7 @@ class UserServiceTest {
 
     @Test
     void createUserSavesUserWhenAuthorized() {
+        String token = "validToken";
         User user = new User();
 
         when(authService.checkAuth(token, "createUser")).thenReturn(true);
@@ -128,6 +129,7 @@ class UserServiceTest {
 
     @Test
     void createUserThrowsSecurityExceptionWhenUnauthorized() {
+        String token = "validToken";
         User user = new User();
 
         when(authService.checkAuth(token, "createUser")).thenReturn(false);

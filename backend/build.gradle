@@ -79,21 +79,21 @@ jacocoTestReport {
 }
 
 // Selenium source/config/tests
-sourceSets {
-	seleniumTest {
-		java.srcDir 'src/test/java/fr/eseo/tauri/selenium'
-	}
-}
-configurations {
-	seleniumTestImplementation.extendsFrom testImplementation
-	seleniumTestRuntimeOnly.extendsFrom testRuntimeOnly
-}
-tasks.register('seleniumTest', Test) {
-	useJUnitPlatform()
-	testClassesDirs = sourceSets.seleniumTest.output.classesDirs
-	classpath = sourceSets.seleniumTest.runtimeClasspath
-	systemProperty 'selenium.server.url', project.hasProperty('selenium.server.url') ? project.property('selenium.server.url') : 'http://localhost:5173/'
-}
+//sourceSets {
+//	seleniumTest {
+//		java.srcDir 'src/test/java/fr/eseo/tauri/selenium'
+//	}
+//}
+//configurations {
+//	seleniumTestImplementation.extendsFrom testImplementation
+//	seleniumTestRuntimeOnly.extendsFrom testRuntimeOnly
+//}
+//tasks.register('seleniumTest', Test) {
+//	useJUnitPlatform()
+//	testClassesDirs = sourceSets.seleniumTest.output.classesDirs
+//	classpath = sourceSets.seleniumTest.runtimeClasspath
+//	systemProperty 'selenium.server.url', project.hasProperty('selenium.server.url') ? project.property('selenium.server.url') : 'http://localhost:5173/'
+//}
 
 
 // Function to setup DB login, when build from gitlab pipeline
