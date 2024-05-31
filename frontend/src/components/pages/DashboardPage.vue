@@ -9,7 +9,7 @@ import { getCurrentUser, hasPermission } from "@/services/user"
 import { extractNames } from "@/utils/string"
 import { ActionSection } from "@/components/molecules/action-section"
 import { RedirectButton } from "@/components/molecules/buttons"
-import { Check, GraduationCap, Play, Scale, Tag, User, Users } from "lucide-vue-next"
+import { Check, GraduationCap, Play, Scale, Tag, User, Users, FileCog } from "lucide-vue-next"
 import { Column } from "@/components/atoms/containers"
 import { InfoText, Title } from "@/components/atoms/texts"
 
@@ -107,6 +107,17 @@ const { data: user } = useQuery({ queryKey: ["current-user"], queryFn: getCurren
 				<Scale class="size-12 stroke-1 text-dark-blue" />
 			</template>
 			<RedirectButton link="/grade-scales"> Barèmes </RedirectButton>
+		</ActionSection>
+
+		<ActionSection
+			v-if="hasPermission('MANAGE_PROJECT')"
+			title="Gestion de projet"
+			description="Vous pouvez ajouter de nouveaux utilisateurs."
+		>
+			<template #icon>
+				<FileCog class="size-12 stroke-1 text-dark-blue" />
+			</template>
+			<RedirectButton link="/project"> Gestion de projet </RedirectButton>
 		</ActionSection>
 	</SidebarTemplate>
 </template>

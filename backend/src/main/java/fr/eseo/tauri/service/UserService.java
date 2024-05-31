@@ -2,6 +2,7 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
@@ -26,6 +27,12 @@ public class UserService {
 	private final RoleRepository roleRepository;
 	private final PermissionService permissionService;
 
+
+
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
+	}
+
 	public User getUserById(String token, Integer id) {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readUser"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -42,12 +49,12 @@ public class UserService {
 		return userRepository.findAll();
 	}
 
-	public void createUser(String token, User user) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "createUser"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+	public User createUser(User user) {
+		User userCheck = userRepository.findByEmail(user.email()).orElse(null);
+		if (userCheck != null) {
+			throw new SecurityException("User already exists in the database");
 		}
-
-		userRepository.save(user);
+		return userRepository.save(user);
 	}
 
 	public void updateUser(String token, Integer id, User updatedUser) {

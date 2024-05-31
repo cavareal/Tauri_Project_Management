@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { UserSchema } from "./user"
 
 export const RoleTypeSchema = z.enum([
 	"SUPERVISING_STAFF",
@@ -13,6 +14,16 @@ export const RoleTypeSchema = z.enum([
 	"IDENTIFIED_USER"
 ])
 export type RoleType = z.infer<typeof RoleTypeSchema>
+
+
+export const RoleSchema = z.object({
+	id: z.number(),
+	type: RoleTypeSchema,
+	user: UserSchema
+})
+export type Role = z.infer<typeof RoleSchema>
+
+
 
 export const formatRole = (role: RoleType) => {
 	switch (role) {

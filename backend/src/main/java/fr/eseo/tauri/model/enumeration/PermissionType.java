@@ -78,5 +78,7 @@ public enum PermissionType {
     GRADE_SCALES_PAGE,
     ADD_GRADE_COMMENT,
     ADD_USER,
+    DELETE_USER,
+    GET_ALL_USERS,
     MANAGE_PROJECT
 }

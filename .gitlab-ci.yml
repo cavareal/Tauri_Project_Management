@@ -44,7 +44,6 @@ vuejs-build-dev:
   image: node:16.19.1-alpine3.17
   script:
     - cd frontend
-    - df -h
     - npm install --legacy-peer-deps
     - npm run build-only:dev
   retry: 2

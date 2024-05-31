@@ -71,6 +71,8 @@ export const PermissionTypeSchema = z.enum([
 	"RATING_PAGE",
 	"GRADE_SCALES_PAGE",
 	"ADD_USER",
+    "DELETE_USER",
+    "GET_ALL_USERS",
 	"MANAGE_PROJECT"
 ])
 

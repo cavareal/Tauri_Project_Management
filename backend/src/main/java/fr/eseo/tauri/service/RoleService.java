@@ -8,6 +8,7 @@ import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
+import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.util.ListUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class RoleService {
 	private final RoleRepository roleRepository;
 	private final UserService userService;
 	private final PermissionService permissionService;
+	private final UserRepository userRepository;
 
 	private static final String READ_PERMISSION = "readRole";
 	private static final String ADD_PERMISSION = "addRole";
@@ -48,6 +50,18 @@ public class RoleService {
 		}
 		if(role.userId() != null) role.user(userService.getUserById(token, role.userId()));
 		roleRepository.save(role);
+	}
+
+	public void createRoles(String email, RoleType[] roles) {
+		User user = userRepository.findByEmail(email).orElse(null);
+
+		for (RoleType roleType : roles) {
+			Role role = new Role();
+			role.user(user);
+			role.type(roleType);
+
+			roleRepository.save(role);
+		}
 	}
 
 	public void updateRole(String token, Integer id, Role updatedRole) {

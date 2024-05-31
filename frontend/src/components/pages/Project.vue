@@ -5,8 +5,8 @@ import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
 import { hasPermission } from "@/services/user/user.service"
 import { NotAuthorized } from "@/components/organisms/errors"
-// import { AddUsers } from "@/components/organisms/project/AddUsers"
-import AddUsers  from "./../organisms/project/AddUsers.vue"
+import AddUser from "./../organisms/project/AddUser.vue"
+import ManageUser from "./../organisms/project/ManageUser.vue"
 
 </script>
 
@@ -17,7 +17,8 @@ import AddUsers  from "./../organisms/project/AddUsers.vue"
 			<Header title="Gestion de projet">
 			</Header>
             <Column>
-                <AddUsers />
+                <AddUser v-if="hasPermission('ADD_USER')" />
+				<ManageUser v-if="hasPermission('DELETE_USER')" />
             </Column>
 		</Column>
 	</SidebarTemplate>
