@@ -30,17 +30,17 @@ public class UserSeeder {
 		userPL.name(plName);
 		userRepository.save(userPL);
 
-//		var userSS = new User("s.s@tauri.com");
-//		userSS.name("CLAVREUL Michael");
-//		userRepository.save(userSS);
-//
-//		var userOL = new User("o.l@tauri.com");
-//		userOL.name("ROUSSEAU Sophie");
-//		userRepository.save(userOL);
-//
-//		var userTC = new User("t.c@tauri.com");
-//		userTC.name("Technique Coach");
-//		userRepository.save(userTC);
+		var userSS = new User("s.s@tauri.com");
+		userSS.name("CLAVREUL Michael");
+		userRepository.save(userSS);
+
+		var userOL = new User("o.l@tauri.com");
+		userOL.name("ROUSSEAU Sophie");
+		userRepository.save(userOL);
+
+		var userTC = new User("t.c@tauri.com");
+		userTC.name("Technique Coach");
+		userRepository.save(userTC);
 
 
 //		for (int i = 0; i < NB_USERS; i++) {
