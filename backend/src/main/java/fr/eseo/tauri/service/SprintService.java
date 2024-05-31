@@ -9,8 +9,11 @@ import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.SprintRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -20,6 +23,7 @@ public class SprintService {
     private final AuthService authService;
     private final SprintRepository sprintRepository;
     private final ProjectService projectService;
+    @Lazy
     private final StudentService studentService;
     private final PresentationOrderService presentationOrderService;
     private final BonusService bonusService;
@@ -97,5 +101,32 @@ public class SprintService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         sprintRepository.deleteAllByProject(projectId);
+    }
+
+    public Sprint getCurrentSprint(String token, Integer projectId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "getSprints"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        LocalDate today = LocalDate.now();
+        List<Sprint> sprints = sprintRepository.findAllByProject(projectId);
+
+        Sprint currentSprint = null;
+        Sprint closestSprint = null;
+        long closestDays = Long.MAX_VALUE;
+
+        for (Sprint sprint : sprints) {
+            if (!sprint.startDate().isAfter(today) && !sprint.endDate().isBefore(today)) {
+                currentSprint = sprint;
+                break;
+            }
+
+            long daysToEndDate = ChronoUnit.DAYS.between(today, sprint.endDate());
+            if (daysToEndDate < closestDays) {
+                closestDays = daysToEndDate;
+                closestSprint = sprint;
+            }
+        }
+
+        return currentSprint != null ? currentSprint : closestSprint;
     }
 }
