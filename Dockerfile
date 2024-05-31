@@ -25,11 +25,15 @@
 
 
 # slenium test : 
+    # private static final String URL = System.getProperty("selenium.server.url", "http://172.24.1.22/");
+    # 
     # WebDriverManager.chromedriver().setup();
     # ChromeOptions options = new ChromeOptions().addArguments("--headless");
     # SeleniumLoginTest.webdriver = new ChromeDriver(options);
     # wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
     # SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");
+
+
 
 # Utiliser une image de base avec Gradle 8.4 et JDK 17
 FROM gradle:8.4.0-jdk17
