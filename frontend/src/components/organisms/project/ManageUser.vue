@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { Column } from '@/components/atoms/containers';
 import { Button } from '@/components/ui/button';
 import { useMutation } from '@tanstack/vue-query';
@@ -26,21 +26,18 @@ const props = defineProps<{
   rolesError: any;
 }>();
 
+
+const emits = defineEmits(["delete:user"])
 const userToDelete = ref<number | null>(null);
+const isDialogOpen = ref<boolean>(false);
 
 function openDelete(userId: number) {
   userToDelete.value = userId;
+  isDialogOpen.value = true;
 }
 
-function getRoleDescription(role: String[]){
-    const roleList: RoleType[] = []
-    
-    role.forEach(element => {
-        roleList.push(formatRole(element));
-    });
-    
-
-    return roleList;
+function getRoleDescription(role: string[]) {
+  return role.map(formatRole);
 }
 
 const { mutate: deleteUserMutate } = useMutation({
@@ -50,6 +47,8 @@ const { mutate: deleteUserMutate } = useMutation({
       await deleteUser(userToDelete.value)
         .then(() => {
           createToast("L'utilisateur a été supprimé.");
+          isDialogOpen.value = false;
+          emits('delete:user')
         })
         .catch(() => {
           createToast("Erreur lors de la suppression de l'utilisateur.");
@@ -57,53 +56,56 @@ const { mutate: deleteUserMutate } = useMutation({
     }
   },
 });
+
+watch(isDialogOpen, (newVal) => {
+  if (!newVal) userToDelete.value = null;
+});
 </script>
 
 <template>
-    <div class="mt-10 border border-gray-300 border-dashed rounded-lg flex justify-center flex-col items-stretch p-4">
-      <h2 class="text-xl font-semibold text-center mb-4">Gestion des utilisateurs</h2>
-      <Column class="items-center gap-4">
-        <template v-if="usersLoading || rolesLoading">
-          <div>Chargement...</div>
-        </template>
-        <template v-else-if="usersError || rolesError">
-          <div>Erreur lors du chargement des données.</div>
-        </template>
-        <template v-else>
-          <div
-            v-for="user in users"
-            :key="user.id"
-            class="flex justify-between items-center w-full p-2 border-b border-gray-300"
-          >
-            <div>
-              <p class="font-medium">{{ user.name }}</p>
-              <p class="text-gray-500">{{ user.email }}</p>
-              <p class="text-gray-400">{{ getRoleDescription(user.role).join(', ') }}</p>
-            </div>
-            <Dialog>
-              <DialogTrigger as-child>
-                <Button class="" @click="openDelete(user.id)">
-                  <Trash class="w-5 h-5" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent class="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Confirmer la suppression</DialogTitle>
-                  <DialogDescription>
-                    Êtes-vous sûr de vouloir supprimer cet utilisateur ?
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button @click="userToDelete = null">Annuler</Button>
-                  <Button class="bg-red-500 text-white" @click="deleteUserMutate">
-                    Supprimer
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+  <div class="mt-10 border border-gray-300 border-dashed rounded-lg flex justify-center flex-col items-stretch p-4">
+    <h2 class="text-xl font-semibold text-center mb-4">Gestion des utilisateurs</h2>
+    <Column class="items-center gap-4">
+      <template v-if="usersLoading || rolesLoading">
+        <div>Chargement...</div>
+      </template>
+      <template v-else-if="usersError || rolesError">
+        <div>Erreur lors du chargement des données.</div>
+      </template>
+      <template v-else>
+        <div
+          v-for="user in users"
+          :key="user.id"
+          class="flex justify-between items-center w-full p-2 border-b border-gray-300"
+        >
+          <div>
+            <p class="font-medium">{{ user.name }}</p>
+            <p class="text-gray-500">{{ user.email }}</p>
+            <p class="text-gray-400">{{ getRoleDescription(user.role).join(', ') }}</p>
           </div>
-        </template>
-      </Column>
-    </div>
-  </template>
-  
+          <Dialog v-model:open="isDialogOpen">
+            <DialogTrigger as-child>
+              <Button @click="openDelete(user.id)">
+                <Trash class="w-5 h-5" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent class="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Confirmer la suppression</DialogTitle>
+                <DialogDescription>
+                  Êtes-vous sûr de vouloir supprimer cet utilisateur ?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button @click="isDialogOpen = false">Annuler</Button>
+                <Button class="bg-red-500 text-white" @click="deleteUserMutate">
+                  Supprimer
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </template>
+    </Column>
+  </div>
+</template>

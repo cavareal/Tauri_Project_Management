@@ -20,7 +20,11 @@ const usersError = ref(false);
 const rolesError = ref(false);
 
 onMounted(async () => {
-  try {
+	refetch()
+});
+
+async function refetch (){
+	try {
     users.value = await getAllUsers();
   } catch (error) {
     usersError.value = true;
@@ -37,7 +41,9 @@ onMounted(async () => {
     rolesLoading.value = false;
     rolesError.value = false;
   }
-});
+}
+
+
 
 const combinedData = computed(() => {
   return users.value.map(user => ({
@@ -56,9 +62,6 @@ function getListOfRoles(user: User) {
   return rolesOfUser;
 }
 
-function ouailateam() {
-  console.log('ouailateam');
-}
 </script>
 
 <template>
@@ -67,7 +70,7 @@ function ouailateam() {
 	  <Column v-else class="gap-4">
 		<Header title="Gestion de projet"></Header>
 		<Column>
-		  <AddUser v-if="hasPermission('ADD_USER')" @add-new-user="ouailateam" />
+		  <AddUser v-if="hasPermission('ADD_USER')" @add:user="refetch" />
 		  <ManageUser
 			v-if="hasPermission('DELETE_USER')"
 			:users="combinedData"
@@ -75,6 +78,7 @@ function ouailateam() {
 			:users-error="usersError"
 			:roles-loading="rolesLoading"
 			:roles-error="rolesError"
+			@delete:user="refetch"
 		  />
 		</Column>
 	  </Column>

@@ -24,13 +24,12 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 
 
-
-
 const userRoles = ref<RoleType[]>([]);
 const userMail = ref<string>("");
 const userName = ref<string>("");
 const createdUser = ref<CreateUser>();
 
+const emits = defineEmits(["add:user"])
 
 
 watch(userMail, (newMail) => {
@@ -67,6 +66,7 @@ const { error, mutate } = useMutation({
                         userMail.value = "";
                         userName.value = "";
                         userRoles.value = [];
+                        emits('add:user')
                     })
                     .catch(() => createToast("Erreur lors de la création du/des role(s)"))
             })
