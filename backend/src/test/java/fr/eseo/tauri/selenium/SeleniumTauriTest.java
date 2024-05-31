@@ -24,7 +24,7 @@ public class SeleniumTauriTest {
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
-                ChromeOptions options = new ChromeOptions();
+                ChromeOptions options = new ChromeOptions().addArguments("--headless");
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
         }
 
