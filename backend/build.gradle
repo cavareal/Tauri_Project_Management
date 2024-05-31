@@ -51,7 +51,7 @@ dependencies {
 // Unit tests
 test {
 	useJUnitPlatform()
-//	include '**/unit/**'
+	include '**/unit/**'
 	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
 }
 
