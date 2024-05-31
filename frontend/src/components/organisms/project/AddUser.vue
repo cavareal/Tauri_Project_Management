@@ -59,10 +59,9 @@ const { error, mutate } = useMutation({
 
         await createUser(createdUser.value)
             .then(() => {
-                createToast("L'utilisateur a été ajouté.")
                 createRole(userMail.value, userRoles.value)
                     .then(() => {
-                        createToast("Le(s) role(s) a/ont été ajouté(s).")
+                        createToast("L'utilisateur a été ajouté avec son/ses rôle(s)")
                         userMail.value = "";
                         userName.value = "";
                         userRoles.value = [];
