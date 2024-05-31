@@ -21,3 +21,5 @@ RUN wget -N https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/c
 ENV SELENIUM_VERSION=4.19.1
 
 RUN apt-get install -y libnss3 libgconf-2-4
+
+

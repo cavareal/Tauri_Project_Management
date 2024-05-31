@@ -1,5 +1,6 @@
 package fr.eseo.tauri.selenium;
 
+import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebElement;
@@ -25,7 +26,10 @@ public class SeleniumLoginTest {
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
+                CustomLogger.info("Selenium URL: " + SeleniumLoginTest.URL);
+                CustomLogger.info("options: " + options);
                 SeleniumLoginTest.webdriver = new ChromeDriver(options);
+                CustomLogger.info("webdriver: " + SeleniumLoginTest.webdriver);
                 wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
                 SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");
         }
