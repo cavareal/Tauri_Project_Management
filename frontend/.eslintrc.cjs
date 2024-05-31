@@ -4,15 +4,22 @@
 module.exports = {
 	root: true,
 	"extends": [
-		"@maxencebonamy",
 		"plugin:vue/vue3-essential",
 		"eslint:recommended",
-		"@vue/eslint-config-typescript"
+		"@vue/eslint-config-typescript",
+		"@maxencebonamy",
 	],
+	parser: "vue-eslint-parser",
 	parserOptions: {
-		ecmaVersion: "latest",
-		project: "./tsconfig.app.json"
+		"parser": "@typescript-eslint/parser",
+		"project": false,
+		"extraFileExtensions": [".vue"],
+		"ecmaVersion": 2020,
+		"sourceType": "module"
 	},
+	plugins: [
+		"@typescript-eslint"
+	],
 	ignorePatterns: [
 		"src/components/ui/**/*.vue",
 		"src/components/ui/**/*.ts",
@@ -26,5 +33,11 @@ module.exports = {
 		"@typescript-eslint/explicit-function-return-type": "off",
 		"func-style": ["error", "expression", { "allowArrowFunctions": true }],
 		"max-len": "off"
-	}
+	},
+	overrides: [
+		{
+			extends: ['plugin:@typescript-eslint/disable-type-checked'],
+			files: ['./**/*.js', './**/*.jsx', './**/*.ts', './**/*.tsx', './**/*.vue'],
+		},
+	],
 }

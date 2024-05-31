@@ -4,8 +4,8 @@ export const UserSchema = z.object({
 	id: z.number(),
 	name: z.string(),
 	email: z.string(),
-	password: z.string(),
-	privateKey: z.string()
+	password: z.string().nullable(),
+	privateKey: z.string().nullable()
 })
 export type User = z.infer<typeof UserSchema>
 

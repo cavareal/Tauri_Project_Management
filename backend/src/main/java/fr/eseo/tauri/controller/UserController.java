@@ -1,5 +1,6 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
@@ -100,6 +101,12 @@ public class UserController {
 	public ResponseEntity<List<Notification>> getAllNotificationsUser(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
 		List<Notification> notifications = notificationService.getNotificationsByUser(token, userId);
 		return ResponseEntity.ok(notifications);
+	}
+
+	@GetMapping("/{authorId}/rated-grades")
+	public ResponseEntity<List<Grade>> getRatedGradesByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer authorId) {
+		var grades = gradeService.getRatedGradesByAuthorId(authorId);
+		return ResponseEntity.ok(grades);
 	}
 
 }

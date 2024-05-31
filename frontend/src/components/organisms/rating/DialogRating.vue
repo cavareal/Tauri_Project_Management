@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button"
 import LoadingButton from "../../molecules/buttons/LoadingButton.vue"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { ref } from "vue"
-import { createGrade } from "@/services/grade-service"
+import { createGrade } from "@/services/grade/grade.service"
 import { createToast } from "@/utils/toast"
 import type { GradeType } from "@/types/grade-type"
-import { getGradeTypeByName } from "@/services/grade-type-service"
+import { getGradeTypeByName } from "@/services/grade-type/grade-type.service"
 
 let mark = ref("")
 const open = ref(false)

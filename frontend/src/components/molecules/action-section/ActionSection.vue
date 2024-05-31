@@ -12,7 +12,7 @@ defineProps<{
 </script>
 
 <template>
-	<Row class="items-center border rounded-lg p-6 gap-4">
+	<Row class="items-center border rounded-md p-6 gap-4 bg-white">
 		<slot name="icon" />
 
 		<Column class="items-start justify-center flex-1 gap-1">

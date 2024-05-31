@@ -12,9 +12,9 @@ Cookies.removeAll()
 
 <template>
 	<Row class="w-full h-full items-stretch justify-stretch">
-		<img src="/background.png" alt="Background with Tauri Logo" class="w-1/2 h-full object-cover object-top" />
+		<img src="/background.png" alt="Background with Tauri Logo" class="w-1/2 h-full object-cover object-top" draggable="false" />
 
-		<Column class="w-1/2 h-full items-center justify-center gap-4 bg-white">
+		<Column class="w-1/2 h-full items-center justify-center gap-4 bg-background">
 			<Logo class="h-48 fill-dark-blue" />
 
 			<Title class="text-dark-blue text-4xl">Bienvenue sur Tauri !</Title>

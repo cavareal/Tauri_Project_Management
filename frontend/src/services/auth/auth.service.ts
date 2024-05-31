@@ -1,7 +1,7 @@
 import { AuthResponseSchema } from "@/types/auth-response"
 import { loginAndValidate } from "@/utils/api"
 import { Cookies } from "@/utils/cookie"
-import { getAllPermissions, getAllRoles } from "@/services/user-service"
+import { getAllPermissions, getAllRoles } from "@/services/user"
 import { AuthRequestSchema } from "@/types/auth-request"
 
 export const login = async(login: string, password: string) => {

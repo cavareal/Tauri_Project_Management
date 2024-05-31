@@ -1,6 +1,6 @@
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { type Bonus, BonusSchema, type CreateBonus, CreateBonusSchema, type UpdateBonus, UpdateBonusSchema } from "@/types/bonus"
-import { getConnectedUser } from "@/services/user-service"
+import { getConnectedUser } from "@/services/user"
 import { z } from "zod"
 
 export const createBonus = async(body: Omit<CreateBonus, "authorId">): Promise<void> => {

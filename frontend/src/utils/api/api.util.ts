@@ -82,6 +82,8 @@ export const queryAndValidate = async <T>({
 		data = JSON.parse(data as string)
 	} catch (error) { /* Do nothing */ }
 
+	console.debug(route, data)
+
 	const parsedBody = responseSchema.safeParse(data)
 	if (!parsedBody.success) {
 		console.error(`Failed to validate GET ${route}: ${parsedBody.error.message}`)

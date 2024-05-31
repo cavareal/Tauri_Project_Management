@@ -5,22 +5,21 @@ import {
 	RedirectImportStudents, GenerateTeams, PrepublishDialog, DeleteTeamsDialog, TeamAccordion, TeamsNotCreated,
 	PublishDialog, SeeReportsDialog
 } from "@/components/organisms/teams"
-import { Cookies } from "@/utils/cookie"
 import { Button } from "@/components/ui/button"
-import { getAllStudents } from "@/services/student-service"
+import { getAllStudents } from "@/services/student/student.service"
 import { NotAuthorized } from "@/components/organisms/errors"
-import { getTeams } from "@/services/team-service"
-import { getCurrentPhase } from "@/services/project-service"
+import { getTeams } from "@/services/team/team.service"
+import { getCurrentPhase } from "@/services/project/project.service"
 import { Header } from "@/components/molecules/header"
 import { computed, onMounted, ref } from "vue"
 import { useQuery } from "@tanstack/vue-query"
 import SignalTeamDialog from "@/components/organisms/teams/SignalTeamDialog.vue"
 import ValidTeamDialog from "@/components/organisms/teams/ValidTeamDialog.vue"
-import { userHasValidateTeams } from "@/services/flag-service"
-import { hasPermission } from "@/services/user-service"
+import { userHasValidateTeams } from "@/services/flag/flag.service"
+import { hasPermission } from "@/services/user/user.service"
 import { Loading } from "@/components/organisms/loading"
+import { Cookies } from "@/utils/cookie"
 
-const validateTeamDescription = "Validation des équipes prépubliées"
 const currentUserId = Cookies.getUserId()
 const hasValidateTeams = ref(true)
 
@@ -29,12 +28,12 @@ const { data: nbStudents, ...nbStudentsQuery } = useQuery({ queryKey: ["nb-stude
 const { data: nbTeams, refetch: refetchTeams, ...nbTeamsQuery } = useQuery({ queryKey: ["nb-teams"], queryFn: async() => (await getTeams()).length })
 
 const handleValidTeams = async() => {
-	hasValidateTeams.value = await userHasValidateTeams(currentUserId, validateTeamDescription)
+	hasValidateTeams.value = await userHasValidateTeams(currentUserId)
 }
 
 onMounted(async() => {
 	if (currentUserId) {
-		hasValidateTeams.value = await userHasValidateTeams(currentUserId, validateTeamDescription)
+		hasValidateTeams.value = await userHasValidateTeams(currentUserId)
 	}
 })
 
@@ -65,10 +64,10 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 				<Button variant="default">Publier</Button>
 			</PublishDialog>
 
-			<SignalTeamDialog v-if="canPreview && displayComposingFlagButtons">
+			<SignalTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons">
 				<Button variant="outline">Signaler</Button>
 			</SignalTeamDialog>
-			<ValidTeamDialog v-if="canPreview && displayComposingFlagButtons" @valid:teams="handleValidTeams">
+			<ValidTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons" @valid:teams="handleValidTeams">
 				<Button variant="default">Valider</Button>
 			</ValidTeamDialog>
 		</Header>

@@ -51,7 +51,7 @@ export const getSprintEndTypeDescription = (sprintEndType: SprintEndType): strin
 	case "UNGRADED_SPRINT":
 		return "Sprint planning, sprint, possibilité de sprint review avec le client [non noté], sprint retrospective"
 	case "FINAL_SPRINT":
-		return "Sprint planning, sprint, sprint review avec présentation et démonstration [soutenance], sprint retrospective, présentation vidéo"
+		return "Sprint planning, sprint, sprint review avec présentation et démonstration [soutenance], sprint retrospective, présentation commerciale"
 	}
 }
 

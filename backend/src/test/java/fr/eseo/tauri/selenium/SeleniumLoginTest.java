@@ -16,7 +16,7 @@ import java.time.Duration;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SeleniumLoginTest {
-        private static final String URL = "http://localhost:5173/";
+        private static final String URL = System.getProperty("selenium.server.url", "http://localhost:5173/");
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
         private static WebDriverWait wait;
@@ -41,7 +41,7 @@ public class SeleniumLoginTest {
         @Test
         @Order(2)
         void loginPl() {
-                webdriver.findElement(By.id("radix-1-form-item")).sendKeys("pl@tauri.com");
+                webdriver.findElement(By.id("radix-1-form-item")).sendKeys("p.l@tauri.com");
                 webdriver.findElement(By.id("radix-2-form-item")).sendKeys("pl");
                 {
                         WebElement element = webdriver.findElement(By.id("radix-1-form-item"));

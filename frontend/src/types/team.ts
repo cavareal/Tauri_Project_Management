@@ -4,7 +4,7 @@ import { z } from "zod"
 
 export const TeamSchema = z.object({
 	id: z.number(),
-	name: z.string().nullable(),
+	name: z.string(),
 	project: ProjectSchema,
 	leader: UserSchema.nullable()
 })

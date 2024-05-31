@@ -5,7 +5,7 @@ import { Cookies } from "@/utils/cookie"
 import { Header } from "@/components/molecules/header"
 import { formatRole } from "@/types/role"
 import { useQuery } from "@tanstack/vue-query"
-import { getCurrentUser, hasPermission } from "@/services/user-service"
+import { getCurrentUser, hasPermission } from "@/services/user"
 import { extractNames } from "@/utils/string"
 import { ActionSection } from "@/components/molecules/action-section"
 import { RedirectButton } from "@/components/molecules/buttons"
@@ -22,7 +22,7 @@ const { data: user } = useQuery({ queryKey: ["current-user"], queryFn: getCurren
 	<SidebarTemplate>
 		<Header :title="`Bonjour ${user ? extractNames(user?.name).firstName : ''} 👋`" id="welcome-text"/>
 
-		<Column class="border rounded-lg p-6 items-center">
+		<Column class="border rounded-md p-6 items-center bg-white">
 			<Title class="text-dark-blue text-xl">
 				Bienvenue sur Tauri !
 			</Title>

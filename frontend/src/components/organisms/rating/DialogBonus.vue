@@ -4,9 +4,9 @@ import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
-import { getStudentsByTeamId } from "@/services/student-service"
+import { getStudentsByTeamId } from "@/services/student"
 import { Label } from "@/components/ui/label"
-import { getStudentBonus, updateBonus } from "@/services/bonus-service"
+import { getStudentBonus, updateBonus } from "@/services/bonus"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ErrorText } from "@/components/atoms/texts"
@@ -27,7 +27,7 @@ let updatedStudentBonuses: Bonus[] = reactive([])
 const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => getStudentsByTeamId(Number(props.teamId)) })
 
 const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
-	queryKey: ["student-bonuses"],
+	queryKey: ["student-bonuses", props.teamId, props.sprintId],
 	queryFn: async() => {
 		if (!teamStudents.value) return
 		return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited, props.sprintId)))

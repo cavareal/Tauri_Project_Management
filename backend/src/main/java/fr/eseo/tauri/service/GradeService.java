@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
+import static fr.eseo.tauri.util.ListUtil.contains;
 import static fr.eseo.tauri.util.ListUtil.filter;
 
 @Service
 @RequiredArgsConstructor
 public class GradeService {
+
     private final AuthService authService;
     private final GradeRepository gradeRepository;
     private final UserService userService;
@@ -65,6 +67,18 @@ public class GradeService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
+        var ratedGrades = gradeRepository.findAllByAuthorId(grade.authorId());
+        if (!ratedGrades.isEmpty()) {
+            for (Grade ratedGrade : ratedGrades) {
+                if (ratedGrade.sprint().id().equals(grade.sprintId())
+                        && ratedGrade.gradeType().id().equals(grade.gradeTypeId())
+                        && ((ratedGrade.student() != null && ratedGrade.student().id().equals(grade.studentId())) || (ratedGrade.team() != null && ratedGrade.team().id().equals(grade.teamId())))
+                ) {
+                    throw new IllegalArgumentException("A grade with the same author, sprint, grade type, student and team already exists");
+                }
+            }
+        }
+
         if (grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
         if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
         if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
@@ -93,7 +107,8 @@ public class GradeService {
         if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
         if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, updatedGrade.sprintId()));
         if (updatedGrade.authorId() != null) grade.author(userService.getUserById(token, updatedGrade.authorId()));
-        if (updatedGrade.studentId() != null) grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
+        if (updatedGrade.studentId() != null)
+            grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
         if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(token, updatedGrade.teamId()));
 
         if ((grade.team() == null) == (grade.student() == null)) {
@@ -125,11 +140,10 @@ public class GradeService {
         var students = studentRepository.findAll();
         var grades = filter(gradeRepository.findAll(), grade -> grade.student() != null);
         for (var student : students) {
-            if (Boolean.FALSE.equals(student.bachelor())) {
-                var studentGrades = filter(grades, grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && /*!grade.gradeType().name().equalsIgnoreCase("mean") && !grade.gradeType().name().equalsIgnoreCase("average")*/!grade.gradeType().name().equals(GradeTypeName.AVERAGE.displayName()));
-                var mean = mean(studentGrades);
-                updateImportedMeanByStudentId(mean, student.id());
-            }
+            if (Boolean.TRUE.equals(student.bachelor())) continue;
+            var studentGrades = filter(grades, grade -> grade.student().id().equals(student.id()) && grade.gradeType().imported() && /*!grade.gradeType().name().equalsIgnoreCase("mean") && !grade.gradeType().name().equalsIgnoreCase("average")*/!grade.gradeType().name().equals(GradeTypeName.AVERAGE.displayName()));
+            var mean = mean(studentGrades);
+            updateImportedMeanByStudentId(mean, student.id());
         }
         CustomLogger.info("Updated imported mean for all students.");
     }
@@ -268,20 +282,15 @@ public class GradeService {
 
     public Boolean getGradesConfirmation(Integer sprintId, Integer teamId) {
         try {
-            CustomLogger.info(teamId.toString());
+            // TODO check if team is ss's team
             List<Student> students = studentRepository.findByTeam(teamId);
             if (students.isEmpty()) {
                 return false;
             }
-            CustomLogger.info(students.toString());
 
             for (Student student : students) {
                 GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
                 Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
-                CustomLogger.info(sprintId.toString());
-                CustomLogger.info(student.id().toString());
-                CustomLogger.info(gradeType.id().toString());
-                CustomLogger.info(grade.toString());
 
                 if (Boolean.FALSE.equals(grade.confirmed())) {
                     return true;
@@ -313,8 +322,12 @@ public class GradeService {
             CustomLogger.info("No student or no grades found");
             return false;
         }
-
     }
+
+    public List<Grade> getRatedGradesByAuthorId(Integer authorId) {
+        return gradeRepository.findAllByAuthorId(authorId);
+    }
+
 }
 
 

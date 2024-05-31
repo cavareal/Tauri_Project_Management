@@ -17,28 +17,32 @@ public class UserSeeder {
 	private final ApplicationSecurity applicationSecurity;
 
 	public void seed(Faker faker) {
-		var userPL = new User("WOODWARD Richard", "pl@tauri.com", applicationSecurity.passwordEncoder().encode("pl"), faker.number().digits(20));
+		var userPL = new User("p.l@tauri.com");
+		userPL.name("WOODWARD Richard");
 		userRepository.save(userPL);
 
-		var userSS = new User("CLAVREUL Mickaël", "ss@tauri.com", applicationSecurity.passwordEncoder().encode("ss"), faker.number().digits(20));
+		var userSS = new User("s.s@tauri.com");
+		userSS.name("CLAVREUL Michael");
 		userRepository.save(userSS);
 
-		var userOL = new User("ROUSSEAU Sophie", "ol@tauri.com", applicationSecurity.passwordEncoder().encode("ol"), faker.number().digits(20));
+		var userOL = new User("o.l@tauri.com");
+		userOL.name("ROUSSEAU Sophie");
 		userRepository.save(userOL);
 
-		var userTC = new User("LECLAIRE Clément", "tc@tauri.com", applicationSecurity.passwordEncoder().encode("tc"), faker.number().digits(20));
+		var userTC = new User("t.c@tauri.com");
+		userTC.name("Technique Coach");
 		userRepository.save(userTC);
 
 
-		for (int i = 0; i < NB_USERS; i++) {
-			var user = new User();
-
-			user.name(faker.name().lastName().toUpperCase() + " " + faker.name().firstName());
-			user.email(faker.internet().emailAddress());
-			user.password(applicationSecurity.passwordEncoder().encode("password"));
-			user.privateKey(faker.number().digits(20));
-
-			userRepository.save(user);
-		}
+//		for (int i = 0; i < NB_USERS; i++) {
+//			var user = new User();
+//
+//			user.name(faker.name().lastName().toUpperCase() + " " + faker.name().firstName());
+//			user.email(faker.internet().emailAddress());
+//			user.password(applicationSecurity.passwordEncoder().encode("password"));
+//			user.privateKey(faker.number().digits(20));
+//
+//			userRepository.save(user);
+//		}
 	}
 }

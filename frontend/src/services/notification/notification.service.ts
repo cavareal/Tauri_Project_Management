@@ -3,7 +3,7 @@ import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { CreateNotificationSchema, NotificationSchema } from "@/types/notification"
 import type { Notification, CreateNotification } from "@/types/notification"
 import { z } from "zod"
-import { getUsersByRole } from "@/services/user-service"
+import { getUsersByRole } from "@/services/user"
 import { Cookies } from "@/utils/cookie"
 
 export const getAllNotifications = async(): Promise<Notification[]> => {

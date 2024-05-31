@@ -4,13 +4,11 @@ import { TeamSchema } from "@/types/team"
 import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
-import { Cookies } from "@/utils/cookie"
 
 export const getTeams = async(): Promise<Team[]> => {
 	const response = await queryAndValidate({
 		route: "teams",
-		responseSchema: TeamSchema.array(),
-		params: { projectId: Cookies.getProjectId().toString() }
+		responseSchema: TeamSchema.array()
 	})
 
 	if (response.status === "error") {
@@ -119,17 +117,17 @@ export const deleteAllTeams = async(): Promise<void> => {
 	}
 }
 
-export const getTeamByUserId = async(userId: number): Promise<Team> => {
+export const getTeamByUserId = async(userId: number): Promise<Team | null> => {
 	const response = await queryAndValidate({
 		route: `users/${userId}/team`,
-		responseSchema: TeamSchema
+		responseSchema: TeamSchema.or(z.literal(""))
 	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
 
-	return response.data
+	return response.data === "" ? null : response.data
 }
 
 export const getTeamByLeaderId = async(leaderId: string | null, projectId: string | null): Promise<Team> => {
