@@ -15,6 +15,7 @@ import fr.eseo.tauri.repository.TeamRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -30,6 +31,8 @@ public class TeamService {
     private final CommentRepository commentRepository;
     private final GradeRepository gradeRepository;
     private final GradeTypeRepository gradeTypeRepository;
+    private final PresentationOrderService presentationOrderService;
+    private final SprintService sprintService;
     @Lazy
     private final StudentService studentService;
 
@@ -134,6 +137,20 @@ public class TeamService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getTeamById(token, id);
+        return studentRepository.findByTeam(id);
+    }
+
+    public List<Student> getStudentsByTeamIdOrdered(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        Team team = getTeamById(token, id);
+        Sprint currentSprint = sprintService.getCurrentSprint(token, team.project().id());
+        var students = studentRepository.findByTeam(id);
+        if(currentSprint != null){
+            var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(token, id, currentSprint.id());
+            if(presentationOrder.size() == students.size()) students.sort(Comparator.comparingInt(presentationOrder::indexOf));
+        }
         return studentRepository.findByTeam(id);
     }
 

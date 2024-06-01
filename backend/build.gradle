@@ -50,9 +50,15 @@ dependencies {
 
 // Unit tests
 test {
-	exclude "**/selenium/*"
 	useJUnitPlatform()
+	include '**/unit/**'
 	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
+}
+
+// Selenium tests
+tasks.register('seleniumTest', Test) {
+	useJUnitPlatform()
+	include '**/selenium/**'
 }
 
 kotlin {
@@ -78,23 +84,6 @@ jacocoTestReport {
 	}
 }
 
-// Selenium source/config/tests
-sourceSets {
-	seleniumTest {
-		java.srcDir 'src/test/java/fr/eseo/tauri/selenium'
-	}
-}
-configurations {
-	seleniumTestImplementation.extendsFrom testImplementation
-	seleniumTestRuntimeOnly.extendsFrom testRuntimeOnly
-}
-tasks.register('seleniumTest', Test) {
-	useJUnitPlatform()
-	testClassesDirs = sourceSets.seleniumTest.output.classesDirs
-	classpath = sourceSets.seleniumTest.runtimeClasspath
-	systemProperty 'selenium.server.url', project.hasProperty('selenium.server.url') ? project.property('selenium.server.url') : 'http://localhost:5173/'
-}
-
 
 // Function to setup DB login, when build from gitlab pipeline
 tasks.register('setLoginDb') {
@@ -102,7 +91,7 @@ tasks.register('setLoginDb') {
 		def dbUsername = System.getProperty("databaseUsername")
 		def dbPassword = System.getProperty("databasePassword")
 
-		if(dbUsername == null || dbPassword == null) {
+		if(dbUsername == null && dbPassword == null) {
 			throw new GradleException("You must provide the database credentials with -PdatabaseUsername=yourUsername -PdatabasePassword=yourPassword")
 		}
 

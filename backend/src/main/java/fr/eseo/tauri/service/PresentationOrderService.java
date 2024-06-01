@@ -64,4 +64,11 @@ public class PresentationOrderService {
         presentationOrderRepository.deleteAllByProject(projectId);
     }
 
+    public List<PresentationOrder> getPresentationOrderByTeamIdAndSprintId(String token, Integer teamId, Integer sprintId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPresentationOrders"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return presentationOrderRepository.findByTeamIdAndSprintId(teamId, sprintId);
+    }
+
 }

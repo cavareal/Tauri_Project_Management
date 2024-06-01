@@ -13,10 +13,11 @@ variables:
   GRADLE_OPTS: "-Dhttp.proxyHost=192.168.4.8 -Dhttp.proxyPort=3128 -Dhttps.proxyHost=192.168.4.8 -Dhttps.proxyPort=3128 -Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.gradle.api.internal.tasks.execution.ExecuteActionsTaskExecuter=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
   ORG_GRADLE_JVM_ARGS: "-Xmx1024m -XX:MaxPermSize=256m"
   #### Value of variables setup in gitlab>settings>ci_cd>variables
-  #---DB backend
+  #---DB
   # $DATABASE_USERNAME
   # $DATABASE_PASSWORD
   #---SONAR
+  # $SONAR_HOST_URL
   # $SONAR_PROJET_KEY_DEV
   # $SONAR_LOGIN_DEV
   # $SONAR_PROJETKEY_PROD
@@ -43,7 +44,6 @@ vuejs-build-dev:
   image: node:16.19.1-alpine3.17
   script:
     - cd frontend
-    - df -h
     - npm install --legacy-peer-deps
     - npm run build-only:dev
   retry: 2
@@ -119,7 +119,7 @@ quality-dev:
     - cd backend
     - chmod +x ./gradlew
     - ./gradlew --no-daemon test 
-    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_DevBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
+    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_DevBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
@@ -144,7 +144,7 @@ quality-prod:
     - cd backend
     - chmod +x ./gradlew
     - ./gradlew --no-daemon test
-    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_MasterBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_PROD -Dsonar.host.url=http://172.24.1.1:9000/sonar -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
+    - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_MasterBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_PROD -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
       - $CI_PROJECT_DIR/build/libs/*.war
@@ -218,26 +218,11 @@ push-prod:
 ##################
 selenium-dev:
   stage: selenium
-  image: selenium/standalone-chrome:latest
+  image: charlo56/pgl-gradlew-chrome:latest
   script:
     - cd backend
-    - chmod +x ./gradlew
-    - |
-      echo "Waiting for the server to be ready..."
-      RETRY_COUNT=0
-      MAX_RETRIES=20
-      WAIT_SECONDS=10
-      until $(curl --output /dev/null --silent --head --fail https://$SERVER_IP_DEV); do
-        RETRY_COUNT=$(($RETRY_COUNT+1))
-        if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
-          echo "Server did not become ready in time. Exiting."
-          exit 1
-        fi
-        echo "Server is not ready yet. Waiting for $WAIT_SECONDS seconds..."
-        sleep $WAIT_SECONDS
-      done
-      echo "Server is ready!"
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/bin/chromedriver -Dwebdriver.chrome.args=--headless
+    - chmod +x ./gradlew  
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/bin/chromedriver --scan 
   dependencies:
     - push-dev
   cache:
@@ -247,31 +232,24 @@ selenium-dev:
     - dev
   retry: 2
 
+  # services:
+  #   - selenium/standalone-chrome
+  # script:
+  #   - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV
+
+
+
+
 ###################
 ## SELENIUM PROD ##
 ###################
 selenium-prod:
   stage: selenium
-  image: selenium/standalone-chrome:latest
+  image: charlo56/pgl-gradlew-chrome:latest
   script:
     - cd backend
     - chmod +x ./gradlew
-    - |
-      echo "Waiting for the server to be ready..."
-      RETRY_COUNT=0
-      MAX_RETRIES=20
-      WAIT_SECONDS=10
-      until $(curl --output /dev/null --silent --head --fail https://$SERVER_IP_PROD); do
-        RETRY_COUNT=$(($RETRY_COUNT+1))
-        if [ $RETRY_COUNT -ge $MAX_RETRIES ]; then
-          echo "Server did not become ready in time. Exiting."
-          exit 1
-        fi
-        echo "Server is not ready yet. Waiting for $WAIT_SECONDS seconds..."
-        sleep $WAIT_SECONDS
-      done
-      echo "Server is ready!"
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/bin/chromedriver -Dwebdriver.chrome.args=--headless
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless
   dependencies:
     - push-prod
   cache:

@@ -14,11 +14,15 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "sprints")
+@Table(name = "sprints", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"project_id", "sprint_order"}),
+        @UniqueConstraint(columnNames = {"project_id", "start_date"}),
+        @UniqueConstraint(columnNames = {"project_id", "end_date"})
+})
 @Data
 public class Sprint implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

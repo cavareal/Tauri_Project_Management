@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
-@Table(name = "grade_types")
+@Table(name = "grade_types", uniqueConstraints = @UniqueConstraint(columnNames = { "name", "for_group", "imported" }))
 @Data
 public class GradeType {
 
@@ -34,7 +34,9 @@ public class GradeType {
     @JsonProperty
     private Boolean imported;
 
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB")
     @JsonProperty
-    private String scaleUrl;
+    private byte[] scalePDFBlob;
 
 }
