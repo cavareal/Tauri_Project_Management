@@ -193,7 +193,7 @@ public class TeamService {
         }
         projectService.updateProject(token, projectId, projectDetails);
         List<Team> teams = this.createTeams(token, projectId, nbTeams);
-        this.fillTeams(teams, women, men, womenPerTeam, nbStudent);
+        this.fillTeams(teams, women, men, womenPerTeam, nbStudent, projectId);
     }
 
     /**
@@ -203,7 +203,7 @@ public class TeamService {
      * @param men the list of men students
      * @param womenPerTeam the number of women per team
      */
-    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent) {
+    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent, Integer projectId) {
         int nbTeams = teams.size();
         int nbWomen = women.size();
 
@@ -234,19 +234,20 @@ public class TeamService {
         }
 
         // re-order the teams by average grade
-        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();
+        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(); // TODO projectId
 
         index = nbTeams * womenPerTeam;
 
         // Assign the remaining students evenly to the teams
         for (int i = index; i < nbStudent; i++) {
             if ((i - index) % nbTeams == 0) {
-                sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();
+                sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();   // TODO projectId
             }
 
             Student student;
             Role role = new Role();
             role.type(RoleType.TEAM_MEMBER);
+            CustomLogger.info("Index: " + index + " nbTeam : " + nbTeams + " Calcul : " +  (i - index)% nbTeams);
             if (i < nbWomen) {
                 student = women.get(i);
                 student.team(sortedTeams.get((i - index)% nbTeams));
@@ -256,6 +257,7 @@ public class TeamService {
             }
 
             role.user(student);
+            CustomLogger.info("studentEND : " + student);
             this.roleRepository.save(role);
             this.studentRepository.save(student);
         }

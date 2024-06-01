@@ -46,8 +46,8 @@ public class RoleController {
     }
 
     @PostMapping(path="/{email}")
-    public ResponseEntity<String> createRoles(@PathVariable String email, @Validated(Create.class) @RequestBody RoleType[] roles) {
-        roleService.createRoles(email, roles);
+    public ResponseEntity<String> createRoles(@PathVariable String email, @RequestParam("projectId") Integer projectId, @Validated(Create.class) @RequestBody RoleType[] roles) {
+        roleService.createRoles(email, roles, projectId);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }

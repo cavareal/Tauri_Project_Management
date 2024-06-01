@@ -52,7 +52,7 @@ public class UserController {
 	}
 
 	@PostMapping
-	public ResponseEntity<User> createUser(@Validated(Create.class) @RequestBody User user) {
+	public ResponseEntity<User> createUser(@Validated(Create.class) @RequestBody User user) throws Exception {
 		return ResponseEntity.ok(userService.createUser(user));
 	}
 

@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Cookies } from "@/utils/cookie"
 
 const props = defineProps<{
   users: Array<User & { role: string[] }>;
@@ -30,6 +31,7 @@ const props = defineProps<{
 const emits = defineEmits(["delete:user"])
 const userToDelete = ref<number | null>(null);
 const isDialogOpen = ref<boolean>(false);
+const pojectLeaderId = Cookies.getUserId()
 
 function openDelete(userId: number) {
   userToDelete.value = userId;
@@ -65,7 +67,7 @@ watch(isDialogOpen, (newVal) => {
 <template>
   <div class="mt-10 border border-gray-300 border-dashed rounded-lg flex justify-center flex-col items-stretch p-4">
     <h2 class="text-xl font-semibold text-center mb-4">Gestion des utilisateurs</h2>
-    <Column class="items-center gap-4">
+    <Column class="items-center gap-4 ">
       <template v-if="usersLoading || rolesLoading">
         <div>Chargement...</div>
       </template>
@@ -73,17 +75,13 @@ watch(isDialogOpen, (newVal) => {
         <div>Erreur lors du chargement des données.</div>
       </template>
       <template v-else>
-        <div
-          v-for="user in users"
-          :key="user.id"
-          class="flex justify-between items-center w-full p-2 border-b border-gray-300"
-        >
-          <div>
+        <div v-for="user in users" :key="user.id" class="flex justify-between items-center w-full p-2 border-b border-gray-300">
+          <div v-if="pojectLeaderId != user.id">
             <p class="font-medium">{{ user.name }}</p>
             <p class="text-gray-500">{{ user.email }}</p>
             <p class="text-gray-400">{{ getRoleDescription(user.role).join(', ') }}</p>
           </div>
-          <Dialog v-model:open="isDialogOpen">
+          <Dialog v-model:open="isDialogOpen" v-if="pojectLeaderId != user.id">
             <DialogTrigger as-child>
               <Button @click="openDelete(user.id)">
                 <Trash class="w-5 h-5" />

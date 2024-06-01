@@ -49,10 +49,10 @@ public class UserService {
 		return userRepository.findAll();
 	}
 
-	public User createUser(User user) {
+	public User createUser(User user) throws Exception {
 		User userCheck = userRepository.findByEmail(user.email()).orElse(null);
 		if (userCheck != null) {
-			throw new SecurityException("User already exists in the database");
+			throw new Exception("User already exists in the database");
 		}
 		return userRepository.save(user);
 	}

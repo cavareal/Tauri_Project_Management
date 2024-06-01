@@ -30,7 +30,7 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     List<Student> findByGenderOrderByBachelor(Gender gender);
 
-    @Query("SELECT s FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gt.name = 'Moyenne' AND s.gender = ?1 ORDER BY s.bachelor, gr.value DESC")
+    @Query("SELECT s FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE (gt.name = 'Moyenne' AND (s.gender = ?1 OR s.gender IS NULL)) ORDER BY s.bachelor, gr.value DESC")
     List<Student> findByGenderOrderByBachelorAndImportedAvgDesc(Gender gender);
 
     @Transactional
