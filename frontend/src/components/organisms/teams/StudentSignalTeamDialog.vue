@@ -40,6 +40,8 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"]
 	await createReportingFlag(description.value, Number(selectedMyTeamStudent.value), Number(selectedOtherTeamStudent.value))
 		.then(() => open.value = false)
 		.then(() => description.value = "")
+		.then(() => selectedMyTeamStudent.value = "")
+		.then(() => selectedOtherTeamStudent.value = "")
 		.then(() => createToast("Le signalement a été envoyé."))
 } })
 

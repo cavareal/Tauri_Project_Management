@@ -45,6 +45,7 @@ const canPreview = hasPermission("PREVIEW_TEAM")
 const displayAdminComposingButtons = computed(() => nbTeams.value && nbTeams.value > 0 && currentPhase.value === "COMPOSING")
 const displayAdminPrepublishedButtons = computed(() => currentPhase.value === "PREPUBLISHED")
 const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPOSING" && !hasValidateTeams.value)
+const displayStudentReportingButton = computed(() => currentPhase.value === "PREPUBLISHED" && hasPermission("FLAG_TEAM_WITH_STUDENTS"))
 
 </script>
 
@@ -65,7 +66,7 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 				<Button variant="default">Publier</Button>
 			</PublishDialog>
 
-			<StudentSignalTeamDialog v-if="nbTeams && nbTeams > 0">
+			<StudentSignalTeamDialog v-if="displayStudentReportingButton">
 				<Button variant="outline">Signaler</Button>
 			</StudentSignalTeamDialog>
 
