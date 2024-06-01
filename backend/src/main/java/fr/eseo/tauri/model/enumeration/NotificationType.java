@@ -11,6 +11,7 @@ public enum NotificationType {
 	CREATE_TEAMS,
     MOVE_STUDENT,
     DELETE_STUDENTS,
+    CREATE_GRADE,
     IMPORT_STUDENTS;
 
 }

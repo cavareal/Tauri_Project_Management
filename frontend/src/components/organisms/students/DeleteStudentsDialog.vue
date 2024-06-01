@@ -8,7 +8,7 @@ import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { createToast } from "@/utils/toast"
-import { sendNotifications } from "@/services/notification-service"
+import { sendNotificationsByRole } from "@/services/notification-service"
 import { Cookies } from "@/utils/cookie"
 import getRole = Cookies.getRole;
 import type { RoleType } from "@/types/role"
@@ -22,7 +22,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-student
 		.then(() => open.value = false)
 		.then(() => emits("delete:students"))
 		.then(() => createToast("Les étudiants ont été supprimés."))
-		.then(() => sendNotifications("La liste des étudiants a été supprimée.", oppositeRole, "DELETE_STUDENTS"))
+		.then(() => sendNotificationsByRole("La liste des étudiants a été supprimée.", oppositeRole, "DELETE_STUDENTS"))
 } })
 
 const DIALOG_TITLE = "Supprimer les étudiants"

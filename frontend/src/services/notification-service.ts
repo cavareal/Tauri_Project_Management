@@ -96,13 +96,18 @@ export const sendManyNotifications = async(message: string): Promise<void> => {
 	}))
 }
 
-export const sendNotifications = async(message: string, roles: RoleType[], type: string): Promise<void> => {
+export const sendNotificationsByRole = async(message: string, roles: RoleType[], type: string): Promise<void> => {
 	const getUsersByRoles = async(roles: RoleType[]): Promise<User[]> => {
 		const usersByRoles = await Promise.all(roles.map(role => getUsersByRole(role)))
 		return usersByRoles.flat()
 	}
 
 	const users = await getUsersByRoles(roles)
+
+	await sendNotificationsByUsers(message, users, type)
+}
+
+export const sendNotificationsByUsers = async(message: string, users: User[], type: string): Promise<void> => {
 
 	const userFromId = Cookies.getUserId()
 

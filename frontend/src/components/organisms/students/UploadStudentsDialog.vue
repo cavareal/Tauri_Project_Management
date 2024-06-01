@@ -12,7 +12,7 @@ import { createToast } from "@/utils/toast"
 import type { RoleType } from "@/types/role"
 import { Cookies } from "@/utils/cookie"
 import getRole = Cookies.getRole;
-import { sendNotifications } from "@/services/notification-service"
+import { sendNotificationsByRole } from "@/services/notification-service"
 
 const DIALOG_TITLE = "Importer les étudiants"
 const DIALOG_DESCRIPTION
@@ -31,7 +31,7 @@ const { error, isPending, mutate: upload } = useMutation({ mutationKey: ["import
 		.then(() => open.value = false)
 		.then(() => emits("import:students"))
 		.then(() => createToast("Les étudiants ont été importés."))
-		.then(() => sendNotifications("Une liste d'étudiants a été importée.", oppositeRole, "IMPORT_STUDENTS"))
+		.then(() => sendNotificationsByRole("Une liste d'étudiants a été importée.", oppositeRole, "IMPORT_STUDENTS"))
 } })
 
 </script>

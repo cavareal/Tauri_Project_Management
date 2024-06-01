@@ -26,7 +26,7 @@ const authorized = hasPermission("GRADES_PAGE")
 
 const { data: teams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 const { data: sprints } = useQuery({
-	queryKey: ["sprints"], queryFn: async () => {
+	queryKey: ["sprints"], queryFn: async() => {
 		const sprints = await getSprints()
 		return sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
 	}
@@ -35,7 +35,7 @@ const { data: sprints } = useQuery({
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", selectedSprint.value, selectedTeam.value],
-	queryFn: async () => {
+	queryFn: async() => {
 		if (selectedSprint.value === "" || selectedTeam.value === "") return false
 		return await getGradesConfirmation(parseInt(selectedSprint.value), parseInt(selectedTeam.value))
 	}

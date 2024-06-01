@@ -12,7 +12,8 @@ const searchLinkByType = (notification: Notification) => {
 		BONUS_MALUS: "/grades",
 		MOVE_STUDENT: "/teams",
 		DELETE_STUDENTS: "/students",
-		IMPORT_STUDENTS: "/students"
+		IMPORT_STUDENTS: "/students",
+		CREATE_GRADE: "/grades"
 	}
 	return types[notification.type]
 }

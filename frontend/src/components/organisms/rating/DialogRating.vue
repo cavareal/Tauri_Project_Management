@@ -12,6 +12,8 @@ import { createGrade } from "@/services/grade-service"
 import { createToast } from "@/utils/toast"
 import type { GradeType } from "@/types/grade-type"
 import { getGradeTypeByName } from "@/services/grade-type-service"
+import { sendNotificationsByUsers } from "@/services/notification-service"
+import { getStudentsByTeamId } from "@/services/student-service"
 
 let mark = ref("")
 const open = ref(false)
@@ -28,6 +30,8 @@ const { data: gradeType, refetch } = useQuery<GradeType, Error>({
 	queryFn: () => getGradeTypeByName(props.gradeTypeString)
 })
 
+const users = await getStudentsByTeamId(Number(props.teamId))
+
 const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
 	await createGrade({
 		value: Number(mark.value),
@@ -40,6 +44,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["create-grade"]
 		.then(() => mark.value = "")
 		.then(() => createToast("La note a bien été enregistrée."))
 		.then(() => open.value = false)
+		//.then(() => sendNotificationsByUsers(`Vous avez reçu la note de "${props.gradeTypeString}" pour le sprint N°${props.sprintId}.`, oppositeRole, "CREATE_GRADE"))
 } })
 
 const handleNoteInput = (event: InputEvent) => {
