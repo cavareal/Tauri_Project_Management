@@ -26,6 +26,7 @@ import { getAllStudents } from "@/services/student"
 import { getTeams } from "@/services/team"
 import type { Team } from "@/types/team"
 import type { Student } from "@/types/student"
+import { ArrowLeftRight } from "lucide-vue-next"
 
 const open = ref(false)
 const description = ref("")
@@ -71,12 +72,13 @@ const DIALOG_DESCRIPTION = "Envoyez un signalement sur la composition des équip
     <Text class="-mb-2">Votre commentaire</Text>
     <Textarea v-model="description" placeholder="Ajouter un commentaire" class="max-h-64"></Textarea>
     <ErrorText v-if="error" class="mt-2">Une erreur est survenue.</ErrorText>
-    <Row>
+    <Column>
+      <Text class="mb-3">Choisie les étudiant(e)s concernés par ce changement</Text>
+    <Row class="justify-between items-center">
       <Column>
-        <Text>Membre de votre équipe</Text>
         <Select v-model="selectedMyTeamStudent" label="Étudiant">
           <SelectTrigger class="w-[180px]">
-            <SelectValue placeholder="Sélectionner un étudiant" />
+            <SelectValue placeholder="Votre équipe" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup >
@@ -87,11 +89,11 @@ const DIALOG_DESCRIPTION = "Envoyez un signalement sur la composition des équip
           </SelectContent>
         </Select>
       </Column>
+      <ArrowLeftRight/>
       <Column>
-        <Text>Membre d'une autre équipe</Text>
         <Select v-model="selectedOtherTeamStudent" label="Étudiant">
           <SelectTrigger class="w-[180px]">
-            <SelectValue placeholder="Sélectionner un étudiant" />
+            <SelectValue placeholder="Autre équipes" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup v-for="team in othersTeams" :key="team.id" :label="team.name" :value="team.id">
@@ -104,6 +106,7 @@ const DIALOG_DESCRIPTION = "Envoyez un signalement sur la composition des équip
         </Select>
       </Column>
     </Row>
+    </Column>
 
     <template #footer>
       <DialogClose v-if="!isPending">
