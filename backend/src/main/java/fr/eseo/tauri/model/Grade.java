@@ -13,7 +13,10 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "grades")
+@Table(name = "grades", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"student_id", "sprint_id", "grade_type_id", "author_id"}),
+        @UniqueConstraint(columnNames = {"team_id", "sprint_id", "grade_type_id", "author_id"})
+})
 @Data
 public class Grade {
 

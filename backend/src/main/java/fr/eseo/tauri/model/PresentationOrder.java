@@ -11,7 +11,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "presentation_orders")
+@Table(name = "presentation_orders", uniqueConstraints = @UniqueConstraint(columnNames = {"sprint_id", "student_id"}))
 @IdClass(PresentationOrderId.class)
 @NoArgsConstructor
 @RequiredArgsConstructor

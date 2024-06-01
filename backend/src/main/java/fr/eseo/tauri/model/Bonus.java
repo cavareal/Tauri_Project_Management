@@ -13,7 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "bonuses")
+@Table(name = "bonuses", uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "sprint_id", "limited"}))
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Data
