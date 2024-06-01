@@ -25,8 +25,12 @@ export const createValidationFlag = async(): Promise<void> => {
 	await createFlag({ type: "VALIDATION" })
 }
 
-export const createReportingFlag = async(description: string): Promise<void> => {
-	await createFlag({ description, type: "REPORTING" })
+export const createReportingFlag = async(description: string, studentId1?: number, studentId2?: number): Promise<void> => {
+	if (!studentId1 || !studentId2) {
+		await createFlag({ description, type: "REPORTING" })
+	} else {
+		await createFlag({ description, type: "REPORTING", firstStudentId: studentId1, secondStudentId: studentId2 })
+	}
 }
 
 export const userHasValidateTeams = async(authorId: number): Promise<boolean> => {

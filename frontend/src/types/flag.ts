@@ -27,8 +27,8 @@ export const CreateFlagSchema = FlagSchema.omit({
 	project: true,
 	status: true
 }).extend({
-	firstStudent: z.coerce.number().optional(),
-	secondStudent: z.coerce.number().optional(),
+	firstStudentId: z.coerce.number().optional(),
+	secondStudentId: z.coerce.number().optional(),
 	authorId: z.coerce.number(),
 	projectId: z.coerce.number(),
 	description: z.string().optional()

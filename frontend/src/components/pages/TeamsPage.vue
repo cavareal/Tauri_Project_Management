@@ -19,6 +19,7 @@ import { userHasValidateTeams } from "@/services/flag/flag.service"
 import { hasPermission } from "@/services/user/user.service"
 import { Loading } from "@/components/organisms/loading"
 import { Cookies } from "@/utils/cookie"
+import { StudentSignalTeamDialog } from "@/components/organisms/teams"
 
 const currentUserId = Cookies.getUserId()
 const hasValidateTeams = ref(true)
@@ -63,6 +64,10 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 			<PublishDialog v-if="canCreate && displayAdminPrepublishedButtons" @publish:teams="refetchCurrentPhase">
 				<Button variant="default">Publier</Button>
 			</PublishDialog>
+
+			<StudentSignalTeamDialog v-if="nbTeams && nbTeams > 0">
+				<Button variant="outline">Signaler</Button>
+			</StudentSignalTeamDialog>
 
 			<SignalTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons">
 				<Button variant="outline">Signaler</Button>
