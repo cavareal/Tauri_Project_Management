@@ -37,12 +37,12 @@ public class SeleniumTauriTest {
                         options.addArguments("--ignore-certificate-errors");
                 }
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
-                SeleniumTauriTest.webdriver.get(SeleniumTauriTest.URL+"login");
         }
 
         @Test
         @Order(1)
         void login(){
+                SeleniumTauriTest.webdriver.get(SeleniumTauriTest.URL+"login");
                 System.out.println("URL before navigation: "+SeleniumTauriTest.URL+"login");
                 System.out.println("URL after navigation: "+SeleniumTauriTest.webdriver.getCurrentUrl());
                 WebDriverWait wait = new WebDriverWait(SeleniumTauriTest.webdriver, Duration.ofSeconds(10));
