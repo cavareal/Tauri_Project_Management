@@ -1,5 +1,6 @@
 package fr.eseo.tauri.selenium;
 
+import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebElement;
@@ -7,10 +8,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -20,11 +25,18 @@ public class SeleniumTauriTest {
         private static final String PASSWORD = "pl";
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
+        private static final Logger logger = Logger.getLogger(SeleniumTauriTest.class.getName());
 
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
+                options.addArguments("--no-sandbox");
+                options.addArguments("--headless");
+                options.addArguments("--ignore-certificate-errors");
+                options.setCapability("goog:loggingPrefs", new LoggingPreferences() {{
+                        enable(LogType.DRIVER, Level.ALL);
+                }});
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
         }
 
