@@ -22,7 +22,8 @@
 # MRC : https://github.com/markhobson/docker-maven-chrome
 # Versions ggogle : https://googlechromelabs.github.io/chrome-for-testing/
 
-
+# Build : docker build -t charlo56/pgl-gradlew-chrome .
+# Push : docker push charlo56/pgl-gradlew-chrome
 
 # slenium test : 
     # private static final String URL = System.getProperty("selenium.server.url", "http://172.24.1.22/");
@@ -60,4 +61,8 @@ RUN wget -q -O /tmp/chromedriver.zip https://storage.googleapis.com/chrome-for-t
     && rm /tmp/chromedriver.zip \
     && ln -s /opt/chromedriver-linux64/chromedriver /usr/bin/chromedriver
 
+RUN chmod +x /usr/bin/chromedriver
+
+# Commande pour garder le conteneur actif
+# CMD ["bash"]
 
