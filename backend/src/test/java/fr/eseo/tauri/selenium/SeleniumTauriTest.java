@@ -32,6 +32,9 @@ public class SeleniumTauriTest {
                 options.addArguments("--no-sandbox");
                 options.addArguments("--headless");
                 options.addArguments("--ignore-certificate-errors");
+                options.setCapability("goog:loggingPrefs", new LoggingPreferences() {{
+                        enable(LogType.DRIVER, Level.ALL);
+                }});
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
         }
 
