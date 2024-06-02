@@ -27,13 +27,16 @@ public class SeleniumTauriTest {
 
         @BeforeAll
         public static void beforeTest(){
-                WebDriverManager.safaridriver().setup();
+                WebDriverManager.chromedriver().setup();
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("--no-sandbox");
                 options.addArguments("--headless");
                 options.addArguments("--ignore-certificate-errors");
                 options.setCapability("goog:loggingPrefs", new LoggingPreferences() {{
                         enable(LogType.DRIVER, Level.ALL);
+                        enable(LogType.BROWSER, Level.ALL);
+                        enable(LogType.SERVER, Level.ALL);
+                        enable(LogType.CLIENT, Level.ALL);
                 }});
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
         }
