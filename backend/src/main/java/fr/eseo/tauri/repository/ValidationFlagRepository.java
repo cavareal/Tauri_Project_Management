@@ -11,7 +11,7 @@ public interface ValidationFlagRepository extends JpaRepository<ValidationFlag, 
     @Query("SELECT vf FROM ValidationFlag vf WHERE vf.author.id = :authorId AND vf.flag.id = :flagId")
     ValidationFlag findByAuthorIdAndFlagId(Integer flagId, Integer authorId);
 
-    @Query("SELECT vf FROM ValidationFlag vf WHERE vf.flag = :flagId")
+    @Query("SELECT vf FROM ValidationFlag vf WHERE vf.flag.id = :flagId")
     List<ValidationFlag> findAllByFlag(Integer flagId);
 
 }

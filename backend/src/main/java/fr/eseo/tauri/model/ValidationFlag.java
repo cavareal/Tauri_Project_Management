@@ -1,6 +1,7 @@
 package fr.eseo.tauri.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import fr.eseo.tauri.model.id_class.ValidationFlagId;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -29,5 +30,13 @@ public class ValidationFlag {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
     private Flag flag;
+
+    @Transient
+    @JsonDeserialize
+    private Integer authorId;
+
+    @Transient
+    @JsonDeserialize
+    private Integer flagId;
 
 }

@@ -68,4 +68,12 @@ public class ValidationFlagService {
         validationFlagRepository.save(validationFlag);
     }
 
+    public void createValidationFlag(String token, Integer flagId, ValidationFlag validationFlag) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationFlag"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        validationFlag.flag(new Flag().id(flagId));
+        validationFlag.author(userService.getUserById(token, validationFlag.authorId()));
+        validationFlagRepository.save(validationFlag);
+    }
 }
