@@ -27,7 +27,7 @@ public class SeleniumTauriTest {
 
         @BeforeAll
         public static void beforeTest(){
-                WebDriverManager.chromedriver().setup();
+                WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
                 options.addArguments("--no-sandbox");
                 options.addArguments("--headless");
