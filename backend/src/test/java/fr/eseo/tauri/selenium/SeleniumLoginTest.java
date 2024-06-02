@@ -17,18 +17,21 @@ import java.time.Duration;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SeleniumLoginTest {
-        private static final String URL = System.getProperty("selenium.server.url", "http://172.24.1.22/");
+        private static final String URL = System.getProperty("selenium.server.url", "http://localhost:5173/");
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
         private static WebDriverWait wait;
+        private static String settings = System.getProperty("selenium.options", "false");
 
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
-                options.addArguments("--no-sandbox");
-                options.addArguments("--headless");
-                options.addArguments("--ignore-certificate-errors");
+                if(settings.equals("true")){
+                        options.addArguments("--no-sandbox");
+                        options.addArguments("--headless");
+                        options.addArguments("--ignore-certificate-errors");
+                }
                 SeleniumLoginTest.webdriver = new ChromeDriver(options);
                 wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
                 SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");

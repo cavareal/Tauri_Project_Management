@@ -24,14 +24,18 @@ public class SeleniumTauriTest {
         private static final String PASSWORD = "pl";
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
+        private static String settings = System.getProperty("selenium.options", "false");
+
 
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
-                options.addArguments("--no-sandbox");
-                options.addArguments("--headless");
-                options.addArguments("--ignore-certificate-errors");
+                if(settings.equals("true")){
+                        options.addArguments("--no-sandbox");
+                        options.addArguments("--headless");
+                        options.addArguments("--ignore-certificate-errors");
+                }
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
                 SeleniumTauriTest.webdriver.get(SeleniumTauriTest.URL+"login");
         }
