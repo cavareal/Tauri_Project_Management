@@ -19,7 +19,7 @@ import java.util.logging.Level;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SeleniumTauriTest {
-        private static final String URL = System.getProperty("selenium.server.url", "http://localhost:5173/");
+        private static final String URL = System.getProperty("selenium.server.url", "https://172.24.1.22/");
         private static final String LOGIN = "p.l@tauri.com";
         private static final String PASSWORD = "pl";
         private static final String TITLE = "Bienvenue sur Tauri !";
@@ -31,11 +31,11 @@ public class SeleniumTauriTest {
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
-                if(settings.equals("true")){
+//                if(settings.equals("true")){
                         options.addArguments("--no-sandbox");
                         options.addArguments("--headless");
                         options.addArguments("--ignore-certificate-errors");
-                }
+//                }
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
         }
 
