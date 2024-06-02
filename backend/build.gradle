@@ -59,6 +59,11 @@ test {
 tasks.register('seleniumTest', Test) {
 	useJUnitPlatform()
 	include '**/selenium/**'
+	if (System.getProperty('selenium.server.url') && System.getProperty('selenium.options') && System.getProperty('webdriver.chrome.driver')) {
+		systemProperty 'selenium.server.url', System.getProperty('selenium.server.url')
+		systemProperty 'selenium.options', System.getProperty('selenium.options')
+		systemProperty 'webdriver.chrome.driver', System.getProperty('webdriver.chrome.driver')
+	}
 }
 
 kotlin {
