@@ -27,11 +27,11 @@ public class SeleniumLoginTest {
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
-                if(settings.equals("true")){
-                        options.addArguments("--no-sandbox");
-                        options.addArguments("--headless");
-                        options.addArguments("--ignore-certificate-errors");
-                }
+//                if(settings.equals("true")){
+                options.addArguments("--no-sandbox");
+                options.addArguments("--headless");
+                options.addArguments("--ignore-certificate-errors");
+//                }
                 SeleniumLoginTest.webdriver = new ChromeDriver(options);
                 wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
                 SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");

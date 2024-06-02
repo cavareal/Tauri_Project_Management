@@ -31,20 +31,19 @@ public class SeleniumTauriTest {
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
-                if(settings.equals("true")){
-                        options.addArguments("--no-sandbox");
-                        options.addArguments("--headless");
-                        options.addArguments("--ignore-certificate-errors");
-                }
+//                if(settings.equals("true")){
+                options.addArguments("--no-sandbox");
+                options.addArguments("--headless");
+                options.addArguments("--ignore-certificate-errors");
+//                }
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
+                SeleniumTauriTest.webdriver.get(SeleniumTauriTest.URL+"login");
+
         }
 
         @Test
         @Order(1)
         void login(){
-                SeleniumTauriTest.webdriver.get(SeleniumTauriTest.URL+"login");
-                System.out.println("URL before navigation: "+SeleniumTauriTest.URL+"login");
-                System.out.println("URL after navigation: "+SeleniumTauriTest.webdriver.getCurrentUrl());
                 WebDriverWait wait = new WebDriverWait(SeleniumTauriTest.webdriver, Duration.ofSeconds(10));
                 WebElement titleElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.className("text-dark-blue")));
 
