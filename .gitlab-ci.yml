@@ -232,12 +232,6 @@ selenium-dev:
     - dev
   retry: 2
 
-  # services:
-  #   - selenium/standalone-chrome
-  # script:
-  #   - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV
-
-
 
 
 ###################
