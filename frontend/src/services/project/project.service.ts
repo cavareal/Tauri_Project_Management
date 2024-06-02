@@ -57,6 +57,17 @@ export const createProject = async(body: CreateProject): Promise<void> => {
     }
 }
 
+export const setActualProject = async(idNewActualProject: number): Promise<void> => {
+    const response = await mutateAndValidate({
+        method: "POST",
+        route: `projects/actual/${idNewActualProject}`,
+    })
+
+    if (response.status === "error") {
+        throw new Error(response.error)
+    }
+}
+
 
 export const getAllProjects = async(): Promise<Project[]> => {
     const response = await queryAndValidate({

@@ -10,6 +10,7 @@ import { type CreateProject, ProjectPhaseSchema } from '@/types/project'
 
 const emits = defineEmits(["add:project"])
 const isDialogOpen = ref<boolean>(false)
+const projectName = ref<string>('')
 
 const { error, mutate } = useMutation({
   mutationKey: ["add-project"],
@@ -17,6 +18,8 @@ const { error, mutate } = useMutation({
     const project: CreateProject = {
       nbTeams: 0,
       nbWomen: 0,
+      name: projectName.value || "Nouveau projet",
+      actual: false,
       phase: ProjectPhaseSchema.parse("COMPOSING")
     }
 
@@ -44,6 +47,10 @@ const { error, mutate } = useMutation({
             Êtes-vous sûr de vouloir ajouter un nouveau projet ?
           </DialogDescription>
         </DialogHeader>
+        <div class="mb-4">
+          <label for="project-name" class="block text-sm font-medium text-gray-700">Nom du projet</label>
+          <input id="project-name" v-model="projectName" class="mt-1 block w-full rounded-md" />
+        </div>
         <DialogFooter>
           <Button class="bg-red-500" @click="isDialogOpen = false">Annuler</Button>
           <Button class="text-white" @click="mutate">Confirmer</Button>

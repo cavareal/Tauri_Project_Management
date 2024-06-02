@@ -35,6 +35,19 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
+    @GetMapping("/actual")
+    public ResponseEntity<Project> getActualProject() {
+        Project projects = projectService.getActualProject();
+        return ResponseEntity.ok(projects);
+    }
+
+    @PostMapping("/actual/{idNewProject}")
+    public ResponseEntity<String> setActualProject(@PathVariable Integer idNewProject) {
+        projectService.setActualProject(idNewProject);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
+    }
+
     @PostMapping
     public ResponseEntity<String> createProject(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Project project) {
         projectService.createProject(token, project);

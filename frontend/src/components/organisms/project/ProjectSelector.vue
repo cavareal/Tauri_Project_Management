@@ -5,6 +5,9 @@ import { createToast } from '@/utils/toast'
 import { Cookies } from '@/utils/cookie/cookie.util'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { type Project } from '@/types/project'
+import { setActualProject } from '@/services/project'
+
+const emits = defineEmits(["choose:project"])
 
 const props = defineProps<{
     projects: Array<Project>
@@ -16,10 +19,21 @@ function handleSelectChange(value: string) {
     selectedProjectId.value = value
 }
 
+function getNameById(id: string | null): string {
+    if(id === null) return ""
+    const project = props.projects.find(project => project.id === Number(id))
+    return project?.name ?? ""
+}
+
 const handleValidate = () => {
     if (selectedProjectId.value !== null) {
-        Cookies.setProjectId(Number(selectedProjectId.value))
-        createToast(`Projet ${selectedProjectId.value} sélectionné`)
+        setActualProject(Number(selectedProjectId.value))
+            .then(() => {
+                emits('choose:project')
+                console.log()
+                Cookies.setProjectId(Number(selectedProjectId.value))
+                createToast("Projet "+ getNameById(selectedProjectId.value) +" sélectionné")
+            })
     } else {
         createToast("Veuillez sélectionner un projet")
     }
@@ -42,7 +56,7 @@ onMounted(() => {
             </SelectTrigger>
             <SelectContent>
                 <SelectItem v-for="project in projects" :key="project.id" :value="project.id.toString()">
-                    Projet : {{ project.id }}
+                    {{ project.name }}
                 </SelectItem>
             </SelectContent>
         </Select>

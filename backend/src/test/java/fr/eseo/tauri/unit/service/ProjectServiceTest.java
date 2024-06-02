@@ -169,4 +169,98 @@ class ProjectServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> projectService.deleteProjectById("token", 1));
     }
+
+
+    @Test
+    void testGetProjectByIdShouldReturnProjectWhenAuthorizedAndIdExists() {
+        // Arrange
+        Project project = new Project();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(projectRepository.findById(anyInt())).thenReturn(Optional.of(project));
+
+        // Act
+        Project result = projectService.getProjectById("token", 1);
+
+        // Assert
+        assertEquals(project, result);
+    }
+
+    @Test
+    void testGetProjectByIdShouldThrowSecurityExceptionWhenUnauthorized() {
+        // Arrange
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(SecurityException.class, () -> projectService.getProjectById("token", 1));
+    }
+
+    @Test
+    void testGetProjectByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        // Arrange
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(ResourceNotFoundException.class, () -> projectService.getProjectById("token", 1));
+    }
+
+    @Test
+    void testGetAllProjectsShouldReturnProjectsWhenAuthorized() {
+        // Arrange
+        List<Project> projects = new ArrayList<>();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(projectRepository.findAll()).thenReturn(projects);
+
+        // Act
+        List<Project> result = projectService.getAllProjects("token");
+
+        // Assert
+        assertEquals(projects, result);
+    }
+
+    @Test
+    void testGetAllProjectsShouldThrowSecurityExceptionWhenUnauthorized() {
+        // Arrange
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(SecurityException.class, () -> projectService.getAllProjects("token"));
+    }
+
+    @Test
+    void getActualProjectShouldReturnProjectWhenExists() {
+        Project project = new Project();
+        when(projectRepository.findFirstByActualTrue()).thenReturn(Optional.of(project));
+
+        Project result = projectService.getActualProject();
+
+        assertEquals(project, result);
+    }
+
+    @Test
+    void getActualProjectShouldThrowResourceNotFoundExceptionWhenDoesNotExist() {
+        when(projectRepository.findFirstByActualTrue()).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> projectService.getActualProject());
+    }
+
+    @Test
+    void setActualProjectShouldSetWhenIdExists() {
+        Project project = new Project();
+        Project actualProject = new Project();
+        when(projectRepository.findById(anyInt())).thenReturn(Optional.of(project));
+        when(projectRepository.findFirstByActualTrue()).thenReturn(Optional.of(actualProject));
+
+        projectService.setActualProject(1);
+
+        verify(projectRepository, times(2)).save(any(Project.class));
+    }
+    @Test
+    void setActualProjectShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> projectService.setActualProject(1));
+    }
+
+
 }

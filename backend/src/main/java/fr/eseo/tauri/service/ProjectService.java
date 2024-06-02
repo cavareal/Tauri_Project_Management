@@ -30,6 +30,22 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
+    public Project getActualProject() {
+        return projectRepository.findFirstByActualTrue()
+                .orElseThrow(() -> new ResourceNotFoundException("actual project", 0));
+    }
+
+    public void setActualProject(Integer idNewProject) {
+        Project project = projectRepository.findById(idNewProject)
+                .orElseThrow(() -> new ResourceNotFoundException("project", idNewProject));
+        projectRepository.findFirstByActualTrue().ifPresent(actualProject -> {
+            actualProject.actual(false);
+            projectRepository.save(actualProject);
+        });
+        project.actual(true);
+        projectRepository.save(project);
+    }
+
     public void createProject(String token, Project project) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addProject"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);

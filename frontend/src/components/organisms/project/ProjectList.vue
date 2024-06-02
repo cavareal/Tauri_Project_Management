@@ -43,9 +43,13 @@ const { mutate: deleteProjectMutate } = useMutation({
     <div class="w-full">
         <h2 class="text-xl font-semibold text-center mb-4">Liste des projets existants</h2>
         <div v-for="project in projects" :key="project.id" class="w-full flex justify-between items-center p-2 border-b border-gray-300">
-                <p class="font-medium">Id du projet : {{ project.id }}</p>
+                <p class="font-medium">{{ project.name }}</p>
+                <p class="text-gray-500">Nombre d'équipes : {{ project.nbTeams ? project.nbTeams : "pas encore générées" }}</p>
                 <p class="text-gray-500">Phase : {{ project.phase }}</p>
-            <Dialog v-model:open="isDialogOpen">
+                <p :class="project.actual ? 'text-green-500' : 'text-red-500'">
+                    {{ project.actual ? 'Actuel' : 'Non Actuel' }}
+                </p>
+            <Dialog v-model:open="isDialogOpen" v-if="!project.actual">
                 <DialogTrigger as-child>
                     <Button @click="openDelete(project.id)">
                         <Trash class="w-5 h-5" />

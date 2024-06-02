@@ -34,7 +34,7 @@ async function refetch() {
       <p v-if="projectsLoading">Chargement...</p>
       <p v-else-if="projectsError">Erreur lors du chargement des projets.</p>
       <div v-else class="w-full">
-        <ProjectSelector :projects="projects" />
+        <ProjectSelector :projects="projects" @choose:project="refetch" />
         <ProjectList :projects="projects" @delete:project="refetch" />
         <AddProject @add:project="refetch" />
       </div>

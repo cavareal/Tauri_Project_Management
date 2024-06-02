@@ -6,7 +6,7 @@ export const GradeTypeSchema = z.object({
 	factor: z.coerce.number().nullable(),
 	forGroup: z.boolean(),
 	imported: z.boolean(),
-	scaleUrl: z.string().nullable()
+	scalePDFBlob: z.unknown().nullable()
 })
 export type GradeType = z.infer<typeof GradeTypeSchema>
 

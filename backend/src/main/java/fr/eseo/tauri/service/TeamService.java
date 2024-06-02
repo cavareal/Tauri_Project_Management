@@ -234,14 +234,15 @@ public class TeamService {
         }
 
         // re-order the teams by average grade
-        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(); // TODO projectId
+        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId); // TODO projectId
+        CustomLogger.info("Teams " + sortedTeams);
 
         index = nbTeams * womenPerTeam;
 
         // Assign the remaining students evenly to the teams
         for (int i = index; i < nbStudent; i++) {
             if ((i - index) % nbTeams == 0) {
-                sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc();   // TODO projectId
+                sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);   // TODO projectId
             }
 
             Student student;
