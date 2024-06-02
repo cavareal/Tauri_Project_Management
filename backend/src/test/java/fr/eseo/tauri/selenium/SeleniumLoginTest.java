@@ -35,7 +35,6 @@ public class SeleniumLoginTest {
                 options.setCapability("goog:loggingPrefs", new LoggingPreferences() {{
                         enable(LogType.DRIVER, Level.ALL);
                 }});
-
                 SeleniumLoginTest.webdriver = new ChromeDriver(options);
                 wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
                 SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");

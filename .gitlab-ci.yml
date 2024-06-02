@@ -237,18 +237,18 @@ selenium-dev:
 ###################
 ## SELENIUM PROD ##
 ###################
-selenium-prod:
+selenium-dev:
   stage: selenium
   image: charlo56/pgl-gradlew-chrome:latest
   script:
     - cd backend
-    - chmod +x ./gradlew
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless
+    - chmod +x ./gradlew  
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/bin/chromedriver --scan 
   dependencies:
-    - push-prod
+    - push-dev
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
   only:
-    - main
+    - dev
   retry: 2

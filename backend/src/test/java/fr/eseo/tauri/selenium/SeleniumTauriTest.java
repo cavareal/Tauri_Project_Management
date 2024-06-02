@@ -15,7 +15,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -25,7 +24,6 @@ public class SeleniumTauriTest {
         private static final String PASSWORD = "pl";
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
-        private static final Logger logger = Logger.getLogger(SeleniumTauriTest.class.getName());
 
         @BeforeAll
         public static void beforeTest(){
@@ -34,9 +32,6 @@ public class SeleniumTauriTest {
                 options.addArguments("--no-sandbox");
                 options.addArguments("--headless");
                 options.addArguments("--ignore-certificate-errors");
-                options.setCapability("goog:loggingPrefs", new LoggingPreferences() {{
-                        enable(LogType.DRIVER, Level.ALL);
-                }});
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
         }
 
