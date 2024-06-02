@@ -222,7 +222,7 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew  
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/bin/chromedriver --scan 
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dsettings.on=true -Dwebdriver.chrome.driver=/usr/bin/chromedriver --scan 
   dependencies:
     - push-dev
   cache:
@@ -243,7 +243,7 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew  
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/bin/chromedriver --scan 
+    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dsettings.on=true -Dwebdriver.chrome.driver=/usr/bin/chromedriver --scan 
   dependencies:
     - push-dev
   cache:
