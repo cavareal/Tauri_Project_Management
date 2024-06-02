@@ -32,20 +32,15 @@ public class SeleniumTauriTest {
                 options.addArguments("--no-sandbox");
                 options.addArguments("--headless");
                 options.addArguments("--ignore-certificate-errors");
-                options.setCapability("goog:loggingPrefs", new LoggingPreferences() {{
-                        enable(LogType.DRIVER, Level.ALL);
-                        enable(LogType.BROWSER, Level.ALL);
-                        enable(LogType.SERVER, Level.ALL);
-                        enable(LogType.CLIENT, Level.ALL);
-                }});
                 SeleniumTauriTest.webdriver = new ChromeDriver(options);
         }
 
         @Test
         @Order(1)
         void login(){
+                System.out.println("URL before navigation: "+SeleniumTauriTest.URL+"login");
                 SeleniumTauriTest.webdriver.get(SeleniumTauriTest.URL+"login");
-
+                System.out.println("URL after navigation: "+SeleniumTauriTest.webdriver.getCurrentUrl());
                 WebDriverWait wait = new WebDriverWait(SeleniumTauriTest.webdriver, Duration.ofSeconds(10));
                 WebElement titleElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.className("text-dark-blue")));
 
