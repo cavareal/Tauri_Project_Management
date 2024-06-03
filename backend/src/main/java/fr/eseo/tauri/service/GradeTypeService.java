@@ -7,10 +7,12 @@ import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -220,7 +222,25 @@ public class GradeTypeService {
         }
         return gradeTypeRepository.findByName(name);
     }
-    
+
+    public void savePdfBase64(Integer id, MultipartFile file, String token) throws IOException { //TODO rename
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeTypePDF"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+            GradeType gradeType = gradeTypeRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
+
+            byte[] pdfBytes = file.getBytes();
+            gradeType.scalePDFBlob(pdfBytes);
+            gradeTypeRepository.save(gradeType);
+    }
+
+    public byte[] getBLOBScale(Integer id, String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "downloadGradeTypePDF"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        GradeType gradeType = gradeTypeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
+        return gradeType.scalePDFBlob();
+    }
 }
-
-
