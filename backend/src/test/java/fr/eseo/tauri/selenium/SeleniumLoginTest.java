@@ -21,13 +21,13 @@ public class SeleniumLoginTest {
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
         private static WebDriverWait wait;
-        private static String settings = System.getProperty("selenium.options", "false");
+        private static String settings = System.getProperty("selenium.options", "off");
 
         @BeforeAll
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
-//                if(settings.equals("true")){
+//                if(settings.equals("on")){
                         options.addArguments("--no-sandbox");
                         options.addArguments("--headless");
                         options.addArguments("--ignore-certificate-errors");
