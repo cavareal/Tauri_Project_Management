@@ -48,12 +48,12 @@ dependencies {
 }
 
 
-// Unit tests
 test {
 	useJUnitPlatform()
 }
 
 
+// Unit tests
 tasks.register('unitTest', Test) {
 	useJUnitPlatform()
 	include '**/unit/**'
