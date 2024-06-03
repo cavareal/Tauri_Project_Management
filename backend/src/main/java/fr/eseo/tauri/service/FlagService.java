@@ -88,4 +88,11 @@ public class FlagService {
         }
         return flagRepository.findByAuthorIdAndType(authorId, type);
 	}
+
+    public List<Flag> getFlagsByConcernedTeamId(String token, Integer teamId) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readFlags"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        return flagRepository.findByConcernedTeamId(teamId);
+    }
 }

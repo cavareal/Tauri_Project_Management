@@ -16,6 +16,7 @@ import { Loading } from "@/components/organisms/loading"
 import { hasPermission } from "@/services/user/user.service"
 import { sendManyNotifications } from "@/services/notification/notification.service"
 import { getCurrentPhase } from "@/services/project/project.service"
+import SwitchStudentsFlags from "@/components/organisms/teams/switch-student/SwitchStudentsFlags.vue"
 
 const queryClient = useQueryClient()
 
@@ -92,6 +93,7 @@ const canEdit = hasPermission("TEAM_MANAGEMENT")
 <template>
 	<Loading v-if="isLoading" />
 	<Accordion v-else type="multiple" :default-value="teams && teams.map(team => team.id.toString())" class="space-y-4">
+    <SwitchStudentsFlags/>
 		<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
 			<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
 				v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"

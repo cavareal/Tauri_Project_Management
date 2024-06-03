@@ -71,4 +71,10 @@ public class FlagController {
 		List<Flag> flags = flagService.getFlagsByAuthorAndType(token, authorId, type);
         return ResponseEntity.ok(flags);
 	}
+
+    @GetMapping("/team/{teamId}")
+    public ResponseEntity<List<Flag>> getFlagsByConcernedTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer teamId) {
+        List<Flag> flags = flagService.getFlagsByConcernedTeamId(token, teamId);
+        return ResponseEntity.ok(flags);
+    }
 }

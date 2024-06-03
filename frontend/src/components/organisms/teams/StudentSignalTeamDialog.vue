@@ -31,6 +31,7 @@ import { ArrowLeftRight } from "lucide-vue-next"
 const open = ref(false)
 const description = ref("")
 const othersTeams = ref<Team[]>([])
+const myTeam  = ref<Team | null>(null)
 const selectedMyTeamStudent = ref("")
 const selectedOtherTeamStudent = ref("")
 const userId = Cookies.getUserId()
@@ -46,12 +47,12 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"]
 } })
 
 const { data: students } = useQuery({ queryKey: ["students"], queryFn: async() => {
-	const myTeam = await getTeamByUserId(userId)
+	myTeam.value = await getTeamByUserId(userId)
 	const students = await getAllStudents()
 	let myTeamStudents: Student[] = []
-	if (myTeam) {
-		othersTeams.value = (await getTeams()).filter(team => team.id !== myTeam.id)
-		myTeamStudents = filteredStudents(students, myTeam.id)
+	if (myTeam.value) {
+		othersTeams.value = (await getTeams()).filter(team => team.id !== myTeam.value!.id)
+		myTeamStudents = filteredStudents(students, myTeam.value!.id)
 	}
 	return { myTeamStudents, students }
 } })

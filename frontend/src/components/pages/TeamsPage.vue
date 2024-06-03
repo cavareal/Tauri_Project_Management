@@ -20,6 +20,7 @@ import { hasPermission } from "@/services/user/user.service"
 import { Loading } from "@/components/organisms/loading"
 import { Cookies } from "@/utils/cookie"
 import { StudentSignalTeamDialog } from "@/components/organisms/teams"
+import SwitchStudentsFlags from "@/components/organisms/teams/switch-student/SwitchStudentsFlags.vue"
 
 const currentUserId = Cookies.getUserId()
 const hasValidateTeams = ref(true)
