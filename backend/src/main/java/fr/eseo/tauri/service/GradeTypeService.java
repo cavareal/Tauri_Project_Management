@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -226,6 +227,12 @@ public class GradeTypeService {
     public void savePdfBase64(Integer id, MultipartFile file, String token) throws IOException { //TODO rename
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeTypePDF"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        if (!Objects.equals(file.getContentType(), "application/pdf")) {
+            throw new IllegalArgumentException("Only PDF files are allowed");
+        }
+        if (file.getSize() > 65 * 1024) { // 65 KB in bytes
+            throw new IllegalArgumentException("File size should not exceed 65 KB");
         }
             GradeType gradeType = gradeTypeRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));

@@ -82,7 +82,6 @@ public class GradeTypeController {
             @PathVariable Integer id,
             @RequestParam("file") MultipartFile file) throws IOException {
             gradeTypeService.savePdfBase64(id, file, token);
-        CustomLogger.info("test");
             return ResponseEntity.ok(responseMessage.create());
     }
 
