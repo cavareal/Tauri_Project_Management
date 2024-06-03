@@ -243,7 +243,7 @@ selenium-dev:
 ###################
 ## SELENIUM PROD ##
 ###################
-selenium-dev:
+selenium-prod:
   stage: selenium
   image: charlo56/pgl-gradlew-chrome:latest
   script:
@@ -262,5 +262,5 @@ selenium-dev:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
   only:
-    - dev
+    - main
   retry: 2
