@@ -216,7 +216,6 @@ public class GradeTypeService {
         }
     }
 
-
     public GradeType findByName(String name, String token) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
@@ -242,7 +241,7 @@ public class GradeTypeService {
             gradeTypeRepository.save(gradeType);
     }
 
-    public byte[] getBLOBScale(Integer id, String token) {
+    public byte[] getBLOBScale(int id, String token) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "downloadGradeTypePDF"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
