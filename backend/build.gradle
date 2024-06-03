@@ -61,8 +61,8 @@ tasks.register('seleniumTest', Test) {
 	include '**/selenium/**'
 
 	if (System.getProperty('seleniumServerUrl') && System.getProperty('seleniumOptions')) {
-		systemProperty 'selenium.server.url', System.getProperty('seleniumServerUrl')
-		systemProperty 'selenium.options', System.getProperty('seleniumOptions')
+		systemProperty 'seleniumServerUrl', System.getProperty('seleniumServerUrl')
+		systemProperty 'seleniumOptions', System.getProperty('seleniumOptions')
 	}
 }
 
