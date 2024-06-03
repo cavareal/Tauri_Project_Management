@@ -50,7 +50,7 @@ export const getGradeTypeByName = async(name: string): Promise<GradeType> => {
 }
 
 
-export const downloadGradeScalePDF = async(gradeTypeId: string): Promise<void> => {
+export const downloadGradeScalePDF = async(gradeTypeId: number): Promise<void> => {
 	const response = await queryAndValidate({
 		route: `grade-types/${gradeTypeId}/download-pdf`,
 		responseSchema: z.string()
@@ -59,6 +59,7 @@ export const downloadGradeScalePDF = async(gradeTypeId: string): Promise<void> =
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+	console.log(new Blob([response.data]))
 	const url = window.URL.createObjectURL(new Blob([response.data]))
 	const link = document.createElement("a")
 	link.href = url
