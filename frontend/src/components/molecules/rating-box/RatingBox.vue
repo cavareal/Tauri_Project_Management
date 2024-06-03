@@ -103,7 +103,7 @@ const download = useMutation({
 	mutationKey: ["export-grade-scale"],
 	mutationFn: async() => {
 		try {
-			await downloadGradeScalePDF(1)
+			await downloadGradeScalePDF("1")
 			createToast("Le fichier a été téléchargé.")
 		} catch (error) {
 			createToast("Erreur lors du téléchargement du fichier.")

@@ -247,6 +247,7 @@ public class GradeTypeService {
         }
         GradeType gradeType = gradeTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
+        CustomLogger.info("Size of the PDF: " + gradeType.scalePDFBlob().length);
         return gradeType.scalePDFBlob();
     }
 }
