@@ -51,9 +51,15 @@ dependencies {
 // Unit tests
 test {
 	useJUnitPlatform()
-	include '**/unit/**'
-	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
 }
+
+
+tasks.register('unitTest', Test) {
+	useJUnitPlatform()
+	include '**/unit/**'
+	finalizedBy 'jacocoTestReport'
+}
+
 
 // Selenium tests
 tasks.register('seleniumTest', Test) {
