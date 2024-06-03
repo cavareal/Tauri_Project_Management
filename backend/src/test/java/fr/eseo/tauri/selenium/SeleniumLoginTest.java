@@ -17,11 +17,11 @@ import java.time.Duration;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SeleniumLoginTest {
-        private static final String URL = System.getProperty("selenium.server.url", "https://172.24.1.22/");
+        private static final String URL = System.getProperty("selenium.server.url", "http://localhost:5173/");
+        private static final String settings = System.getProperty("selenium.options", "off");
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
         private static WebDriverWait wait;
-        private static String settings = System.getProperty("selenium.options", "off");
 
         @BeforeAll
         public static void beforeTest(){

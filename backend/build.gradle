@@ -59,9 +59,10 @@ test {
 tasks.register('seleniumTest', Test) {
 	useJUnitPlatform()
 	include '**/selenium/**'
-	if (System.getProperty('selenium.server.url') && System.getProperty('selenium.options')) {
-		systemProperty 'selenium.server.url', System.getProperty('selenium.server.url')
-		systemProperty 'selenium.options', System.getProperty('selenium.options')
+
+	if (System.getProperty('seleniumServerUrl') && System.getProperty('seleniumOptions')) {
+		systemProperty 'selenium.server.url', System.getProperty('seleniumServerUrl')
+		systemProperty 'selenium.options', System.getProperty('seleniumOptions')
 	}
 }
 

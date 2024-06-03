@@ -185,7 +185,7 @@ push-dev:
   retry: 2
   only:
     - dev
-     
+
 #################
 ## DEPLOY PROD ##
 #################
@@ -222,9 +222,15 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew  
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dselenium.options=on
+    - ./gradlew --no-daemon seleniumTest -DseleniumServerUrl=https://$SERVER_IP_DEV -DseleniumOptions=on
   dependencies:
     - push-dev
+  artifacts:
+    paths:
+      - backend/build/reports/tests/selenium
+      - backend/build/test-results/selenium
+    expire_in: 30 mins
+    when: always
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
@@ -242,10 +248,16 @@ selenium-dev:
   image: charlo56/pgl-gradlew-chrome:latest
   script:
     - cd backend
-    - chmod +x ./gradlew  
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dselenium.options=on
+    - chmod +x ./gradlew
+    - ./gradlew --no-daemon seleniumTest -DseleniumServerUrl=https://$SERVER_IP_PROD -DseleniumOptions=on
   dependencies:
-    - push-dev
+    - push-prod
+  artifacts:
+    paths:
+      - backend/build/reports/tests/selenium
+      - backend/build/test-results/selenium
+    expire_in: 30 mins
+    when: always
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
