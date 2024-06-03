@@ -10,7 +10,7 @@ import { createToast } from "@/utils/toast"
 import { onMounted, ref, watch } from "vue"
 import { CheckIcon, Loader } from "@/components/atoms/icons"
 import { getGradeTypeDescription, type GradeTypeName } from "@/types/grade-type"
-import { Button } from "@/components/ui/button" 
+import { Button } from "@/components/ui/button"
 import { downloadGradeScalePDF } from "@/services/grade-type"
 import type { Grade } from "@/types/grade"
 
@@ -101,9 +101,9 @@ onMounted(() => {
 
 const download = useMutation({
 	mutationKey: ["export-grade-scale"],
-	mutationFn: async () => {
+	mutationFn: async() => {
 		try {
-			await downloadGradeScalePDF(props.sprintId)
+			await downloadGradeScalePDF(1)
 			createToast("Le fichier a été téléchargé.")
 		} catch (error) {
 			createToast("Erreur lors du téléchargement du fichier.")
@@ -132,7 +132,7 @@ const download = useMutation({
 		<Textarea v-if="commentAuthorization" placeholder="Ajouter un commentaire" v-model="comment" :disabled="isPending" v-on:blur="mutate" />
 
 		<ErrorText v-if="status === 'DONE' && isError">Une erreur est survenue.</ErrorText>
-		
+
 		<Row class="items-center justify-end mt-4">
 			<Button variant="outline" @click="download.mutate">
 				Télécharger le barème
