@@ -62,8 +62,8 @@ tasks.register('seleniumTest', Test) {
 
 	if (System.getProperty('seleniumServerUrl') && System.getProperty('seleniumOptions')) {
 		System.out.println("Running Selenium tests on " + System.getProperty('seleniumServerUrl') + " with options " + System.getProperty('seleniumOptions'));
-//		systemProperty 'seleniumServerUrl', System.getProperty('seleniumServerUrl')
-//		systemProperty 'seleniumOptions', System.getProperty('seleniumOptions')
+		systemProperty 'seleniumServerUrl', System.getProperty('seleniumServerUrl')
+		systemProperty 'seleniumOptions', System.getProperty('seleniumOptions')
 	}
 }
 

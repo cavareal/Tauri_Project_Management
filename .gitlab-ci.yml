@@ -222,7 +222,7 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew  
-    - ./gradlew --no-daemon seleniumTest -DseleniumServerUrl=https://$SERVER_IP_DEV -DseleniumOptions=on
+    - ./gradlew --no-daemon seleniumTest -DseleniumServerUrl=https://$SERVER_IP_DEV/ -DseleniumOptions=on
   dependencies:
     - push-dev
   artifacts:
@@ -249,7 +249,7 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon seleniumTest -DseleniumServerUrl=https://$SERVER_IP_PROD -DseleniumOptions=on
+    - ./gradlew --no-daemon seleniumTest -DseleniumServerUrl=https://$SERVER_IP_PROD/ -DseleniumOptions=on
   dependencies:
     - push-prod
   artifacts:
