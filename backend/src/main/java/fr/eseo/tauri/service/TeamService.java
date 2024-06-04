@@ -193,7 +193,7 @@ public class TeamService {
         }
         projectService.updateProject(token, projectId, projectDetails);
         List<Team> teams = this.createTeams(token, projectId, nbTeams);
-        this.fillTeams(teams, women, men, womenPerTeam, nbStudent, projectId);
+        this.fillTeams(teams, women, men, womenPerTeam, nbStudent, false, projectId);
     }
 
     /**
@@ -203,39 +203,40 @@ public class TeamService {
      * @param men the list of men students
      * @param womenPerTeam the number of women per team
      */
-    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent, Integer projectId) {
+    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent, boolean autoRatio, Integer projectId) {
         int nbTeams = teams.size();
         int nbWomen = women.size();
 
         int index;
 
         // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
-        for (int i = 0; i < nbTeams; i++) {
-            for (int j = 0; j < womenPerTeam; j++) {
-                Student student;
-                Role role = new Role();
-                role.type(RoleType.TEAM_MEMBER);
-                index = i * womenPerTeam + j;
+        if (!autoRatio) {
+            for (int i = 0; i < nbTeams; i++) {
+                for (int j = 0; j < womenPerTeam; j++) {
+                    Student student;
+                    Role role = new Role();
+                    role.type(RoleType.TEAM_MEMBER);
+                    index = i * womenPerTeam + j;
 
-                if (index < nbWomen) {
-                    student = women.get(index);
-                    student.team(teams.get(i));
-                    role.user(student);
-                    this.roleRepository.save(role);
-                    this.studentRepository.save(student);
-                } else if (index < nbStudent) {
-                    student = men.get(index - nbWomen);
-                    student.team(teams.get(i));
-                    role.user(student);
-                    this.roleRepository.save(role);
-                    this.studentRepository.save(student);
+                    if (index < nbWomen) {
+                        student = women.get(index);
+                        student.team(teams.get(i));
+                        role.user(student);
+                        this.roleRepository.save(role);
+                        this.studentRepository.save(student);
+                    } else if (index < nbStudent) {
+                        student = men.get(index - nbWomen);
+                        student.team(teams.get(i));
+                        role.user(student);
+                        this.roleRepository.save(role);
+                        this.studentRepository.save(student);
+                    }
                 }
             }
         }
 
         // re-order the teams by average grade
-        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId); // TODO projectId
-        CustomLogger.info("Teams " + sortedTeams);
+        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId); // TODO  : repository add id
 
         index = nbTeams * womenPerTeam;
 
@@ -288,7 +289,7 @@ public class TeamService {
 
         }
 
-        return teamGrades.stream().mapToDouble(Double::doubleValue).sum() / teamGrades.size();
+        return formattedResult(teamGrades.stream().mapToDouble(Double::doubleValue).sum() / teamGrades.size());
 
     }
 
