@@ -42,7 +42,7 @@ const { mutate: deleteProjectMutate } = useMutation({
 <template>
     <div class="w-full">
         <h2 class="text-xl font-semibold text-center mb-4">Liste des projets existants</h2>
-        <div v-for="project in projects" :key="project.id" class="w-full flex justify-between items-center p-2 border-b border-gray-300">
+        <div v-for="project in projects" :key="project.id" class="w-full flex justify-between items-center p-2 mb-5 border-b border-gray-500">
                 <p class="font-medium">{{ project.name }}</p>
                 <p class="text-gray-500">Nombre d'équipes : {{ project.nbTeams ? project.nbTeams : "pas encore générées" }}</p>
                 <p class="text-gray-500">Phase : {{ project.phase }}</p>

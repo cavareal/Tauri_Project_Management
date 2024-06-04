@@ -290,7 +290,7 @@ public class StudentService {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
-        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(token);
+        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(token, projectId);
         List<Student> students = getAllStudentsByProject(token, projectId);
 
         CSVWriter csvWriter = new CSVWriter(writer);

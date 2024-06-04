@@ -222,8 +222,8 @@ class TeamServiceTest {
         List<Student> men = Arrays.asList(new Student(), new Student());
 
         when(authService.checkAuth(token, "createTeam")).thenReturn(true);
-        when(studentRepository.findByGender(Gender.WOMAN)).thenReturn(women);
-        when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN)).thenReturn(men);
+        when(studentRepository.findByGenderAndProjectId(Gender.WOMAN, projectId)).thenReturn(women);
+        when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN, projectId)).thenReturn(men);
 
         assertThrows(IllegalArgumentException.class, () -> teamService.generateTeams(token, projectId, projectDetails));
     }

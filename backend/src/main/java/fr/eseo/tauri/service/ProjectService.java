@@ -1,8 +1,11 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
+import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
+import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ public class ProjectService {
 
     private final AuthService authService;
     private final ProjectRepository projectRepository;
+    private final GradeTypeRepository gradeTypeRepository;
 
     public Project getProjectById(String token, Integer id) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "readProject"))) {
@@ -51,6 +55,23 @@ public class ProjectService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         projectRepository.save(project);
+
+        GradeTypeName[] gradeTypeNames = GradeTypeName.values();
+        for(GradeTypeName gradeTypeName : gradeTypeNames) {
+            if(gradeTypeName != GradeTypeName.AVERAGE) {
+                var gradeType = new GradeType();
+
+                gradeType.name(gradeTypeName.displayName());
+                gradeType.factor(1.f);
+                gradeType.forGroup(true);
+                gradeType.imported(false);
+                gradeType.project(project);
+
+                if (gradeTypeName == GradeTypeName.INDIVIDUAL_PERFORMANCE) gradeType.forGroup(false);
+
+                gradeTypeRepository.save(gradeType);
+            }
+        }
     }
 
     public void updateProject(String token, Integer id, Project updatedProject) {
