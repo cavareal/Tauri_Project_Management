@@ -1,8 +1,10 @@
 package fr.eseo.tauri.service;
 
+import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.security.AuthResponse;
@@ -26,6 +28,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final ProjectRepository projectRepository;
 
     public Boolean checkAuth(String token, String permission) {
 
@@ -62,8 +65,8 @@ public class AuthService {
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
             CustomLogger.info("Access token generated for user " + user.id() + " : " + accessToken);
-            return new AuthResponse(user.id(), accessToken);
-
+            Integer idProject = projectRepository.findFirstByActualTrue().map(Project::id).orElse(0);
+            return new AuthResponse(user.id(), accessToken, idProject);
         } catch (Exception e){
             throw new SecurityException("Wrong credentials");
         }

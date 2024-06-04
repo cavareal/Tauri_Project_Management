@@ -69,7 +69,10 @@ const { error, mutate } = useMutation({
                     })
                     .catch(() => createToast("Erreur lors de la création du/des role(s)"))
             })
-            .catch(() => createToast("Erreur lors de la création d'un utilisateur. Il se peut que l'email soit déjà enregistrée"))
+            .catch(() => {
+                console.log("Error creating user")    
+                createToast("Erreur lors de la création d'un utilisateur. Il se peut que l'email soit déjà enregistrée")
+            })
     }
 })
 
@@ -114,8 +117,7 @@ const onSubmit = handleSubmit((values) => {
                     type="text" v-model="userName" />
             </div>
 
-            <form @submit.prevent="onSubmit">
-                <div>
+            <form @submit.prevent="onSubmit" class="flex flex-col">  
                     <FormField name="items">
                         <FormItem>
                             <div class="mb-4">
@@ -123,9 +125,8 @@ const onSubmit = handleSubmit((values) => {
                                     Role(s) pour le nouvel utilisateur
                                 </FormLabel>
                             </div>
-                            <FormField v-for="roleType in RoleTypeSchema.options" v-slot="{ value, handleChange }"
-                                :key="roleType" type="checkbox" :value="roleType" :unchecked-value="false" name="roles">
-                                <FormItem class="flex flex-row items-start space-x-3 space-y-0">
+                            <FormField v-for="roleType in RoleTypeSchema.options" v-slot="{ value, handleChange }" :key="roleType" type="checkbox" :value="roleType" :unchecked-value="false" name="roles">
+                                <FormItem v-if="roleType != 'OPTION_STUDENT'" class="flex flex-row items-start space-x-3 space-y-0">
                                     <FormControl>
                                         <Checkbox :checked="value.includes(roleType)" @update:checked="handleChange" />
                                     </FormControl>
@@ -137,8 +138,7 @@ const onSubmit = handleSubmit((values) => {
                             <FormMessage />
                         </FormItem>
                     </FormField>
-                </div>
-                <Button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Valider</Button>
+                <Button class="mt-2">Valider</Button>
                 <p v-if=error>Erreur lors de la création d'un utilisateur</p>
             </form>
         </Column>

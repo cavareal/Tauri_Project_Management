@@ -12,4 +12,7 @@ public class AuthResponse {
 
     @JsonProperty
     private String accessToken;
+
+    @JsonProperty
+    private Integer idProject;
 }

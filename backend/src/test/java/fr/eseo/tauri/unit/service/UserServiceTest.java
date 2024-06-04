@@ -116,7 +116,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUserSavesUserWhenAuthorized() {
+    void createUserSavesUserWhenAuthorized() throws Exception {
         String token = "validToken";
         User user = new User();
 

@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Cookies } from "@/utils/cookie"
 
 const props = defineProps<{
   users: Array<User & { role: string[] }>;
@@ -30,6 +31,7 @@ const props = defineProps<{
 const emits = defineEmits(["delete:user"])
 const userToDelete = ref<number | null>(null);
 const isDialogOpen = ref<boolean>(false);
+const pojectLeaderId = Cookies.getUserId()
 
 function openDelete(userId: number) {
   userToDelete.value = userId;
@@ -65,20 +67,16 @@ watch(isDialogOpen, (newVal) => {
 <template>
   <div class="mt-10 border border-gray-300 border-dashed rounded-lg flex justify-center flex-col items-stretch p-4">
     <h2 class="text-xl font-semibold text-center mb-4">Gestion des utilisateurs</h2>
-    <Column class="items-center gap-4">
+    <Column class="items-center gap-4 ">
       <template v-if="usersLoading || rolesLoading">
         <div>Chargement...</div>
       </template>
       <template v-else-if="usersError || rolesError">
         <div>Erreur lors du chargement des données.</div>
       </template>
-      <template v-else>
-        <div
-          v-for="user in users"
-          :key="user.id"
-          class="flex justify-between items-center w-full p-2 border-b border-gray-300"
-        >
-          <div>
+      <template v-else v-for="user in users" :key="user.id">
+        <div v-if="pojectLeaderId != user.id && user.role[0] != 'OPTION_STUDENT'" class="flex justify-between items-center w-full p-2 border-b border-gray-300">
+          <div >
             <p class="font-medium">{{ user.name }}</p>
             <p class="text-gray-500">{{ user.email }}</p>
             <p class="text-gray-400">{{ getRoleDescription(user.role).join(', ') }}</p>
@@ -98,7 +96,7 @@ watch(isDialogOpen, (newVal) => {
               </DialogHeader>
               <DialogFooter>
                 <Button @click="isDialogOpen = false">Annuler</Button>
-                <Button class="bg-red-500 text-white" @click="deleteUserMutate">
+                <Button class="bg-red-500 hover:bg-red-700 text-white" @click="deleteUserMutate">
                   Supprimer
                 </Button>
               </DialogFooter>

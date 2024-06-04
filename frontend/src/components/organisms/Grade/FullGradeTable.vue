@@ -97,22 +97,22 @@ watch(() => props.teamId, async() => {
 		<TableHeader>
 			<TableRow>
 				<TableHead :class="rowClass">Nom</TableHead>
-				<TableHead :class="rowClass">
+				<TableHead :class="rowClass" title="Solution technique">
 					<div class="flex items-center justify-center">
 						<Blocks :stroke-width="1"/>
 					</div>
 				</TableHead>
-				<TableHead :class="rowClass">
+				<TableHead :class="rowClass" title="Gestion de projet">
 					<div class="flex items-center justify-center">
 						<SquareGanttChart :stroke-width="1"/>
 					</div>
 				</TableHead>
-				<TableHead :class="rowClass">
+				<TableHead :class="rowClass" title="Conformité au sprint">
 					<div class="flex items-center justify-center">
 						<Play :stroke-width="1"/>
 					</div>
 				</TableHead>
-				<TableHead :class="rowClass">
+				<TableHead :class="rowClass" title="Contenu de présentation">
 					<div class="flex items-center justify-center">
 						<Presentation :stroke-width="1"/>
 					</div>
@@ -121,7 +121,7 @@ watch(() => props.teamId, async() => {
 					<div class="flex items-center justify-center">
 						<Row>
 							<div class="mr-2">Total équipe</div>
-							<Tooltip expression="\text{Total équipe}=  \frac{\text{Solution Technique} + \text{Gestion de projet} + \text{Conformité au sprint} + \text{Présentation}} {4}" position="left-0">
+							<Tooltip expression="\text{Total équipe}= \\ \frac{\text{Solution Technique} + \text{Gestion de projet} + \text{Conformité au sprint} + \text{Présentation}} {4}" position="left-0">
 								<Info :stroke-width="1" :size="20"/>
 							</Tooltip>
 						</Row>
@@ -179,7 +179,7 @@ watch(() => props.teamId, async() => {
 				<TableCell v-if="averageTeam" :class="cellClass" >{{averageTeam["Solution Technique"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Gestion de projet"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
-				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Support de présentation"]}}</TableCell>
+				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Contenu de la présentation"]}}</TableCell>
 				<TableCell v-if="totalGrade" :class="cellClass"> {{totalGrade}} </TableCell>
 				<TableCell v-if="studentBonuses" :class="cellClass">{{ studentBonuses[index][1].value}} </TableCell>
 				<TableCell v-if="studentBonuses" :class="cellClass">{{ studentBonuses[index][0].value }} </TableCell>
