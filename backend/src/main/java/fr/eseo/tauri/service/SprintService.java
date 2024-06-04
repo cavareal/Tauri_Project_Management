@@ -57,8 +57,8 @@ public class SprintService {
                 presentationOrderService.createPresentationOrder(token, presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
-                bonusService.createBonus(token, limitedBonus);
-                bonusService.createBonus(token, unlimitedBonus);
+                bonusService.createBonus(limitedBonus);
+                bonusService.createBonus(unlimitedBonus);
             }
         }
     }

@@ -33,11 +33,7 @@ public class UserService {
 		return userRepository.findAll();
 	}
 
-	public User getUserById(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readUser"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
+	public User getUserById(Integer id) {
 		return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user", id));
 	}
 
@@ -57,12 +53,8 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
-	public void updateUser(String token, Integer id, User updatedUser) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateUser"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
-		var user = getUserById(token, id);
+	public void updateUser(Integer id, User updatedUser) {
+		var user = getUserById(id);
 
 		if (updatedUser.name() != null) user.name(updatedUser.name());
 		if (updatedUser.email() != null) user.email(updatedUser.email());
@@ -77,7 +69,7 @@ public class UserService {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 
-		var user = getUserById(token, id);
+		var user = getUserById(id);
 
 		// Change team's leader to null when their leader is deleted.
 		var teams = teamRepository.findAllByLeaderId(user.id());
@@ -101,7 +93,7 @@ public class UserService {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readRoleByUserId"))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
-		User user = getUserById(token, id);
+		User user = getUserById(id);
 		return roleRepository.findByUser(user);
 	}
 
@@ -116,7 +108,7 @@ public class UserService {
 		} else if (roles.contains(RoleType.TEAM_MEMBER)) {
 			return teamRepository.findByStudentId(userId);
 		} else {
-			CustomLogger.info(getUserById(token, userId).name() + "is not a member of any team");
+			CustomLogger.info(getUserById(userId).name() + "is not a member of any team");
 			return null;
 		}
 	}
@@ -126,7 +118,7 @@ public class UserService {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 
-		var user = getUserById(token, id);
+		var user = getUserById(id);
 		var roles = roleRepository.findByUser(user);
 
 		List<PermissionType> permissions = new ArrayList<>();

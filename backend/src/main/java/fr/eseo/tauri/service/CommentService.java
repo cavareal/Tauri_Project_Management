@@ -19,59 +19,40 @@ public class CommentService {
     private final TeamService teamService;
     private final SprintService sprintService;
 
-    public Comment getCommentById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readComment"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Comment getCommentById(Integer id) {
         return commentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("comment", id));
     }
 
-    public List<Comment> getAllCommentsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readComments"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Comment> getAllCommentsByProject(Integer projectId) {
         return commentRepository.findAllByProject(projectId);
     }
 
-    public void createComment(String token, Comment comment) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addComment"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        comment.author(userService.getUserById(token, comment.authorId()));
-        comment.sprint(sprintService.getSprintById(token, comment.sprintId()));
-        comment.team(teamService.getTeamById(token, comment.teamId()));
+    public void createComment(Comment comment) {
+        comment.author(userService.getUserById(comment.authorId()));
+        comment.sprint(sprintService.getSprintById(comment.sprintId()));
+        comment.team(teamService.getTeamById(comment.teamId()));
 
         commentRepository.save(comment);
     }
 
-    public void updateComment(String token, Integer id, Comment updatedComment) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateComment"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        Comment comment = getCommentById(token, id);
+    public void updateComment(Integer id, Comment updatedComment) {
+        Comment comment = getCommentById(id);
 
         if (updatedComment.content() != null) comment.content(updatedComment.content());
         if (updatedComment.feedback() != null) comment.feedback(updatedComment.feedback());
-        if (updatedComment.sprintId() != null) comment.sprint(sprintService.getSprintById(token, updatedComment.sprintId()));
-        if (updatedComment.authorId() != null) comment.author(userService.getUserById(token, updatedComment.authorId()));
-        if (updatedComment.teamId() != null) comment.team(teamService.getTeamById(token, updatedComment.teamId()));
+        if (updatedComment.sprintId() != null) comment.sprint(sprintService.getSprintById(updatedComment.sprintId()));
+        if (updatedComment.authorId() != null) comment.author(userService.getUserById(updatedComment.authorId()));
+        if (updatedComment.teamId() != null) comment.team(teamService.getTeamById(updatedComment.teamId()));
 
         commentRepository.save(comment);
     }
 
-    public void deleteComment(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        getCommentById(token, id);
+    public void deleteComment(Integer id) {
+        getCommentById(id);
         commentRepository.deleteById(id);
     }
 
-    public void deleteAllCommentsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteComment"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void deleteAllCommentsByProject(Integer projectId) {
         commentRepository.deleteAllByProject(projectId);
     }
 }
