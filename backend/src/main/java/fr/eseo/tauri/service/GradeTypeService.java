@@ -223,7 +223,7 @@ public class GradeTypeService {
         return gradeTypeRepository.findByName(name);
     }
 
-    public void saveGradeScale(Integer id, MultipartFile file, String token) throws IOException { //TODO rename
+    public void saveGradeScale(Integer id, MultipartFile file, String token) throws IOException {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeTypeTXT"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
