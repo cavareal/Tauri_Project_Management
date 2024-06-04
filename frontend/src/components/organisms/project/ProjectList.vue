@@ -64,7 +64,7 @@ const { mutate: deleteProjectMutate } = useMutation({
                     </DialogHeader>
                     <DialogFooter>
                         <Button @click="isDialogOpen = false">Annuler</Button>
-                        <Button class="bg-red-500 text-white" @click="deleteProjectMutate">
+                        <Button class="bg-red-500 hover:bg-red-700 text-white" @click="deleteProjectMutate">
                             Supprimer
                         </Button>
                     </DialogFooter>

@@ -60,6 +60,6 @@ onMounted(() => {
                 </SelectItem>
             </SelectContent>
         </Select>
-        <Button @click="handleValidate" class="mt-4 px-4 py-2 text-white rounded-lg">Valider le choix</Button>
+        <Button @click="handleValidate" class="mt-4">Valider le choix</Button>
     </div>
 </template>

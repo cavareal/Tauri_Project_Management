@@ -38,7 +38,7 @@ const { error, mutate } = useMutation({
   <div class="flex justify-center mt-10">
     <Dialog v-model:open="isDialogOpen">
       <DialogTrigger as-child>
-        <Button class="mt-4 px-4 py-2 text-white rounded-lg hover:bg-blue-600">Ajouter projet</Button>
+        <Button class="">Ajouter projet</Button>
       </DialogTrigger>
       <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
@@ -52,8 +52,8 @@ const { error, mutate } = useMutation({
           <input id="project-name" v-model="projectName" class="mt-1 block w-full rounded-md" />
         </div>
         <DialogFooter>
-          <Button class="bg-red-500" @click="isDialogOpen = false">Annuler</Button>
-          <Button class="text-white" @click="mutate">Confirmer</Button>
+          <Button class="bg-red-500 hover:bg-red-600" @click="isDialogOpen = false">Annuler</Button>
+          <Button @click="mutate">Confirmer</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

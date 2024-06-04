@@ -96,7 +96,7 @@ watch(isDialogOpen, (newVal) => {
               </DialogHeader>
               <DialogFooter>
                 <Button @click="isDialogOpen = false">Annuler</Button>
-                <Button class="bg-red-500 text-white" @click="deleteUserMutate">
+                <Button class="bg-red-500 hover:bg-red-700 text-white" @click="deleteUserMutate">
                   Supprimer
                 </Button>
               </DialogFooter>

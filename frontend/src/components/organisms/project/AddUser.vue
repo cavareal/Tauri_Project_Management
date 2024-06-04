@@ -117,8 +117,7 @@ const onSubmit = handleSubmit((values) => {
                     type="text" v-model="userName" />
             </div>
 
-            <form @submit.prevent="onSubmit">
-                <div>
+            <form @submit.prevent="onSubmit" class="flex flex-col">  
                     <FormField name="items">
                         <FormItem>
                             <div class="mb-4">
@@ -139,8 +138,7 @@ const onSubmit = handleSubmit((values) => {
                             <FormMessage />
                         </FormItem>
                     </FormField>
-                </div>
-                <Button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Valider</Button>
+                <Button class="mt-2">Valider</Button>
                 <p v-if=error>Erreur lors de la création d'un utilisateur</p>
             </form>
         </Column>
