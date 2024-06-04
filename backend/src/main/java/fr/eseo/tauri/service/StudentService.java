@@ -43,10 +43,10 @@ public class StudentService {
     private final GradeRepository gradeRepository;
     private final UserService userService;
 
-    static final String MAP_KEY_NAMES = "names";
-    static final String MAP_KEY_GENDERS = "genders";
-    static final String MAP_KEY_BACHELORS = "bachelors";
-    static final String MAP_KEY_GRADES = "grades";
+    public static final String MAP_KEY_NAMES = "names";
+    public static final String MAP_KEY_GENDERS = "genders";
+    public static final String MAP_KEY_BACHELORS = "bachelors";
+    public static final String MAP_KEY_GRADES = "grades";
     private static final String PASSWORD = "password";
 
     public Student getStudentById(String token, Integer id) {
@@ -179,7 +179,7 @@ public class StudentService {
      * @param index the index to check
      * @return {@code true} if the index contains a non-empty value, {@code false} otherwise
      */
-    static boolean hasNonEmptyValue(String[] line, int index) {
+    public static boolean hasNonEmptyValue(String[] line, int index) {
         return line.length > index && !line[index].trim().isEmpty();
     }
 
@@ -211,9 +211,10 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.project(projectService.getProjectById(token, projectId));
-        student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
+//        student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
         student.privateKey("privateKey");
-        student.email(name.toLowerCase().replace(" ", ".") + "@reseau.eseo.fr");
+        String[] nameParts = name.split(" "); // Divise le nom en deux parties basées sur l'espace
+        student.email(nameParts[1].toLowerCase() + "." + nameParts[0].toLowerCase() + "@reseau.eseo.fr");
         return student;
     }
 
@@ -412,9 +413,6 @@ public class StudentService {
     }
 
     public List<Bonus> getStudentBonuses(String token, Integer idStudent, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
 
         return bonusRepository.findAllStudentBonuses(idStudent, sprintId);
     }
@@ -430,7 +428,7 @@ public class StudentService {
 
         Double individualGrade = gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
-        return 2*individualGrade + studentGradedTeamGrade;
+        return (2*individualGrade + studentGradedTeamGrade)/3;
     }
 
     public Double getSprintGrade(String token, Integer studentId, Integer sprintId) {
@@ -444,7 +442,7 @@ public class StudentService {
 
         List<Bonus> studentBonuses = getStudentBonuses(token, studentId, sprintId);
 
-        return 0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrade(token, studentId, sprintId));
+        return 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrade(token, studentId, sprintId));
     }
 
     public Grade getGradeByTypeAndAuthor(String token, Integer id, Integer gradeTypeId, Integer authorId, Integer sprintId) {

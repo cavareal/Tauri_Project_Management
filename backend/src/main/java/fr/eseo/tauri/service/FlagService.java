@@ -40,6 +40,7 @@ public class FlagService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         flag.author(userService.getUserById(token, flag.authorId()));
+        flag.project(projectService.getProjectById(token, flag.projectId()));
         if (flag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById(token, flag.firstStudentId()));
         if (flag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById(token, flag.secondStudentId()));
 

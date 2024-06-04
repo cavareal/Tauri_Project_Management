@@ -42,27 +42,30 @@ const removeCookie = (name: CookieName): void => {
 	document.cookie = `${name}=; expires=Thu, 19 Apr 2001 00:00:00 UTC; path=/;`
 }
 
-export namespace Cookies {
-	export const getRole = (): RoleType => getCookie<RoleType>("role")
-	export const setRole = (role: RoleType): void => setCookie("role", role)
 
-	export const getToken = (): string => getCookie("token")
-	export const setToken = (token: string): void => setCookie("token", token)
+export const Cookies = {
 
-	export const getProjectId = (): number => getCookie<number>("currentProject")
-	export const setProjectId = (id: number): void => setCookie("currentProject", id.toString())
+	getRole: (): RoleType => getCookie<RoleType>("role"),
+	setRole: (role: RoleType): void => setCookie("role", role),
 
-	export const getUserId = (): number => getCookie<number>("user")
-	export const setUserId = (id: number): void => setCookie("user", id.toString())
+	getToken: (): string => getCookie("token"),
+	setToken: (token: string): void => setCookie("token", token),
 
-	export const getPermissions = (): PermissionType[] => getCookie<PermissionType[]>("permissions")
-	export const setPermissions = (permissions: PermissionType[]): void => setCookie("permissions", JSON.stringify(permissions))
+	getProjectId: (): number => getCookie<number>("currentProject"),
+	setProjectId: (id: number): void => setCookie("currentProject", id.toString()),
 
-	export const removeAll = (): void => {
+	getUserId: (): number => getCookie<number>("user"),
+	setUserId: (id: number): void => setCookie("user", id.toString()),
+
+	getPermissions: (): PermissionType[] => getCookie<PermissionType[]>("permissions"),
+	setPermissions: (permissions: PermissionType[]): void => setCookie("permissions", JSON.stringify(permissions)),
+
+	removeAll: (): void => {
 		removeCookie("role")
 		removeCookie("token")
 		removeCookie("currentProject")
 		removeCookie("user")
 		removeCookie("permissions")
 	}
+
 }

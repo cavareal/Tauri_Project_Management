@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { Button } from "@/components/ui/button"
-import { deleteAllStudents } from "@/services/student-service"
+import { deleteAllStudents } from "@/services/student/student.service"
 import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
 import { ref } from "vue"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
@@ -42,8 +42,8 @@ const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir supprimer tous les �
 			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" @click="mutate" :loading="isPending">
-				Confirmer
+			<LoadingButton type="submit" @click="mutate" :loading="isPending" variant="destructive">
+				Supprimer
 			</LoadingButton>
 		</template>
 	</CustomDialog>

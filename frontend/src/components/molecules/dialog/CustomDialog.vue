@@ -15,7 +15,7 @@ defineProps<{
 			<slot name="trigger" />
 		</DialogTrigger>
 
-		<DialogContent>
+		<DialogContent class="bg-white">
 			<DialogHeader>
 				<DialogTitle>{{ title }}</DialogTitle>
 				<DialogDescription>{{ description }}</DialogDescription>

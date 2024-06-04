@@ -6,7 +6,7 @@ import fr.eseo.tauri.model.id_class.ValidationBonusId;
 import fr.eseo.tauri.util.valid.Create;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;;
+import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -15,9 +15,6 @@ import org.hibernate.annotations.OnDeleteAction;
 @IdClass(ValidationBonusId.class)
 @Data
 public class ValidationBonus {
-
-    @JsonProperty
-    private Boolean confirmed = false;
 
     @Id
     @ManyToOne

@@ -1,6 +1,7 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.*;
+import fr.eseo.tauri.service.PresentationOrderService;
 import fr.eseo.tauri.service.TeamService;
 import fr.eseo.tauri.util.CustomLogger;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +26,7 @@ import java.util.List;
 public class TeamController {
 
     private final TeamService teamService;
+    private final PresentationOrderService presentationOrderService;
     private final ResponseMessage responseMessage = new ResponseMessage("team");
 
     @GetMapping("/{id}")
@@ -56,6 +58,12 @@ public class TeamController {
     @GetMapping("/{id}/students")
     public ResponseEntity<List<Student>> getStudentsByTeamId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         var students = teamService.getStudentsByTeamId(token, id);
+        return ResponseEntity.ok(students);
+    }
+
+    @GetMapping("/{id}/orderedStudents")
+    public ResponseEntity<List<Student>> getStudentsByTeamIdOrdered(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        var students = teamService.getStudentsByTeamIdOrdered(token, id);
         return ResponseEntity.ok(students);
     }
 
@@ -108,4 +116,15 @@ public class TeamController {
         return ResponseEntity.ok(sprintGrade);
     }
 
+    @GetMapping("/sprint/{sprintId}/average")
+    public ResponseEntity<List<Double>> getAverageSprintGrades(@PathVariable Integer sprintId) {
+        List<Double> sprintGrade = teamService.getAverageSprintGrades(sprintId);
+        return ResponseEntity.ok(sprintGrade);
+    }
+
+    @GetMapping("/{id}/presentationOrder")
+    public ResponseEntity<List<PresentationOrder>> getPresentationOrderByTeamIdAndSprintId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam Integer sprintId) {
+        List<PresentationOrder> presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(token, id, sprintId);
+        return ResponseEntity.ok(presentationOrder);
+    }
 }

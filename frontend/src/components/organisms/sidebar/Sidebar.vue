@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { Bell, GraduationCap, LayoutDashboard, LogOut, Scale, Users, Check, Tag, Play, User } from "lucide-vue-next"
+import { Bell, GraduationCap, LayoutDashboard, LogOut, Scale, Users, Check, Tag, Play, User, FileCog } from "lucide-vue-next"
 import SidebarLink from "./SidebarLink.vue"
 import Separator from "@/components/ui/separator/Separator.vue"
 import { Logo } from "@/components/atoms/logo"
@@ -11,7 +11,7 @@ import Row from "@/components/atoms/containers/Row.vue"
 import NotificationView from "@/components/organisms/notifications/NotificationView.vue"
 import { useQuery } from "@tanstack/vue-query"
 import { Cookies } from "@/utils/cookie"
-import { getAllNotificationsFromUser } from "@/services/notification-service"
+import { getAllNotificationsFromUser } from "@/services/notification/notification.service"
 
 const props = defineProps<{
 	class?: string
@@ -72,6 +72,10 @@ const { data: notifications } = useQuery({ queryKey: ["notifications"], queryFn:
 
 			<SidebarLink link="/grade-scales" permission="GRADE_SCALES_PAGE">
 				<Scale /> Barèmes
+			</SidebarLink>
+
+			<SidebarLink link="/project" permission="MANAGE_PROJECT">
+				<FileCog /> Gestion de projet
 			</SidebarLink>
 		</Column>
 

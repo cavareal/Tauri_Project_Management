@@ -1,13 +1,12 @@
 <script setup lang="ts">
 
-import { CustomDialog } from "@/components/molecules/dialog"
+import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
-import { Cookies } from "@/utils/cookie"
-import { getStudentsByTeamId } from "@/services/student-service"
+import { getStudentsByTeamId } from "@/services/student"
 import { Label } from "@/components/ui/label"
-import { getStudentBonus, updateBonus } from "@/services/bonus-service"
+import { getStudentBonus, updateBonus } from "@/services/bonus"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ErrorText } from "@/components/atoms/texts"
@@ -23,26 +22,19 @@ const props = defineProps<{
 }>()
 
 const open = ref(false)
-const currentUserId = Cookies.getUserId()
 let updatedStudentBonuses: Bonus[] = reactive([])
 
-const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async () => getStudentsByTeamId(Number(props.teamId)) })
+const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => getStudentsByTeamId(Number(props.teamId)) })
 
-/*const { data: studentBonuses } = useQuery({ queryKey: ["student-bonuses"], queryFn: async() => {
-	if (!teamStudents.value) return []
-	return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited)))
-}
-//enabled: !!teamStudents.value
-})*/
 const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
-	queryKey: ["student-bonuses"],
-	queryFn: async () => {
-		if (!teamStudents.value) return null
+	queryKey: ["student-bonuses", props.teamId, props.sprintId],
+	queryFn: async() => {
+		if (!teamStudents.value) return
 		return await Promise.all(teamStudents.value.map(student => getStudentBonus(student.id, props.limited, props.sprintId)))
 	}
 })
 
-watch(teamStudents, async (value, _) => {
+watch(teamStudents, async(value, _) => {
 	if (value) {
 		await refetchBonuses()
 	}
@@ -63,7 +55,9 @@ const handleBonusInput = (event: InputEvent, index: number, inputType: "value" |
 
 	if (inputType === "value") {
 		const value = parseFloat(inputValue)
-		if (isNaN(value)) return
+
+		if (isNaN(value)) updatedStudentBonuses[updatedBonusIndex].value = 0
+
 		if (!props.limited) {
 			updatedStudentBonuses[updatedBonusIndex].value = value
 		} else if (value > 4) {
@@ -84,15 +78,13 @@ const handleBonusInput = (event: InputEvent, index: number, inputType: "value" |
 	}
 }
 
-const { isPending, error, mutate: update } = useMutation({
-	mutationKey: ["update-bonuses"], mutationFn: async () => {
-		console.log(updatedStudentBonuses)
-		await Promise.all(updatedStudentBonuses.map(studentBonus => updateBonus(studentBonus.id, { value: studentBonus.value, comment: studentBonus.comment, authorId: currentUserId })))
-			.then(() => open.value = false)
-			.then(() => createToast("Les bonus ont été mis à jour."))
-			.then(() => refetchBonuses())
-	}
-})
+const { isPending, error, mutate: update } = useMutation({ mutationKey: ["update-bonuses"], mutationFn: async() => {
+	console.log(updatedStudentBonuses)
+	await Promise.all(updatedStudentBonuses.map(studentBonus => updateBonus(studentBonus.id, { value: studentBonus.value, comment: studentBonus.comment })))
+		.then(() => open.value = false)
+		.then(() => createToast("Les bonus ont été mis à jour."))
+		.then(() => refetchBonuses())
+} })
 
 const DIALOG_DESCRIPTION_LIMITE = "Vous pouvez ajuster les bonus et malus des membres de votre équipe. Attention, une fois que vous les avez validés, "
 	+ "vous ne pouvez plus les modifier. Cependant, si un membre de votre équipe modifie de nouveau les bonus, vous pourrez les valider à nouveau."
@@ -109,7 +101,7 @@ const DIALOG_DESCRIPTION_ILLIMITE = "Vous pouvez ajouter des bonus et malus illi
 		</template>
 
 		<Row v-if="studentBonuses" class="flex-wrap">
-			<Row v-for="(student, index) in teamStudents" :key="student.id" class=" mb-3 w-1/2">
+			<Row v-for="(student, index) in teamStudents" :key="student.id" class="mb-3 w-1/2">
 				<Column>
 					<Row class="grid grid-cols-[3fr,1fr] mr-2">
 						<Label :for="student.name" class="whitespace-nowrap mt-3">{{ student.name }}</Label>
@@ -128,6 +120,9 @@ const DIALOG_DESCRIPTION_ILLIMITE = "Vous pouvez ajouter des bonus et malus illi
 		<ErrorText v-if="error">Une erreur est survenue.</ErrorText>
 
 		<template #footer>
+			<DialogClose>
+				<Button variant="outline">Annuler</Button>
+			</DialogClose>
 			<LoadingButton type="submit" @click="update" :loading="isPending">
 				Valider
 			</LoadingButton>

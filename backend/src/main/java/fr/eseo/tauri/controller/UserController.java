@@ -1,5 +1,6 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
@@ -33,6 +34,12 @@ public class UserController {
 	private final GradeService gradeService;
 	private final NotificationService notificationService;
 
+
+	@GetMapping
+	public List<User> getAllUsers() {
+		return userService.getAllUsers();
+	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
 		User user = userService.getUserById(token, id);
@@ -45,11 +52,10 @@ public class UserController {
 	}
 
 	@PostMapping
-	public ResponseEntity<String> createUser(@RequestParam String name, @Validated(Create.class) @RequestBody User user) {
-		userService.createUser(name, user);
-		CustomLogger.info(responseMessage.create());
-		return ResponseEntity.ok(responseMessage.create());
+	public ResponseEntity<User> createUser(@Validated(Create.class) @RequestBody User user) {
+		return ResponseEntity.ok(userService.createUser(user));
 	}
+
 
 	@PatchMapping("/{id}")
 	public ResponseEntity<String> updateUser(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody User user) {
@@ -100,6 +106,12 @@ public class UserController {
 	public ResponseEntity<List<Notification>> getAllNotificationsUser(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
 		List<Notification> notifications = notificationService.getNotificationsByUser(token, userId);
 		return ResponseEntity.ok(notifications);
+	}
+
+	@GetMapping("/{authorId}/rated-grades")
+	public ResponseEntity<List<Grade>> getRatedGradesByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer authorId) {
+		var grades = gradeService.getRatedGradesByAuthorId(authorId);
+		return ResponseEntity.ok(grades);
 	}
 
 }

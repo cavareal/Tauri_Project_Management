@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/vue-query"
 import { ErrorText, Text } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { Textarea } from "@/components/ui/textarea"
-import { createReportingFlag } from "@/services/flag-service"
+import { createReportingFlag } from "@/services/flag"
 import { createToast } from "@/utils/toast"
 
 const open = ref(false)
@@ -17,6 +17,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"]
 	if (!description.value) return
 	await createReportingFlag(description.value)
 		.then(() => open.value = false)
+		.then(() => description.value = "")
 		.then(() => createToast("Le signalement a été envoyé."))
 } })
 

@@ -12,7 +12,7 @@ export const extractNames = (name: string): ExtractNameResponse => {
 		return { firstName: name, lastName: "" }
 	}
 
-	const lastName = name.substring(0, spaceIndex)
-	const firstName = name.substring(spaceIndex + 1)
+	const lastName = name.substring(0, spaceIndex).trim()
+	const firstName = name.substring(spaceIndex + 1).trim()
 	return { firstName, lastName }
 }

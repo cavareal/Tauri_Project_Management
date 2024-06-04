@@ -30,14 +30,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             jwtTokenUtil.setAuthenticationContext(userDetails, request);
             filterChain.doFilter(request, response);
 
-        } else if (request.getRequestURI().equals("/api/auth/login")) {
+        } else if (request.getRequestURI().equals("/api/auth/login") || request.getRequestURI().equals("/tauri/api/auth/login")) {
             filterChain.doFilter(request, response);
 
-        } else if (!Objects.equals(request.getRequestURI(), "/api")) {
-            filterChain.doFilter(request, response);
+        } else if (request.getRequestURI().contains(("/api/")) || request.getRequestURI().contains("/tauri/api/")) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         } else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            filterChain.doFilter(request, response);
         }
     }
 }

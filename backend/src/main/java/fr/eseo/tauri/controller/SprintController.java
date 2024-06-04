@@ -62,4 +62,10 @@ public class SprintController {
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
+
+    @GetMapping("/current")
+    public ResponseEntity<Sprint> getCurrentSprint(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        Sprint sprint = sprintService.getCurrentSprint(token, projectId);
+        return ResponseEntity.ok(sprint);
+    }
 }

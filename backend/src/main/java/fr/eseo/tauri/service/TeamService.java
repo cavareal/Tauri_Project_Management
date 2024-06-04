@@ -15,6 +15,7 @@ import fr.eseo.tauri.repository.TeamRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -30,6 +31,8 @@ public class TeamService {
     private final CommentRepository commentRepository;
     private final GradeRepository gradeRepository;
     private final GradeTypeRepository gradeTypeRepository;
+    private final PresentationOrderService presentationOrderService;
+    private final SprintService sprintService;
     @Lazy
     private final StudentService studentService;
 
@@ -72,9 +75,7 @@ public class TeamService {
 
         // Create the teams
         for (int i = 0; i < nbTeams; i++) {
-            Team team = new Team();
-            team.name("Équipe " + (i + 1));
-            team.project(project);
+            Team team = new Team("Équipe " + (i + 1), project);
             this.teamRepository.save(team);
             teams.add(team);
         }
@@ -136,6 +137,20 @@ public class TeamService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getTeamById(token, id);
+        return studentRepository.findByTeam(id);
+    }
+
+    public List<Student> getStudentsByTeamIdOrdered(String token, Integer id) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        Team team = getTeamById(token, id);
+        Sprint currentSprint = sprintService.getCurrentSprint(token, team.project().id());
+        var students = studentRepository.findByTeam(id);
+        if(currentSprint != null){
+            var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(token, id, currentSprint.id());
+            if(presentationOrder.size() == students.size()) students.sort(Comparator.comparingInt(presentationOrder::indexOf));
+        }
         return studentRepository.findByTeam(id);
     }
 
@@ -285,10 +300,16 @@ public class TeamService {
         for(Student student : students){
             Double studentGradedTeamGrade = gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName());
             Double individualGrade = gradeRepository.findAverageByGradeTypeForStudent(student.id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
-
-            double result = (2*individualGrade + studentGradedTeamGrade)/3;
-            String formattedResult = String.format("%.2f", result);
-            individualGrades.add(Double.parseDouble(formattedResult.replace(',', '.')));
+            double result;
+            if(studentGradedTeamGrade != null && individualGrade != null){
+                result = (2*individualGrade + studentGradedTeamGrade)/3;
+            }
+            else if(studentGradedTeamGrade == null){
+                result = individualGrade;
+            } else {
+                result = studentGradedTeamGrade;
+            }
+            individualGrades.add(formattedResult(result));
 
         }
         return individualGrades;
@@ -306,12 +327,28 @@ public class TeamService {
 
         for(int i = 0; i < students.size(); i++){
             List<Bonus> studentBonuses = studentService.getStudentBonuses(token, students.get(i).id(), sprintId);
-            sprintGrades.add(0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrades(token, id, sprintId)).get(i));
+            double result = 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrades(token, id, sprintId)).get(i);
+            sprintGrades.add(formattedResult(result));
         }
         if (sprintGrades.isEmpty()) {
             return Collections.singletonList(-1.0);
         }
         return sprintGrades;
+    }
+
+    public List<Double> getAverageSprintGrades(Integer sprintId){
+        List<Team> teams = teamRepository.findAll();
+        List<Double> averageSprintGrades = new ArrayList<>();
+        for(Team team : teams){
+            List<Double> sprintGrades = getSprintGrades("token", team.id(), sprintId);
+            double average = sprintGrades.stream().mapToDouble(Double::doubleValue).sum() / sprintGrades.size();
+            averageSprintGrades.add(formattedResult(average));
+        }
+        return averageSprintGrades;
+    }
+
+    private Double formattedResult(Double result) {
+        return Double.parseDouble(String.format("%.2f", result).replace(',', '.'));
     }
 
 }

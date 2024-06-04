@@ -5,14 +5,14 @@ import { StudentsTable, DeleteStudentsDialog, ImportStudents, ExportStudents } f
 import { Error, NotAuthorized } from "@/components/organisms/errors"
 import { Button } from "@/components/ui/button"
 import { GradeFactorsDialog } from "@/components/organisms/students"
-import { getAllStudents } from "@/services/student-service"
+import { getAllStudents } from "@/services/student"
 import { Header } from "@/components/molecules/header"
 import { computed } from "vue"
-import { getAllImportedGradeTypes } from "@/services/grade-type-service"
-import { getAllImportedGrades } from "@/services/grade-service"
+import { getAllImportedGradeTypes } from "@/services/grade-type/grade-type.service"
+import { getAllImportedGrades } from "@/services/grade"
 import { useQuery } from "@tanstack/vue-query"
-import { hasPermission } from "@/services/user-service"
-import { getCurrentPhase } from "@/services/project-service"
+import { hasPermission } from "@/services/user"
+import { getCurrentPhase } from "@/services/project/project.service"
 
 const { data: currentPhase } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
 const { data: students, ...studentsQuery } = useQuery({ queryKey: ["students"], queryFn: getAllStudents })

@@ -2,6 +2,7 @@ package fr.eseo.tauri.controller;
 
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.model.Bonus;
+import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.service.StudentService;
 import fr.eseo.tauri.util.CustomLogger;
@@ -111,6 +112,12 @@ public class StudentController {
 	public ResponseEntity<Double> getSprintGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
 		Double sprintGrade = studentService.getSprintGrade(token, id, sprintId);
 		return ResponseEntity.ok(sprintGrade);
+	}
+
+	@GetMapping("{id}/gradeType/{gradeTypeId}/author/{authorId}")
+	public ResponseEntity<Grade> getGradeByTypeAndAuthor(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer gradeTypeId, @PathVariable Integer authorId, @RequestParam("sprintId") Integer sprintId) {
+		Grade grade = studentService.getGradeByTypeAndAuthor(token, id, gradeTypeId, authorId, sprintId);
+		return ResponseEntity.ok(grade);
 	}
 
 }
