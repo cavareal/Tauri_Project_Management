@@ -11,7 +11,7 @@ import { onMounted, ref, watch } from "vue"
 import { CheckIcon, Loader } from "@/components/atoms/icons"
 import { getGradeTypeDescription, type GradeTypeName } from "@/types/grade-type"
 import { Button } from "@/components/ui/button"
-import { downloadGradeScalePDF } from "@/services/grade-type"
+import { downloadGradeScaleTXT } from "@/services/grade-type"
 import type { Grade } from "@/types/grade"
 
 const props = defineProps<{
@@ -46,24 +46,26 @@ const updateGrade = () => {
 }
 
 
-const { mutate, isPending, isError } = useMutation({ mutationFn: async() => {
-	if (grade.value === oldValues.value.grade && comment.value === oldValues.value.comment) {
-		return
-	}
+const { mutate, isPending, isError } = useMutation({
+	mutationFn: async() => {
+		if (grade.value === oldValues.value.grade && comment.value === oldValues.value.comment) {
+			return
+		}
 
-	status.value = "LOADING"
-	await createOrUpdateGrade({
-		value: Number(grade.value),
-		comment: comment.value,
-		sprintId: Number(props.sprintId),
-		teamId: props.teamId ? Number(props.teamId) : null,
-		studentId: props.studentId ? Number(props.studentId) : null,
-		gradeTypeName: props.gradeTypeName
-	})
-		.then(() => createToast("La note a bien été enregistrée."))
-		.then(() => oldValues.value = { grade: grade.value, comment: comment.value })
-		.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
-} })
+		status.value = "LOADING"
+		await createOrUpdateGrade({
+			value: Number(grade.value),
+			comment: comment.value,
+			sprintId: Number(props.sprintId),
+			teamId: props.teamId ? Number(props.teamId) : null,
+			studentId: props.studentId ? Number(props.studentId) : null,
+			gradeTypeName: props.gradeTypeName
+		})
+			.then(() => createToast("La note a bien été enregistrée."))
+			.then(() => oldValues.value = { grade: grade.value, comment: comment.value })
+			.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
+	}
+})
 
 const onGradeChange = (value: string | number) => {
 	if (Number(value) > 20) {
@@ -100,15 +102,11 @@ onMounted(() => {
 })
 
 const download = useMutation({
-	mutationKey: ["export-grade-scale"],
 	mutationFn: async() => {
-		try {
-			await downloadGradeScalePDF(1) //TODO: get grade type id from props.gradeTypeName
-			createToast("Le fichier a été téléchargé.")
-		} catch (error) {
-			createToast("Erreur lors du téléchargement du fichier.")
-		}
-	}
+		await downloadGradeScaleTXT(props.gradeTypeName)
+			.then(() => createToast("Le fichier a été téléchargé."))
+	},
+	onError: () => createToast("Erreur lors du téléchargement du fichier.")
 })
 
 </script>
@@ -126,10 +124,12 @@ const download = useMutation({
 
 		<Row class="items-center justify-between gap-6">
 			<InfoText class="flex-1">{{ getGradeTypeDescription(gradeTypeName) }}</InfoText>
-			<Input v-if="gradeAuthorization" class="w-16" type="number" min="0" max="20" v-model="grade" @update:model-value="onGradeChange" v-on:blur="mutate" :disabled="isPending" />
+			<Input v-if="gradeAuthorization" class="w-16" type="number" min="0" max="20" v-model="grade"
+				@update:model-value="onGradeChange" v-on:blur="mutate" :disabled="isPending" />
 		</Row>
 
-		<Textarea v-if="commentAuthorization" placeholder="Ajouter un commentaire" v-model="comment" :disabled="isPending" v-on:blur="mutate" />
+		<Textarea v-if="commentAuthorization" placeholder="Ajouter un commentaire" v-model="comment"
+			:disabled="isPending" v-on:blur="mutate" />
 
 		<ErrorText v-if="status === 'DONE' && isError">Une erreur est survenue.</ErrorText>
 
