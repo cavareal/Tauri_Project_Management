@@ -17,6 +17,7 @@ import ExportGrades from "../organisms/Grade/ExportGrades.vue"
 import { SprintSelect, TeamSelect } from "../molecules/select"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId } from "@/services/team"
+import { TeamSelect2 } from "@/components/molecules/select"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
@@ -36,6 +37,9 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 	}
 })
 
+const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
+const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
+
 </script>
 
 <template>
@@ -44,8 +48,8 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 		<Column v-else class="gap-4">
 			<Header title="Notes">
 				<SprintSelect v-model="sprintId" />
-				<TeamSelect v-model="teamId" />
-
+				<TeamSelect v-model="teamId" v-if="canViewAllWg || canViewAllOg" />
+				<TeamSelect2 v-model="teamId" v-else />
 				<ValidGradesDialog
 					v-if="teamId !== null && sprintId !== null && canConfirmOwnTeamGrade && isGradesConfirmed && ssTeam?.id.toString() == teamId"
 					@valid:individual-grades="refetchGradesConfirmation" :selectedTeam="teamId"
