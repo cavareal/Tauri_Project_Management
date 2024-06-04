@@ -3,7 +3,7 @@
 import { SidebarTemplate } from "@/components/templates"
 import {
 	RedirectImportStudents, GenerateTeams, PrepublishDialog, DeleteTeamsDialog, TeamAccordion, TeamsNotCreated,
-	PublishDialog
+	PublishDialog, SeeReportsDialog
 } from "@/components/organisms/teams"
 import { Button } from "@/components/ui/button"
 import { getAllStudents } from "@/services/student/student.service"
@@ -19,6 +19,7 @@ import { userHasValidateTeams } from "@/services/flag/flag.service"
 import { hasPermission } from "@/services/user/user.service"
 import { Loading } from "@/components/organisms/loading"
 import { Cookies } from "@/utils/cookie"
+import { StudentSignalTeamDialog } from "@/components/organisms/teams"
 
 const currentUserId = Cookies.getUserId()
 const hasValidateTeams = ref(true)
@@ -44,6 +45,7 @@ const canPreview = hasPermission("PREVIEW_TEAM")
 const displayAdminComposingButtons = computed(() => nbTeams.value && nbTeams.value > 0 && currentPhase.value === "COMPOSING")
 const displayAdminPrepublishedButtons = computed(() => currentPhase.value === "PREPUBLISHED")
 const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPOSING" && !hasValidateTeams.value)
+const displayStudentReportingButton = computed(() => currentPhase.value === "PREPUBLISHED" && hasPermission("FLAG_TEAM_WITH_STUDENTS"))
 
 </script>
 
@@ -53,6 +55,9 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 			<DeleteTeamsDialog v-if="canCreate && displayAdminComposingButtons" @delete:teams="refetchTeams">
 				<Button variant="outline">Supprimer les équipes</Button>
 			</DeleteTeamsDialog>
+      <SeeReportsDialog v-if="canCreate && displayAdminComposingButtons">
+        <Button variant="outline">Voir les avis</Button>
+      </SeeReportsDialog>
 			<PrepublishDialog v-if="canCreate && displayAdminComposingButtons" @prepublish:teams="refetchCurrentPhase">
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
@@ -60,6 +65,10 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 			<PublishDialog v-if="canCreate && displayAdminPrepublishedButtons" @publish:teams="refetchCurrentPhase">
 				<Button variant="default">Publier</Button>
 			</PublishDialog>
+
+			<StudentSignalTeamDialog v-if="displayStudentReportingButton">
+				<Button variant="outline">Signaler</Button>
+			</StudentSignalTeamDialog>
 
 			<SignalTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons">
 				<Button variant="outline">Signaler</Button>

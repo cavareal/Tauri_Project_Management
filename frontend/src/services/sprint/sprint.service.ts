@@ -7,11 +7,8 @@ import { Cookies } from "@/utils/cookie"
 
 export const getSprints = async(): Promise<Sprint[]> => {
 
-	const currentProjectId = Cookies.getProjectId().toString()
-
 	const response = await queryAndValidate({
 		responseSchema: SprintSchema.array(),
-		params: { projectId: currentProjectId ?? "" },
 		route: "sprints"
 	})
 

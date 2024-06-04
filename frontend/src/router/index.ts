@@ -52,7 +52,7 @@ const router = createRouter({
 		{
 			path: "/project",
 			name: "project",
-			component: () => import("@/components/pages/Project.vue")
+			component: () => import("@/components/pages/ProjectPage.vue")
 		},
 		{
 			path: "/:pathMatch(.*)*",

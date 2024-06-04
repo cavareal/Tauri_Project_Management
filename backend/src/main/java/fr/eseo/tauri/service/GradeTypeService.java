@@ -73,7 +73,7 @@ public class GradeTypeService {
         }
         if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
         if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
-        if (updatedGradeType.scaleUrl() != null) gradeType.scaleUrl(updatedGradeType.scaleUrl());
+        if (updatedGradeType.scalePDFBlob() != null) gradeType.scalePDFBlob(updatedGradeType.scalePDFBlob());
 
         gradeTypeRepository.save(gradeType);
     }

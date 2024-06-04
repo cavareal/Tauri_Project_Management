@@ -8,7 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "validation_flags")
+@Table(name = "validation_flags", uniqueConstraints = @UniqueConstraint(columnNames = {"author_id", "flag_id"}))
 @IdClass(ValidationFlagId.class)
 @Data
 public class ValidationFlag {

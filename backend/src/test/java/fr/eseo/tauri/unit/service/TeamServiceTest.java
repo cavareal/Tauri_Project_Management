@@ -525,6 +525,124 @@ class TeamServiceTest {
         assertThrows(SecurityException.class, () -> teamService.getSprintGrades(token, id, sprintId));
     }
 
+    @Test
+    void getTeamByIdShouldReturnTeamWhenAuthorizedAndIdExists() {
+        Team team = new Team();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findById(anyInt())).thenReturn(Optional.of(team));
 
+        Team result = teamService.getTeamById("token", 1);
+
+        assertEquals(team, result);
+    }
+
+    @Test
+    void getTeamByIdShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.getTeamById("token", 1));
+    }
+
+    @Test
+    void getTeamByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> teamService.getTeamById("token", 1));
+    }
+
+    @Test
+    void getAllTeamsByProjectShouldReturnTeamsWhenAuthorized() {
+        List<Team> teams = new ArrayList<>();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findAllByProject(anyInt())).thenReturn(teams);
+
+        List<Team> result = teamService.getAllTeamsByProject("token", 1);
+
+        assertEquals(teams, result);
+    }
+
+    @Test
+    void getAllTeamsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.getAllTeamsByProject("token", 1));
+    }
+
+    @Test
+    void createTeamsShouldCreateTeamsWhenAuthorized() {
+        Project project = new Project();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(projectService.getProjectById(anyString(), anyInt())).thenReturn(project);
+        when(teamRepository.save(any(Team.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        List<Team> result = teamService.createTeams("token", 1, 3);
+
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void createTeamsShouldThrowSecurityExceptionWhenUnauthorized() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+
+        assertThrows(SecurityException.class, () -> teamService.createTeams("token", 1, 3));
+    }
+
+    @Test
+    void updateTeamShouldUpdateWhenAuthorizedAndIdExists() {
+        Team team = new Team();
+        Team updatedTeam = new Team();
+        updatedTeam.name("Updated Team");
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findById(anyInt())).thenReturn(Optional.of(team));
+
+        teamService.updateTeam("token", 1, updatedTeam);
+
+        verify(teamRepository, times(1)).save(updatedTeam);
+    }
+
+
+    @Test
+    void updateTeamShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        Team updatedTeam = new Team();
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> teamService.updateTeam("token", 1, updatedTeam));
+    }
+
+
+    @Test
+    void getNbWomenByTeamIdShouldThrowResourceNotFoundExceptionWhenTeamDoesNotExist() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> teamService.getNbWomenByTeamId("token", 1));
+    }
+
+    @Test
+    void getNbBachelorByTeamIdShouldThrowResourceNotFoundExceptionWhenTeamDoesNotExist() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> teamService.getNbBachelorByTeamId("token", 1));
+    }
+
+
+    @Test
+    void getIndividualTotalGradesShouldThrowResourceNotFoundExceptionWhenTeamDoesNotExist() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> teamService.getIndividualTotalGrades("token", 1, 1));
+    }
+
+    @Test
+    void getSprintGradesShouldThrowResourceNotFoundExceptionWhenTeamDoesNotExist() {
+        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+        when(teamRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> teamService.getSprintGrades("token", 1, 1));
+    }
 
 }

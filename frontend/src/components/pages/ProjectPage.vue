@@ -7,6 +7,7 @@ import { hasPermission } from '@/services/user/user.service';
 import { NotAuthorized } from '@/components/organisms/errors';
 import AddUser from './../organisms/project/AddUser.vue';
 import ManageUser from './../organisms/project/ManageUser.vue';
+import ManageProject from '../organisms/project/ManageProject.vue';
 import { getAllUsers } from '@/services/user/user.service';
 import { getAllRoles } from '@/services/role/role.service';
 import { type User } from '@/types/user';
@@ -20,17 +21,17 @@ const usersError = ref(false);
 const rolesError = ref(false);
 
 onMounted(async () => {
-	refetch()
+  refetch()
 });
 
-async function refetch (){
-	try {
+async function refetch() {
+  try {
     users.value = await getAllUsers();
   } catch (error) {
     usersError.value = true;
   } finally {
     usersLoading.value = false;
-	usersError.value = false;
+    usersError.value = false;
   }
 
   try {
@@ -65,23 +66,16 @@ function getListOfRoles(user: User) {
 </script>
 
 <template>
-	<SidebarTemplate>
-	  <NotAuthorized v-if="!hasPermission('MANAGE_PROJECT')" />
-	  <Column v-else class="gap-4">
-		<Header title="Gestion de projet"></Header>
-		<Column>
-		  <AddUser v-if="hasPermission('ADD_USER')" @add:user="refetch" />
-		  <ManageUser
-			v-if="hasPermission('DELETE_USER')"
-			:users="combinedData"
-			:users-loading="usersLoading"
-			:users-error="usersError"
-			:roles-loading="rolesLoading"
-			:roles-error="rolesError"
-			@delete:user="refetch"
-		  />
-		</Column>
-	  </Column>
-	</SidebarTemplate>
-  </template>
-  
+  <SidebarTemplate>
+    <NotAuthorized v-if="!hasPermission('MANAGE_PROJECT')" />
+    <Column v-else class="gap-4">
+      <Header title="Gestion de projet"></Header>
+      <Column>
+        <ManageProject v-if="hasPermission('MANAGE_PROJECT')" />
+        <AddUser v-if="hasPermission('ADD_USER')" @add:user="refetch" />
+        <ManageUser v-if="hasPermission('DELETE_USER')" :users="combinedData" :users-loading="usersLoading"
+          :users-error="usersError" :roles-loading="rolesLoading" :roles-error="rolesError" @delete:user="refetch" />
+      </Column>
+    </Column>
+  </SidebarTemplate>
+</template>

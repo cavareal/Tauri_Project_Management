@@ -1,18 +1,17 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
-import fr.eseo.tauri.model.Permission;
-import fr.eseo.tauri.model.Role;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.repository.RoleRepository;
-import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.repository.*;
+import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ListUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -24,6 +23,9 @@ public class RoleService {
 	private final UserService userService;
 	private final PermissionService permissionService;
 	private final UserRepository userRepository;
+	private final StudentRepository studentRepository;
+	private final GradeRepository gradeRepository;
+	private final GradeTypeRepository gradeTypeRepository;
 
 	private static final String READ_PERMISSION = "readRole";
 	private static final String ADD_PERMISSION = "addRole";
@@ -52,16 +54,52 @@ public class RoleService {
 		roleRepository.save(role);
 	}
 
-	public void createRoles(String email, RoleType[] roles) {
+	public void createRoles(String email, RoleType[] roles, Integer projectId) {
 		User user = userRepository.findByEmail(email).orElse(null);
 
 		for (RoleType roleType : roles) {
-			Role role = new Role();
-			role.user(user);
-			role.type(roleType);
+			if(roleType == RoleType.OPTION_STUDENT) {
+                userRepository.findByEmail(email).ifPresent(userRepository::delete);
+                createStudentRoleAndGrades(email, projectId, roleType);
+			} else {
+				Role role = new Role();
+				role.user(user);
+				role.type(roleType);
 
-			roleRepository.save(role);
+				roleRepository.save(role);
+			}
 		}
+	}
+
+	private void createStudentRoleAndGrades(String email,Integer projectId, RoleType roleType){
+
+		Student student = new Student();
+		student.project(new Project().id(projectId));
+		student.email(email);
+		student.name(emailToName(email));
+		studentRepository.save(student);
+
+		Role role = new Role();
+		role.user(student);
+		role.type(roleType);
+		roleRepository.save(role);
+
+		GradeType gradeType = gradeTypeRepository.findByName("MOYENNE");
+		if (gradeType != null) {
+			Grade grade = new Grade();
+			grade.value(10f);
+			grade.gradeType(gradeType);
+			grade.student(student);
+			grade.confirmed(false);
+			gradeRepository.save(grade);
+		}
+	}
+
+	private String emailToName(String email){
+		String[] parts = email.split("@")[0].split("\\.");
+		return (parts.length == 2)
+				? parts[1].toUpperCase() + " " + parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1).toLowerCase()
+				: "";
 	}
 
 	public void updateRole(String token, Integer id, Role updatedRole) {

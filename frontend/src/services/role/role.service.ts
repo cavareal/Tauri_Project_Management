@@ -2,6 +2,7 @@ import { RoleTypeSchema, type RoleType, RoleSchema } from "@/types/role"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
 import { type Role } from "@/types/role"
+import { Cookies } from "@/utils/cookie"
 
 export const getAllRoles = async(): Promise<Role[]> => {
     const response = await queryAndValidate({
@@ -17,6 +18,7 @@ export const getAllRoles = async(): Promise<Role[]> => {
 }
 
 export const createRole = async(email: String, body: RoleType[]): Promise<void> => {
+
 	const response = await mutateAndValidate({
 		method: "POST",
 		route: `roles/${email}`,

@@ -10,7 +10,10 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "comments")
+@Table(name = "comments", uniqueConstraints = {
+        //@UniqueConstraint(columnNames = {"student_id", "sprint_id", "feedback", "author_id"}),
+        @UniqueConstraint(columnNames = {"team_id", "sprint_id", "feedback", "author_id"})
+})
 @Data
 public class Comment {
 
@@ -34,6 +37,12 @@ public class Comment {
     private Team team;
 
     @ManyToOne
+    @JoinColumn(name = "sprint_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty
+    private Sprint sprint;
+
+    @ManyToOne
     @JoinColumn(name = "author_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty
@@ -53,11 +62,5 @@ public class Comment {
     @Transient
     @JsonDeserialize
     private Integer authorId;
-
-    @ManyToOne
-    @JoinColumn(name = "sprint_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonProperty
-    private Sprint sprint;
 
 }

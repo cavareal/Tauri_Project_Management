@@ -17,7 +17,9 @@ const props = defineProps<{
 	sprintId: string,
 	teamId?: string,
 	studentId?: string,
-	allGrades: Grade[]
+	allGrades: Grade[],
+	gradeAuthorization: boolean,
+	commentAuthorization: boolean
 }>()
 
 const queryClient = useQueryClient()
@@ -110,10 +112,10 @@ onMounted(() => {
 
 		<Row class="items-center justify-between gap-6">
 			<InfoText class="flex-1">{{ getGradeTypeDescription(gradeTypeName) }}</InfoText>
-			<Input class="w-16" type="number" min="0" max="20" v-model="grade" @update:model-value="onGradeChange" v-on:blur="mutate" :disabled="isPending" />
+			<Input v-if="gradeAuthorization" class="w-16" type="number" min="0" max="20" v-model="grade" @update:model-value="onGradeChange" v-on:blur="mutate" :disabled="isPending" />
 		</Row>
 
-		<Textarea placeholder="Ajouter un commentaire" v-model="comment" :disabled="isPending" v-on:blur="mutate" />
+		<Textarea v-if="commentAuthorization" placeholder="Ajouter un commentaire" v-model="comment" :disabled="isPending" v-on:blur="mutate" />
 
 		<ErrorText v-if="status === 'DONE' && isError">Une erreur est survenue.</ErrorText>
 	</Column>

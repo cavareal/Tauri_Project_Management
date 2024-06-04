@@ -428,7 +428,7 @@ public class StudentService {
 
         Double individualGrade = gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
-        return 2*individualGrade + studentGradedTeamGrade;
+        return (2*individualGrade + studentGradedTeamGrade)/3;
     }
 
     public Double getSprintGrade(String token, Integer studentId, Integer sprintId) {
@@ -442,7 +442,7 @@ public class StudentService {
 
         List<Bonus> studentBonuses = getStudentBonuses(token, studentId, sprintId);
 
-        return 0.7*(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum()) + 0.3*(getIndividualTotalGrade(token, studentId, sprintId));
+        return 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrade(token, studentId, sprintId));
     }
 
     public Grade getGradeByTypeAndAuthor(String token, Integer id, Integer gradeTypeId, Integer authorId, Integer sprintId) {

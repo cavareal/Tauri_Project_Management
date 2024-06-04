@@ -65,7 +65,7 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 						<GenderIcon :gender="student.gender" />
 					</TableCell>
 					<TableCell :class="rowClass">
-						<CheckIcon :checked="student.bachelor ?? false" />
+						<CheckIcon :checked="student.bachelor" />
 					</TableCell>
 				</TableRow>
 			</TableBody>

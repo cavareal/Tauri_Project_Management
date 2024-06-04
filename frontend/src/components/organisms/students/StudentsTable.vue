@@ -49,7 +49,7 @@ defineProps<{
 						<GenderIcon :gender="student.gender" />
 					</TableCell>
 					<TableCell class="min-w-28" :class="rowClass">
-						<CheckIcon :checked="student.bachelor ?? false" />
+						<CheckIcon :checked="student.bachelor" />
 					</TableCell>
 					<TableCell v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass" class="min-w-32">
 						<Skeleton v-if="!grades" class="w-5/6 h-5" />
