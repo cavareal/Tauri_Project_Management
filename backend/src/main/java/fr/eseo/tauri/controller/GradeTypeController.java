@@ -76,16 +76,16 @@ public class GradeTypeController {
         return ResponseEntity.ok(gradeType);
     }
 
-    @PostMapping("/{id}/upload-pdf")
-    public ResponseEntity<String> uploadPdf(@RequestHeader("Authorization") String token,
+    @PostMapping("/{id}/upload-grade-scale")
+    public ResponseEntity<String> uploadGradeScaleTXT(@RequestHeader("Authorization") String token,
             @PathVariable Integer id,
             @RequestParam("file") MultipartFile file) throws IOException {
-            gradeTypeService.savePdfBase64(id, file, token);
+            gradeTypeService.saveGradeScale(id, file, token);
             return ResponseEntity.ok(responseMessage.create());
     }
 
-    @GetMapping("/{id}/download-pdf")
-    public ResponseEntity<byte[]> downloadPdf(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+    @GetMapping("/{id}/download-grade-scale")
+    public ResponseEntity<byte[]> downloadGradeScaleTXT(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
         return ResponseEntity.ok(gradeTypeService.getBLOBScale(id, token));
     }
 

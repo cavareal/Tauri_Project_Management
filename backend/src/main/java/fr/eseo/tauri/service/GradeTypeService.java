@@ -76,7 +76,7 @@ public class GradeTypeService {
         }
         if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
         if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
-        if (updatedGradeType.scalePDFBlob() != null) gradeType.scalePDFBlob(updatedGradeType.scalePDFBlob());
+        if (updatedGradeType.scaleTXTBlob() != null) gradeType.scaleTXTBlob(updatedGradeType.scaleTXTBlob());
 
         gradeTypeRepository.save(gradeType);
     }
@@ -223,12 +223,13 @@ public class GradeTypeService {
         return gradeTypeRepository.findByName(name);
     }
 
-    public void savePdfBase64(Integer id, MultipartFile file, String token) throws IOException { //TODO rename
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeTypePDF"))) {
+    public void saveGradeScale(Integer id, MultipartFile file, String token) throws IOException { //TODO rename
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeTypeTXT"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        if (!Objects.equals(file.getContentType(), "application/pdf")) {
-            throw new IllegalArgumentException("Only PDF files are allowed");
+        if (!Objects.equals(file.getContentType(), "text/plain")) {
+            CustomLogger.info("File type: " + file.getContentType());
+            throw new IllegalArgumentException("Only TXT files are allowed");
         }
         if (file.getSize() > 65 * 1024) { // 65 KB in bytes
             throw new IllegalArgumentException("File size should not exceed 65 KB");
@@ -236,18 +237,18 @@ public class GradeTypeService {
             GradeType gradeType = gradeTypeRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
 
-            byte[] pdfBytes = file.getBytes();
-            gradeType.scalePDFBlob(pdfBytes);
+            byte[] txtBytes = file.getBytes();
+            gradeType.scaleTXTBlob(txtBytes);
             gradeTypeRepository.save(gradeType);
     }
 
     public byte[] getBLOBScale(int id, String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "downloadGradeTypePDF"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "downloadGradeTypeTXT"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         GradeType gradeType = gradeTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
-        CustomLogger.info("Size of the PDF: " + gradeType.scalePDFBlob().length);
-        return gradeType.scalePDFBlob();
+        CustomLogger.info("Size of the PDF: " + gradeType.scaleTXTBlob().length);
+        return gradeType.scaleTXTBlob();
     }
 }
