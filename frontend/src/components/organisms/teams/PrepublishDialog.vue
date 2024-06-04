@@ -8,7 +8,7 @@ import { updateProject } from "@/services/project/project.service"
 import { useMutation } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { createToast } from "@/utils/toast"
-import { sendNotificationsByRole } from "@/services/notification-service"
+import { sendNotificationsByRole } from "@/services/notification"
 
 const emits = defineEmits(["prepublish:teams"])
 const open = ref(false)

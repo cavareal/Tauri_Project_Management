@@ -8,7 +8,7 @@ import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { createToast } from "@/utils/toast"
-import { sendNotificationsByRole } from "@/services/notification-service"
+import { sendNotificationsByRole } from "@/services/notification"
 import { Cookies } from "@/utils/cookie"
 import getRole = Cookies.getRole;
 import type { RoleType } from "@/types/role"

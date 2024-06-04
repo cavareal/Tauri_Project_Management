@@ -11,6 +11,7 @@ import { onMounted, ref, watch } from "vue"
 import { CheckIcon, Loader } from "@/components/atoms/icons"
 import { getGradeTypeDescription, type GradeTypeName } from "@/types/grade-type"
 import type { Grade } from "@/types/grade"
+import { sendNotificationsByTeam } from "@/services/notification"
 
 const props = defineProps<{
 	gradeTypeName: GradeTypeName,
@@ -61,6 +62,7 @@ const { mutate, isPending, isError } = useMutation({ mutationFn: async() => {
 		.then(() => createToast("La note a bien été enregistrée."))
 		.then(() => oldValues.value = { grade: grade.value, comment: comment.value })
 		.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
+		.then(() => sendNotificationsByTeam(`La note "${props.gradeTypeName}" du sprint ${props.sprintId} a été évalué.`, Number(props.teamId), "CREATE_GRADE"))
 } })
 
 const onGradeChange = (value: string | number) => {

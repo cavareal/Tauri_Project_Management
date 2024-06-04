@@ -14,7 +14,7 @@ import { updateStudent, getStudentsByTeamId } from "@/services/student/student.s
 import { cn } from "@/utils/style"
 import { Loading } from "@/components/organisms/loading"
 import { hasPermission } from "@/services/user/user.service"
-import { sendManyNotifications } from "@/services/notification/notification.service"
+import { sendNotificationsByRole } from "@/services/notification/notification.service"
 import { getCurrentPhase } from "@/services/project/project.service"
 
 const queryClient = useQueryClient()

@@ -12,7 +12,7 @@ import { createToast } from "@/utils/toast"
 import type { RoleType } from "@/types/role"
 import { Cookies } from "@/utils/cookie"
 import getRole = Cookies.getRole;
-import { sendNotificationsByRole } from "@/services/notification-service"
+import { sendNotificationsByRole } from "@/services/notification"
 
 const DIALOG_TITLE = "Importer les étudiants"
 const DIALOG_DESCRIPTION

@@ -1,12 +1,15 @@
 
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { CreateNotificationSchema, NotificationSchema } from "@/types/notification"
-import type { Notification, CreateNotification, NotificationType } from "@/types/notification"
+import type { Notification, CreateNotification } from "@/types/notification"
 import { z } from "zod"
 import { getUsersByRole } from "@/services/user"
 import { Cookies } from "@/utils/cookie"
 import type { RoleType } from "@/types/role"
 import type { User } from "@/types/user"
+import { getTeamById } from "@/services/team"
+import { getStudentsByTeamId } from "@/services/student"
+
 
 export const getAllNotifications = async(): Promise<Notification[]> => {
 	const response = await queryAndValidate({
@@ -131,4 +134,14 @@ export const sendNotificationsByUsers = async(message: string, users: User[], ty
 			throw new Error(response.error)
 		}
 	}))
+}
+
+export const sendNotificationsByTeam = async(message: string, teamId: number, type: string): Promise<void> => {
+
+	const students = await  getStudentsByTeamId(teamId)
+	const team = await getTeamById(teamId)
+	if (team.leader != null) {
+		await sendNotificationsByUsers(message, [team.leader], type)
+	}
+	await sendNotificationsByUsers(message, students, type)
 }
