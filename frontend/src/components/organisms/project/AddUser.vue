@@ -126,9 +126,8 @@ const onSubmit = handleSubmit((values) => {
                                     Role(s) pour le nouvel utilisateur
                                 </FormLabel>
                             </div>
-                            <FormField v-for="roleType in RoleTypeSchema.options" v-slot="{ value, handleChange }"
-                                :key="roleType" type="checkbox" :value="roleType" :unchecked-value="false" name="roles">
-                                <FormItem class="flex flex-row items-start space-x-3 space-y-0">
+                            <FormField v-for="roleType in RoleTypeSchema.options" v-slot="{ value, handleChange }" :key="roleType" type="checkbox" :value="roleType" :unchecked-value="false" name="roles">
+                                <FormItem v-if="roleType != 'OPTION_STUDENT'" class="flex flex-row items-start space-x-3 space-y-0">
                                     <FormControl>
                                         <Checkbox :checked="value.includes(roleType)" @update:checked="handleChange" />
                                     </FormControl>

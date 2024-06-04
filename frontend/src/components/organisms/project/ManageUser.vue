@@ -74,14 +74,14 @@ watch(isDialogOpen, (newVal) => {
       <template v-else-if="usersError || rolesError">
         <div>Erreur lors du chargement des données.</div>
       </template>
-      <template v-else>
-        <div v-for="user in users" :key="user.id" class="flex justify-between items-center w-full p-2 border-b border-gray-300">
-          <div v-if="pojectLeaderId != user.id">
+      <template v-else v-for="user in users" :key="user.id">
+        <div v-if="pojectLeaderId != user.id && user.role[0] != 'OPTION_STUDENT'" class="flex justify-between items-center w-full p-2 border-b border-gray-300">
+          <div >
             <p class="font-medium">{{ user.name }}</p>
             <p class="text-gray-500">{{ user.email }}</p>
             <p class="text-gray-400">{{ getRoleDescription(user.role).join(', ') }}</p>
           </div>
-          <Dialog v-model:open="isDialogOpen" v-if="pojectLeaderId != user.id">
+          <Dialog v-model:open="isDialogOpen">
             <DialogTrigger as-child>
               <Button @click="openDelete(user.id)">
                 <Trash class="w-5 h-5" />
