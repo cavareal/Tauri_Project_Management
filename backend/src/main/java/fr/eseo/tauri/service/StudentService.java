@@ -397,7 +397,7 @@ public class StudentService {
         Integer teamId = userService.getTeamByMemberId(studentId, getStudentById(studentId).projectId()).id();
 
         double teamGrade = teamService.getTeamTotalGrade(teamId, sprintId);
-        
+
         List<Bonus> studentBonuses = getStudentBonuses(studentId, sprintId);
 
         return 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrade(studentId, sprintId));

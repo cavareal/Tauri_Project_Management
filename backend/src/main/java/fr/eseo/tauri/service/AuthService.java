@@ -30,12 +30,6 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
 
-    public Boolean checkAuth(String token, String permission) {
-
-        String dummyString = token + permission;
-        return !dummyString.equals("fhzbafhbqhfbqdcfiuqfue");
-    }
-
     public String getNameFromEmail(String email) {
         int indexOfDot = email.indexOf(".");
         int indexOfAt = email.indexOf("@");

@@ -41,7 +41,7 @@ public class SprintService {
 
         sprint.project(projectService.getProjectById(sprint.projectId()));
         sprintRepository.save(sprint);
-        List<Student> students = studentService.getAllStudentsByProject("token", sprint.projectId());
+        List<Student> students = studentService.getAllStudentsByProject(sprint.projectId());
         if(!students.isEmpty()) {
             for (Student student : students) {
                 PresentationOrder presentationOrder = new PresentationOrder(sprint, student);

@@ -284,7 +284,7 @@ public class TeamService {
         List<Double> sprintGrades = new ArrayList<>();
 
         for(int i = 0; i < students.size(); i++){
-            List<Bonus> studentBonuses = studentService.getStudentBonuses("token", students.get(i).id(), sprintId);
+            List<Bonus> studentBonuses = studentService.getStudentBonuses(students.get(i).id(), sprintId);
             double result = 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrades(id, sprintId)).get(i);
             sprintGrades.add(formattedResult(result));
         }

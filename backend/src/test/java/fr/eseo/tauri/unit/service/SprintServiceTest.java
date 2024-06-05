@@ -97,7 +97,7 @@ class SprintServiceTest {
         Sprint sprint = new Sprint();
 
         when(projectService.getProjectById(projectId)).thenReturn(new Project());
-        when(studentService.getAllStudentsByProject("token",projectId)).thenReturn(Collections.emptyList());
+        when(studentService.getAllStudentsByProject(projectId)).thenReturn(Collections.emptyList());
 
         sprintService.createSprint(sprint, projectId);
 
