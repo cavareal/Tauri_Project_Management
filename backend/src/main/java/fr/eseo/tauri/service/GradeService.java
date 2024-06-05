@@ -263,7 +263,7 @@ public class GradeService {
             }
 
             for (Student student : students) {
-                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
+                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
                 Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
 
                 if (Boolean.FALSE.equals(grade.confirmed())) {
@@ -286,7 +286,7 @@ public class GradeService {
             }
 
             for (Student student : students) {
-                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
+                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
                 Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
                 grade.confirmed(true);
                 gradeRepository.save(grade);
