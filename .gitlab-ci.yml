@@ -90,7 +90,8 @@ java-build:
     - cd backend
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
-    - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -x test -Pprod unitTest
+    - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD unitTest jacocoTestReport -Pprod
+    # - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -x test -Pprod unitTest
   retry: 2
   dependencies:    
     - vuejs-build-dev
