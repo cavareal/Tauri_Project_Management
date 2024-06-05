@@ -67,7 +67,7 @@ public class StudentService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        if(student.projectId() != null) student.project(projectService.getProjectById(token, student.projectId()));
+        if(student.projectId() != null) student.project(projectService.getProjectById(student.projectId()));
         if(student.teamId() != null)student.team(teamService.getTeamById(student.teamId()));
         studentRepository.save(student);
 
@@ -99,7 +99,7 @@ public class StudentService {
         if (updatedStudent.gender() != null) student.gender(updatedStudent.gender());
         if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
         if (updatedStudent.teamRole() != null) student.teamRole(updatedStudent.teamRole());
-        if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(token, updatedStudent.projectId()));
+        if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(updatedStudent.projectId()));
         if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(updatedStudent.teamId()));
 
         studentRepository.save(student);
@@ -210,7 +210,7 @@ public class StudentService {
         student.name(name);
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
-        student.project(projectService.getProjectById(token, projectId));
+        student.project(projectService.getProjectById(projectId));
 //        student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
         student.privateKey("privateKey");
         String[] nameParts = name.split(" "); // Divise le nom en deux parties basées sur l'espace

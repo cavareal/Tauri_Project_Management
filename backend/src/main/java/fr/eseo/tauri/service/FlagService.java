@@ -30,7 +30,7 @@ public class FlagService {
 
     public void createFlag(Flag flag) {
         flag.author(userService.getUserById(flag.authorId()));
-        flag.project(projectService.getProjectById("token", flag.projectId()));
+        flag.project(projectService.getProjectById(flag.projectId()));
         if (flag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById("token", flag.firstStudentId()));
         if (flag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById("token", flag.secondStudentId()));
 
@@ -48,7 +48,7 @@ public class FlagService {
         if (updatedFlag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById("token", updatedFlag.firstStudentId()));
         if (updatedFlag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById("token", updatedFlag.secondStudentId()));
         if (updatedFlag.authorId() != null) flag.author(userService.getUserById(updatedFlag.authorId()));
-        if (updatedFlag.projectId() != null) flag.project(projectService.getProjectById("token", updatedFlag.projectId()));
+        if (updatedFlag.projectId() != null) flag.project(projectService.getProjectById(updatedFlag.projectId()));
 
         flagRepository.save(flag);
     }

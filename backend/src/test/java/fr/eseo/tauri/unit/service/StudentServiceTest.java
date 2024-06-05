@@ -124,9 +124,8 @@ class StudentServiceTest {
 
     @Test
     void createStudentShouldSaveWhenAuthorizedAndProjectAndTeamExist() {
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(true);
-        when(projectService.getProjectById(anyString(), anyInt())).thenReturn(new Project());
-        when(teamService.getTeamById(anyString(), anyInt())).thenReturn(new Team());
+        when(projectService.getProjectById(anyInt())).thenReturn(new Project());
+        when(teamService.getTeamById(anyInt())).thenReturn(new Team());
         when(sprintService.getAllSprintsByProject(anyString(), anyInt())).thenReturn(Collections.emptyList());
 
         Student student = new Student();
