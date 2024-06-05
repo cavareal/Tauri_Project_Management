@@ -38,17 +38,13 @@ public class ValidationBonusService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        validationBonus.bonus(bonusService.getBonusById(token, validationBonus.bonusId()));
-        validationBonus.author(userService.getUserById(token, validationBonus.authorId()));
+        validationBonus.bonus(bonusService.getBonusById(validationBonus.bonusId()));
+        validationBonus.author(userService.getUserById(validationBonus.authorId()));
 
         validationBonusRepository.save(validationBonus);
     }
 
-    public void deleteAllValidationBonuses(String token, Integer bonusId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteValidationBonus"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public void deleteAllValidationBonuses(Integer bonusId) {
         validationBonusRepository.deleteAllByBonusId(bonusId);
 
     }

@@ -26,8 +26,6 @@ import static org.mockito.Mockito.*;
 @Nested
 class GradeServiceTest {
 
-    private final String TEST_TOKEN = "testToken";
-
     @Mock
     private GradeRepository gradeRepository;
 
@@ -69,63 +67,39 @@ class GradeServiceTest {
     @Test
     void getGradeByIdShouldReturnGradeWhenAuthorized() {
         Grade grade = new Grade();
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(gradeRepository.findById(anyInt())).thenReturn(Optional.of(grade));
 
-        Grade result = gradeService.getGradeById(TEST_TOKEN, 1);
+        Grade result = gradeService.getGradeById(1);
 
         assertEquals(grade, result);
     }
 
     @Test
-    void getGradeByIdShouldThrowSecurityExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> gradeService.getGradeById(TEST_TOKEN, 1));
-    }
-
-    @Test
     void getGradeByIdShouldThrowResourceNotFoundExceptionWhenGradeNotFound() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(gradeRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> gradeService.getGradeById(TEST_TOKEN, 1));
+        assertThrows(ResourceNotFoundException.class, () -> gradeService.getGradeById(1));
     }
 
     @Test
     void getAllUnimportedGradesByProjectShouldReturnGradesWhenAuthorized() {
         List<Grade> grades = Collections.singletonList(new Grade());
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+
         when(gradeRepository.findAllUnimportedByProject(anyInt())).thenReturn(grades);
 
-        List<Grade> result = gradeService.getAllUnimportedGradesByProject(TEST_TOKEN, 1);
+        List<Grade> result = gradeService.getAllUnimportedGradesByProject(1);
 
         assertEquals(grades, result);
-    }
-
-    @Test
-    void getAllUnimportedGradesByProjectShouldThrowExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> gradeService.getAllUnimportedGradesByProject(TEST_TOKEN, 1));
     }
 
     @Test
     void getAllImportedGradesByProjectShouldReturnGradesWhenAuthorized() {
         List<Grade> grades = Collections.singletonList(new Grade());
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(gradeRepository.findAllImportedByProject(anyInt())).thenReturn(grades);
 
-        List<Grade> result = gradeService.getAllImportedGradesByProject(TEST_TOKEN, 1);
+        List<Grade> result = gradeService.getAllImportedGradesByProject(1);
 
         assertEquals(grades, result);
-    }
-
-    @Test
-    void getAllImportedGradesByProjectShouldThrowExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> gradeService.getAllImportedGradesByProject(TEST_TOKEN, 1));
     }
 
     @Test
@@ -139,13 +113,12 @@ class GradeServiceTest {
         gradeType.forGroup(true);
         grade.gradeType(gradeType);
 
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
         when(sprintService.getSprintById(anyString(), anyInt())).thenReturn(new Sprint());
-        when(gradeTypeService.getGradeTypeById(anyString(), anyInt())).thenReturn(gradeType);
+        when(gradeTypeService.getGradeTypeById(anyInt())).thenReturn(gradeType);
         when(teamService.getTeamById(anyString(), anyInt())).thenReturn(new Team());
 
-        gradeService.createGrade(TEST_TOKEN, grade);
+        gradeService.createGrade(grade);
 
         verify(gradeRepository, times(1)).save(any(Grade.class));
     }
@@ -161,74 +134,37 @@ class GradeServiceTest {
         gradeType.forGroup(false);
         grade.gradeType(gradeType);
 
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
         when(sprintService.getSprintById(anyString(), anyInt())).thenReturn(new Sprint());
-        when(gradeTypeService.getGradeTypeById(anyString(), anyInt())).thenReturn(gradeType);
+        when(gradeTypeService.getGradeTypeById(anyInt())).thenReturn(gradeType);
         when(studentService.getStudentById(anyString(), anyInt())).thenReturn(new Student());
 
-        gradeService.createGrade(TEST_TOKEN, grade);
+        gradeService.createGrade(grade);
 
         verify(gradeRepository, times(1)).save(any(Grade.class));
     }
 
     @Test
-    void createGradeShouldThrowExceptionWhenNotAuthorized() {
-        Grade grade = new Grade();
-
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> gradeService.createGrade(TEST_TOKEN, grade));
-    }
-
-    @Test
-    void updateGradeShouldThrowExceptionWhenNotAuthorized() {
-        Grade updatedGrade = new Grade();
-
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> gradeService.updateGrade(TEST_TOKEN, 1, updatedGrade));
-    }
-
-    @Test
     void deleteGradeShouldDeleteGradeWhenAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(gradeRepository.findById(anyInt())).thenReturn(Optional.of(new Grade()));
 
-        gradeService.deleteGrade(TEST_TOKEN, 1);
+        gradeService.deleteGrade(1);
 
         verify(gradeRepository, times(1)).deleteById(anyInt());
     }
 
     @Test
-    void deleteGradeShouldThrowSecurityExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> gradeService.deleteGrade(TEST_TOKEN, 1));
-    }
-
-    @Test
     void deleteGradeShouldThrowResourceNotFoundExceptionWhenGradeNotFound() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(gradeRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> gradeService.deleteGrade(TEST_TOKEN, 1));
+        assertThrows(ResourceNotFoundException.class, () -> gradeService.deleteGrade(1));
     }
 
     @Test
     void deleteAllGradesByProjectShouldDeleteGradesWhenAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-
-        gradeService.deleteAllGradesByProject(TEST_TOKEN, 1);
+        gradeService.deleteAllGradesByProject(1);
 
         verify(gradeRepository, times(1)).deleteAllByProject(anyInt());
-    }
-
-    @Test
-    void deleteAllGradesByProjectShouldThrowSecurityExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> gradeService.deleteAllGradesByProject(TEST_TOKEN, 1));
     }
 
     @Test
@@ -277,16 +213,6 @@ class GradeServiceTest {
     }
 
     @Test
-    void createStudentIndividualGradesCSVReportShouldThrowSecurityExceptionWhenNotAuthorized() {
-        String token = "testToken";
-        int userId = 1;
-
-        when(authService.checkAuth(token, "exportGrades")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> gradeService.createStudentIndividualGradesCSVReport(token, userId));
-    }
-
-    @Test
     void createStudentIndividualGradesCSVReportShouldGenerateCorrectReportWhenAuthorized() throws IOException {
         String token = "validToken";
         int projectId = 1;
@@ -300,12 +226,11 @@ class GradeServiceTest {
         List<Student> students = Collections.singletonList(student);
         List<GradeType> gradeTypes = Collections.singletonList(gradeType);
 
-        when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
         when(studentRepository.findAllByProject(projectId)).thenReturn(students);
         when(gradeRepository.findAllUnimportedGradeTypesByProjectId(projectId)).thenReturn(gradeTypes);
         when(gradeService.getGradeByStudentAndGradeType(student, gradeType)).thenReturn(90f);
 
-        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, projectId);
+        byte[] result = gradeService.createStudentIndividualGradesCSVReport(projectId);
 
         String expectedCsv = """
                 "","","","Test Grade"
@@ -328,11 +253,10 @@ class GradeServiceTest {
         List<Student> students = Collections.singletonList(student);
         List<GradeType> gradeTypes = Collections.emptyList();
 
-        when(authService.checkAuth(token, "exportGrades")).thenReturn(true);
         when(studentRepository.findAllByProject(projectId)).thenReturn(students);
         when(gradeRepository.findAllUnimportedGradeTypesByProjectId(projectId)).thenReturn(gradeTypes);
 
-        byte[] result = gradeService.createStudentIndividualGradesCSVReport(token, projectId);
+        byte[] result = gradeService.createStudentIndividualGradesCSVReport(projectId);
 
         String expectedCsv = """
                 "","",""
@@ -354,7 +278,7 @@ class GradeServiceTest {
 
         when(studentRepository.findAll()).thenReturn(students);
 
-        gradeService.updateImportedMean();
+        gradeService.updateImportedMean(1);
 
         verify(gradeRepository, never()).updateImportedMeanByStudentId(anyFloat(), anyInt());
     }
@@ -605,7 +529,7 @@ class GradeServiceTest {
         grade.confirmed(true);
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token")).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(grade);
 
         Boolean result = gradeService.getGradesConfirmation(teamId, sprintId);
@@ -624,7 +548,7 @@ class GradeServiceTest {
         gradeType.name(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token")).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(null);
 
         Boolean result = gradeService.getGradesConfirmation(teamId, sprintId);
@@ -657,7 +581,7 @@ class GradeServiceTest {
         grade.confirmed(false);
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token")).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(grade);
 
         Boolean result = gradeService.setGradesConfirmation(teamId, sprintId);
@@ -677,7 +601,7 @@ class GradeServiceTest {
         gradeType.name(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token")).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(null);
 
         Boolean result = gradeService.setGradesConfirmation(teamId, sprintId);

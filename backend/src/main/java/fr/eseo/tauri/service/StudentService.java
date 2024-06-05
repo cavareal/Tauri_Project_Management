@@ -83,8 +83,8 @@ public class StudentService {
                 presentationOrderService.createPresentationOrder(token, presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
-                bonusService.createBonus(token, limitedBonus);
-                bonusService.createBonus(token, unlimitedBonus);
+                bonusService.createBonus(limitedBonus);
+                bonusService.createBonus(unlimitedBonus);
             }
         }
     }
@@ -121,7 +121,7 @@ public class StudentService {
         for (var student : students) {
             userService.deleteUserById(token, student.id());
         }
-        gradeTypeService.deleteAllImportedGradeTypes(token);
+        gradeTypeService.deleteAllImportedGradeTypes();
         teamService.deleteAllTeamsByProject(token, projectId);
     }
 
@@ -240,7 +240,7 @@ public class StudentService {
             throw new EmptyResourceException("uploaded file");
         }
 
-        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(token, file.getInputStream());
+        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
         CustomLogger.info("Successfully created GradeType objects from the CSV file.");
         Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
 
@@ -260,7 +260,7 @@ public class StudentService {
                         grade.value(Float.parseFloat(grades.get(i).get(j).trim()));
                         grade.student(student);
                         grade.gradeType(gradeTypes.get(j));
-                        gradeService.createGrade(token, grade);
+                        gradeService.createGrade(grade);
                     } catch (NumberFormatException ignored) {
                         // Do nothing // If the grade is not a number, it is ignored
                     }
@@ -290,7 +290,7 @@ public class StudentService {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
-        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(token, projectId);
+        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(projectId);
         List<Student> students = getAllStudentsByProject(token, projectId);
 
         CSVWriter csvWriter = new CSVWriter(writer);
