@@ -49,7 +49,6 @@ dependencies {
 
 
 test {
-	exclude "**/selenium/**"
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'
 }
@@ -59,7 +58,7 @@ test {
 tasks.register('unitTest', Test) {
 	useJUnitPlatform()
 	include '**/unit/**'
-	finalizedBy 'jacocoTestReport'
+	exclude "**/selenium/**"
 }
 
 
@@ -67,6 +66,7 @@ tasks.register('unitTest', Test) {
 tasks.register('seleniumTest', Test) {
 	useJUnitPlatform()
 	include '**/selenium/**'
+	exclude "**/unit/**"
 
 	if (System.getProperty('seleniumServerUrl') && System.getProperty('seleniumOptions')) {
 		System.out.println("Running Selenium tests on " + System.getProperty('seleniumServerUrl') + " with options " + System.getProperty('seleniumOptions'));
