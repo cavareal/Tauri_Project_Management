@@ -6,6 +6,7 @@ import { Cookies } from '@/utils/cookie/cookie.util'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { type Project } from '@/types/project'
 import { setActualProject } from '@/services/project'
+import Column from '@/components/atoms/containers/Column.vue'
 
 const emits = defineEmits(["choose:project"])
 
@@ -48,7 +49,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="w-full flex flex-col items-center mb-10">
+    <Column class="mx-5">
         <h2 class="text-xl font-semibold text-center">Projet actuel</h2>
         <Select :model-value="selectedProjectId ?? undefined" @update:model-value="handleSelectChange">
             <SelectTrigger class="mt-4 p-2 border rounded">
@@ -60,6 +61,8 @@ onMounted(() => {
                 </SelectItem>
             </SelectContent>
         </Select>
-        <Button @click="handleValidate" class="mt-4">Valider le choix</Button>
-    </div>
+        <div class="flex justify-center">
+            <Button @click="handleValidate" class="mt-4">Valider le choix</Button>
+        </div>
+    </Column>
 </template>

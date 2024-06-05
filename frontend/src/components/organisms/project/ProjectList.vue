@@ -7,6 +7,7 @@ import { deleteProject } from '@/services/project/project.service'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { type Project } from '@/types/project'
+import { Column } from '@/components/atoms/containers'
 
 const props = defineProps<{
     projects: Array<Project>
@@ -40,8 +41,8 @@ const { mutate: deleteProjectMutate } = useMutation({
 </script>
 
 <template>
-    <div class="w-full">
-        <h2 class="text-xl font-semibold text-center mb-4">Liste des projets existants</h2>
+    <Column class="mx-10">
+        <h2 class="text-xl font-semibold text-center mb-4 mt-6">Liste des projets existants</h2>
         <div v-for="project in projects" :key="project.id" class="w-full flex justify-between items-center p-2 mb-5 border-b border-gray-500">
                 <p class="font-medium">{{ project.name }}</p>
                 <p class="text-gray-500">Nombre d'équipes : {{ project.nbTeams ? project.nbTeams : "pas encore générées" }}</p>
@@ -71,5 +72,5 @@ const { mutate: deleteProjectMutate } = useMutation({
                 </DialogContent>
             </Dialog>
         </div>
-    </div>
+    </Column>
 </template>

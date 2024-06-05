@@ -81,6 +81,7 @@ public enum PermissionType {
     ADD_USER,
     DELETE_USER,
     GET_ALL_USERS,
+    MANAGE_USER,
     MANAGE_PROJECT,
     ADD_PROJECT,
     DELETE_PROJECT,
