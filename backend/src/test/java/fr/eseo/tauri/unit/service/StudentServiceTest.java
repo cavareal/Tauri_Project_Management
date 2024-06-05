@@ -44,16 +44,10 @@ class StudentServiceTest {
     private TeamService teamService;
 
     @Mock
-    private AuthService authService;
-
-    @Mock
     private ProjectService projectService;
 
     @Mock
     private SprintService sprintService;
-
-    @Mock
-    private UserService userService;
 
     @Mock
     private RoleService roleService;
@@ -72,52 +66,34 @@ class StudentServiceTest {
     @Test
     void getStudentByIdShouldReturnStudentWhenAuthorizedAndIdExists() {
         Student student = new Student();
-        when(authService.checkAuth(anyString(), eq("readStudent"))).thenReturn(true);
         when(studentRepository.findById(anyInt())).thenReturn(Optional.of(student));
 
-        Student result = studentService.getStudentById("token", 1);
+        Student result = studentService.getStudentById(1);
 
         assertEquals(student, result);
     }
 
     @Test
-    void getStudentByIdShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("readStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getStudentById("token", 1));
-    }
-
-    @Test
     void getStudentByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
-        when(authService.checkAuth(anyString(), eq("readStudent"))).thenReturn(true);
         when(studentRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> studentService.getStudentById("token", 1));
+        assertThrows(ResourceNotFoundException.class, () -> studentService.getStudentById(1));
     }
 
     @Test
     void getAllStudentsByProjectShouldReturnStudentsWhenAuthorized() {
-        when(authService.checkAuth(anyString(), eq("readStudents"))).thenReturn(true);
         when(studentRepository.findAllByProject(anyInt())).thenReturn(Arrays.asList(new Student(), new Student()));
 
-        List<Student> result = studentService.getAllStudentsByProject("token", 1);
+        List<Student> result = studentService.getAllStudentsByProject(1);
 
         assertEquals(2, result.size());
     }
 
     @Test
-    void getAllStudentsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("readStudents"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getAllStudentsByProject("token", 1));
-    }
-
-    @Test
     void getAllStudentsByProjectShouldReturnEmptyListWhenNoStudentsExist() {
-        when(authService.checkAuth(anyString(), eq("readStudents"))).thenReturn(true);
         when(studentRepository.findAllByProject(anyInt())).thenReturn(Collections.emptyList());
 
-        List<Student> result = studentService.getAllStudentsByProject("token", 1);
+        List<Student> result = studentService.getAllStudentsByProject(1);
 
         assertTrue(result.isEmpty());
     }
@@ -131,7 +107,7 @@ class StudentServiceTest {
         Student student = new Student();
         student.projectId(1);
         student.teamId(1);
-        studentService.createStudent("token", student);
+        studentService.createStudent(student);
 
         verify(studentRepository, times(1)).save(student);
         verify(roleService, times(1)).createRole(any(Role.class));
@@ -139,18 +115,8 @@ class StudentServiceTest {
 
 
     @Test
-    void deleteStudentShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("deleteStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.deleteStudent("token", 1));
-    }
-
-
-    @Test
     void deleteAllStudentsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("deleteStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.deleteAllStudentsByProject("token", 1));
+        assertThrows(SecurityException.class, () -> studentService.deleteAllStudentsByProject(1));
     }
 
     @Test
@@ -233,51 +199,35 @@ class StudentServiceTest {
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenNameIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", null, "M", "B", 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData(null, "M", "B", 1));
     }
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenNameIsEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", "", "M", "B", 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("", "M", "B", 1));
     }
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenGenderIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", "John Doe", null, "B", 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", null, "B", 1));
     }
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenGenderIsEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", "John Doe", "", "B", 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", "", "B", 1));
     }
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenBachelorIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", "John Doe", "M", null, 1));
-    }
-
-    @Test
-    void populateDatabaseFromCSVShouldThrowSecurityExceptionWhenUnauthorized() {
-        MultipartFile file = mock(MultipartFile.class);
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.populateDatabaseFromCSV("token", file, 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", "M", null, 1));
     }
 
     @Test
     void populateDatabaseFromCSVShouldThrowEmptyResourceExceptionWhenFileIsEmpty() {
         MultipartFile file = mock(MultipartFile.class);
         when(file.isEmpty()).thenReturn(true);
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(true);
 
-        assertThrows(EmptyResourceException.class, () -> studentService.populateDatabaseFromCSV("token", file, 1));
-    }
-
-    @Test
-    void createStudentsCSVShouldThrowSecurityExceptionWhenUnauthorized() throws IOException {
-        when(authService.checkAuth(anyString(), eq("exportStudents"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.createStudentsCSV("token", 1));
+        assertThrows(EmptyResourceException.class, () -> studentService.populateDatabaseFromCSV(file, 1));
     }
 
     @Test
@@ -493,58 +443,40 @@ class StudentServiceTest {
 
     @Test
     void getStudentBonusShouldReturnBonusWhenAuthorizedAndBonusExists() {
-        String token = "validToken";
         Integer idStudent = 1;
         Boolean limited = true;
         Bonus bonus = new Bonus();
         Integer idSprint = 1;
 
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
         when(bonusRepository.findStudentBonus(idStudent, limited, idSprint)).thenReturn(bonus);
 
-        Bonus result = studentService.getStudentBonus(token, idStudent, limited, idSprint);
+        Bonus result = studentService.getStudentBonus(idStudent, limited, idSprint);
 
         assertEquals(bonus, result);
     }
 
     @Test
-    void getStudentBonusShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer idStudent = 1;
-        Boolean limited = true;
-        Integer idSprint = 1;
-
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getStudentBonus(token, idStudent, limited, idSprint));
-    }
-
-    @Test
     void getStudentBonusShouldReturnNullWhenNoBonusFound() {
-        String token = "validToken";
         Integer idStudent = 1;
         Boolean limited = true;
         Integer idSprint = 1;
 
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
         when(bonusRepository.findStudentBonus(idStudent, limited, idSprint)).thenReturn(null);
 
-        Bonus result = studentService.getStudentBonus(token, idStudent, limited, idSprint);
+        Bonus result = studentService.getStudentBonus(idStudent, limited, idSprint);
 
         assertNull(result);
     }
 
     @Test
     void getStudentBonusesShouldReturnBonusesWhenAuthorizedAndBonusesExist() {
-        String token = "validToken";
         Integer idStudent = 1;
         List<Bonus> bonuses = Arrays.asList(new Bonus(), new Bonus());
         Integer idSprint = 1;
 
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
         when(bonusRepository.findAllStudentBonuses(idStudent, idSprint)).thenReturn(bonuses);
 
-        List<Bonus> result = studentService.getStudentBonuses(token, idStudent, idSprint);
+        List<Bonus> result = studentService.getStudentBonuses(idStudent, idSprint);
 
         assertEquals(bonuses, result);
     }
@@ -562,39 +494,14 @@ class StudentServiceTest {
 
     @Test
     void getStudentBonusesShouldReturnEmptyListWhenNoBonusesFound() {
-        String token = "validToken";
         Integer idStudent = 1;
         Integer idSprint = 1;
 
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
         when(bonusRepository.findAllStudentBonuses(idStudent, idSprint)).thenReturn(Collections.emptyList());
 
-        List<Bonus> result = studentService.getStudentBonuses(token, idStudent, idSprint);
+        List<Bonus> result = studentService.getStudentBonuses(idStudent, idSprint);
 
         assertTrue(result.isEmpty());
     }
-
-    @Test
-    void getIndividualTotalGradeShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-        Integer sprintId = 1;
-
-        when(authService.checkAuth(token, "readGrades")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getIndividualTotalGrade(token, id, sprintId));
-    }
-
-    @Test
-    void getSprintGradeShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer studentId = 1;
-        Integer sprintId = 1;
-
-        when(authService.checkAuth(token, "readGrade")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getSprintGrade(token, studentId, sprintId));
-    }
-
 
 }
