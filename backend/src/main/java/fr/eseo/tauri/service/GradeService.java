@@ -27,7 +27,6 @@ import static fr.eseo.tauri.util.ListUtil.filter;
 @RequiredArgsConstructor
 public class GradeService {
 
-    private final AuthService authService;
     private final GradeRepository gradeRepository;
     private final UserService userService;
     @Lazy
@@ -68,14 +67,14 @@ public class GradeService {
 
         if (grade.authorId() != null) grade.author(userService.getUserById(grade.authorId()));
         if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(grade.sprintId()));
-        if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById("token", grade.gradeTypeId()));
+        if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(grade.gradeTypeId()));
 
         if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
             grade.student(null);
             if (grade.teamId() != null) grade.team(teamService.getTeamById(grade.teamId()));
         } else {
             grade.team(null);
-            if (grade.studentId() != null) grade.student(studentService.getStudentById("token", grade.studentId()));
+            if (grade.studentId() != null) grade.student(studentService.getStudentById(grade.studentId()));
         }
 
         if ((grade.team() == null) == (grade.student() == null)) {
@@ -92,7 +91,7 @@ public class GradeService {
         if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(updatedGrade.sprintId()));
         if (updatedGrade.authorId() != null) grade.author(userService.getUserById(updatedGrade.authorId()));
         if (updatedGrade.studentId() != null)
-            grade.student(studentService.getStudentById("token", updatedGrade.studentId()));
+            grade.student(studentService.getStudentById(updatedGrade.studentId()));
         if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(updatedGrade.teamId()));
 
         if ((grade.team() == null) == (grade.student() == null)) {

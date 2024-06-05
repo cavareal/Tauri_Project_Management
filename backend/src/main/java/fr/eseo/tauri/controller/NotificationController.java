@@ -25,89 +25,82 @@ public class NotificationController {
 
     /**
      * Get a notification by its id
-     * @param token the token of the user
      * @param id the id of the notification
      * @return the notification
      */
 
     @GetMapping("/{id}")
-    public ResponseEntity<Notification> getNotificationById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        var notification = notificationService.getNotificationById(token, id);
+    public ResponseEntity<Notification> getNotificationById(@PathVariable Integer id) {
+        var notification = notificationService.getNotificationById(id);
         return ResponseEntity.ok(notification);
     }
 
     /**
      * Get all notifications by project
-     * @param token the token of the user
      * @return the list of notifications
      */
     @GetMapping
-    public ResponseEntity<List<Notification>> getAllNotifications(@RequestHeader("Authorization") String token) {
-        var notifications = notificationService.getAllNotifications(token);
+    public ResponseEntity<List<Notification>> getAllNotifications() {
+        var notifications = notificationService.getAllNotifications();
         return ResponseEntity.ok(notifications);
     }
 
     /**
      * Create a notification
-     * @param token the token of the user
      * @param notification the notification to create
      * @return a message
      */
     @PostMapping
-    public ResponseEntity<String> createNotification(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Notification notification) {
-        notificationService.createNotification(token, notification);
+    public ResponseEntity<String> createNotification(@Validated(Create.class) @RequestBody Notification notification) {
+        notificationService.createNotification(notification);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
 
     /**
      * Update a notification
-     * @param token the token of the user
      * @param id the id of the notification
      * @param updatedNotification the updated notification
      * @return a message
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateNotification(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Notification updatedNotification) {
-        notificationService.updateNotification(token, id, updatedNotification);
+    public ResponseEntity<String> updateNotification(@PathVariable Integer id, @Validated(Update.class) @RequestBody Notification updatedNotification) {
+        notificationService.updateNotification(id, updatedNotification);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     /**
      * Update a notification
-     * @param token the token of the user
      * @param id the id of the notification
      * @return a message
      */
     @PatchMapping("/{id}/changeStateChecked")
-    public ResponseEntity<String> changeStateChecked(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        notificationService.changeCheckedNotification(token, id);
+    public ResponseEntity<String> changeStateChecked(@PathVariable Integer id) {
+        notificationService.changeCheckedNotification(id);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     /**
      * Delete a notification by its id
-     * @param token the token of the user
      * @param id the id of the notification
      * @return a message
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteNotificationById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        notificationService.deleteNotificationById(token, id);
+    public ResponseEntity<String> deleteNotificationById(@PathVariable Integer id) {
+        notificationService.deleteNotificationById(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     /**
      * Delete all notifications
-     * @param token the token of the user
      * @return a message
      */
     @DeleteMapping
-    public ResponseEntity<String> deleteAllNotifications(@RequestHeader("Authorization") String token) {
-        notificationService.deleteAllNotifications(token);
+    public ResponseEntity<String> deleteAllNotifications() {
+        notificationService.deleteAllNotifications();
         CustomLogger.info(responseMessage.deleteAll());
         return ResponseEntity.ok(responseMessage.deleteAll());
     }

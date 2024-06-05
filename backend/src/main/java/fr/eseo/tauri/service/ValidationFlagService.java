@@ -31,12 +31,12 @@ public class ValidationFlagService {
     public void createValidationFlags(Flag flag) {
         ValidationFlag validationFlagPL = new ValidationFlag();
         validationFlagPL.flag(flag);
-        validationFlagPL.author(roleService.getUsersByRoleType("token", RoleType.PROJECT_LEADER).get(0));
+        validationFlagPL.author(roleService.getUsersByRoleType(RoleType.PROJECT_LEADER).get(0));
         validationFlagRepository.save(validationFlagPL);
 
-        if(userService.getRolesByUserId("token", flag.author().id()).contains(RoleType.OPTION_STUDENT)){
-            List<Student> students = teamService.getStudentsByTeamId("token", flag.firstStudent().team().id());
-            students.addAll(teamService.getStudentsByTeamId("token", flag.secondStudent().team().id()));
+        if(userService.getRolesByUserId(flag.author().id()).contains(RoleType.OPTION_STUDENT)){
+            List<Student> students = teamService.getStudentsByTeamId(flag.firstStudent().team().id());
+            students.addAll(teamService.getStudentsByTeamId(flag.secondStudent().team().id()));
             for(Student student: students){
                 ValidationFlag validationFlag = new ValidationFlag();
                 validationFlag.flag(flag);

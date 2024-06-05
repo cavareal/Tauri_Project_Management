@@ -24,48 +24,48 @@ public class SprintController {
     private final ResponseMessage responseMessage = new ResponseMessage("sprint");
 
     @GetMapping("/{id}")
-    public ResponseEntity<Sprint> getSprintById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Sprint sprint = sprintService.getSprintById(token, id);
+    public ResponseEntity<Sprint> getSprintById(@PathVariable Integer id) {
+        Sprint sprint = sprintService.getSprintById(id);
         return ResponseEntity.ok(sprint);
     }
 
     @GetMapping
-    public ResponseEntity<List<Sprint>> getAllSprintsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        List<Sprint> sprints = sprintService.getAllSprintsByProject(token, projectId);
+    public ResponseEntity<List<Sprint>> getAllSprintsByProject(@RequestParam("projectId") Integer projectId) {
+        List<Sprint> sprints = sprintService.getAllSprintsByProject(projectId);
         return ResponseEntity.ok(sprints);
     }
 
     @PostMapping
-    public ResponseEntity<String> createSprint(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Sprint sprint, @RequestParam Integer projectId) {
-        sprintService.createSprint(token, sprint, projectId);
+    public ResponseEntity<String> createSprint(@Validated(Create.class) @RequestBody Sprint sprint, @RequestParam Integer projectId) {
+        sprintService.createSprint(sprint, projectId);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Sprint updatedSprint) {
-        sprintService.updateSprint(token, id, updatedSprint);
+    public ResponseEntity<String> updateSprint(@PathVariable Integer id, @Validated(Update.class) @RequestBody Sprint updatedSprint) {
+        sprintService.updateSprint(id, updatedSprint);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        sprintService.deleteSprint(token, id);
+    public ResponseEntity<String> deleteSprint(@PathVariable Integer id) {
+        sprintService.deleteSprint(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllSprintsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        sprintService.deleteAllSprintsByProject(token, projectId);
+    public ResponseEntity<String> deleteAllSprintsByProject(@RequestParam("projectId") Integer projectId) {
+        sprintService.deleteAllSprintsByProject(projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 
     @GetMapping("/current")
-    public ResponseEntity<Sprint> getCurrentSprint(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        Sprint sprint = sprintService.getCurrentSprint(token, projectId);
+    public ResponseEntity<Sprint> getCurrentSprint(@RequestParam("projectId") Integer projectId) {
+        Sprint sprint = sprintService.getCurrentSprint(projectId);
         return ResponseEntity.ok(sprint);
     }
 }

@@ -27,20 +27,20 @@ public class RoleController {
     private final ResponseMessage responseMessage = new ResponseMessage("role");
 
     @GetMapping("/{id}")
-    public ResponseEntity<Role> getRoleById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Role role = roleService.getRoleById(token, id);
+    public ResponseEntity<Role> getRoleById(@PathVariable Integer id) {
+        Role role = roleService.getRoleById(id);
         return ResponseEntity.ok(role);
     }
 
     @GetMapping
-    public ResponseEntity<List<Role>> getAllRoles(@RequestHeader("Authorization") String token) {
-        List<Role> roles = roleService.getAllRoles(token);
+    public ResponseEntity<List<Role>> getAllRoles() {
+        List<Role> roles = roleService.getAllRoles();
         return ResponseEntity.ok(roles);
     }
 
     @PostMapping
-    public ResponseEntity<String> createRole(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Role role) {
-        roleService.createRole(token, role);
+    public ResponseEntity<String> createRole(@Validated(Create.class) @RequestBody Role role) {
+        roleService.createRole(role);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
@@ -53,29 +53,29 @@ public class RoleController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateRole(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Role updatedRole) {
-        roleService.updateRole(token, id, updatedRole);
+    public ResponseEntity<String> updateRole(@PathVariable Integer id, @Validated(Update.class) @RequestBody Role updatedRole) {
+        roleService.updateRole(id, updatedRole);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteRoleById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        roleService.deleteRoleById(token, id);
+    public ResponseEntity<String> deleteRoleById(@PathVariable Integer id) {
+        roleService.deleteRoleById(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     @GetMapping("/{roleType}/users")
-    public ResponseEntity<List<User>> getUsersByRole(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType) {
-        var users = roleService.getUsersByRoleType(token, roleType);
+    public ResponseEntity<List<User>> getUsersByRole(@PathVariable RoleType roleType) {
+        var users = roleService.getUsersByRoleType(roleType);
         CustomLogger.info("Retrieved users by role type: " + users);
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{roleType}/permissions/{permissionType}")
-    public ResponseEntity<Boolean> hasPermission(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType, @PathVariable PermissionType permissionType) {
-        var hasPermission = roleService.hasPermission(token, roleType, permissionType);
+    public ResponseEntity<Boolean> hasPermission(@PathVariable RoleType roleType, @PathVariable PermissionType permissionType) {
+        var hasPermission = roleService.hasPermission(roleType, permissionType);
         return ResponseEntity.ok(hasPermission);
     }
 

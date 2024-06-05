@@ -4,9 +4,11 @@ import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.GradeType;
+import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.GradeTypeService;
+import fr.eseo.tauri.service.ProjectService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,7 @@ class GradeTypeServiceTest {
     private GradeTypeService gradeTypeService;
 
     @Mock
-    private AuthService authService;
+    private ProjectService projectService;
 
     @Mock
     private GradeTypeRepository gradeTypeRepository;
@@ -196,7 +198,9 @@ class GradeTypeServiceTest {
     void createImportedGradeTypeShouldReturnGradeTypeWhenAuthorized() {
         String name = "Type1";
         Float factor = 1.0f;
+        Project project = new Project();
 
+        when(projectService.getActualProject()).thenReturn(project);
         when(gradeTypeRepository.save(any(GradeType.class))).thenAnswer(i -> i.getArguments()[0]);
 
         GradeType result = gradeTypeService.createImportedGradeType(name, factor);
@@ -205,6 +209,7 @@ class GradeTypeServiceTest {
         assertEquals(factor, result.factor());
         assertFalse(result.forGroup());
         assertTrue(result.imported());
+        assertEquals(project, result.project());
     }
 
     @Test

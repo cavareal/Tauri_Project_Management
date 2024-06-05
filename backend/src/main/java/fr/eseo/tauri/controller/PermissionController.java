@@ -24,41 +24,41 @@ public class PermissionController {
     private final ResponseMessage responseMessage = new ResponseMessage("permission");
 
     @GetMapping("/{id}")
-    public ResponseEntity<Permission> getPermissionById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Permission permission = permissionService.getPermissionById(token, id);
+    public ResponseEntity<Permission> getPermissionById(@PathVariable Integer id) {
+        Permission permission = permissionService.getPermissionById(id);
         return ResponseEntity.ok(permission);
     }
 
     @GetMapping
-    public ResponseEntity<List<Permission>> getAllPermissionsByProject(@RequestHeader("Authorization") String token) {
-        List<Permission> permissions = permissionService.getAllPermissions(token);
+    public ResponseEntity<List<Permission>> getAllPermissionsByProject() {
+        List<Permission> permissions = permissionService.getAllPermissions();
         return ResponseEntity.ok(permissions);
     }
 
     @PostMapping
-    public ResponseEntity<String> createPermission(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Permission permission) {
-        permissionService.createPermission(token, permission);
+    public ResponseEntity<String> createPermission(@Validated(Create.class) @RequestBody Permission permission) {
+        permissionService.createPermission(permission);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updatePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Permission updatedPermission) {
-        permissionService.updatePermission(token, id, updatedPermission);
+    public ResponseEntity<String> updatePermission(@PathVariable Integer id, @Validated(Update.class) @RequestBody Permission updatedPermission) {
+        permissionService.updatePermission(id, updatedPermission);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePermission(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        permissionService.deletePermission(token, id);
+    public ResponseEntity<String> deletePermission(@PathVariable Integer id) {
+        permissionService.deletePermission(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllPermissionsByProject(@RequestHeader("Authorization") String token) {
-        permissionService.deleteAllPermissions(token);
+    public ResponseEntity<String> deleteAllPermissionsByProject() {
+        permissionService.deleteAllPermissions();
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }

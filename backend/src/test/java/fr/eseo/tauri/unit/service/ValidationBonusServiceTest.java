@@ -45,7 +45,7 @@ class ValidationBonusServiceTest {
     void getValidationBonusByAuthorIdShouldReturnBonusWhenAuthorized() {
         when(validationBonusRepository.findByAuthorIdAndBonusId(anyInt(), anyInt())).thenReturn(new ValidationBonus());
 
-        ValidationBonus result = validationBonusService.getValidationBonusByAuthorId("token", 1, 1);
+        ValidationBonus result = validationBonusService.getValidationBonusByAuthorId(1, 1);
 
         assertNotNull(result);
     }
@@ -54,7 +54,7 @@ class ValidationBonusServiceTest {
     void getAllValidationBonusesShouldReturnBonusesWhenAuthorized() {
         when(validationBonusRepository.findAllByBonusId(anyInt())).thenReturn(Arrays.asList(new ValidationBonus(), new ValidationBonus()));
 
-        List<ValidationBonus> result = validationBonusService.getAllValidationBonuses("token", 1);
+        List<ValidationBonus> result = validationBonusService.getAllValidationBonuses(1);
 
         assertEquals(2, result.size());
     }
@@ -63,7 +63,7 @@ class ValidationBonusServiceTest {
     void getAllValidationBonusesShouldReturnEmptyListWhenNoBonuses() {
         when(validationBonusRepository.findAllByBonusId(anyInt())).thenReturn(Collections.emptyList());
 
-        List<ValidationBonus> result = validationBonusService.getAllValidationBonuses("token", 1);
+        List<ValidationBonus> result = validationBonusService.getAllValidationBonuses(1);
 
         assertTrue(result.isEmpty());
     }
@@ -76,14 +76,14 @@ class ValidationBonusServiceTest {
         validationBonus.bonusId(1);
         validationBonus.authorId(1);
 
-        validationBonusService.createValidationBonus("token", validationBonus);
+        validationBonusService.createValidationBonus(validationBonus);
 
         verify(validationBonusRepository, times(1)).save(any(ValidationBonus.class));
     }
 
     @Test
     void deleteAllValidationBonusesShouldDeleteBonusesWhenAuthorized() {
-        validationBonusService.deleteAllValidationBonuses("token", 1);
+        validationBonusService.deleteAllValidationBonuses(1);
 
         verify(validationBonusRepository, times(1)).deleteAllByBonusId(anyInt());
     }
