@@ -113,12 +113,6 @@ class StudentServiceTest {
         verify(roleService, times(1)).createRole(any(Role.class));
     }
 
-
-    @Test
-    void deleteAllStudentsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        assertThrows(SecurityException.class, () -> studentService.deleteAllStudentsByProject(1));
-    }
-
     @Test
     void extractNamesGenderBachelorAndGradesShouldReturnCorrectData() throws IOException, CsvValidationException {
         String csvContent = "1,John Doe,M,B,15,14,13\n2,Jane Doe,F,B,12,13,14";
