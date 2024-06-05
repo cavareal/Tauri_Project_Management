@@ -113,10 +113,10 @@ class GradeServiceTest {
         gradeType.forGroup(true);
         grade.gradeType(gradeType);
 
-        when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
-        when(sprintService.getSprintById(anyString(), anyInt())).thenReturn(new Sprint());
+        when(userService.getUserById(anyInt())).thenReturn(new User());
+        when(sprintService.getSprintById(anyInt())).thenReturn(new Sprint());
         when(gradeTypeService.getGradeTypeById(anyInt())).thenReturn(gradeType);
-        when(teamService.getTeamById(anyString(), anyInt())).thenReturn(new Team());
+        when(teamService.getTeamById(anyInt())).thenReturn(new Team());
 
         gradeService.createGrade(grade);
 
@@ -134,8 +134,8 @@ class GradeServiceTest {
         gradeType.forGroup(false);
         grade.gradeType(gradeType);
 
-        when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
-        when(sprintService.getSprintById(anyString(), anyInt())).thenReturn(new Sprint());
+        when(userService.getUserById(anyInt())).thenReturn(new User());
+        when(sprintService.getSprintById(anyInt())).thenReturn(new Sprint());
         when(gradeTypeService.getGradeTypeById(anyInt())).thenReturn(gradeType);
         when(studentService.getStudentById(anyString(), anyInt())).thenReturn(new Student());
 
@@ -366,7 +366,6 @@ class GradeServiceTest {
         gradeType.forGroup(true);
         Double expectedAverage = 85.0;
         Integer projectId = 1;
-        Integer projectId = 1;
 
 
         when(gradeTypeRepository.findByNameAndProjectId(gradeTypeName, projectId)).thenReturn(gradeType);
@@ -391,7 +390,7 @@ class GradeServiceTest {
         when(gradeTypeRepository.findByNameAndProjectId(gradeTypeName, projectId)).thenReturn(gradeType);
         when(gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, gradeTypeName)).thenReturn(expectedAverage);
 
-        Double actualAverage = gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId, gradeTypeName);
+        Double actualAverage = gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId, gradeTypeName, projectId);
 
         assertEquals(expectedAverage, actualAverage);
     }
@@ -409,7 +408,7 @@ class GradeServiceTest {
         when(gradeTypeRepository.findByNameAndProjectId(gradeTypeName, projectId)).thenReturn(gradeType);
         when(gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, gradeTypeName)).thenReturn(null);
 
-        Double actualAverage = gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId, gradeTypeName);
+        Double actualAverage = gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId, gradeTypeName, projectId);
 
         assertNull(actualAverage);
     }
@@ -508,10 +507,11 @@ class GradeServiceTest {
     void getGradesConfirmationShouldReturnFalseWhenNoStudentsInTeam() {
         Integer teamId = 1;
         Integer sprintId = 1;
+        Integer projectId = 1;
 
         when(studentRepository.findByTeam(teamId)).thenReturn(Collections.emptyList());
 
-        Boolean result = gradeService.getGradesConfirmation(teamId, sprintId);
+        Boolean result = gradeService.getGradesConfirmation(teamId, sprintId, projectId);
 
         assertFalse(result);
     }
@@ -520,6 +520,8 @@ class GradeServiceTest {
     void getGradesConfirmationShouldReturnFalseWhenAllGradesConfirmed() {
         Integer teamId = 1;
         Integer sprintId = 1;
+        Integer projectId = 1;
+        String token = "kljh";
         Student student = new Student();
         student.id(1);
         List<Student> students = Collections.singletonList(student);
@@ -529,10 +531,10 @@ class GradeServiceTest {
         grade.confirmed(true);
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), token, projectId)).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(grade);
 
-        Boolean result = gradeService.getGradesConfirmation(teamId, sprintId);
+        Boolean result = gradeService.getGradesConfirmation(teamId, sprintId, projectId);
 
         assertFalse(result);
     }
@@ -541,6 +543,8 @@ class GradeServiceTest {
     void getGradesConfirmationShouldReturnFalseWhenNoGradesFound() {
         Integer teamId = 1;
         Integer sprintId = 1;
+        Integer projectId = 1;
+        String token = "ouai";
         Student student = new Student();
         student.id(1);
         List<Student> students = Collections.singletonList(student);
@@ -548,10 +552,10 @@ class GradeServiceTest {
         gradeType.name(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), token, projectId)).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(null);
 
-        Boolean result = gradeService.getGradesConfirmation(teamId, sprintId);
+        Boolean result = gradeService.getGradesConfirmation(teamId, sprintId, projectId);
 
         assertFalse(result);
     }
@@ -560,10 +564,11 @@ class GradeServiceTest {
     void setGradesConfirmationShouldReturnFalseWhenNoStudentsInTeam() {
         Integer teamId = 1;
         Integer sprintId = 1;
+        Integer projectId = 1;
 
         when(studentRepository.findByTeam(teamId)).thenReturn(Collections.emptyList());
 
-        Boolean result = gradeService.setGradesConfirmation(teamId, sprintId);
+        Boolean result = gradeService.setGradesConfirmation(teamId, sprintId, projectId);
 
         assertFalse(result);
     }
@@ -572,6 +577,8 @@ class GradeServiceTest {
     void setGradesConfirmationShouldReturnTrueWhenGradesNotConfirmed() {
         Integer teamId = 1;
         Integer sprintId = 1;
+        Integer projectId = 1;
+        String token = "ouai";
         Student student = new Student();
         student.id(1);
         List<Student> students = Collections.singletonList(student);
@@ -581,10 +588,10 @@ class GradeServiceTest {
         grade.confirmed(false);
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), token, projectId)).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(grade);
 
-        Boolean result = gradeService.setGradesConfirmation(teamId, sprintId);
+        Boolean result = gradeService.setGradesConfirmation(teamId, sprintId, projectId);
 
         assertTrue(result);
         verify(gradeRepository, times(1)).save(grade);
@@ -594,6 +601,8 @@ class GradeServiceTest {
     void setGradesConfirmationShouldReturnFalseWhenNoGradesFound() {
         Integer teamId = 1;
         Integer sprintId = 1;
+        Integer projectId = 1;
+        String token = "ouai";
         Student student = new Student();
         student.id(1);
         List<Student> students = Collections.singletonList(student);
@@ -601,10 +610,10 @@ class GradeServiceTest {
         gradeType.name(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), token, projectId)).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(null);
 
-        Boolean result = gradeService.setGradesConfirmation(teamId, sprintId);
+        Boolean result = gradeService.setGradesConfirmation(teamId, sprintId, projectId);
 
         assertFalse(result);
     }
