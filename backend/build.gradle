@@ -91,6 +91,7 @@ sonarqube {
 
 // To get coverage code in sonarQube
 jacocoTestReport {
+	dependsOn unitTest
 	reports {
 		xml.required = true
 		html.required = true
