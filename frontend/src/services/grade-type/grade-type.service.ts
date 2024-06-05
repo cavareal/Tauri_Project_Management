@@ -54,7 +54,7 @@ export const downloadGradeScaleTXT = async(gradeTypeName: string): Promise<void>
 	const gradeType = await getGradeTypeByName(gradeTypeName)
 
 	const response = await queryAndValidate({
-		route: `grade-types/${gradeType.id}/download-pdf`,
+		route: `grade-types/${gradeType.id}/download-grade-scale`,
 		responseSchema: z.any()
 	})
 

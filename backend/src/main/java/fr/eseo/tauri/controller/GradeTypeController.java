@@ -89,4 +89,10 @@ public class GradeTypeController {
         return ResponseEntity.ok(gradeTypeService.getBLOBScale(id, token));
     }
 
+    @DeleteMapping("/{id}/delete-grade-scale")
+    public ResponseEntity<String> deleteGradeScaleTXT(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        gradeTypeService.deleteGradeScale(id, token);
+        return ResponseEntity.ok(responseMessage.delete());
+    }
+
 }

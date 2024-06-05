@@ -224,7 +224,7 @@ public class GradeTypeService {
     }
 
     public void saveGradeScale(Integer id, MultipartFile file, String token) throws IOException {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeTypeTXT"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeScaleTXT"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         if (!Objects.equals(file.getContentType(), "text/plain")) {
@@ -243,12 +243,19 @@ public class GradeTypeService {
     }
 
     public byte[] getBLOBScale(int id, String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "downloadGradeTypeTXT"))) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "downloadGradeScaleTXT"))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         GradeType gradeType = gradeTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
         CustomLogger.info("Size of the PDF: " + gradeType.scaleTXTBlob().length);
         return gradeType.scaleTXTBlob();
+    }
+
+    public void deleteGradeScale(Integer id, String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeScaleTXT"))){
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        gradeTypeRepository.deleteById(id);
     }
 }

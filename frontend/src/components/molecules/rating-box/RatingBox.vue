@@ -45,6 +45,7 @@ const updateGrade = () => {
 	status.value = "IDLE"
 }
 
+//TODO : Add a v-if to ensure that a grade scale has been uplaoded
 
 const { mutate, isPending, isError } = useMutation({
 	mutationFn: async() => {
@@ -133,7 +134,7 @@ const download = useMutation({
 
 		<ErrorText v-if="status === 'DONE' && isError">Une erreur est survenue.</ErrorText>
 
-		<Row class="items-center justify-end mt-4">
+		<Row class="items-center justify-end mt-4" v-if=""> //TODO : Add a v-if to ensure that a grade scale has been uplaoded
 			<Button variant="outline" @click="download.mutate">
 				Télécharger le barème
 			</Button>
