@@ -423,13 +423,15 @@ class GradeTypeServiceTest {
     void findByNameShouldReturnGradeTypeWhenAuthorizedAndNameExists() {
         String token = "validToken";
         String name = "Type1";
+        Integer projectId = 1;
         GradeType gradeType = new GradeType();
         gradeType.name(name);
 
-        when(authService.checkAuth(token, "readGradeType")).thenReturn(true);
-        when(gradeTypeRepository.findByName(name)).thenReturn(gradeType);
 
-        GradeType result = gradeTypeService.findByName(name, token);
+        when(authService.checkAuth(token, "readGradeType")).thenReturn(true);
+        when(gradeTypeRepository.findByNameAndProjectId(name, projectId)).thenReturn(gradeType);
+
+        GradeType result = gradeTypeService.findByName(name, token, projectId);
 
         assertEquals(gradeType, result);
     }
@@ -448,11 +450,12 @@ class GradeTypeServiceTest {
     void findByNameShouldReturnNullWhenNameDoesNotExist() {
         String token = "validToken";
         String name = "NonexistentType";
+        Integer projectId = 1;
 
         when(authService.checkAuth(token, "readGradeType")).thenReturn(true);
-        when(gradeTypeRepository.findByName(name)).thenReturn(null);
+        when(gradeTypeRepository.findByNameAndProjectId(name, projectId)).thenReturn(null);
 
-        GradeType result = gradeTypeService.findByName(name, token);
+        GradeType result = gradeTypeService.findByName(name, token, projectId);
 
         assertNull(result);
     }

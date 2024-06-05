@@ -117,9 +117,9 @@ public class GradeController {
     }
 
     @GetMapping("/average/{id}")
-    public double getAverageGradeTypeByStudentIdOrTeamId(@PathVariable Integer id,@RequestParam("sprintId") Integer sprintId,@RequestParam("gradeTypeName") String gradeTypeName) {
+    public double getAverageGradeTypeByStudentIdOrTeamId(@PathVariable Integer id,@RequestParam("sprintId") Integer sprintId,@RequestParam("gradeTypeName") String gradeTypeName, @RequestParam("projectId") Integer projectId) {
         try{
-            return gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName);
+            return gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName, projectId);
         } catch (NullPointerException e){
             return -1.0;
         }
@@ -138,13 +138,13 @@ public class GradeController {
     }
 
     @GetMapping("/confirmation/{sprintId}/team/{teamId}")
-    public ResponseEntity<Boolean> getGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId) {
-        return ResponseEntity.ok(gradeService.getGradesConfirmation(sprintId, teamId));
+    public ResponseEntity<Boolean> getGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId, @RequestParam("projectId") Integer projectId) {
+        return ResponseEntity.ok(gradeService.getGradesConfirmation(sprintId, teamId, projectId));
     }
 
     @PostMapping("/confirmation/{sprintId}/team/{teamId}")
-    public ResponseEntity<Boolean> setGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId) {
-        return ResponseEntity.ok(gradeService.setGradesConfirmation(sprintId, teamId));
+    public ResponseEntity<Boolean> setGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId, @RequestParam("projectId") Integer projectId) {
+        return ResponseEntity.ok(gradeService.setGradesConfirmation(sprintId, teamId, projectId));
     }
 
 }

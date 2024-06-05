@@ -182,8 +182,9 @@ public class GradeService {
         }
     }
 
-    public Double getAverageByGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName) {
-        GradeType gradeType = gradeTypeRepository.findByName(gradeTypeName);
+    public Double getAverageByGradeTypeByStudentIdOrTeamId(Integer id, Integer sprintId, String gradeTypeName, Integer projectId) {
+        GradeType gradeType = gradeTypeRepository.findByNameAndProjectId(gradeTypeName, projectId);
+
         Double grade;
         if (Boolean.TRUE.equals(gradeType.forGroup())) {
             grade = gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, gradeTypeName);
@@ -280,7 +281,7 @@ public class GradeService {
         return allGrades;
     }
 
-    public Boolean getGradesConfirmation(Integer sprintId, Integer teamId) {
+    public Boolean getGradesConfirmation(Integer sprintId, Integer teamId, Integer projectId) {
         try {
             // TODO check if team is ss's team
             List<Student> students = studentRepository.findByTeam(teamId);
@@ -289,7 +290,7 @@ public class GradeService {
             }
 
             for (Student student : students) {
-                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
+                GradeType gradeType = gradeTypeRepository.findByNameAndProjectId(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId);
                 Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
 
                 if (Boolean.FALSE.equals(grade.confirmed())) {
@@ -304,7 +305,7 @@ public class GradeService {
     }
 
 
-    public Boolean setGradesConfirmation(Integer sprintId, Integer teamId) {
+    public Boolean setGradesConfirmation(Integer sprintId, Integer teamId, Integer projectId) {
         try {
             List<Student> students = studentRepository.findByTeam(teamId);
             if (students.isEmpty()) {
@@ -312,7 +313,7 @@ public class GradeService {
             }
 
             for (Student student : students) {
-                GradeType gradeType = gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), "token");
+                GradeType gradeType = gradeTypeRepository.findByNameAndProjectId(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId);
                 Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
                 grade.confirmed(true);
                 gradeRepository.save(grade);

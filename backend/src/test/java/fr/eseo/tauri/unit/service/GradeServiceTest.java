@@ -441,11 +441,14 @@ class GradeServiceTest {
         GradeType gradeType = new GradeType();
         gradeType.forGroup(true);
         Double expectedAverage = 85.0;
+        Integer projectId = 1;
+        Integer projectId = 1;
 
-        when(gradeTypeRepository.findByName(gradeTypeName)).thenReturn(gradeType);
+
+        when(gradeTypeRepository.findByNameAndProjectId(gradeTypeName, projectId)).thenReturn(gradeType);
         when(gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, gradeTypeName)).thenReturn(expectedAverage);
 
-        Double actualAverage = gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId, gradeTypeName);
+        Double actualAverage = gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId, gradeTypeName, projectId);
 
         assertEquals(expectedAverage, actualAverage);
     }
@@ -458,8 +461,10 @@ class GradeServiceTest {
         GradeType gradeType = new GradeType();
         gradeType.forGroup(false);
         Double expectedAverage = 90.0;
+        Integer projectId = 1;
 
-        when(gradeTypeRepository.findByName(gradeTypeName)).thenReturn(gradeType);
+
+        when(gradeTypeRepository.findByNameAndProjectId(gradeTypeName, projectId)).thenReturn(gradeType);
         when(gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, gradeTypeName)).thenReturn(expectedAverage);
 
         Double actualAverage = gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId, gradeTypeName);
@@ -474,8 +479,10 @@ class GradeServiceTest {
         String gradeTypeName = "Test Grade";
         GradeType gradeType = new GradeType();
         gradeType.forGroup(true);
+        Integer projectId = 1;
 
-        when(gradeTypeRepository.findByName(gradeTypeName)).thenReturn(gradeType);
+
+        when(gradeTypeRepository.findByNameAndProjectId(gradeTypeName, projectId)).thenReturn(gradeType);
         when(gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, gradeTypeName)).thenReturn(null);
 
         Double actualAverage = gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId, gradeTypeName);

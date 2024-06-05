@@ -218,11 +218,11 @@ public class GradeTypeService {
     }
 
 
-    public GradeType findByName(String name, String token) {
+    public GradeType findByName(String name, String token, Integer projectId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return gradeTypeRepository.findByName(name);
+        return gradeTypeRepository.findByNameAndProjectId(name, projectId);
     }
     
 }

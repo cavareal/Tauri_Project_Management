@@ -84,7 +84,8 @@ public class RoleService {
 		role.type(roleType);
 		roleRepository.save(role);
 
-		GradeType gradeType = gradeTypeRepository.findByName("MOYENNE");
+		GradeType gradeType = gradeTypeRepository.findByNameAndProjectId("MOYENNE", projectId);
+
 		if (gradeType != null) {
 			Grade grade = new Grade();
 			grade.value(10f);
