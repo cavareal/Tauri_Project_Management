@@ -25,6 +25,7 @@ public class GradeTypeService {
     private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
     private final GradeService gradeService;
+    private final ProjectService projectService;
     
     private static final String READ_PERMISSION = "readGradeType";
     private static final String ADD_PERMISSION = "addGradeType";
@@ -38,18 +39,18 @@ public class GradeTypeService {
         return gradeTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("gradeType", id));
     }
 
-    public List<GradeType> getAllImportedGradeTypes(String token) {
+    public List<GradeType> getAllImportedGradeTypes(String token, Integer projectId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return gradeTypeRepository.findAllImported();
+        return gradeTypeRepository.findAllImported(projectId);
     }
 
-    public List<GradeType> getAllUnimportedGradeTypes(String token) {
+    public List<GradeType> getAllUnimportedGradeTypes(String token, Integer projectId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        return gradeTypeRepository.findAllUnimported();
+        return gradeTypeRepository.findAllUnimported(projectId);
     }
 
     public void createGradeType(String token, GradeType gradeType) {
@@ -74,6 +75,7 @@ public class GradeTypeService {
         if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
         if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
         if (updatedGradeType.scalePDFBlob() != null) gradeType.scalePDFBlob(updatedGradeType.scalePDFBlob());
+        if (updatedGradeType.project() != null) gradeType.project(updatedGradeType.project());
 
         gradeTypeRepository.save(gradeType);
     }
@@ -141,6 +143,7 @@ public class GradeTypeService {
         gradeType.factor(factor);
         gradeType.forGroup(false);
         gradeType.imported(true);
+        gradeType.project(projectService.getActualProject());
         return(gradeTypeRepository.save(gradeType));
     }
 

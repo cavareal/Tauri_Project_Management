@@ -39,7 +39,7 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     @Query("SELECT t.name FROM Team t")
     List<String> findAllTeamNames();
 
-    @Query("SELECT s.team FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gt.name = 'Moyenne' AND s.project.id=:projectId AND s.team IS NOT NULL GROUP BY s.team ORDER BY AVG(gr.value) ASC")
+    @Query("SELECT s.team FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gr.gradeType.project.id = :projectId AND gt.name = 'Moyenne' AND s.team IS NOT NULL GROUP BY s.team ORDER BY AVG(gr.value) ASC")
     List<Team> findAllOrderByAvgGradeOrderByAsc(Integer projectId);
 
     @Query("SELECT AVG(gr.value) FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE s.team = ?1 AND gt.name = 'Moyenne'")

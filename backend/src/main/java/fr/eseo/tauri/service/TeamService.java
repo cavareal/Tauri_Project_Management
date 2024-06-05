@@ -180,8 +180,8 @@ public class TeamService {
 
         CustomLogger.info("TeamService.createTeams : Creating Teams");
 
-        List<Student> women = this.studentRepository.findByGender(Gender.WOMAN);
-        List<Student> men = this.studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN);
+        List<Student> women = this.studentRepository.findByGenderAndProjectId(Gender.WOMAN, projectId);
+        List<Student> men = this.studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN, projectId);
         int nbStudent = men.size() + women.size();
         Integer nbTeams = projectDetails.nbTeams();
         Integer womenPerTeam = projectDetails.nbWomen();
@@ -236,20 +236,22 @@ public class TeamService {
         }
 
         // re-order the teams by average grade
-        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId); // TODO  : repository add id
+        CustomLogger.info("Teams before sorting : " + teams);
+        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);
 
         index = nbTeams * womenPerTeam;
 
         // Assign the remaining students evenly to the teams
         for (int i = index; i < nbStudent; i++) {
             if ((i - index) % nbTeams == 0) {
-                sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);   // TODO projectId
+                sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);
             }
+            CustomLogger.info("Teams actuals : " + sortedTeams);
 
             Student student;
             Role role = new Role();
             role.type(RoleType.TEAM_MEMBER);
-            CustomLogger.info("Index: " + index + " nbTeam : " + nbTeams + " Calcul : " +  (i - index)% nbTeams);
+
             if (i < nbWomen) {
                 student = women.get(i);
                 student.team(sortedTeams.get((i - index)% nbTeams));

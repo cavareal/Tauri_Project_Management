@@ -27,14 +27,14 @@ public class GradeTypeController {
     }
 
     @GetMapping("/imported")
-    public ResponseEntity<List<GradeType>> getAllImportedGradeTypes(@RequestHeader("Authorization") String token) {
-        List<GradeType> importedGradeTypes = gradeTypeService.getAllImportedGradeTypes(token);
+    public ResponseEntity<List<GradeType>> getAllImportedGradeTypes(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
+        List<GradeType> importedGradeTypes = gradeTypeService.getAllImportedGradeTypes(token, projectId);
         return ResponseEntity.ok(importedGradeTypes);
     }
 
     @GetMapping("/unimported")
-    public ResponseEntity<List<GradeType>> getAllUnimportedGradeTypes(@RequestHeader("Authorization") String token) {
-        List<GradeType> gradeTypes = gradeTypeService.getAllUnimportedGradeTypes(token);
+    public ResponseEntity<List<GradeType>> getAllUnimportedGradeTypes(@RequestHeader("Authorization") String token,  @RequestParam("projectId") Integer projectId) {
+        List<GradeType> gradeTypes = gradeTypeService.getAllUnimportedGradeTypes(token, projectId);
         return ResponseEntity.ok(gradeTypes);
     }
 
