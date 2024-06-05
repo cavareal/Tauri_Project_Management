@@ -68,7 +68,7 @@ public class StudentService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         if(student.projectId() != null) student.project(projectService.getProjectById(token, student.projectId()));
-        if(student.teamId() != null)student.team(teamService.getTeamById(token, student.teamId()));
+        if(student.teamId() != null)student.team(teamService.getTeamById(student.teamId()));
         studentRepository.save(student);
 
         Role role = new Role();
@@ -80,7 +80,7 @@ public class StudentService {
         if(!sprints.isEmpty()) {
             for (Sprint sprint : sprints) {
                 PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
-                presentationOrderService.createPresentationOrder(token, presentationOrder);
+                presentationOrderService.createPresentationOrder(presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
                 bonusService.createBonus(limitedBonus);
@@ -100,7 +100,7 @@ public class StudentService {
         if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
         if (updatedStudent.teamRole() != null) student.teamRole(updatedStudent.teamRole());
         if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(token, updatedStudent.projectId()));
-        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(token, updatedStudent.teamId()));
+        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(updatedStudent.teamId()));
 
         studentRepository.save(student);
     }

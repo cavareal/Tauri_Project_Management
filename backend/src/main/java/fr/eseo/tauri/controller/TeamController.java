@@ -31,7 +31,7 @@ public class TeamController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Team> getTeamById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Team team = teamService.getTeamById(token, id);
+        Team team = teamService.getTeamById(id);
         return ResponseEntity.ok(team);
     }
 
@@ -124,7 +124,7 @@ public class TeamController {
 
     @GetMapping("/{id}/presentationOrder")
     public ResponseEntity<List<PresentationOrder>> getPresentationOrderByTeamIdAndSprintId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam Integer sprintId) {
-        List<PresentationOrder> presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(token, id, sprintId);
+        List<PresentationOrder> presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(id, sprintId);
         return ResponseEntity.ok(presentationOrder);
     }
 }

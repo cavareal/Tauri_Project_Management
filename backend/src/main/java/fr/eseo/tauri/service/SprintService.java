@@ -52,7 +52,7 @@ public class SprintService {
         if(!students.isEmpty()) {
             for (Student student : students) {
                 PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
-                presentationOrderService.createPresentationOrder(token, presentationOrder);
+                presentationOrderService.createPresentationOrder(presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
                 bonusService.createBonus(limitedBonus);

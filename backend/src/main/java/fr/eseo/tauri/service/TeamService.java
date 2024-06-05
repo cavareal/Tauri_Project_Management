@@ -145,7 +145,7 @@ public class TeamService {
         Sprint currentSprint = sprintService.getCurrentSprint(token, team.project().id());
         var students = studentRepository.findByTeam(id);
         if(currentSprint != null){
-            var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(token, id, currentSprint.id());
+            var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(id, currentSprint.id());
             if(presentationOrder.size() == students.size()) students.sort(Comparator.comparingInt(presentationOrder::indexOf));
         }
         return studentRepository.findByTeam(id);
