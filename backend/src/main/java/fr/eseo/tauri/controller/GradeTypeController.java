@@ -23,56 +23,56 @@ public class GradeTypeController {
     private final ResponseMessage responseMessage = new ResponseMessage("gradetype");
 
     @GetMapping("/{id}")
-    public ResponseEntity<GradeType> getGradeTypeById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        GradeType gradeType = gradeTypeService.getGradeTypeById(token, id);
+    public ResponseEntity<GradeType> getGradeTypeById(@PathVariable Integer id) {
+        GradeType gradeType = gradeTypeService.getGradeTypeById(id);
         return ResponseEntity.ok(gradeType);
     }
 
     @GetMapping("/imported")
-    public ResponseEntity<List<GradeType>> getAllImportedGradeTypes(@RequestHeader("Authorization") String token) {
-        List<GradeType> importedGradeTypes = gradeTypeService.getAllImportedGradeTypes(token);
+    public ResponseEntity<List<GradeType>> getAllImportedGradeTypes(@RequestParam("projectId") Integer projectId) {
+        List<GradeType> importedGradeTypes = gradeTypeService.getAllImportedGradeTypes(projectId);
         return ResponseEntity.ok(importedGradeTypes);
     }
 
     @GetMapping("/unimported")
-    public ResponseEntity<List<GradeType>> getAllUnimportedGradeTypes(@RequestHeader("Authorization") String token) {
-        List<GradeType> gradeTypes = gradeTypeService.getAllUnimportedGradeTypes(token);
+    public ResponseEntity<List<GradeType>> getAllUnimportedGradeTypes(@RequestParam("projectId") Integer projectId) {
+        List<GradeType> gradeTypes = gradeTypeService.getAllUnimportedGradeTypes(projectId);
         return ResponseEntity.ok(gradeTypes);
     }
 
     @PostMapping
-    public ResponseEntity<String> createGradeType(@RequestHeader("Authorization") String token, @RequestBody GradeType gradeType) {
-        gradeTypeService.createGradeType(token, gradeType);
+    public ResponseEntity<String> createGradeType(@RequestBody GradeType gradeType) {
+        gradeTypeService.createGradeType(gradeType);
         return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateGradeType(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody GradeType updatedGradeType) {
-        gradeTypeService.updateGradeType(token, id, updatedGradeType);
+    public ResponseEntity<String> updateGradeType(@PathVariable Integer id, @RequestBody GradeType updatedGradeType,  @RequestParam("projectId") Integer projectId) {
+        gradeTypeService.updateGradeType(id, updatedGradeType, projectId);
         return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGradeTypeById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        gradeTypeService.deleteGradeTypeById(token, id);
+    public ResponseEntity<String> deleteGradeTypeById(@PathVariable Integer id) {
+        gradeTypeService.deleteGradeTypeById(id);
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     @DeleteMapping("/imported")
-    public ResponseEntity<String> deleteAllImportedGradeTypes(@RequestHeader("Authorization") String token) {
-        gradeTypeService.deleteAllImportedGradeTypes(token);
+    public ResponseEntity<String> deleteAllImportedGradeTypes() {
+        gradeTypeService.deleteAllImportedGradeTypes();
         return ResponseEntity.ok(responseMessage.deleteAll());
     }
 
     @DeleteMapping("/unimported")
-    public ResponseEntity<String> deleteAllUnimportedGradeTypes(@RequestHeader("Authorization") String token) {
-        gradeTypeService.deleteAllUnimportedGradeTypes(token);
+    public ResponseEntity<String> deleteAllUnimportedGradeTypes() {
+        gradeTypeService.deleteAllUnimportedGradeTypes();
         return ResponseEntity.ok(responseMessage.deleteAll());
     }
 
     @GetMapping("/name")
-    public ResponseEntity<GradeType> getGradeTypeByName(@RequestHeader("Authorization") String token, @RequestParam("name") String name) {
-        GradeType gradeType = gradeTypeService.findByName(name, token);
+    public ResponseEntity<GradeType> getGradeTypeByName(@RequestParam("name") String name) {
+        GradeType gradeType = gradeTypeService.findByName(name);
         return ResponseEntity.ok(gradeType);
     }
 

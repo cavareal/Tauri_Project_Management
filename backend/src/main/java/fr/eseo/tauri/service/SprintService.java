@@ -28,10 +28,8 @@ public class SprintService {
     private final PresentationOrderService presentationOrderService;
     private final BonusService bonusService;
 
-    public Sprint getSprintById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readSprint"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Sprint getSprintById(Integer id) {
+
         return sprintRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("sprint", id));
     }
 
@@ -57,34 +55,26 @@ public class SprintService {
                 presentationOrderService.createPresentationOrder(token, presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
-                bonusService.createBonus(token, limitedBonus);
-                bonusService.createBonus(token, unlimitedBonus);
+                bonusService.createBonus(limitedBonus);
+                bonusService.createBonus(unlimitedBonus);
             }
         }
     }
 
-    public void updateSprint(String token, Integer id, Sprint updatedSprint) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateSprint"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        Sprint sprint = getSprintById(token, id);
+    public void updateSprint(Integer id, Sprint updatedSprint) {
+        Sprint sprint = getSprintById(id);
 
         if (updatedSprint.startDate() != null) sprint.startDate(updatedSprint.startDate());
         if (updatedSprint.endDate() != null) sprint.endDate(updatedSprint.endDate());
         if (updatedSprint.endType() != null) sprint.endType(updatedSprint.endType());
         if (updatedSprint.sprintOrder() != null) sprint.sprintOrder(updatedSprint.sprintOrder());
-        if (updatedSprint.projectId() != null) sprint.project(projectService.getProjectById(token, updatedSprint.projectId()));
+        if (updatedSprint.projectId() != null) sprint.project(projectService.getProjectById("token",updatedSprint.projectId()));
 
         sprintRepository.save(sprint);
     }
 
-    public void deleteSprint(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteSprint"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        var deletedSprint = getSprintById(token, id);
+    public void deleteSprint(Integer id) {
+        var deletedSprint = getSprintById(id);
         sprintRepository.deleteById(id);
 
         var sprints = sprintRepository.findAllByProject(id);
