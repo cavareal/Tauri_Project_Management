@@ -136,8 +136,8 @@ public class GradeService {
     /**
      * This method is used to update the mean of imported grades for each student.
      */
-    public void updateImportedMean() {
-        var students = studentRepository.findAll();
+    public void updateImportedMean(Integer projectId) {
+        var students = studentRepository.findAllByProject(projectId);
         var grades = filter(gradeRepository.findAll(), grade -> grade.student() != null);
         for (var student : students) {
             if (Boolean.TRUE.equals(student.bachelor())) continue;
