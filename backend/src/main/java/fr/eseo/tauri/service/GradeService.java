@@ -41,32 +41,19 @@ public class GradeService {
     private final GradeTypeService gradeTypeService;
     private final TeamService teamService;
 
-    public Grade getGradeById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Grade getGradeById(Integer id) {
         return gradeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("grade", id));
     }
 
-    public List<Grade> getAllUnimportedGradesByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Grade> getAllUnimportedGradesByProject(Integer projectId) {
         return gradeRepository.findAllUnimportedByProject(projectId);
     }
 
-    public List<Grade> getAllImportedGradesByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Grade> getAllImportedGradesByProject(Integer projectId) {
         return gradeRepository.findAllImportedByProject(projectId);
     }
 
-    public void createGrade(String token, Grade grade) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public void createGrade(Grade grade) {
         var ratedGrades = gradeRepository.findAllByAuthorId(grade.authorId());
         if (!ratedGrades.isEmpty()) {
             for (Grade ratedGrade : ratedGrades) {
@@ -79,16 +66,16 @@ public class GradeService {
             }
         }
 
-        if (grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
-        if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
-        if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
+        if (grade.authorId() != null) grade.author(userService.getUserById("token", grade.authorId()));
+        if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById("token", grade.sprintId()));
+        if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById("token", grade.gradeTypeId()));
 
         if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
             grade.student(null);
-            if (grade.teamId() != null) grade.team(teamService.getTeamById(token, grade.teamId()));
+            if (grade.teamId() != null) grade.team(teamService.getTeamById("token", grade.teamId()));
         } else {
             grade.team(null);
-            if (grade.studentId() != null) grade.student(studentService.getStudentById(token, grade.studentId()));
+            if (grade.studentId() != null) grade.student(studentService.getStudentById("token", grade.studentId()));
         }
 
         if ((grade.team() == null) == (grade.student() == null)) {
@@ -98,18 +85,15 @@ public class GradeService {
         gradeRepository.save(grade);
     }
 
-    public void updateGrade(String token, Integer id, Grade updatedGrade) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        Grade grade = getGradeById(token, id);
+    public void updateGrade(Integer id, Grade updatedGrade) {
+        Grade grade = getGradeById(id);
         if (updatedGrade.value() != null) grade.value(updatedGrade.value());
         if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
-        if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, updatedGrade.sprintId()));
-        if (updatedGrade.authorId() != null) grade.author(userService.getUserById(token, updatedGrade.authorId()));
+        if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById("token", updatedGrade.sprintId()));
+        if (updatedGrade.authorId() != null) grade.author(userService.getUserById("token", updatedGrade.authorId()));
         if (updatedGrade.studentId() != null)
-            grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
-        if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(token, updatedGrade.teamId()));
+            grade.student(studentService.getStudentById("token", updatedGrade.studentId()));
+        if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById("token", updatedGrade.teamId()));
 
         if ((grade.team() == null) == (grade.student() == null)) {
             throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
@@ -118,18 +102,12 @@ public class GradeService {
         gradeRepository.save(grade);
     }
 
-    public void deleteGrade(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        getGradeById(token, id);
+    public void deleteGrade(Integer id) {
+        getGradeById(id);
         gradeRepository.deleteById(id);
     }
 
-    public void deleteAllGradesByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void deleteAllGradesByProject(Integer projectId) {
         gradeRepository.deleteAllByProject(projectId);
     }
 
@@ -196,16 +174,12 @@ public class GradeService {
     /**
      * This method generates a CSV report of a student's individual grades.
      *
-     * @param token The authentication token of the user.
      * @param projectId The ID of the project.
      * @return A byte array containing the CSV report.
      * @throws IOException If an I/O error occurs.
      */
-    public byte[] createStudentIndividualGradesCSVReport(String token, int projectId) throws IOException {
+    public byte[] createStudentIndividualGradesCSVReport(int projectId) throws IOException {
         CustomLogger.info("Creating student grades report for project with id " + projectId);
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "exportGrades"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
 
         CustomLogger.info("Creating student grades report for project with id " + projectId);
 
