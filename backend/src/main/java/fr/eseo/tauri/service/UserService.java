@@ -79,6 +79,7 @@ public class UserService {
 
 	public Team getTeamByMemberId(Integer userId, Integer projectId) {
 		List<RoleType> roles = getRolesByUserId(userId);
+		CustomLogger.info("Roles of user " + userId + " : " + roles);
 
 		if (roles.contains(RoleType.SUPERVISING_STAFF)) {
 			return teamRepository.findByLeaderId(userId, projectId);

@@ -93,6 +93,7 @@ public class UserController {
 	@GetMapping("{id}/team")
 	public ResponseEntity<Team> getTeamByMemberId(@PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
 		Team team = userService.getTeamByMemberId(id, projectId);
+		CustomLogger.info("Team found: " + team);
 		return ResponseEntity.ok(team);
 	}
 
