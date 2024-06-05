@@ -121,7 +121,7 @@ public class StudentService {
         for (var student : students) {
             userService.deleteUserById(token, student.id());
         }
-        gradeTypeService.deleteAllImportedGradeTypes(token);
+        gradeTypeService.deleteAllImportedGradeTypes();
         teamService.deleteAllTeamsByProject(token, projectId);
     }
 
@@ -240,7 +240,7 @@ public class StudentService {
             throw new EmptyResourceException("uploaded file");
         }
 
-        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(token, file.getInputStream());
+        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
         CustomLogger.info("Successfully created GradeType objects from the CSV file.");
         Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
 
@@ -290,7 +290,7 @@ public class StudentService {
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
-        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(token, projectId);
+        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(projectId);
         List<Student> students = getAllStudentsByProject(token, projectId);
 
         CSVWriter csvWriter = new CSVWriter(writer);
