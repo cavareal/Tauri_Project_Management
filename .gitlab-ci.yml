@@ -84,7 +84,7 @@ vuejs-build-prod:
 ## BUILD backend DEV or PROD ##
 ###############################
 java-build:
-  stage: build-backend
+  stage: build-backend  
   image: gradle:8.4-jdk17
   script:
     - cd backend
