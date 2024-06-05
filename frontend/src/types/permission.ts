@@ -75,6 +75,7 @@ export const PermissionTypeSchema = z.enum([
     "DELETE_USER",
     "GET_ALL_USERS",
 	"MANAGE_PROJECT",
+	"MANAGE_USER",
     "ADD_PROJECT",
     "DELETE_PROJECT",
     "SET_ACTUAL_PROJECT",

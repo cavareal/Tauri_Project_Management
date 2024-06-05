@@ -7,6 +7,7 @@ import { createToast } from "@/utils/toast"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 import { type CreateProject, ProjectPhaseSchema } from '@/types/project'
+import Column from '@/components/atoms/containers/Column.vue'
 
 const emits = defineEmits(["add:project"])
 const isDialogOpen = ref<boolean>(false)
@@ -35,10 +36,12 @@ const { error, mutate } = useMutation({
 </script>
 
 <template>
-  <div class="flex justify-center mt-10">
+  <Column class="mt-5 mb-2">
     <Dialog v-model:open="isDialogOpen">
       <DialogTrigger as-child>
-        <Button class="">Ajouter projet</Button>
+        <div class="flex justify-center">
+            <Button class="">Ajouter projet</Button>
+        </div>
       </DialogTrigger>
       <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
@@ -58,5 +61,5 @@ const { error, mutate } = useMutation({
       </DialogContent>
     </Dialog>
     <p v-if="error">Erreur lors de la création d'un projet</p>
-  </div>
+  </Column>
 </template>

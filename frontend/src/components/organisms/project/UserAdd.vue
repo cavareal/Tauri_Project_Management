@@ -98,10 +98,8 @@ const onSubmit = handleSubmit((values) => {
 </script>
 
 <template>
-    <div
-        class="border border-gray-300 border-dashed rounded-lg flex justify-center flex-col items-stretch p-4">
-        <h2 class="text-xl font-semibold text-center mb-4">Ajouter un utilisateur</h2>
-        <Column class="items-center gap-4">
+    <Column class="items-center mx-10">
+        <h2 class="text-xl font-semibold text-center">Ajouter un utilisateur</h2>
 
             <div class="w-full flex flex-col items-start mb-2">
                 <label for="email" class="mb-1 text-sm font-medium text-gray-700">Email</label>
@@ -142,5 +140,4 @@ const onSubmit = handleSubmit((values) => {
                 <p v-if=error>Erreur lors de la création d'un utilisateur</p>
             </form>
         </Column>
-    </div>
 </template>
