@@ -74,7 +74,7 @@ public class StudentService {
         Role role = new Role();
         role.user(student);
         role.type(RoleType.OPTION_STUDENT);
-        roleService.createRole(token, role);
+        roleService.createRole(role);
 
         List<Sprint> sprints = sprintService.getAllSprintsByProject(token, student.projectId());
         if(!sprints.isEmpty()) {

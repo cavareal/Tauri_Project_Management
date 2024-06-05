@@ -134,7 +134,7 @@ class StudentServiceTest {
         studentService.createStudent("token", student);
 
         verify(studentRepository, times(1)).save(student);
-        verify(roleService, times(1)).createRole(anyString(), any(Role.class));
+        verify(roleService, times(1)).createRole(any(Role.class));
     }
 
 

@@ -48,7 +48,7 @@ public class UserController {
 
 	@GetMapping(path = "/roles/{roleType}")
 	public Iterable<User> getUsersByRole(@PathVariable RoleType roleType) {
-		return roleService.getUsersByRoleType("token",roleType);
+		return roleService.getUsersByRoleType(roleType);
 	}
 
 	@PostMapping

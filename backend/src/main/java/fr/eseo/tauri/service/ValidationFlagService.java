@@ -31,7 +31,7 @@ public class ValidationFlagService {
     public void createValidationFlags(Flag flag) {
         ValidationFlag validationFlagPL = new ValidationFlag();
         validationFlagPL.flag(flag);
-        validationFlagPL.author(roleService.getUsersByRoleType("token", RoleType.PROJECT_LEADER).get(0));
+        validationFlagPL.author(roleService.getUsersByRoleType(RoleType.PROJECT_LEADER).get(0));
         validationFlagRepository.save(validationFlagPL);
 
         if(userService.getRolesByUserId(flag.author().id()).contains(RoleType.OPTION_STUDENT)){
