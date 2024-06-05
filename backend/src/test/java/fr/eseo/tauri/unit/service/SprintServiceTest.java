@@ -30,9 +30,6 @@ import static org.mockito.Mockito.*;
 class SprintServiceTest {
 
     @Mock
-    private AuthService authService;
-
-    @Mock
     private SprintRepository sprintRepository;
 
     @Mock
@@ -51,184 +48,100 @@ class SprintServiceTest {
 
     @Test
     void getSprintByIdShouldReturnSprintWhenAuthorizedAndSprintExists() {
-        String token = "validToken";
         Integer id = 1;
         Sprint sprint = new Sprint();
 
-        when(authService.checkAuth(token, "readSprint")).thenReturn(true);
         when(sprintRepository.findById(id)).thenReturn(Optional.of(sprint));
 
-        Sprint result = sprintService.getSprintById(token, id);
+        Sprint result = sprintService.getSprintById(id);
 
         assertEquals(sprint, result);
     }
 
     @Test
-    void getSprintByIdShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "readSprint")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> sprintService.getSprintById(token, id));
-    }
-
-    @Test
     void getSprintByIdShouldThrowResourceNotFoundExceptionWhenSprintDoesNotExist() {
-        String token = "validToken";
         Integer id = 1;
 
-        when(authService.checkAuth(token, "readSprint")).thenReturn(true);
         when(sprintRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> sprintService.getSprintById(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> sprintService.getSprintById(id));
     }
 
     @Test
     void getAllSprintsByProjectShouldReturnSprintsWhenAuthorizedAndProjectExists() {
-        String token = "validToken";
         Integer projectId = 1;
         List<Sprint> sprints = Arrays.asList(new Sprint(), new Sprint());
 
-        when(authService.checkAuth(token, "readSprints")).thenReturn(true);
         when(sprintRepository.findAllByProject(projectId)).thenReturn(sprints);
 
-        List<Sprint> result = sprintService.getAllSprintsByProject(token, projectId);
+        List<Sprint> result = sprintService.getAllSprintsByProject(projectId);
 
         assertEquals(sprints, result);
     }
 
     @Test
-    void getAllSprintsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer projectId = 1;
-
-        when(authService.checkAuth(token, "readSprints")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> sprintService.getAllSprintsByProject(token, projectId));
-    }
-
-    @Test
     void getAllSprintsByProjectShouldHandleNoSprints() {
-        String token = "validToken";
         Integer projectId = 1;
         List<Sprint> sprints = Collections.emptyList();
 
-        when(authService.checkAuth(token, "readSprints")).thenReturn(true);
         when(sprintRepository.findAllByProject(projectId)).thenReturn(sprints);
 
-        List<Sprint> result = sprintService.getAllSprintsByProject(token, projectId);
+        List<Sprint> result = sprintService.getAllSprintsByProject(projectId);
 
         assertEquals(sprints, result);
     }
 
     @Test
     void createSprintShouldSaveSprintWhenAuthorizedAndProjectExists() {
-        String token = "validToken";
         Integer projectId = 1;
         Sprint sprint = new Sprint();
 
-        when(authService.checkAuth(token, "addSprint")).thenReturn(true);
         when(projectService.getProjectById(projectId)).thenReturn(new Project());
-        when(studentService.getAllStudentsByProject(token, projectId)).thenReturn(Collections.emptyList());
+        when(studentService.getAllStudentsByProject("token",projectId)).thenReturn(Collections.emptyList());
 
-        sprintService.createSprint(token, sprint, projectId);
+        sprintService.createSprint(sprint, projectId);
 
         verify(sprintRepository, times(1)).save(sprint);
     }
 
     @Test
-    void createSprintShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer projectId = 1;
-        Sprint sprint = new Sprint();
-
-        when(authService.checkAuth(token, "addSprint")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> sprintService.createSprint(token, sprint, projectId));
-    }
-
-    @Test
     void deleteSprintShouldDeleteSprintWhenAuthorizedAndSprintExists() {
-        String token = "validToken";
         Integer id = 1;
         Sprint sprint = new Sprint();
 
-        when(authService.checkAuth(token, "deleteSprint")).thenReturn(true);
-        when(authService.checkAuth(token, "readSprint")).thenReturn(true);
         when(sprintRepository.findById(id)).thenReturn(Optional.of(sprint));
 
-        sprintService.deleteSprint(token, id);
+        sprintService.deleteSprint(id);
 
         verify(sprintRepository, times(1)).deleteById(id);
     }
 
     @Test
-    void deleteSprintShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "deleteSprint")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> sprintService.deleteSprint(token, id));
-    }
-
-    @Test
     void deleteSprintShouldThrowResourceNotFoundExceptionWhenSprintDoesNotExist() {
-        String token = "validToken";
         Integer id = 1;
 
-        when(authService.checkAuth(token, "deleteSprint")).thenReturn(true);
-        when(authService.checkAuth(token, "readSprint")).thenReturn(true);
         when(sprintRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> sprintService.deleteSprint(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> sprintService.deleteSprint(id));
     }
 
     @Test
     void deleteAllSprintsByProjectShouldDeleteSprintsWhenAuthorizedAndProjectExists() {
-        String token = "validToken";
         Integer projectId = 1;
 
-        when(authService.checkAuth(token, "deleteSprint")).thenReturn(true);
-
-        sprintService.deleteAllSprintsByProject(token, projectId);
+        sprintService.deleteAllSprintsByProject(projectId);
 
         verify(sprintRepository, times(1)).deleteAllByProject(projectId);
-    }
-
-    @Test
-    void deleteAllSprintsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer projectId = 1;
-
-        when(authService.checkAuth(token, "deleteSprint")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> sprintService.deleteAllSprintsByProject(token, projectId));
     }
 
     @Test
     void deleteAllSprintsByProjectShouldHandleNoSprints() {
-        String token = "validToken";
         Integer projectId = 1;
 
-        when(authService.checkAuth(token, "deleteSprint")).thenReturn(true);
         doNothing().when(sprintRepository).deleteAllByProject(projectId);
 
-        sprintService.deleteAllSprintsByProject(token, projectId);
+        sprintService.deleteAllSprintsByProject(projectId);
 
         verify(sprintRepository, times(1)).deleteAllByProject(projectId);
     }
-
-    @Test
-    void updateSprintShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-        Sprint updatedSprint = new Sprint();
-
-        when(authService.checkAuth(token, "updateSprint")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> sprintService.updateSprint(token, id, updatedSprint));
-    }
-
 }

@@ -142,7 +142,7 @@ public class TeamService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         Team team = getTeamById(id);
-        Sprint currentSprint = sprintService.getCurrentSprint(token, team.project().id());
+        Sprint currentSprint = sprintService.getCurrentSprint(team.project().id());
         var students = studentRepository.findByTeam(id);
         if(currentSprint != null){
             var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(id, currentSprint.id());

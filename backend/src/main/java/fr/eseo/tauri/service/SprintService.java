@@ -20,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SprintService {
 
-    private final AuthService authService;
     private final SprintRepository sprintRepository;
     private final ProjectService projectService;
     @Lazy
@@ -33,22 +32,16 @@ public class SprintService {
         return sprintRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("sprint", id));
     }
 
-    public List<Sprint> getAllSprintsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readSprints"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Sprint> getAllSprintsByProject(Integer projectId) {
         return sprintRepository.findAllByProject(projectId);
     }
 
-    public void createSprint(String token, Sprint sprint, int sprintId) {
+    public void createSprint(Sprint sprint, int sprintId) {
         CustomLogger.info("Creating sprint " + sprintId);
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addSprint"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
 
         sprint.project(projectService.getProjectById(sprint.projectId()));
         sprintRepository.save(sprint);
-        List<Student> students = studentService.getAllStudentsByProject(token, sprint.projectId());
+        List<Student> students = studentService.getAllStudentsByProject("token", sprint.projectId());
         if(!students.isEmpty()) {
             for (Student student : students) {
                 PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
@@ -86,17 +79,11 @@ public class SprintService {
         }
     }
 
-    public void deleteAllSprintsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteSprint"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void deleteAllSprintsByProject(Integer projectId) {
         sprintRepository.deleteAllByProject(projectId);
     }
 
-    public Sprint getCurrentSprint(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "getSprints"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Sprint getCurrentSprint(Integer projectId) {
         LocalDate today = LocalDate.now();
         List<Sprint> sprints = sprintRepository.findAllByProject(projectId);
 

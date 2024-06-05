@@ -76,7 +76,7 @@ public class StudentService {
         role.type(RoleType.OPTION_STUDENT);
         roleService.createRole(role);
 
-        List<Sprint> sprints = sprintService.getAllSprintsByProject(token, student.projectId());
+        List<Sprint> sprints = sprintService.getAllSprintsByProject(student.projectId());
         if(!sprints.isEmpty()) {
             for (Sprint sprint : sprints) {
                 PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
