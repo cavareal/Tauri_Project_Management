@@ -122,7 +122,7 @@ public class StudentService {
             userService.deleteUserById(student.id());
         }
         gradeTypeService.deleteAllImportedGradeTypes();
-        teamService.deleteAllTeamsByProject(token, projectId);
+        teamService.deleteAllTeamsByProject(projectId);
     }
 
 
@@ -438,7 +438,7 @@ public class StudentService {
 
         Integer teamId = userService.getTeamByMemberId(studentId, getStudentById(token, studentId).projectId()).id();
 
-        double teamGrade = teamService.getTeamTotalGrade(token, teamId, sprintId);
+        double teamGrade = teamService.getTeamTotalGrade(teamId, sprintId);
 
         List<Bonus> studentBonuses = getStudentBonuses(token, studentId, sprintId);
 

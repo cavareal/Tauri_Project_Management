@@ -113,10 +113,10 @@ class GradeServiceTest {
         gradeType.forGroup(true);
         grade.gradeType(gradeType);
 
-        when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
-        when(sprintService.getSprintById(anyString(), anyInt())).thenReturn(new Sprint());
+        when(userService.getUserById(anyInt())).thenReturn(new User());
+        when(sprintService.getSprintById(anyInt())).thenReturn(new Sprint());
         when(gradeTypeService.getGradeTypeById(anyInt())).thenReturn(gradeType);
-        when(teamService.getTeamById(anyString(), anyInt())).thenReturn(new Team());
+        when(teamService.getTeamById(anyInt())).thenReturn(new Team());
 
         gradeService.createGrade(grade);
 
@@ -134,8 +134,8 @@ class GradeServiceTest {
         gradeType.forGroup(false);
         grade.gradeType(gradeType);
 
-        when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
-        when(sprintService.getSprintById(anyString(), anyInt())).thenReturn(new Sprint());
+        when(userService.getUserById(anyInt())).thenReturn(new User());
+        when(sprintService.getSprintById(anyInt())).thenReturn(new Sprint());
         when(gradeTypeService.getGradeTypeById(anyInt())).thenReturn(gradeType);
         when(studentService.getStudentById(anyString(), anyInt())).thenReturn(new Student());
 
