@@ -118,7 +118,7 @@ quality-dev:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon test 
+    - ./gradlew --no-daemon unitTest 
     - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_DevBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
@@ -143,7 +143,7 @@ quality-prod:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon test
+    - ./gradlew --no-daemon unitTest
     - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_MasterBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_PROD -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
@@ -185,7 +185,7 @@ push-dev:
   retry: 2
   only:
     - dev
-     
+
 #################
 ## DEPLOY PROD ##
 #################
@@ -222,21 +222,21 @@ selenium-dev:
   script:
     - cd backend
     - chmod +x ./gradlew  
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV -Dwebdriver.chrome.driver=/usr/bin/chromedriver --scan 
+    - ./gradlew --no-daemon seleniumTest -DseleniumServerUrl=https://$SERVER_IP_DEV/ -DseleniumOptions=on --scan
   dependencies:
     - push-dev
+  artifacts:
+    paths:
+      - backend/build/reports/tests/selenium
+      - backend/build/test-results/selenium
+    expire_in: 30 mins
+    when: always
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches
   only:
     - dev
   retry: 2
-
-  # services:
-  #   - selenium/standalone-chrome
-  # script:
-  #   - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_DEV
-
 
 
 
@@ -249,9 +249,15 @@ selenium-prod:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon seleniumTest -Dselenium.server.url=https://$SERVER_IP_PROD -Dwebdriver.chrome.driver=/usr/local/bin/chromedriver -Dwebdriver.chrome.args=--headless
+    - ./gradlew --no-daemon seleniumTest -DseleniumServerUrl=https://$SERVER_IP_PROD/ -DseleniumOptions=on --scan
   dependencies:
     - push-prod
+  artifacts:
+    paths:
+      - backend/build/reports/tests/selenium
+      - backend/build/test-results/selenium
+    expire_in: 30 mins
+    when: always
   cache:
     paths:
       - $CI_PROJECT_DIR/.gradle/caches

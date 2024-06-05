@@ -55,11 +55,12 @@ public class AuthService {
 
     public AuthResponse login(String email, String password) {
         try {
-//            Authentication authentication = authenticate(email, password);  // Auth with LDAP
-//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // Check if user in DB
-//            User user = userRepository.findByEmail(userDetails.getUsername())
-            User user = userRepository.findByEmail(email)
+            Authentication authentication = authenticate(email, password);  // Auth with LDAP
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            CustomLogger.info("User " + userDetails.getUsername() + " authenticated");
+//             Check if user in DB
+            User user = userRepository.findByEmail(userDetails.getUsername())
+//            User user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
 
 
@@ -68,7 +69,7 @@ public class AuthService {
             Integer idProject = projectRepository.findFirstByActualTrue().map(Project::id).orElse(0);
             return new AuthResponse(user.id(), accessToken, idProject);
         } catch (Exception e){
-            throw new SecurityException("Wrong credentials");
+            throw new SecurityException("Wrong credentials" + e.getMessage());
         }
     }
 
