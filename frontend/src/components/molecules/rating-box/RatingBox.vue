@@ -12,6 +12,7 @@ import { CheckIcon, Loader } from "@/components/atoms/icons"
 import { getGradeTypeDescription, type GradeTypeName } from "@/types/grade-type"
 import { Button } from "@/components/ui/button"
 import { downloadGradeScaleTXT } from "@/services/grade-type"
+import { getGradeTypeByName } from "@/services/grade-type"
 import type { Grade } from "@/types/grade"
 
 const props = defineProps<{
@@ -29,6 +30,7 @@ const status = ref<"IDLE" | "LOADING" | "DONE">("IDLE")
 const grade = ref("")
 const comment = ref("")
 const oldValues = ref({ grade: "", comment: "" })
+const isGradeScaleUploaded = ref(false)
 
 const updateGrade = () => {
 	const data = getRatedGrade(props.allGrades, {
@@ -45,7 +47,15 @@ const updateGrade = () => {
 	status.value = "IDLE"
 }
 
-//TODO : Add a v-if to ensure that a grade scale has been uplaoded
+const checkGradeScaleUploaded = async () => {
+	try {
+		const gradeType = await getGradeTypeByName(props.gradeTypeName)
+		isGradeScaleUploaded.value = !!gradeType.scaleTXTBlob // Check if the grade scale is present
+	} catch (error) {
+		console.error("Error checking grade scale:", error)
+		isGradeScaleUploaded.value = false
+	}
+}
 
 const { mutate, isPending, isError } = useMutation({
 	mutationFn: async() => {
@@ -100,6 +110,7 @@ watch(() => [props.teamId, props.sprintId], () => {
 
 onMounted(() => {
 	updateGrade()
+	checkGradeScaleUploaded()
 })
 
 const download = useMutation({
@@ -134,7 +145,7 @@ const download = useMutation({
 
 		<ErrorText v-if="status === 'DONE' && isError">Une erreur est survenue.</ErrorText>
 
-		<Row class="items-center justify-end mt-4" v-if=""> //TODO : Add a v-if to ensure that a grade scale has been uplaoded
+		<Row class="items-center justify-end mt-4" v-if="isGradeScaleUploaded">
 			<Button variant="outline" @click="download.mutate">
 				Télécharger le barème
 			</Button>
