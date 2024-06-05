@@ -60,17 +60,18 @@ public class GradeTypeService {
         gradeTypeRepository.save(gradeType);
     }
 
-    public void updateGradeType(String token, Integer id, GradeType updatedGradeType) {
+    public void updateGradeType(String token, Integer id, GradeType updatedGradeType, Integer projectId) {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, UPDATE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
         GradeType gradeType = getGradeTypeById(token, id);
+        CustomLogger.info("Updating GradeType with id " + gradeType);
 
         if (updatedGradeType.name() != null) gradeType.name(updatedGradeType.name());
         if (updatedGradeType.factor() != null) {
             gradeType.factor(updatedGradeType.factor());
-            gradeService.updateImportedMean();
+            gradeService.updateImportedMean(projectId);
         }
         if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
         if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());

@@ -45,8 +45,8 @@ public class GradeTypeController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateGradeType(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody GradeType updatedGradeType) {
-        gradeTypeService.updateGradeType(token, id, updatedGradeType);
+    public ResponseEntity<String> updateGradeType(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestBody GradeType updatedGradeType,  @RequestParam("projectId") Integer projectId) {
+        gradeTypeService.updateGradeType(token, id, updatedGradeType, projectId);
         return ResponseEntity.ok(responseMessage.update());
     }
 

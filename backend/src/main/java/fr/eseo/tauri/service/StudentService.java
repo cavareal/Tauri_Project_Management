@@ -260,7 +260,7 @@ public class StudentService {
                         grade.value(Float.parseFloat(grades.get(i).get(j).trim()));
                         grade.student(student);
                         grade.gradeType(gradeTypes.get(j));
-                        gradeService.createGrade(token, grade);
+                        gradeService.createGrade(grade);
                     } catch (NumberFormatException ignored) {
                         // Do nothing // If the grade is not a number, it is ignored
                     }
