@@ -50,22 +50,21 @@ dependencies {
 
 test {
 	useJUnitPlatform()
-	finalizedBy 'jacocoTestReport'
+//	finalizedBy 'jacocoTestReport'
 }
 
 
 // Unit tests
 tasks.register('unitTest', Test) {
 	useJUnitPlatform()
-	include '**/unit/**'
 	exclude "**/selenium/**"
+	finalizedBy 'jacocoTestReport'
 }
 
 
 // Selenium tests
 tasks.register('seleniumTest', Test) {
 	useJUnitPlatform()
-	include '**/selenium/**'
 	exclude "**/unit/**"
 
 	if (System.getProperty('seleniumServerUrl') && System.getProperty('seleniumOptions')) {
