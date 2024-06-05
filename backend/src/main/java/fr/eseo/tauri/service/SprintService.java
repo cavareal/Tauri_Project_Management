@@ -46,7 +46,7 @@ public class SprintService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        sprint.project(projectService.getProjectById(token, sprint.projectId()));
+        sprint.project(projectService.getProjectById(sprint.projectId()));
         sprintRepository.save(sprint);
         List<Student> students = studentService.getAllStudentsByProject(token, sprint.projectId());
         if(!students.isEmpty()) {
@@ -68,7 +68,7 @@ public class SprintService {
         if (updatedSprint.endDate() != null) sprint.endDate(updatedSprint.endDate());
         if (updatedSprint.endType() != null) sprint.endType(updatedSprint.endType());
         if (updatedSprint.sprintOrder() != null) sprint.sprintOrder(updatedSprint.sprintOrder());
-        if (updatedSprint.projectId() != null) sprint.project(projectService.getProjectById("token",updatedSprint.projectId()));
+        if (updatedSprint.projectId() != null) sprint.project(projectService.getProjectById(updatedSprint.projectId()));
 
         sprintRepository.save(sprint);
     }

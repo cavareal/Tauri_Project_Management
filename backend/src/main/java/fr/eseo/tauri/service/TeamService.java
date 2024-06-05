@@ -61,7 +61,7 @@ public class TeamService {
             throw new IllegalArgumentException("The number of teams to create must be greater than 0");
         }
 
-        Project project = projectService.getProjectById(token, projectId);
+        Project project = projectService.getProjectById(projectId);
 
         // Delete all previous teams
         if(!getAllTeamsByProject(token, projectId).isEmpty()){
@@ -161,7 +161,7 @@ public class TeamService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         getTeamById(id);
-        boolean validateWoman = getNbWomenByTeamId(token, id) >= projectService.getProjectById(token, projectId).nbWomen();
+        boolean validateWoman = getNbWomenByTeamId(token, id) >= projectService.getProjectById(projectId).nbWomen();
         boolean validateBachelor = getNbBachelorByTeamId(token, id) >= 1;
         return new Criteria(getNbWomenByTeamId(token, id), getNbBachelorByTeamId(token, id), validateWoman, validateBachelor);
     }
@@ -188,7 +188,7 @@ public class TeamService {
             CustomLogger.error("TeamService.generateTeams : Not enough students to create the teams");
             throw new IllegalArgumentException("Not enough students to create the teams");
         }
-        projectService.updateProject(token, projectId, projectDetails);
+        projectService.updateProject(projectId, projectDetails);
         List<Team> teams = this.createTeams(token, projectId, nbTeams);
         this.fillTeams(teams, women, men, womenPerTeam, nbStudent, false, projectId);
     }

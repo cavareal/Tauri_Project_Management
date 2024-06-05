@@ -68,7 +68,7 @@ class TeamServiceTest {
         when(authService.checkAuth(token, "readTeam")).thenReturn(true);
         when(teamRepository.findById(id)).thenReturn(Optional.of(expectedTeam));
 
-        Team actualTeam = teamService.getTeamById(token, id);
+        Team actualTeam = teamService.getTeamById(id);
 
         assertEquals(expectedTeam, actualTeam);
     }
@@ -80,7 +80,7 @@ class TeamServiceTest {
 
         when(authService.checkAuth(token, "readTeam")).thenReturn(false);
 
-        assertThrows(SecurityException.class, () -> teamService.getTeamById(token, id));
+        assertThrows(SecurityException.class, () -> teamService.getTeamById(id));
     }
 
     @Test
@@ -91,7 +91,7 @@ class TeamServiceTest {
         when(authService.checkAuth(token, "readTeam")).thenReturn(true);
         when(teamRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> teamService.getTeamById(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> teamService.getTeamById(id));
     }
 
     @Test
@@ -236,7 +236,7 @@ class TeamServiceTest {
         Project project = new Project();
 
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-        when(projectService.getProjectById(anyString(), anyInt())).thenReturn(project);
+        when(projectService.getProjectById(anyInt())).thenReturn(project);
         when(teamRepository.findAllByProject(anyInt())).thenReturn(Collections.emptyList());
 
         List<Team> result = teamService.createTeams(token, projectId, nbTeams);
@@ -254,7 +254,7 @@ class TeamServiceTest {
         List<Team> existingTeams = Arrays.asList(new Team(), new Team());
 
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-        when(projectService.getProjectById(anyString(), anyInt())).thenReturn(project);
+        when(projectService.getProjectById(anyInt())).thenReturn(project);
         when(teamRepository.findAllByProject(anyInt())).thenReturn(existingTeams);
 
         teamService.createTeams(token, projectId, nbTeams);
@@ -398,7 +398,7 @@ class TeamServiceTest {
         when(authService.checkAuth(token, DELETE_PERMISSION)).thenReturn(true);
         when(teamRepository.countBachelorInTeam(id)).thenReturn(1);
         when(teamRepository.findById(id)).thenReturn(Optional.of(new Team()));
-        when(projectService.getProjectById(token, projectId)).thenReturn(project);
+        when(projectService.getProjectById(projectId)).thenReturn(project);
         when(teamRepository.countWomenInTeam(id)).thenReturn(2);
         when(teamRepository.countBachelorInTeam(id)).thenReturn(1);
 
@@ -531,7 +531,7 @@ class TeamServiceTest {
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(teamRepository.findById(anyInt())).thenReturn(Optional.of(team));
 
-        Team result = teamService.getTeamById("token", 1);
+        Team result = teamService.getTeamById(1);
 
         assertEquals(team, result);
     }
@@ -540,7 +540,7 @@ class TeamServiceTest {
     void getTeamByIdShouldThrowSecurityExceptionWhenUnauthorized() {
         when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
 
-        assertThrows(SecurityException.class, () -> teamService.getTeamById("token", 1));
+        assertThrows(SecurityException.class, () -> teamService.getTeamById(1));
     }
 
     @Test
@@ -548,7 +548,7 @@ class TeamServiceTest {
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(teamRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> teamService.getTeamById("token", 1));
+        assertThrows(ResourceNotFoundException.class, () -> teamService.getTeamById(1));
     }
 
     @Test
@@ -573,7 +573,7 @@ class TeamServiceTest {
     void createTeamsShouldCreateTeamsWhenAuthorized() {
         Project project = new Project();
         when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-        when(projectService.getProjectById(anyString(), anyInt())).thenReturn(project);
+        when(projectService.getProjectById(anyInt())).thenReturn(project);
         when(teamRepository.save(any(Team.class))).thenAnswer(i -> i.getArguments()[0]);
 
         List<Team> result = teamService.createTeams("token", 1, 3);

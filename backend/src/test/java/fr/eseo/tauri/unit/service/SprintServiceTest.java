@@ -129,7 +129,7 @@ class SprintServiceTest {
         Sprint sprint = new Sprint();
 
         when(authService.checkAuth(token, "addSprint")).thenReturn(true);
-        when(projectService.getProjectById(token, projectId)).thenReturn(new Project());
+        when(projectService.getProjectById(projectId)).thenReturn(new Project());
         when(studentService.getAllStudentsByProject(token, projectId)).thenReturn(Collections.emptyList());
 
         sprintService.createSprint(token, sprint, projectId);
