@@ -49,12 +49,12 @@ public class AuthService {
 
     public AuthResponse login(String email, String password) {
         try {
-//            Authentication authentication = authenticate(email, password);  // Auth with LDAP
-//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            Authentication authentication = authenticate(email, password);  // Auth with LDAP
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
 //          Check if user in DB
-//            User user = userRepository.findByEmail(userDetails.getUsername())
-            User user = userRepository.findByEmail(email)
+            User user = userRepository.findByEmail(userDetails.getUsername())
+//            User user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
