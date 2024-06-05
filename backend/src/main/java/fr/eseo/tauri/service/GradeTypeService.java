@@ -7,16 +7,19 @@ import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,6 @@ public class GradeTypeService {
     private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
     private final GradeService gradeService;
-    private final ProjectService projectService;
     
     private static final String READ_PERMISSION = "readGradeType";
     private static final String ADD_PERMISSION = "addGradeType";
@@ -60,7 +62,7 @@ public class GradeTypeService {
         }
         if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
         if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
-        if (updatedGradeType.scalePDFBlob() != null) gradeType.scalePDFBlob(updatedGradeType.scalePDFBlob());
+        if (updatedGradeType.scaleTXTBlob() != null) gradeType.scaleTXTBlob(updatedGradeType.scaleTXTBlob());
         if (updatedGradeType.project() != null) gradeType.project(updatedGradeType.project());
 
         gradeTypeRepository.save(gradeType);
@@ -195,7 +197,40 @@ public class GradeTypeService {
         }
         return gradeTypeRepository.findByNameAndProjectId(name, projectId);
     }
-    
+
+    public void saveGradeScale(Integer id, MultipartFile file, String token) throws IOException {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeScaleTXT"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        if (!Objects.equals(file.getContentType(), "text/plain")) {
+            CustomLogger.info("File type: " + file.getContentType());
+            throw new IllegalArgumentException("Only TXT files are allowed");
+        }
+        if (file.getSize() > 65 * 1024) { // 65 KB in bytes
+            throw new IllegalArgumentException("File size should not exceed 65 KB");
+        }
+            GradeType gradeType = gradeTypeRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
+
+            byte[] txtBytes = file.getBytes();
+            gradeType.scaleTXTBlob(txtBytes);
+            gradeTypeRepository.save(gradeType);
+    }
+
+    public byte[] getBLOBScale(int id, String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "downloadGradeScaleTXT"))) {
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        GradeType gradeType = gradeTypeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
+        CustomLogger.info("Size of the PDF: " + gradeType.scaleTXTBlob().length);
+        return gradeType.scaleTXTBlob();
+    }
+
+    public void deleteGradeScale(Integer id, String token) {
+        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeScaleTXT"))){
+            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+        }
+        gradeTypeRepository.deleteById(id);
+    }
 }
-
-

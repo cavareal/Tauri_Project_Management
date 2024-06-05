@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -73,4 +75,24 @@ public class GradeTypeController {
         GradeType gradeType = gradeTypeService.findByName(name, token, projectId);
         return ResponseEntity.ok(gradeType);
     }
+
+    @PostMapping("/{id}/upload-grade-scale")
+    public ResponseEntity<String> uploadGradeScaleTXT(@RequestHeader("Authorization") String token,
+            @PathVariable Integer id,
+            @RequestParam("file") MultipartFile file) throws IOException {
+            gradeTypeService.saveGradeScale(id, file, token);
+            return ResponseEntity.ok(responseMessage.create());
+    }
+
+    @GetMapping("/{id}/download-grade-scale")
+    public ResponseEntity<byte[]> downloadGradeScaleTXT(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        return ResponseEntity.ok(gradeTypeService.getBLOBScale(id, token));
+    }
+
+    @DeleteMapping("/{id}/delete-grade-scale")
+    public ResponseEntity<String> deleteGradeScaleTXT(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
+        gradeTypeService.deleteGradeScale(id, token);
+        return ResponseEntity.ok(responseMessage.delete());
+    }
+
 }

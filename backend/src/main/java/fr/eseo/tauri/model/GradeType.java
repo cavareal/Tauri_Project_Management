@@ -51,6 +51,6 @@ public class GradeType {
     @Lob
     @Column(columnDefinition = "MEDIUMBLOB")
     @JsonProperty
-    private byte[] scalePDFBlob;
+    private byte[] scaleTXTBlob;
 
 }
