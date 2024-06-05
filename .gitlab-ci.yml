@@ -91,7 +91,6 @@ java-build:
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
     - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -Pprod -x test
-    # - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -x test -Pprod unitTest
   retry: 2
   dependencies:    
     - vuejs-build-dev
@@ -119,7 +118,7 @@ quality-dev:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon unitTest
+    - ./gradlew --no-daemon test
     - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_DevBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_DEV -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:
@@ -144,7 +143,7 @@ quality-prod:
   script:
     - cd backend
     - chmod +x ./gradlew
-    - ./gradlew --no-daemon unitTest jacocoTestReport
+    - ./gradlew --no-daemon test
     - ./gradlew --no-daemon sonar -Dsonar.projectName=Team4_2024_MasterBranch_Project -Dsonar.projectKey=$SONAR_PROJET_KEY_PROD -Dsonar.host.url=$SONAR_HOST_URL -Dsonar.login=$SONAR_LOGIN_DEV -Dsonar.java.binaries=build/classes/java/main
   artifacts:
     paths:

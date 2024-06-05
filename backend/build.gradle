@@ -50,16 +50,16 @@ dependencies {
 
 test {
 	useJUnitPlatform()
-//	finalizedBy 'jacocoTestReport'
+	exclude "**/selenium/**"
+	finalizedBy 'jacocoTestReport'
 }
 
 
 // Unit tests
-tasks.register('unitTest', Test) {
-	useJUnitPlatform()
-	exclude "**/selenium/**"
-	finalizedBy 'jacocoTestReport'
-}
+//tasks.register('unitTest', Test) {
+//	useJUnitPlatform()
+//	finalizedBy 'jacocoTestReport'
+//}
 
 
 // Selenium tests
@@ -91,7 +91,6 @@ sonarqube {
 
 // To get coverage code in sonarQube
 jacocoTestReport {
-	dependsOn unitTest
 	reports {
 		xml.required = true
 		html.required = true
