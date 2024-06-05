@@ -1,5 +1,5 @@
-import { queryAndValidate } from "@/utils/api"
-import { ValidationFlagSchema } from "@/types/validationFlag"
+import { mutateAndValidate, queryAndValidate } from "@/utils/api"
+import { CreateValidationFlagSchema, ValidationFlagSchema } from "@/types/validationFlag"
 import type { ValidationFlag } from "@/types/validationFlag"
 
 export const getValidationFlagsByFlagId = async(flagId: number): Promise<ValidationFlag[]> => {
@@ -13,4 +13,20 @@ export const getValidationFlagsByFlagId = async(flagId: number): Promise<Validat
 	}
 
 	return response.data
+}
+
+export const updateValidationFlag = async(flagId: number, authorId: number, confirmed: boolean) => {
+	console.log(flagId, authorId, confirmed)
+	const response = await mutateAndValidate({
+		method: "PATCH",
+		route: `flags/${flagId}/validation/${authorId}`,
+		body: { flagId, authorId, confirmed },
+		bodySchema: CreateValidationFlagSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response
 }

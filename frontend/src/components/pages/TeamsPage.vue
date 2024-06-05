@@ -20,7 +20,6 @@ import { hasPermission } from "@/services/user/user.service"
 import { Loading } from "@/components/organisms/loading"
 import { Cookies } from "@/utils/cookie"
 import { StudentSignalTeamDialog } from "@/components/organisms/teams"
-import SwitchStudentsFlags from "@/components/organisms/teams/switch-student/SwitchStudentsFlags.vue"
 
 const currentUserId = Cookies.getUserId()
 const hasValidateTeams = ref(true)
@@ -46,7 +45,7 @@ const canPreview = hasPermission("PREVIEW_TEAM")
 const displayAdminComposingButtons = computed(() => nbTeams.value && nbTeams.value > 0 && currentPhase.value === "COMPOSING")
 const displayAdminPrepublishedButtons = computed(() => currentPhase.value === "PREPUBLISHED")
 const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPOSING" && !hasValidateTeams.value)
-const displayStudentReportingButton = computed(() => currentPhase.value === "PREPUBLISHED" && hasPermission("FLAG_TEAM_WITH_STUDENTS"))
+const displayStudentReportingButton = computed(() => currentPhase.value === "PREPUBLISHED" && hasPermission("ADD_FLAG_TEAM_WITH_STUDENT"))
 
 </script>
 

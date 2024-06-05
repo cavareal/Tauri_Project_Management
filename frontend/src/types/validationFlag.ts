@@ -5,7 +5,7 @@ import { FlagSchema } from "@/types/flag"
 export const ValidationFlagSchema = z.object({
 	author: UserSchema,
 	flag: FlagSchema,
-	confirmed: z.boolean()
+	confirmed: z.boolean().nullable()
 })
 
 export const CreateValidationFlagSchema = ValidationFlagSchema.omit({

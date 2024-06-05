@@ -40,17 +40,13 @@ public class ValidationFlagService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        ValidationFlag validationFlagPL = new ValidationFlag();
-        validationFlagPL.flag(flag);
-        validationFlagPL.author(roleService.getUsersByRoleType(token, RoleType.PROJECT_LEADER).get(0));
-        validationFlagRepository.save(validationFlagPL);
-
         if(userService.getRolesByUserId(token, flag.author().id()).contains(RoleType.OPTION_STUDENT)){
             List<Student> students = teamService.getStudentsByTeamId(token, flag.firstStudent().team().id());
             students.addAll(teamService.getStudentsByTeamId(token, flag.secondStudent().team().id()));
             for(Student student: students){
                 ValidationFlag validationFlag = new ValidationFlag();
                 validationFlag.flag(flag);
+                validationFlag.confirmed(null);
                 validationFlag.author(student);
                 validationFlagRepository.save(validationFlag);
             }

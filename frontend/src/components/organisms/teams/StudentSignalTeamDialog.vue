@@ -19,7 +19,7 @@ import {
 	SelectItem,
 	SelectLabel
 } from "@/components/ui/select"
-import { useQuery } from "@tanstack/vue-query"
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
 import { getTeamByUserId } from "@/services/team/team.service"
 import { Cookies } from "@/utils/cookie"
 import { getAllStudents } from "@/services/student"
@@ -35,6 +35,7 @@ const myTeam  = ref<Team | null>(null)
 const selectedMyTeamStudent = ref("")
 const selectedOtherTeamStudent = ref("")
 const userId = Cookies.getUserId()
+const client = useQueryClient()
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"], mutationFn: async() => {
 	if (!description.value) return
@@ -43,6 +44,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"]
 		.then(() => description.value = "")
 		.then(() => selectedMyTeamStudent.value = "")
 		.then(() => selectedOtherTeamStudent.value = "")
+		.then(() => client.invalidateQueries({ queryKey: ["flagForConcerned"] }))
 		.then(() => createToast("Le signalement a été envoyé."))
 } })
 
