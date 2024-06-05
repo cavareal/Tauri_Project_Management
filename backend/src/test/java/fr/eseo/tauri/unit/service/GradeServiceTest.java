@@ -137,7 +137,7 @@ class GradeServiceTest {
         when(userService.getUserById(anyInt())).thenReturn(new User());
         when(sprintService.getSprintById(anyInt())).thenReturn(new Sprint());
         when(gradeTypeService.getGradeTypeById(anyInt())).thenReturn(gradeType);
-        when(studentService.getStudentById(anyString(), anyInt())).thenReturn(new Student());
+        when(studentService.getStudentById(anyInt())).thenReturn(new Student());
 
         gradeService.createGrade(grade);
 

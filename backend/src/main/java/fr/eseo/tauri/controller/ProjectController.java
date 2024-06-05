@@ -24,14 +24,14 @@ public class ProjectController {
     private final ResponseMessage responseMessage = new ResponseMessage("project");
 
     @GetMapping("/{id}")
-    public ResponseEntity<Project> getProjectById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Project project = projectService.getProjectById(token, id);
+    public ResponseEntity<Project> getProjectById(@PathVariable Integer id) {
+        Project project = projectService.getProjectById(id);
         return ResponseEntity.ok(project);
     }
 
     @GetMapping
-    public ResponseEntity<List<Project>> getAllProjects(@RequestHeader("Authorization") String token) {
-        List<Project> projects = projectService.getAllProjects(token);
+    public ResponseEntity<List<Project>> getAllProjects() {
+        List<Project> projects = projectService.getAllProjects();
         return ResponseEntity.ok(projects);
     }
 
@@ -49,29 +49,29 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createProject(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Project project) {
-        projectService.createProject(token, project);
+    public ResponseEntity<String> createProject(@Validated(Create.class) @RequestBody Project project) {
+        projectService.createProject(project);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateProject(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Project updatedProject) {
-        projectService.updateProject(token, id, updatedProject);
+    public ResponseEntity<String> updateProject(@PathVariable Integer id, @Validated(Update.class) @RequestBody Project updatedProject) {
+        projectService.updateProject(id, updatedProject);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProjectById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        projectService.deleteProjectById(token, id);
+    public ResponseEntity<String> deleteProjectById(@PathVariable Integer id) {
+        projectService.deleteProjectById(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllProjects(@RequestHeader("Authorization") String token) {
-        projectService.deleteAllProjects(token);
+    public ResponseEntity<String> deleteAllProjects() {
+        projectService.deleteAllProjects();
         CustomLogger.info(responseMessage.deleteAll());
         return ResponseEntity.ok(responseMessage.deleteAll());
     }

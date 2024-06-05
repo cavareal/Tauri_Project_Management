@@ -22,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TeamService {
 
-    private final AuthService authService;
     private final TeamRepository teamRepository;
     private final UserService userService;
     private final ProjectService projectService;
@@ -43,10 +42,7 @@ public class TeamService {
         return teamRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("team", id));
     }
 
-    public List<Team> getAllTeamsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Team> getAllTeamsByProject(Integer projectId) {
         return teamRepository.findAllByProject(projectId);
     }
 
@@ -55,17 +51,17 @@ public class TeamService {
      * @param nbTeams the number of teams to create
      * @return a List<Teams> if teams are created, otherwise null
      */
-    public List<Team> createTeams(String token, Integer projectId, Integer nbTeams) {
+    public List<Team> createTeams(Integer projectId, Integer nbTeams) {
         if (nbTeams < 1) {
             CustomLogger.error("TeamService.createTeams : The number of teams to create must be greater than 0");
             throw new IllegalArgumentException("The number of teams to create must be greater than 0");
         }
 
-        Project project = projectService.getProjectById(token, projectId);
+        Project project = projectService.getProjectById(projectId);
 
         // Delete all previous teams
-        if(!getAllTeamsByProject(token, projectId).isEmpty()){
-            deleteAllTeamsByProject(token, projectId);
+        if(!getAllTeamsByProject(projectId).isEmpty()){
+            deleteAllTeamsByProject(projectId);
         }
 
         ArrayList<Team> teams = new ArrayList<>();
@@ -80,11 +76,7 @@ public class TeamService {
         return teams;
     }
 
-    public void updateTeam(String token, Integer id, Team updatedTeam) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateTeam"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public void updateTeam(Integer id, Team updatedTeam) {
         Team team = getTeamById(id);
 
         if (updatedTeam.name() != null) team.name(updatedTeam.name());
@@ -93,10 +85,7 @@ public class TeamService {
         teamRepository.save(team);
     }
 
-    public void deleteAllTeamsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void deleteAllTeamsByProject(Integer projectId) {
         studentRepository.removeAllStudentsFromTeams(projectId);
         teamRepository.deleteAllByProject(projectId);
     }
@@ -107,10 +96,7 @@ public class TeamService {
      * @param id The ID of the team.
      * @return The number of women in the team if the team exists, otherwise 0.
      */
-    public Integer getNbWomenByTeamId(String token, Integer id){
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Integer getNbWomenByTeamId(Integer id){
         getTeamById(id);
         return teamRepository.countWomenInTeam(id);
     }
@@ -121,60 +107,44 @@ public class TeamService {
      * @param id The ID of the team.
      * @return The number of bachelor students in the team if the team exists, otherwise 0.
      */
-    public Integer getNbBachelorByTeamId(String token, Integer id){
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Integer getNbBachelorByTeamId(Integer id){
         getTeamById(id);
         return teamRepository.countBachelorInTeam(id);
     }
 
-    public List<Student> getStudentsByTeamId(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Student> getStudentsByTeamId(Integer id) {
         getTeamById(id);
         return studentRepository.findByTeam(id);
     }
 
-    public List<Student> getStudentsByTeamIdOrdered(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Student> getStudentsByTeamIdOrdered(Integer id) {
         Team team = getTeamById(id);
-        Sprint currentSprint = sprintService.getCurrentSprint(token, team.project().id());
+        Sprint currentSprint = sprintService.getCurrentSprint(team.project().id());
         var students = studentRepository.findByTeam(id);
         if(currentSprint != null){
-            var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(token, id, currentSprint.id());
+            var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(id, currentSprint.id());
             if(presentationOrder.size() == students.size()) students.sort(Comparator.comparingInt(presentationOrder::indexOf));
         }
         return studentRepository.findByTeam(id);
     }
 
-    public Double getTeamAvgGrade(String token, Integer id) {
+    public Double getTeamAvgGrade(Integer id) {
         Team team = getTeamById(id);
         return teamRepository.findAvgGradeByTeam(team);
     }
 
-    public Criteria getCriteriaByTeamId(String token, Integer id, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Criteria getCriteriaByTeamId(Integer id, Integer projectId) {
         getTeamById(id);
-        boolean validateWoman = getNbWomenByTeamId(token, id) >= projectService.getProjectById(token, projectId).nbWomen();
-        boolean validateBachelor = getNbBachelorByTeamId(token, id) >= 1;
-        return new Criteria(getNbWomenByTeamId(token, id), getNbBachelorByTeamId(token, id), validateWoman, validateBachelor);
+        boolean validateWoman = getNbWomenByTeamId(id) >= projectService.getProjectById(projectId).nbWomen();
+        boolean validateBachelor = getNbBachelorByTeamId(id) >= 1;
+        return new Criteria(getNbWomenByTeamId(id), getNbBachelorByTeamId(id), validateWoman, validateBachelor);
     }
 
     /**
      * Auto generate teams with students according to the given number of teams and the number of women per team.
      * FUTURE :  create teams with the same average grade
      */
-    public void generateTeams(String token, Integer projectId, Project projectDetails) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "createTeam"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public void generateTeams(Integer projectId, Project projectDetails) {
         CustomLogger.info("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGenderAndProjectId(Gender.WOMAN, projectId);
@@ -188,8 +158,8 @@ public class TeamService {
             CustomLogger.error("TeamService.generateTeams : Not enough students to create the teams");
             throw new IllegalArgumentException("Not enough students to create the teams");
         }
-        projectService.updateProject(token, projectId, projectDetails);
-        List<Team> teams = this.createTeams(token, projectId, nbTeams);
+        projectService.updateProject(projectId, projectDetails);
+        List<Team> teams = this.createTeams(projectId, nbTeams);
         this.fillTeams(teams, women, men, womenPerTeam, nbStudent, false, projectId);
     }
 
@@ -265,18 +235,11 @@ public class TeamService {
         CustomLogger.info("Teams have been filled with students");
     }
 
-    public List<Comment> getFeedbacksByTeamAndSprint(String token, Integer teamId, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Comment> getFeedbacksByTeamAndSprint(Integer teamId, Integer sprintId) {
         return commentRepository.findAllByTeamIdAndSprintId(teamId, sprintId);
     }
 
-    public Double getTeamTotalGrade(String token, Integer teamId, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public Double getTeamTotalGrade(Integer teamId, Integer sprintId) {
         List<GradeType> teacherGradedTeamGradeTypes = gradeTypeRepository.findTeacherGradedTeamGradeTypes();
         List<Double> teamGrades = new ArrayList<>();
 
@@ -292,12 +255,8 @@ public class TeamService {
 
     }
 
-    public List<Double> getIndividualTotalGrades(String token, Integer id, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        List<Student> students = getStudentsByTeamId(token, id);
+    public List<Double> getIndividualTotalGrades(Integer id, Integer sprintId) {
+        List<Student> students = getStudentsByTeamId(id);
         List<Double> individualGrades = new ArrayList<>();
 
         for(Student student : students){
@@ -318,19 +277,15 @@ public class TeamService {
         return individualGrades;
     }
 
-    public List<Double> getSprintGrades(String token, Integer id, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Double> getSprintGrades(Integer id, Integer sprintId) {
+        double teamGrade = getTeamTotalGrade(id, sprintId);
 
-        double teamGrade = getTeamTotalGrade(token, id, sprintId);
-
-        List<Student> students = getStudentsByTeamId(token, id);
+        List<Student> students = getStudentsByTeamId(id);
         List<Double> sprintGrades = new ArrayList<>();
 
         for(int i = 0; i < students.size(); i++){
-            List<Bonus> studentBonuses = studentService.getStudentBonuses(token, students.get(i).id(), sprintId);
-            double result = 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrades(token, id, sprintId)).get(i);
+            List<Bonus> studentBonuses = studentService.getStudentBonuses(students.get(i).id(), sprintId);
+            double result = 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrades(id, sprintId)).get(i);
             sprintGrades.add(formattedResult(result));
         }
         if (sprintGrades.isEmpty()) {
@@ -343,7 +298,7 @@ public class TeamService {
         List<Team> teams = teamRepository.findAll();
         List<Double> averageSprintGrades = new ArrayList<>();
         for(Team team : teams){
-            List<Double> sprintGrades = getSprintGrades("token", team.id(), sprintId);
+            List<Double> sprintGrades = getSprintGrades(team.id(), sprintId);
             double average = sprintGrades.stream().mapToDouble(Double::doubleValue).sum() / sprintGrades.size();
             averageSprintGrades.add(formattedResult(average));
         }

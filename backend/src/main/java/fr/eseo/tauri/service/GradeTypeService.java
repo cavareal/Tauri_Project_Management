@@ -25,11 +25,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class GradeTypeService {
 
-    private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
     private final GradeService gradeService;
     private final ProjectService projectService;
-
+    
     private static final String READ_PERMISSION = "readGradeType";
     private static final String ADD_PERMISSION = "addGradeType";
     private static final String UPDATE_PERMISSION = "updateGradeType";
@@ -200,9 +199,6 @@ public class GradeTypeService {
     }
 
     public void saveGradeScale(Integer id, MultipartFile file, String token) throws IOException {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addGradeScaleTXT"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
         if (!Objects.equals(file.getContentType(), "text/plain")) {
             CustomLogger.info("File type: " + file.getContentType());
             throw new IllegalArgumentException("Only TXT files are allowed");
@@ -219,9 +215,6 @@ public class GradeTypeService {
     }
 
     public byte[] getBLOBScale(int id, String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "downloadGradeScaleTXT"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
         GradeType gradeType = gradeTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
         CustomLogger.info("Size of the PDF: " + gradeType.scaleTXTBlob().length);
@@ -229,9 +222,6 @@ public class GradeTypeService {
     }
 
     public void deleteGradeScale(Integer id, String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteGradeScaleTXT"))){
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
         gradeTypeRepository.deleteById(id);
     }
 }
