@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { ProjectSchema } from "./project"
 
 export const GradeTypeSchema = z.object({
 	id: z.number(),
