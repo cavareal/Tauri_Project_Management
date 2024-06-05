@@ -50,7 +50,7 @@ public class RoleService {
 		if (!Boolean.TRUE.equals(authService.checkAuth(token, ADD_PERMISSION))) {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
-		if(role.userId() != null) role.user(userService.getUserById(token, role.userId()));
+		if(role.userId() != null) role.user(userService.getUserById(role.userId()));
 		roleRepository.save(role);
 	}
 
@@ -110,7 +110,7 @@ public class RoleService {
 		Role role = getRoleById(token, id);
 
 		if (updatedRole.type() != null) role.type(updatedRole.type());
-		if (updatedRole.userId() != null) role.user(userService.getUserById(token, updatedRole.userId()));
+		if (updatedRole.userId() != null) role.user(userService.getUserById(updatedRole.userId()));
 
 		roleRepository.save(role);
 	}

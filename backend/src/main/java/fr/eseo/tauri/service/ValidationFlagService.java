@@ -34,7 +34,7 @@ public class ValidationFlagService {
         validationFlagPL.author(roleService.getUsersByRoleType("token", RoleType.PROJECT_LEADER).get(0));
         validationFlagRepository.save(validationFlagPL);
 
-        if(userService.getRolesByUserId("token", flag.author().id()).contains(RoleType.OPTION_STUDENT)){
+        if(userService.getRolesByUserId(flag.author().id()).contains(RoleType.OPTION_STUDENT)){
             List<Student> students = teamService.getStudentsByTeamId("token", flag.firstStudent().team().id());
             students.addAll(teamService.getStudentsByTeamId("token", flag.secondStudent().team().id()));
             for(Student student: students){

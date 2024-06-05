@@ -25,7 +25,7 @@ public class SprintController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Sprint> getSprintById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Sprint sprint = sprintService.getSprintById(token, id);
+        Sprint sprint = sprintService.getSprintById(id);
         return ResponseEntity.ok(sprint);
     }
 
@@ -44,14 +44,14 @@ public class SprintController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Sprint updatedSprint) {
-        sprintService.updateSprint(token, id, updatedSprint);
+        sprintService.updateSprint(id, updatedSprint);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSprint(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        sprintService.deleteSprint(token, id);
+        sprintService.deleteSprint(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }

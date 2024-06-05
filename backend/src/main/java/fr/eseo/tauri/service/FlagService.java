@@ -36,7 +36,7 @@ public class FlagService {
 
         flagRepository.save(flag);
 
-        validationFlagService.createValidationFlags("token", flag);
+        validationFlagService.createValidationFlags(flag);
     }
 
     public void updateFlag(Integer id, Flag updatedFlag) {

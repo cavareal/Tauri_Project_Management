@@ -21,7 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
-	private final AuthService authService;
 	private final UserRepository userRepository;
 	private final TeamRepository teamRepository;
 	private final RoleRepository roleRepository;
@@ -35,14 +34,6 @@ public class UserService {
 
 	public User getUserById(Integer id) {
 		return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user", id));
-	}
-
-	public List<User> getAllUsers(String token) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readUser"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
-		return userRepository.findAll();
 	}
 
 	public User createUser(User user) throws Exception {
@@ -64,11 +55,7 @@ public class UserService {
 		userRepository.save(user);
 	}
 
-	public void deleteUserById(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteUser"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
+	public void deleteUserById(Integer id) {
 		var user = getUserById(id);
 
 		// Change team's leader to null when their leader is deleted.
@@ -81,27 +68,17 @@ public class UserService {
 		userRepository.deleteById(id);
 	}
 
-	public void deleteAllUsers(String token) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteUser"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
+	public void deleteAllUsers() {
 		userRepository.deleteAll();
 	}
 
-	public List<RoleType> getRolesByUserId(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readRoleByUserId"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
+	public List<RoleType> getRolesByUserId(Integer id) {
 		User user = getUserById(id);
 		return roleRepository.findByUser(user);
 	}
 
-	public Team getTeamByMemberId(String token, Integer userId, Integer projectId) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readTeamBySupervisor"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-		List<RoleType> roles = getRolesByUserId(token, userId);
+	public Team getTeamByMemberId(Integer userId, Integer projectId) {
+		List<RoleType> roles = getRolesByUserId(userId);
 
 		if (roles.contains(RoleType.SUPERVISING_STAFF)) {
 			return teamRepository.findByLeaderId(userId, projectId);
@@ -113,11 +90,7 @@ public class UserService {
 		}
 	}
 
-	public List<PermissionType> getPermissionsByUser(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
+	public List<PermissionType> getPermissionsByUser(Integer id) {
 		var user = getUserById(id);
 		var roles = roleRepository.findByUser(user);
 
@@ -133,12 +106,8 @@ public class UserService {
 		return permissions;
 	}
 
-	public Boolean hasPermission(String token, Integer id, PermissionType permission) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
-		var permissions = getPermissionsByUser(token, id);
+	public Boolean hasPermission(Integer id, PermissionType permission) {
+		var permissions = getPermissionsByUser(id);
 
 		return permissions.contains(permission);
 	}

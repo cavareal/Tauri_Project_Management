@@ -119,7 +119,7 @@ public class StudentService {
         }
         var students = getAllStudentsByProject(token, projectId);
         for (var student : students) {
-            userService.deleteUserById(token, student.id());
+            userService.deleteUserById(student.id());
         }
         gradeTypeService.deleteAllImportedGradeTypes();
         teamService.deleteAllTeamsByProject(token, projectId);
@@ -422,7 +422,7 @@ public class StudentService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        Integer teamId = userService.getTeamByMemberId(token, id, getStudentById(token, id).projectId()).id();
+        Integer teamId = userService.getTeamByMemberId(id, getStudentById(token, id).projectId()).id();
 
         Double studentGradedTeamGrade = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName());
 
@@ -436,7 +436,7 @@ public class StudentService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        Integer teamId = userService.getTeamByMemberId(token, studentId, getStudentById(token, studentId).projectId()).id();
+        Integer teamId = userService.getTeamByMemberId(studentId, getStudentById(token, studentId).projectId()).id();
 
         double teamGrade = teamService.getTeamTotalGrade(token, teamId, sprintId);
 
