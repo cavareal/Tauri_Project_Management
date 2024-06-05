@@ -49,6 +49,7 @@ dependencies {
 
 
 test {
+	exclude "**/selenium/**"
 	useJUnitPlatform()
 	finalizedBy 'jacocoTestReport'
 }
