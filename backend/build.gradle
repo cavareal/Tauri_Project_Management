@@ -55,13 +55,6 @@ test {
 }
 
 
-// Unit tests
-//tasks.register('unitTest', Test) {
-//	useJUnitPlatform()
-//	finalizedBy 'jacocoTestReport'
-//}
-
-
 // Selenium tests
 tasks.register('seleniumTest', Test) {
 	useJUnitPlatform()
