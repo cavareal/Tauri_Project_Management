@@ -145,7 +145,7 @@ public class RoleService {
 	}
 
 	public Boolean hasPermission(String token, RoleType roleType, PermissionType permissionType) {
-		var permissions = permissionService.getAllPermissionsByRole(token, roleType);
+		var permissions = permissionService.getAllPermissionsByRole(roleType);
 		return ListUtil.map(permissions, Permission::type).contains(permissionType);
 	}
 

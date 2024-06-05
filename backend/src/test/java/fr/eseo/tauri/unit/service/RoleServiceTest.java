@@ -234,7 +234,7 @@ class RoleServiceTest {
         List<Permission> permissions = List.of(new Permission());
 
         when(authService.checkAuth(token, "deleteRole")).thenReturn(true);
-        when(permissionService.getAllPermissionsByRole(token, roleType)).thenReturn(permissions);
+        when(permissionService.getAllPermissionsByRole(roleType)).thenReturn(permissions);
 
         Boolean result = roleService.hasPermission(token, roleType, permissionType);
 
