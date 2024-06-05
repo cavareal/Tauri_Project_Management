@@ -57,6 +57,7 @@ public class AuthService {
         try {
             Authentication authentication = authenticate(email, password);  // Auth with LDAP
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            CustomLogger.info("User " + userDetails.getUsername() + " authenticated");
 //             Check if user in DB
             User user = userRepository.findByEmail(userDetails.getUsername())
 //            User user = userRepository.findByEmail(email)
@@ -68,7 +69,7 @@ public class AuthService {
             Integer idProject = projectRepository.findFirstByActualTrue().map(Project::id).orElse(0);
             return new AuthResponse(user.id(), accessToken, idProject);
         } catch (Exception e){
-            throw new SecurityException("Wrong credentials");
+            throw new SecurityException("Wrong credentials" + e.getMessage());
         }
     }
 
