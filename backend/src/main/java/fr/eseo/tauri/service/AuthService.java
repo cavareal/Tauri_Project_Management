@@ -55,12 +55,12 @@ public class AuthService {
 
     public AuthResponse login(String email, String password) {
         try {
-            Authentication authentication = authenticate(email, password);  // Auth with LDAP
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            CustomLogger.info("User " + userDetails.getUsername() + " authenticated");
+//            Authentication authentication = authenticate(email, password);  // Auth with LDAP
+//            UserDetails userDetaixls = (UserDetails) authentication.getPrincipal();
+//            CustomLogger.info("User " + userDetails.getUsername() + " authenticated");
 //             Check if user in DB
-            User user = userRepository.findByEmail(userDetails.getUsername())
-//            User user = userRepository.findByEmail(email)
+//            User user = userRepository.findByEmail(userDetails.getUsername())
+            User user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
 
 

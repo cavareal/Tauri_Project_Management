@@ -28,7 +28,8 @@ public class GradeTypeService {
     private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
     private final GradeService gradeService;
-    
+    private final ProjectService projectService;
+
     private static final String READ_PERMISSION = "readGradeType";
     private static final String ADD_PERMISSION = "addGradeType";
     private static final String UPDATE_PERMISSION = "updateGradeType";

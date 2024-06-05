@@ -68,7 +68,7 @@ public class StudentService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
         if(student.projectId() != null) student.project(projectService.getProjectById(token, student.projectId()));
-        if(student.teamId() != null)student.team(teamService.getTeamById(token, student.teamId()));
+        if(student.teamId() != null)student.team(teamService.getTeamById(student.teamId()));
         studentRepository.save(student);
 
         Role role = new Role();
@@ -100,7 +100,7 @@ public class StudentService {
         if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
         if (updatedStudent.teamRole() != null) student.teamRole(updatedStudent.teamRole());
         if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(token, updatedStudent.projectId()));
-        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(token, updatedStudent.teamId()));
+        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(updatedStudent.teamId()));
 
         studentRepository.save(student);
     }

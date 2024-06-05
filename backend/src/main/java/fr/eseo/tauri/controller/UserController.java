@@ -42,7 +42,7 @@ public class UserController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-		User user = userService.getUserById(token, id);
+		User user = userService.getUserById(id);
 		return ResponseEntity.ok(user);
 	}
 
@@ -59,7 +59,7 @@ public class UserController {
 
 	@PatchMapping("/{id}")
 	public ResponseEntity<String> updateUser(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody User user) {
-		userService.updateUser(token, id, user);
+		userService.updateUser(id, user);
 		CustomLogger.info(responseMessage.update());
 		return ResponseEntity.ok(responseMessage.update());
 	}

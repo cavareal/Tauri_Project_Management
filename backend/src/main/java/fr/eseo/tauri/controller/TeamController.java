@@ -31,7 +31,7 @@ public class TeamController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Team> getTeamById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Team team = teamService.getTeamById(token, id);
+        Team team = teamService.getTeamById(id);
         return ResponseEntity.ok(team);
     }
 

@@ -70,8 +70,8 @@ public class NotificationService {
 			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
 		}
 
-		notification.userFrom(userService.getUserById(token, notification.userFromId()));
-		notification.userTo(userService.getUserById(token, notification.userToId()));
+		notification.userFrom(userService.getUserById(notification.userFromId()));
+		notification.userTo(userService.getUserById(notification.userToId()));
 
 		notificationRepository.save(notification);
 	}
@@ -91,8 +91,8 @@ public class NotificationService {
 
 		if (updatedNotification.message() != null) notification.message(updatedNotification.message());
 		if (updatedNotification.checked() != null) notification.checked(updatedNotification.checked());
-		if (updatedNotification.userToId() != null) notification.userTo(userService.getUserById(token, updatedNotification.userToId()));
-		if (updatedNotification.userFromId() != null) notification.userFrom(userService.getUserById(token, updatedNotification.userFromId()));
+		if (updatedNotification.userToId() != null) notification.userTo(userService.getUserById(updatedNotification.userToId()));
+		if (updatedNotification.userFromId() != null) notification.userFrom(userService.getUserById(updatedNotification.userFromId()));
 
 		notificationRepository.save(notification);
 	}
