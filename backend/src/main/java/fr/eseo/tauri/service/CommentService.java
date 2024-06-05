@@ -13,7 +13,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final AuthService authService;
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final TeamService teamService;

@@ -14,7 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FlagService {
 
-    private final AuthService authService;
     private final FlagRepository flagRepository;
     private final UserService userService;
     private final StudentService studentService;
@@ -30,7 +29,7 @@ public class FlagService {
     }
 
     public void createFlag(Flag flag) {
-        flag.author(userService.getUserById("token", flag.authorId()));
+        flag.author(userService.getUserById(flag.authorId()));
         flag.project(projectService.getProjectById("token", flag.projectId()));
         if (flag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById("token", flag.firstStudentId()));
         if (flag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById("token", flag.secondStudentId()));
@@ -48,7 +47,7 @@ public class FlagService {
         if (updatedFlag.status() != null) flag.status(updatedFlag.status());
         if (updatedFlag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById("token", updatedFlag.firstStudentId()));
         if (updatedFlag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById("token", updatedFlag.secondStudentId()));
-        if (updatedFlag.authorId() != null) flag.author(userService.getUserById("token", updatedFlag.authorId()));
+        if (updatedFlag.authorId() != null) flag.author(userService.getUserById(updatedFlag.authorId()));
         if (updatedFlag.projectId() != null) flag.project(projectService.getProjectById("token", updatedFlag.projectId()));
 
         flagRepository.save(flag);

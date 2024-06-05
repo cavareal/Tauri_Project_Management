@@ -39,10 +39,7 @@ public class TeamService {
     private static final String READ_PERMISSION = "readTeam";
     private static final String DELETE_PERMISSION = "deleteTeam";
 
-    public Team getTeamById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Team getTeamById(Integer id) {
         return teamRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("team", id));
     }
 
@@ -88,10 +85,10 @@ public class TeamService {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
 
-        Team team = getTeamById(token, id);
+        Team team = getTeamById(id);
 
         if (updatedTeam.name() != null) team.name(updatedTeam.name());
-        if (updatedTeam.leaderId() != null) team.leader(userService.getUserById(token, updatedTeam.leaderId()));
+        if (updatedTeam.leaderId() != null) team.leader(userService.getUserById(updatedTeam.leaderId()));
 
         teamRepository.save(team);
     }
@@ -114,7 +111,7 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        getTeamById(token, id);
+        getTeamById(id);
         return teamRepository.countWomenInTeam(id);
     }
 
@@ -128,7 +125,7 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        getTeamById(token, id);
+        getTeamById(id);
         return teamRepository.countBachelorInTeam(id);
     }
 
@@ -136,7 +133,7 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        getTeamById(token, id);
+        getTeamById(id);
         return studentRepository.findByTeam(id);
     }
 
@@ -144,7 +141,7 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        Team team = getTeamById(token, id);
+        Team team = getTeamById(id);
         Sprint currentSprint = sprintService.getCurrentSprint(token, team.project().id());
         var students = studentRepository.findByTeam(id);
         if(currentSprint != null){
@@ -155,7 +152,7 @@ public class TeamService {
     }
 
     public Double getTeamAvgGrade(String token, Integer id) {
-        Team team = getTeamById(token, id);
+        Team team = getTeamById(id);
         return teamRepository.findAvgGradeByTeam(team);
     }
 
@@ -163,7 +160,7 @@ public class TeamService {
         if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
             throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
         }
-        getTeamById(token, id);
+        getTeamById(id);
         boolean validateWoman = getNbWomenByTeamId(token, id) >= projectService.getProjectById(token, projectId).nbWomen();
         boolean validateBachelor = getNbBachelorByTeamId(token, id) >= 1;
         return new Criteria(getNbWomenByTeamId(token, id), getNbBachelorByTeamId(token, id), validateWoman, validateBachelor);

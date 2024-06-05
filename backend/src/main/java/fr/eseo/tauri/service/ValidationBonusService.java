@@ -39,7 +39,7 @@ public class ValidationBonusService {
         }
 
         validationBonus.bonus(bonusService.getBonusById(validationBonus.bonusId()));
-        validationBonus.author(userService.getUserById(token, validationBonus.authorId()));
+        validationBonus.author(userService.getUserById(validationBonus.authorId()));
 
         validationBonusRepository.save(validationBonus);
     }

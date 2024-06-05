@@ -79,13 +79,13 @@ public class GradeService {
             }
         }
 
-        if (grade.authorId() != null) grade.author(userService.getUserById(token, grade.authorId()));
-        if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, grade.sprintId()));
+        if (grade.authorId() != null) grade.author(userService.getUserById(grade.authorId()));
+        if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(grade.sprintId()));
         if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(token, grade.gradeTypeId()));
 
         if (Boolean.TRUE.equals(grade.gradeType().forGroup())) {
             grade.student(null);
-            if (grade.teamId() != null) grade.team(teamService.getTeamById(token, grade.teamId()));
+            if (grade.teamId() != null) grade.team(teamService.getTeamById(grade.teamId()));
         } else {
             grade.team(null);
             if (grade.studentId() != null) grade.student(studentService.getStudentById(token, grade.studentId()));
@@ -105,11 +105,11 @@ public class GradeService {
         Grade grade = getGradeById(token, id);
         if (updatedGrade.value() != null) grade.value(updatedGrade.value());
         if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
-        if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(token, updatedGrade.sprintId()));
-        if (updatedGrade.authorId() != null) grade.author(userService.getUserById(token, updatedGrade.authorId()));
+        if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(updatedGrade.sprintId()));
+        if (updatedGrade.authorId() != null) grade.author(userService.getUserById(updatedGrade.authorId()));
         if (updatedGrade.studentId() != null)
             grade.student(studentService.getStudentById(token, updatedGrade.studentId()));
-        if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(token, updatedGrade.teamId()));
+        if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(updatedGrade.teamId()));
 
         if ((grade.team() == null) == (grade.student() == null)) {
             throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
