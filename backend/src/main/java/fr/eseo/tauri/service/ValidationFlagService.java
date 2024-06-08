@@ -14,10 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ValidationFlagService {
 
-    private final AuthService authService;
     private final ValidationFlagRepository validationFlagRepository;
     private final UserService userService;
-    private final RoleService roleService;
     private final TeamService teamService;
 
     public ValidationFlag getValidationFlagByAuthorId(Integer flagId, Integer authorId) {
@@ -49,7 +47,7 @@ public class ValidationFlagService {
         validationFlagRepository.save(validationFlag);
     }
 
-    public void createValidationFlag(String token, Integer flagId, ValidationFlag validationFlag) {
+    public void createValidationFlag(Integer flagId, ValidationFlag validationFlag) {
         validationFlag.flag(new Flag().id(flagId));
         validationFlag.author(userService.getUserById(validationFlag.authorId()));
         validationFlagRepository.save(validationFlag);

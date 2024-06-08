@@ -24,7 +24,6 @@ public class FlagController {
 
     private final FlagService flagService;
     private final ResponseMessage responseMessage = new ResponseMessage("flag");
-	private final AuthService authService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Flag> getFlagById(@PathVariable Integer id) {
