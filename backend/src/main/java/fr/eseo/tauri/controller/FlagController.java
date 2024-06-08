@@ -7,7 +7,6 @@ import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Create;
 import fr.eseo.tauri.util.valid.Update;
-import fr.eseo.tauri.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
