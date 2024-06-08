@@ -36,7 +36,7 @@ const { data: flags } = useQuery({
     </div>
   </div>
   <div v-else>
-    <Row v-if="!flags || flags?.length>0" class="gap-4 border rounded-lg p-2 md:p-6 bg-white justify-between">
+    <Row v-if="flags && flags.length>0" class="gap-4 border rounded-lg p-2 md:p-6 bg-white justify-between">
       <Row>
         <Row class="mr-2">
           <User/>

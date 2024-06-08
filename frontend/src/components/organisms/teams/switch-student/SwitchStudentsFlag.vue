@@ -12,6 +12,8 @@ import { updateValidationFlag } from "@/services/validationFlag"
 import { createToast } from "@/utils/toast"
 import { ref } from "vue"
 import { updateFlag } from "@/services/flag"
+import type { User } from "@/types/user"
+import { addNotification } from "@/services/notification"
 
 const props = defineProps<{
   flag: Flag
@@ -22,11 +24,13 @@ const client = useQueryClient()
 
 const canValidate = ref(true)
 const currentUserId = Cookies.getUserId()
+const concernedUsers = ref<User[]>([])
 
 const { data: validations, refetch: refetchValidationFlags } = useQuery({
 	queryKey: ["validationsFlag", props.flag.id],
 	queryFn: async() => {
 		const vFlags = await getValidationFlagsByFlagId(props.flag.id)
+		concernedUsers.value = vFlags.map(vFlag => vFlag.author)
 		if (!props.isPl) {
 			canValidate.value = vFlags.filter(vFlag => vFlag.author.id === Number(currentUserId))[0].confirmed === null
 		}
@@ -40,6 +44,9 @@ const handleValidationFlag = async(confirmed: boolean) => {
 		refetchValidationFlags()
 	} else {
 		await updateFlag(props.flag.id, { ...props.flag, status: confirmed })
+		for (const user of concernedUsers.value) {
+			await addNotification(user.id, currentUserId, `La demande de changement d'équipe entre ${props.flag.firstStudent!.name} et ${props.flag.secondStudent!.name} a été ${confirmed ? "validée" : "refusée"}`)
+		}
 		await client.invalidateQueries({ queryKey: ["flagForConcerned"] })
 	}
 	const text = confirmed ? "validée" : "refusée"
