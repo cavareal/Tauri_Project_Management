@@ -27,11 +27,14 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     List<Student> findByTeam(Integer teamId);
 
     List<Student> findByGender(Gender gender);
+    @Query("SELECT s FROM Student s WHERE s.gender = :gender AND s.project.id = :projectId")
+    List<Student> findByGenderAndProjectId(Gender gender, Integer projectId);
 
     List<Student> findByGenderOrderByBachelor(Gender gender);
 
-    @Query("SELECT s FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gt.name = 'Moyenne' AND s.gender = ?1 ORDER BY s.bachelor, gr.value DESC")
-    List<Student> findByGenderOrderByBachelorAndImportedAvgDesc(Gender gender);
+
+    @Query("SELECT s FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE (gt.name = 'Moyenne' AND (s.gender = :gender OR s.gender IS NULL) AND s.project.id = :projectId) ORDER BY s.bachelor, gr.value DESC")
+    List<Student> findByGenderOrderByBachelorAndImportedAvgDesc(Gender gender, Integer projectId);
 
     @Transactional
     @Modifying

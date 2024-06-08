@@ -36,10 +36,6 @@ public class ValidationFlagService {
     }
 
     public void createValidationFlags(String token, Flag flag) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationFlag"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
         if(userService.getRolesByUserId(token, flag.author().id()).contains(RoleType.OPTION_STUDENT)){
             List<Student> students = teamService.getStudentsByTeamId(token, flag.firstStudent().team().id());
             students.addAll(teamService.getStudentsByTeamId(token, flag.secondStudent().team().id()));
@@ -53,21 +49,14 @@ public class ValidationFlagService {
         }
     }
 
-    public void updateValidationFlag(String token, Integer flagId, Integer authorId, ValidationFlag updatedValidationFlag) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateValidationFlag"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        ValidationFlag validationFlag = getValidationFlagByAuthorId(token, flagId, authorId);
+    public void updateValidationFlag(Integer flagId, Integer authorId, ValidationFlag updatedValidationFlag) {
+        ValidationFlag validationFlag = getValidationFlagByAuthorId(flagId, authorId);
 
         if (updatedValidationFlag.confirmed() != null) validationFlag.confirmed(updatedValidationFlag.confirmed());
         validationFlagRepository.save(validationFlag);
     }
 
     public void createValidationFlag(String token, Integer flagId, ValidationFlag validationFlag) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addValidationFlag"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
         validationFlag.flag(new Flag().id(flagId));
         validationFlag.author(userService.getUserById(token, validationFlag.authorId()));
         validationFlagRepository.save(validationFlag);

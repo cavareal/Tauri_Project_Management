@@ -24,10 +24,6 @@ import static org.mockito.Mockito.*;
 
 @Nested
 class NotificationServiceTest {
-
-    @Mock
-    private AuthService authService;
-
     @Mock
     private NotificationRepository notificationRepository;
 
@@ -44,175 +40,75 @@ class NotificationServiceTest {
 
     @Test
     void getNotificationByIdShouldReturnNotificationWhenAuthorizedAndIdExists() {
-        String token = "validToken";
         Integer id = 1;
         Notification notification = new Notification();
         notification.id(id);
 
-        when(authService.checkAuth(token, "readNotification")).thenReturn(true);
         when(notificationRepository.findById(id)).thenReturn(Optional.of(notification));
 
-        Notification result = notificationService.getNotificationById(token, id);
+        Notification result = notificationService.getNotificationById(id);
 
         assertEquals(notification, result);
     }
 
     @Test
-    void getNotificationByIdShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "readNotification")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> notificationService.getNotificationById(token, id));
-    }
-
-    @Test
     void getNotificationByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
-        String token = "validToken";
         Integer id = 1;
 
-        when(authService.checkAuth(token, "readNotification")).thenReturn(true);
         when(notificationRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> notificationService.getNotificationById(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> notificationService.getNotificationById(id));
     }
 
     @Test
     void getAllNotificationsShouldReturnNotificationsWhenAuthorized() {
-        String token = "validToken";
         List<Notification> notifications = Arrays.asList(new Notification(), new Notification());
 
-        when(authService.checkAuth(token, "readNotifications")).thenReturn(true);
         when(notificationRepository.findAll()).thenReturn(notifications);
 
-        List<Notification> result = notificationService.getAllNotifications(token);
+        List<Notification> result = notificationService.getAllNotifications();
 
         assertEquals(notifications, result);
     }
 
     @Test
-    void getAllNotificationsShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "readNotifications")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> notificationService.getAllNotifications(token));
-    }
-
-    @Test
     void getAllNotificationsShouldReturnEmptyListWhenNoNotifications() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "readNotifications")).thenReturn(true);
         when(notificationRepository.findAll()).thenReturn(Collections.emptyList());
 
-        List<Notification> result = notificationService.getAllNotifications(token);
+        List<Notification> result = notificationService.getAllNotifications();
 
         assertTrue(result.isEmpty());
     }
 
     @Test
     void createNotificationShouldSaveNotificationWhenAuthorized() {
-        String token = "validToken";
         Notification notification = new Notification();
         notification.userFromId(1);
         notification.userToId(2);
 
-        when(authService.checkAuth(token, "addNotification")).thenReturn(true);
-        when(userService.getUserById(token, notification.userFromId())).thenReturn(new User());
-        when(userService.getUserById(token, notification.userToId())).thenReturn(new User());
+        when(userService.getUserById(notification.userFromId())).thenReturn(new User());
+        when(userService.getUserById(notification.userToId())).thenReturn(new User());
 
-        notificationService.createNotification(token, notification);
+        notificationService.createNotification(notification);
 
         verify(notificationRepository, times(1)).save(notification);
     }
 
     @Test
-    void createNotificationShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Notification notification = new Notification();
-
-        when(authService.checkAuth(token, "addNotification")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> notificationService.createNotification(token, notification));
-    }
-
-
-    @Test
-    void updateNotificationShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-        Notification updatedNotification = new Notification();
-
-        when(authService.checkAuth(token, "updateNotification")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> notificationService.updateNotification(token, id, updatedNotification));
-    }
-
-    @Test
-    void deleteNotificationByIdShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "deleteNotification")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> notificationService.deleteNotificationById(token, id));
-    }
-
-    @Test
     void deleteAllNotificationsShouldDeleteAllNotificationsWhenAuthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "deleteNotification")).thenReturn(true);
-
-        notificationService.deleteAllNotifications(token);
+        notificationService.deleteAllNotifications();
 
         verify(notificationRepository, times(1)).deleteAll();
     }
-
-    @Test
-    void deleteAllNotificationsShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "deleteNotification")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> notificationService.deleteAllNotifications(token));
-    }
     @Test
     void getNotificationsByUserShouldReturnNotificationsWhenAuthorizedAndNotificationsExist() {
-        String token = "validToken";
         int userId = 1;
         List<Notification> notifications = Arrays.asList(new Notification(), new Notification());
 
-        when(authService.checkAuth(token, "readNotification")).thenReturn(true);
         when(notificationRepository.findByUser(userId)).thenReturn(notifications);
 
-        List<Notification> result = notificationService.getNotificationsByUser(token, userId);
+        List<Notification> result = notificationService.getNotificationsByUser(userId);
 
         assertEquals(notifications, result);
     }
-
-    @Test
-    void getNotificationsByUserShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer userId = 1;
-
-        when(authService.checkAuth(token, "readNotification")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> notificationService.getNotificationsByUser(token, userId));
-    }
-
-
-    @Test
-    void changeCheckedNotificationShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "updateNotification")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> notificationService.changeCheckedNotification(token, id));
-    }
-
-
 }

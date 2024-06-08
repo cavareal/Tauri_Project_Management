@@ -7,96 +7,77 @@ import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.util.CustomLogger;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class GradeTypeService {
 
-    private final AuthService authService;
     private final GradeTypeRepository gradeTypeRepository;
     private final GradeService gradeService;
+    private final ProjectService projectService;
     
     private static final String READ_PERMISSION = "readGradeType";
     private static final String ADD_PERMISSION = "addGradeType";
     private static final String UPDATE_PERMISSION = "updateGradeType";
     private static final String DELETE_PERMISSION = "deleteGradeType";
 
-    public GradeType getGradeTypeById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public GradeType getGradeTypeById(Integer id) {
         return gradeTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("gradeType", id));
     }
 
-    public List<GradeType> getAllImportedGradeTypes(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        return gradeTypeRepository.findAllImported();
+    public List<GradeType> getAllImportedGradeTypes(Integer projectId) {
+        return gradeTypeRepository.findAllImported(projectId);
     }
 
-    public List<GradeType> getAllUnimportedGradeTypes(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        return gradeTypeRepository.findAllUnimported();
+    public List<GradeType> getAllUnimportedGradeTypes(Integer projectId) {
+        return gradeTypeRepository.findAllUnimported(projectId);
     }
 
-    public void createGradeType(String token, GradeType gradeType) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, ADD_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void createGradeType(GradeType gradeType) {
         gradeTypeRepository.save(gradeType);
     }
 
-    public void updateGradeType(String token, Integer id, GradeType updatedGradeType) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, UPDATE_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void updateGradeType(Integer id, GradeType updatedGradeType, Integer projectId) {
 
-        GradeType gradeType = getGradeTypeById(token, id);
+        GradeType gradeType = getGradeTypeById(id);
+        CustomLogger.info("Updating GradeType with id " + gradeType);
 
         if (updatedGradeType.name() != null) gradeType.name(updatedGradeType.name());
         if (updatedGradeType.factor() != null) {
             gradeType.factor(updatedGradeType.factor());
-            gradeService.updateImportedMean();
+            gradeService.updateImportedMean(projectId);
         }
         if (updatedGradeType.forGroup() != null) gradeType.forGroup(updatedGradeType.forGroup());
         if (updatedGradeType.imported() != null) gradeType.imported(updatedGradeType.imported());
-        if (updatedGradeType.scalePDFBlob() != null) gradeType.scalePDFBlob(updatedGradeType.scalePDFBlob());
+        if (updatedGradeType.scaleTXTBlob() != null) gradeType.scaleTXTBlob(updatedGradeType.scaleTXTBlob());
+        if (updatedGradeType.project() != null) gradeType.project(updatedGradeType.project());
 
         gradeTypeRepository.save(gradeType);
     }
 
-    public void deleteGradeTypeById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        getGradeTypeById(token, id);
+    public void deleteGradeTypeById(Integer id) {
+        getGradeTypeById(id);
         gradeTypeRepository.deleteById(id);
     }
 
-    public void deleteAllImportedGradeTypes(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void deleteAllImportedGradeTypes() {
         gradeTypeRepository.deleteAllImported();
     }
 
-    public void deleteAllUnimportedGradeTypes(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, DELETE_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void deleteAllUnimportedGradeTypes() {
         gradeTypeRepository.deleteAllUnimported();
     }
 
@@ -107,12 +88,7 @@ public class GradeTypeService {
      * @param names      the list of names for the GradeType objects
      * @return a list of GradeType objects created from the provided coefficients and names
      */
-    public List<GradeType> generateImportedGradeTypes(String token, List<String> coefficients, List<String> names) {
-
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, ADD_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public List<GradeType> generateImportedGradeTypes(List<String> coefficients, List<String> names) {
         if (coefficients == null || coefficients.isEmpty()) {
             CustomLogger.warn("The list of coefficients is null or empty");
             throw new EmptyResourceException("list of coefficients");
@@ -141,6 +117,7 @@ public class GradeTypeService {
         gradeType.factor(factor);
         gradeType.forGroup(false);
         gradeType.imported(true);
+        gradeType.project(projectService.getActualProject());
         return(gradeTypeRepository.save(gradeType));
     }
 
@@ -150,7 +127,7 @@ public class GradeTypeService {
      * @param inputStream the InputStream from which the CSV file is read
      * @return a list of GradeType objects created from the coefficients and names in the CSV file
      */
-    public List<GradeType> createGradeTypesFromCSV(String token, InputStream inputStream) throws CsvValidationException, IOException {
+    public List<GradeType> createGradeTypesFromCSV(InputStream inputStream) throws CsvValidationException, IOException {
         List<String> coefficients = new ArrayList<>();
         List<String> names = new ArrayList<>();
         boolean coefficientsStarted = false;
@@ -169,7 +146,7 @@ public class GradeTypeService {
             }
         }
 
-        return generateImportedGradeTypes(token, coefficients, names);
+        return generateImportedGradeTypes(coefficients, names);
     }
 
     /**
@@ -214,13 +191,34 @@ public class GradeTypeService {
     }
 
 
-    public GradeType findByName(String name, String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, READ_PERMISSION))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        return gradeTypeRepository.findByName(name);
+    public GradeType findByName(String name, String token, Integer projectId) {
+        return gradeTypeRepository.findByNameAndProjectId(name, projectId);
     }
-    
+
+    public void saveGradeScale(Integer id, MultipartFile file, String token) throws IOException {
+        if (!Objects.equals(file.getContentType(), "text/plain")) {
+            CustomLogger.info("File type: " + file.getContentType());
+            throw new IllegalArgumentException("Only TXT files are allowed");
+        }
+        if (file.getSize() > 65 * 1024) { // 65 KB in bytes
+            throw new IllegalArgumentException("File size should not exceed 65 KB");
+        }
+            GradeType gradeType = gradeTypeRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
+
+            byte[] txtBytes = file.getBytes();
+            gradeType.scaleTXTBlob(txtBytes);
+            gradeTypeRepository.save(gradeType);
+    }
+
+    public byte[] getBLOBScale(int id, String token) {
+        GradeType gradeType = gradeTypeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
+        CustomLogger.info("Size of the PDF: " + gradeType.scaleTXTBlob().length);
+        return gradeType.scaleTXTBlob();
+    }
+
+    public void deleteGradeScale(Integer id, String token) {
+        gradeTypeRepository.deleteById(id);
+    }
 }
-
-

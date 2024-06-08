@@ -5,6 +5,7 @@ import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -14,14 +15,18 @@ public interface GradeTypeRepository extends JpaRepository<GradeType, Integer> {
 	@Query("SELECT g FROM GradeType g WHERE g.forGroup")
 	List<GradeType> findAllForGroup();
 
-	@Query("SELECT gt FROM GradeType gt WHERE gt.imported = true")
-	List<GradeType> findAllImported();
 
-	@Query("SELECT gt FROM GradeType gt WHERE gt.imported = false")
-	List<GradeType> findAllUnimported();
+	@Query("SELECT gt FROM GradeType gt WHERE gt.imported = true AND gt.project.id = :projectId")
+	List<GradeType> findAllImported(Integer projectId);
+
+	@Query("SELECT gt FROM GradeType gt WHERE gt.imported = false AND gt.project.id = :projectId")
+	List<GradeType> findAllUnimported(Integer projectId);
 
 	@Query("SELECT gt FROM GradeType gt WHERE gt.name = :name")
 	GradeType findByName(String name);
+
+	@Query("SELECT g FROM GradeType g WHERE g.name = :name AND g.project.id = :projectId")
+	GradeType findByNameAndProjectId(String name, Integer projectId);
 
 	@Modifying
 	@Transactional

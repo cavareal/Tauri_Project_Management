@@ -17,5 +17,6 @@ const style = cn(
 
 <template>
 	<ManIcon v-if="props.gender === 'MAN'" :class="style" />
-	<WomanIcon v-else :class="style" />
+	<WomanIcon v-else-if="props.gender === 'WOMAN'" :class="style" />
+	<div v-else ></div>
 </template>

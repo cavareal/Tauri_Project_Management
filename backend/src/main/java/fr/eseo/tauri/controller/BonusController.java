@@ -25,77 +25,71 @@ public class BonusController {
 
     /**
      * Get a bonus by its id
-     * @param token the token of the user
      * @param id the id of the bonus
      * @return the bonus
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Bonus> getBonusById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Bonus bonus = bonusService.getBonusById(token, id);
+    public ResponseEntity<Bonus> getBonusById(@PathVariable Integer id) {
+        Bonus bonus = bonusService.getBonusById(id);
         return ResponseEntity.ok(bonus);
     }
 
     /**
      * Get all bonuses by project
-     * @param token the token of the user
      * @param projectId the id of the project
      * @return the list of bonuses
      */
     @GetMapping
-    public ResponseEntity<List<Bonus>> getAllBonusesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        List<Bonus> bonuses = bonusService.getAllBonusesByProject(token, projectId);
+    public ResponseEntity<List<Bonus>> getAllBonusesByProject(@RequestParam("projectId") Integer projectId) {
+        List<Bonus> bonuses = bonusService.getAllBonusesByProject(projectId);
         return ResponseEntity.ok(bonuses);
     }
 
     /**
      * Create a bonus
-     * @param token the token of the user
      * @param bonus the bonus to create
      * @return a message
      */
     @PostMapping
-    public ResponseEntity<String> createBonus(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Bonus bonus) {
-        bonusService.createBonus(token, bonus);
+    public ResponseEntity<String> createBonus(@Validated(Create.class) @RequestBody Bonus bonus) {
+        bonusService.createBonus(bonus);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
 
     /**
      * Update a bonus
-     * @param token the token of the user
      * @param id the id of the bonus
      * @param updatedBonus the bonus to update
      * @return a message
      */
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class)@RequestBody Bonus updatedBonus) {
-        bonusService.updateBonus(token, id, updatedBonus);
+    public ResponseEntity<String> updateBonus(@PathVariable Integer id, @Validated(Update.class)@RequestBody Bonus updatedBonus) {
+        bonusService.updateBonus(id, updatedBonus);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     /**
      * Delete a bonus
-     * @param token the token of the user
      * @param id the id of the bonus
      * @return a message
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        bonusService.deleteBonus(token, id);
+    public ResponseEntity<String> deleteBonus(@PathVariable Integer id) {
+        bonusService.deleteBonus(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     /**
      * Delete all bonuses
-     * @param token the token of the user
      * @param projectId the id of the project
      * @return a message
      */
     @DeleteMapping
-    public ResponseEntity<String> deleteAllBonusesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        bonusService.deleteAllBonusesByProject(token, projectId);
+    public ResponseEntity<String> deleteAllBonusesByProject(@RequestParam("projectId") Integer projectId) {
+        bonusService.deleteAllBonusesByProject(projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }

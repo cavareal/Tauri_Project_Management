@@ -21,6 +21,9 @@ public class Project implements Serializable {
     @JsonProperty
     private Integer id;
 
+    @JsonProperty
+    private String name = "Nouveau projet";
+
     @NotNull(groups = { Create.class }, message = "The nbTeams field is required")
     @JsonProperty
     private Integer nbTeams;
@@ -33,5 +36,9 @@ public class Project implements Serializable {
     @Column(name="phase")
     @JsonProperty
     private ProjectPhase phase = ProjectPhase.COMPOSING;
+
+    @JsonProperty
+    @Column(columnDefinition = "TINYINT(1)")
+    private Boolean actual = false;
 
 }

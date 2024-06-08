@@ -25,9 +25,6 @@ import static org.mockito.Mockito.*;
 class PermissionsServiceTest {
 
     @Mock
-    private AuthService authService;
-
-    @Mock
     private PermissionRepository permissionRepository;
 
     @InjectMocks
@@ -40,178 +37,95 @@ class PermissionsServiceTest {
 
     @Test
     void getPermissionByIdShouldReturnPermissionWhenAuthorizedAndIdExists() {
-        String token = "validToken";
         Integer id = 1;
         Permission permission = new Permission();
         permission.id(id);
 
-        when(authService.checkAuth(token, "readPermission")).thenReturn(true);
         when(permissionRepository.findById(id)).thenReturn(Optional.of(permission));
 
-        Permission result = permissionService.getPermissionById(token, id);
+        Permission result = permissionService.getPermissionById(id);
 
         assertEquals(permission, result);
     }
 
     @Test
-    void getPermissionByIdShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "readPermission")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> permissionService.getPermissionById(token, id));
-    }
-
-    @Test
     void getPermissionByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
-        String token = "validToken";
         Integer id = 1;
 
-        when(authService.checkAuth(token, "readPermission")).thenReturn(true);
         when(permissionRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> permissionService.getPermissionById(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> permissionService.getPermissionById(id));
     }
 
     @Test
     void getAllPermissionsShouldReturnAllPermissionsWhenAuthorized() {
-        String token = "validToken";
         List<Permission> permissions = Arrays.asList(new Permission(), new Permission());
 
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(true);
         when(permissionRepository.findAll()).thenReturn(permissions);
 
-        List<Permission> result = permissionService.getAllPermissions(token);
+        List<Permission> result = permissionService.getAllPermissions();
 
         assertEquals(permissions, result);
-    }
-
-    @Test
-    void getAllPermissionsShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> permissionService.getAllPermissions(token));
     }
 
     @Test
     void getAllPermissionsByRoleShouldReturnPermissionsWhenAuthorizedAndRoleExists() {
-        String token = "validToken";
         RoleType roleType = RoleType.SUPERVISING_STAFF;
         List<Permission> permissions = Arrays.asList(new Permission(), new Permission());
 
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(true);
         when(permissionRepository.findByRole(roleType)).thenReturn(permissions);
 
-        List<Permission> result = permissionService.getAllPermissionsByRole(token, roleType);
+        List<Permission> result = permissionService.getAllPermissionsByRole(roleType);
 
         assertEquals(permissions, result);
     }
 
     @Test
-    void getAllPermissionsByRoleShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        RoleType roleType = RoleType.SUPERVISING_STAFF;
-
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> permissionService.getAllPermissionsByRole(token, roleType));
-    }
-
-    @Test
     void getAllPermissionsByRoleShouldReturnEmptyListWhenNoPermissionsForRole() {
-        String token = "validToken";
         RoleType roleType = RoleType.SUPERVISING_STAFF;
 
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(true);
         when(permissionRepository.findByRole(roleType)).thenReturn(new ArrayList<>());
 
-        List<Permission> result = permissionService.getAllPermissionsByRole(token, roleType);
+        List<Permission> result = permissionService.getAllPermissionsByRole(roleType);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
     void createPermissionShouldSavePermissionWhenAuthorized() {
-        String token = "validToken";
         Permission permission = new Permission();
 
-        when(authService.checkAuth(token, "addPermission")).thenReturn(true);
-
-        permissionService.createPermission(token, permission);
+        permissionService.createPermission(permission);
 
         verify(permissionRepository, times(1)).save(permission);
     }
 
     @Test
-    void createPermissionShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Permission permission = new Permission();
-
-        when(authService.checkAuth(token, "addPermission")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> permissionService.createPermission(token, permission));
-    }
-
-    @Test
     void deletePermissionShouldDeletePermissionWhenAuthorizedAndIdExists() {
-        String token = "validToken";
         Integer id = 1;
         Permission permission = new Permission();
         permission.id(id);
 
-        when(authService.checkAuth(token, "deletePermission")).thenReturn(true);
-        when(authService.checkAuth(token, "readPermission")).thenReturn(true);
         when(permissionRepository.findById(id)).thenReturn(Optional.of(permission));
 
-        permissionService.deletePermission(token, id);
+        permissionService.deletePermission(id);
 
         verify(permissionRepository, times(1)).deleteById(id);
     }
 
     @Test
-    void deletePermissionShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "deletePermission")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> permissionService.deletePermission(token, id));
-    }
-
-    @Test
     void deletePermissionShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
-        String token = "validToken";
         Integer id = 1;
 
-        when(authService.checkAuth(token, "deletePermission")).thenReturn(true);
-        when(authService.checkAuth(token, "readPermission")).thenReturn(true);
         when(permissionRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> permissionService.deletePermission(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> permissionService.deletePermission(id));
     }
 
     @Test
     void deleteAllPermissionsShouldDeleteAllPermissionsWhenAuthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "deletePermission")).thenReturn(true);
-        when(authService.checkAuth(token, "readPermission")).thenReturn(true);
-
-        permissionService.deleteAllPermissions(token);
+        permissionService.deleteAllPermissions();
 
         verify(permissionRepository, times(1)).deleteAll();
-    }
-
-    @Test
-    void deleteAllPermissionsShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "deletePermission")).thenReturn(false);
-        when(authService.checkAuth(token, "readPermission")).thenReturn(true);
-
-        assertThrows(SecurityException.class, () -> permissionService.deleteAllPermissions(token));
     }
 }

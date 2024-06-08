@@ -34,16 +34,6 @@ class AuthServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void checkAuthShouldReturnTrueWhenPermissionExists() {
-        String token = "validToken";
-        String permission = "validPermission";
-
-        Boolean result = authService.checkAuth(token, permission);
-
-        assertTrue(result);
-    }
-
 //    @Test
 //    void loginShouldReturnAuthResponseWhenCredentialsMatch() {
 //        String login = "validLogin";
