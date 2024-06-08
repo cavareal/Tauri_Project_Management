@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
 import { ref } from "vue"
 import { hasPermission } from "@/services/user"

@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.ValidationFlag;
@@ -21,24 +20,18 @@ public class ValidationFlagService {
     private final RoleService roleService;
     private final TeamService teamService;
 
-    public ValidationFlag getValidationFlagByAuthorId(String token, Integer flagId, Integer authorId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationFlag"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public ValidationFlag getValidationFlagByAuthorId(Integer flagId, Integer authorId) {
         return validationFlagRepository.findByAuthorIdAndFlagId(flagId, authorId);
     }
 
-    public List<ValidationFlag> getAllValidationFlags(String token, Integer flagId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readValidationFlags"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<ValidationFlag> getAllValidationFlags(Integer flagId) {
         return validationFlagRepository.findAllByFlag(flagId);
     }
 
-    public void createValidationFlags(String token, Flag flag) {
-        if(userService.getRolesByUserId(token, flag.author().id()).contains(RoleType.OPTION_STUDENT)){
-            List<Student> students = teamService.getStudentsByTeamId(token, flag.firstStudent().team().id());
-            students.addAll(teamService.getStudentsByTeamId(token, flag.secondStudent().team().id()));
+    public void createValidationFlags(Flag flag) {
+        if(userService.getRolesByUserId(flag.author().id()).contains(RoleType.OPTION_STUDENT)){
+            List<Student> students = teamService.getStudentsByTeamId(flag.firstStudent().team().id());
+            students.addAll(teamService.getStudentsByTeamId(flag.secondStudent().team().id()));
             for(Student student: students){
                 ValidationFlag validationFlag = new ValidationFlag();
                 validationFlag.flag(flag);
@@ -58,7 +51,7 @@ public class ValidationFlagService {
 
     public void createValidationFlag(String token, Integer flagId, ValidationFlag validationFlag) {
         validationFlag.flag(new Flag().id(flagId));
-        validationFlag.author(userService.getUserById(token, validationFlag.authorId()));
+        validationFlag.author(userService.getUserById(validationFlag.authorId()));
         validationFlagRepository.save(validationFlag);
     }
 }
