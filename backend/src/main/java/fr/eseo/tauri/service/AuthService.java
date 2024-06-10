@@ -34,7 +34,7 @@ public class AuthService {
     private final ProjectRepository projectRepository;
 
     @Value("${app.log.with.ldap}")
-    private Boolean prodProperty;
+    private String prodProperty;
 
 
     public String getNameFromEmail(String email) {
@@ -58,7 +58,7 @@ public class AuthService {
         try {
             User user;
 
-            if(prodProperty){       // Auth with LDAP
+            if(prodProperty.equals("true")){       // Auth with LDAP
                 Authentication authentication = authenticate(email, password);
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
