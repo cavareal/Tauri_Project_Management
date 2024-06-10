@@ -9,7 +9,6 @@ import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.TeamRepository;
 
@@ -144,7 +143,7 @@ public class TeamService {
      * Auto generate teams with students according to the given number of teams and the number of women per team.
      * FUTURE :  create teams with the same average grade
      */
-    public void generateTeams(Integer projectId, Project projectDetails) {
+    public void generateTeams(Integer projectId, Project projectDetails, boolean autoWomenRatio) {
         CustomLogger.info("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGenderAndProjectId(Gender.WOMAN, projectId);
@@ -160,7 +159,7 @@ public class TeamService {
         }
         projectService.updateProject(projectId, projectDetails);
         List<Team> teams = this.createTeams(projectId, nbTeams);
-        this.fillTeams(teams, women, men, womenPerTeam, nbStudent, false, projectId);
+        this.fillTeams(teams, women, men, womenPerTeam, nbStudent, autoWomenRatio, projectId);
     }
 
     /**
@@ -170,14 +169,14 @@ public class TeamService {
      * @param men the list of men students
      * @param womenPerTeam the number of women per team
      */
-    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent, boolean autoRatio, Integer projectId) {
+    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent, boolean autoWomenRatio, Integer projectId) {
         int nbTeams = teams.size();
         int nbWomen = women.size();
 
         int index;
 
         // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
-        if (!autoRatio) {
+        if (!autoWomenRatio) {
             for (int i = 0; i < nbTeams; i++) {
                 for (int j = 0; j < womenPerTeam; j++) {
                     Student student;
@@ -204,7 +203,7 @@ public class TeamService {
 
         // re-order the teams by average grade
         CustomLogger.info("Teams before sorting : " + teams);
-        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);
+        List<Team> sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);
 
         index = nbTeams * womenPerTeam;
 

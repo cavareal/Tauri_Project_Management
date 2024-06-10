@@ -1,8 +1,7 @@
 <script setup lang="ts">
 
 import { Row, Column } from "@/components/atoms/containers"
-import InfoText from "@/components/atoms/texts/InfoText.vue"
-import Subtitle from "@/components/atoms/texts/Subtitle.vue"
+import { InfoText, Subtitle } from "@/components/atoms/texts"
 
 defineProps<{
 	title: string

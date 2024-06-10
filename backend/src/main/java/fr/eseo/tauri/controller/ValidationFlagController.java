@@ -42,9 +42,9 @@ public class ValidationFlagController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createValidationFlagsForAFlag(@RequestHeader("Authorization") String token, @PathVariable Integer flagId, @Validated(Update.class) @RequestBody ValidationFlag validationFlag) {
+    public ResponseEntity<String> createValidationFlagsForAFlag(@PathVariable Integer flagId, @Validated(Update.class) @RequestBody ValidationFlag validationFlag) {
         System.out.println("flagId: " + flagId);
-        validationFlagService.createValidationFlag(token, flagId, validationFlag);
+        validationFlagService.createValidationFlag(flagId, validationFlag);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
