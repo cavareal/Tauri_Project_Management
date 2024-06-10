@@ -90,7 +90,7 @@ const onGradeChange = (value: string | number) => {
 		<Row :class="rowClass">
 			<Label>Bachelor :</Label>
 			<div class="flex justify-end">
-				<Switch id="Bachelor" v-model="bachelor"/>
+				<Switch id="Bachelor" :checked="bachelor" @update:checked="value => bachelor = value"/>
 			</div>
 		</Row>
 		<Row :class="rowClass">
