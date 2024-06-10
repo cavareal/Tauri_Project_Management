@@ -29,15 +29,15 @@ const DIALOG_DESCRIPTION = "Vous pouvez ajouter un étudiant en remplissant les 
 
 const { mutate: addStudent, isPending, error } = useMutation({ mutationKey: ["add-student"], mutationFn: async() => {
 	await createStudent({
-		name: lastName.value + firstName.value,
+		name: lastName.value + " " +  firstName.value,
 		gender: gendered.value,
-		grade: Number(grade.value),
+		//grade: Number(grade.value),
 		bachelor: bachelor.value
 	})
 		.then(() => lastName.value = "")
 		.then(() => firstName.value = "")
 		.then(() => gendered.value = "")
-		.then(() => grade.value = "")
+		//.then(() => grade.value = "")
 		.then(() => bachelor.value = false)
 		.then(() => createToast("L'étudiant a bien été ajouté."))
 		.then(() => open.value = false)
@@ -53,6 +53,7 @@ const onGradeChange = (value: string | number) => {
 		return
 	}
 	grade.value = value.toString()
+	console.log(bachelor.value)
 }
 
 </script>

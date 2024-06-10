@@ -80,8 +80,8 @@ export const createStudent = async(body: Omit<CreateStudent, "privateKey" | "ema
 		body: {
 			...body,
 			email: "",
-			password: null,
-			privateKey: null,
+			password: "",
+			privateKey: "",
 			projectId: currentProjectId
 		},
 		bodySchema: z.unknown()

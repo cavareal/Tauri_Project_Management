@@ -58,6 +58,10 @@ public class StudentService {
     public void createStudent(Student student) {
         if(student.projectId() != null) student.project(projectService.getProjectById(student.projectId()));
         if(student.teamId() != null)student.team(teamService.getTeamById(student.teamId()));
+        if(Objects.equals(student.email(), "")){
+            String[] nameParts = student.name().split(" ");
+            student.email(nameParts[1].toLowerCase() + "." + nameParts[0].toLowerCase() + "@reseau.eseo.fr");
+        }
         studentRepository.save(student);
 
         Role role = new Role();

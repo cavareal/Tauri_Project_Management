@@ -41,8 +41,8 @@ public class StudentController {
 	}
 
 	@PostMapping
-	public ResponseEntity<String> createStudent(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Student student) {
-		studentService.createStudent(token, student);
+	public ResponseEntity<String> createStudent(@Validated(Create.class) @RequestBody Student student, @RequestParam Integer projectId ) {
+		studentService.createStudent( student);
 		CustomLogger.info(responseMessage.create());
 		return ResponseEntity.ok(responseMessage.create());
 	}
