@@ -11,7 +11,7 @@ import { ArrowLeftRight, User } from "lucide-vue-next"
 import { Subtitle } from "@/components/atoms/texts"
 
 const props = defineProps<{
-  isPl: boolean
+	isPl: boolean
 }>()
 
 const { data: flags } = useQuery({
@@ -30,30 +30,26 @@ const { data: flags } = useQuery({
 </script>
 
 <template>
-  <div v-if="!props.isPl">
-    <div v-for="flag in flags" :key="flag.id">
-      <SwitchStudentsFlag v-if="flag.status === null" :flag="flag" :isPl="props.isPl"/>
-    </div>
-  </div>
-  <div v-else>
-    <Row v-if="flags && flags.length>0" class="gap-4 border rounded-lg p-2 md:p-6 bg-white justify-between">
-      <Row>
-        <Row class="mr-2">
-          <User/>
-          <ArrowLeftRight/>
-          <User/>
-        </Row>
-        <Subtitle class="text-center w-[80%]">Demandes de modification d'équipe</Subtitle>
-      </Row>
-      <PlViewSwitchStudentsFlag :flags="flags" :isPl="props.isPl">
-        <Button variant="outline">
-          Voir les demandes
-        </Button>
-      </PlViewSwitchStudentsFlag>
-    </Row>
-  </div>
+	<div v-if="!props.isPl">
+		<div v-for="flag in flags" :key="flag.id">
+			<SwitchStudentsFlag v-if="flag.status === null" :flag="flag" :isPl="props.isPl" />
+		</div>
+	</div>
+	<div v-else>
+		<Row v-if="flags && flags.length > 0" class="gap-4 border rounded-lg p-2 md:p-6 mb-4 bg-white justify-between">
+			<Row>
+				<Row class="mr-2">
+					<User />
+					<ArrowLeftRight />
+					<User />
+				</Row>
+				<Subtitle class="text-center w-[80%]">Demandes de modification d'équipe</Subtitle>
+			</Row>
+			<PlViewSwitchStudentsFlag :flags="flags" :isPl="props.isPl">
+				<Button variant="outline">
+					Voir les demandes
+				</Button>
+			</PlViewSwitchStudentsFlag>
+		</Row>
+	</div>
 </template>
-
-<style scoped>
-
-</style>

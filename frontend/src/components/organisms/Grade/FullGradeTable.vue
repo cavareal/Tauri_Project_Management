@@ -174,8 +174,8 @@ watch(() => props.teamId, async() => {
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="(student, index) in teamStudents">
-				<TableCell class="font-medium" :class="cellClass">{{student.name}}</TableCell>
+			<TableRow v-for="(student, index) in teamStudents" :key="student.id">
+				<TableCell class="font-medium" :class="cn(cellClass, 'text-left')">{{student.name}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass" >{{averageTeam["Solution Technique"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Gestion de projet"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
