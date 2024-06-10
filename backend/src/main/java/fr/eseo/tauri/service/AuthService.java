@@ -78,7 +78,7 @@ public class AuthService {
         }
     }
 
-    private Authentication authenticate(String email, String password) {
+    public Authentication authenticate(String email, String password) {
         String safeEmail = StringEscapeUtils.escapeHtml4(email);
         String safePassword = StringEscapeUtils.escapeHtml4(password);
         return authenticationManager.authenticate(
