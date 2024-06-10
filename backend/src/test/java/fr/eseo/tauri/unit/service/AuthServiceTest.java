@@ -1,66 +1,60 @@
 package fr.eseo.tauri.unit.service;
 
-import fr.eseo.tauri.model.User;
-import fr.eseo.tauri.security.AuthResponse;
-import fr.eseo.tauri.security.JwtTokenUtil;
+
 import fr.eseo.tauri.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+@Nested
 class AuthServiceTest {
 
     @InjectMocks
     AuthService authService;
 
     @Mock
-    UserDetailsService userDetailsService;
-
-    @Mock
-    PasswordEncoder passwordEncoder;
-
-    @Mock
-    JwtTokenUtil jwtTokenUtil;
+    AuthenticationManager authenticationManager;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
-//    @Test
-//    void loginShouldReturnAuthResponseWhenCredentialsMatch() {
-//        String login = "validLogin";
-//        String password = "validPassword";
-//        User user = new User();
-//        user.password(passwordEncoder.encode(password));
-//
-//        when(userDetailsService.loadUserByUsername(login)).thenReturn(user);
-//        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
-//        when(jwtTokenUtil.generateAccessToken(user)).thenReturn("validToken");
-//
-//        AuthResponse actualResponse = authService.login(login, password);
-//
-//        assertEquals(user.id(), actualResponse.id());
-//        assertEquals("validToken", actualResponse.accessToken());
-//    }
+    @Test
+    @DisplayName("Should throw SecurityException when credentials are incorrect")
+    void shouldThrowSecurityExceptionWhenCredentialsAreIncorrect() {
+        String email = "john.doe@example.com";
+        String password = "wrongpassword";
 
-//    @Test
-//    void loginShouldThrowSecurityExceptionWhenCredentialsDoNotMatch() {
-//        String login = "validLogin";
-//        String password = "validPassword";
-//        User user = new User();
-//        user.password(passwordEncoder.encode("wrongPassword"));
-//
-//        when(userDetailsService.loadUserByUsername(login)).thenReturn(user);
-//        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
-//
-//        assertThrows(SecurityException.class, () -> authService.login(login, password));
-//    }
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("Wrong credentials"));
+
+        assertThrows(SecurityException.class, () -> authService.login(email, password));
+    }
+
+    @Test
+    @DisplayName("Should return Authentication when credentials are correct")
+    void shouldReturnAuthenticationWhenCredentialsAreCorrect() {
+        String email = "john.doe@example.com";
+        String password = "password";
+        Authentication authentication = Mockito.mock(Authentication.class);
+
+        when(authenticationManager.authenticate(any())).thenReturn(authentication);
+
+        Authentication actualAuthentication = authService.authenticate(email, password);
+
+        assertNotNull(actualAuthentication);
+    }
+
 }
