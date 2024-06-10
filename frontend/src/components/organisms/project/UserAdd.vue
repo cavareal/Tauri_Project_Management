@@ -9,90 +9,90 @@ import { createRole } from "@/services/role/role.service"
 import { useMutation } from "@tanstack/vue-query"
 import { createToast } from "@/utils/toast"
 import { type CreateUser } from "@/types/user"
-import { h } from 'vue'
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
+import { h } from "vue"
+import { useForm } from "vee-validate"
+import { toTypedSchema } from "@vee-validate/zod"
+import * as z from "zod"
 
 import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form'
-import { Checkbox } from '@/components/ui/checkbox'
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage
+} from "@/components/ui/form"
+import { Checkbox } from "@/components/ui/checkbox"
 
 
-const userRoles = ref<RoleType[]>([]);
-const userMail = ref<string>("");
-const userName = ref<string>("");
-const createdUser = ref<CreateUser>();
+const userRoles = ref<RoleType[]>([])
+const userMail = ref<string>("")
+const userName = ref<string>("")
+const createdUser = ref<CreateUser>()
 
 const emits = defineEmits(["add:user"])
 
 
 watch(userMail, (newMail) => {
-    if (newMail) {
-        const [firstName, lastNameWithDomain] = newMail.split('@')[0].split('.');
-        if (firstName && lastNameWithDomain) {
-            const lastName = lastNameWithDomain.toUpperCase();
-            const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
-            userName.value = `${lastName} ${formattedFirstName}`;
-        } else {
-            userName.value = "";
-        }
-    }
-});
+	if (newMail) {
+		const [firstName, lastNameWithDomain] = newMail.split("@")[0].split(".")
+		if (firstName && lastNameWithDomain) {
+			const lastName = lastNameWithDomain.toUpperCase()
+			const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1)
+			userName.value = `${lastName} ${formattedFirstName}`
+		} else {
+			userName.value = ""
+		}
+	}
+})
 
 
 const { error, mutate } = useMutation({
-    mutationKey: ["add-new-user"],
-    mutationFn: async () => {
+	mutationKey: ["add-new-user"],
+	mutationFn: async() => {
 
-        if (!userMail.value || !userRoles.value || !userName.value) {
-            alert("Veuillez remplir tous les champs");
-            return
-        }
+		if (!userMail.value || !userRoles.value || !userName.value) {
+			alert("Veuillez remplir tous les champs")
+			return
+		}
 
-        createdUser.value = { name: userName.value, email: userMail.value, password: "", privateKey: "" }
+		createdUser.value = { name: userName.value, email: userMail.value, password: "", privateKey: "" }
 
-        await createUser(createdUser.value)
-            .then(() => {
-                createRole(userMail.value, userRoles.value)
-                    .then(() => {
-                        createToast("L'utilisateur a été ajouté avec son/ses rôle(s)")
-                        userMail.value = "";
-                        userName.value = "";
-                        userRoles.value = [];
-                        emits('add:user')
-                    })
-                    .catch(() => createToast("Erreur lors de la création du/des role(s)"))
-            })
-            .catch(() => {
-                console.log("Error creating user")    
-                createToast("Erreur lors de la création d'un utilisateur. Il se peut que l'email soit déjà enregistrée")
-            })
-    }
+		await createUser(createdUser.value)
+			.then(() => {
+				createRole(userMail.value, userRoles.value)
+					.then(() => {
+						createToast("L'utilisateur a été ajouté avec son/ses rôle(s)")
+						userMail.value = ""
+						userName.value = ""
+						userRoles.value = []
+						emits("add:user")
+					})
+					.catch(() => createToast("Erreur lors de la création du/des role(s)"))
+			})
+			.catch(() => {
+				console.log("Error creating user")
+				createToast("Erreur lors de la création d'un utilisateur. Il se peut que l'email soit déjà enregistrée")
+			})
+	}
 })
 
 
 const formSchema = toTypedSchema(z.object({
-    roles: z.array(z.string()).refine(value => value.some(role => role), {
-        message: 'Vous devez choisir au moins 1 role.',
-    }),
+	roles: z.array(z.string()).refine(value => value.some(role => role), {
+		message: "Vous devez choisir au moins 1 role."
+	})
 }))
 
 const { handleSubmit } = useForm({
-    validationSchema: formSchema,
-    initialValues: {
-        roles: [],
-    },
+	validationSchema: formSchema,
+	initialValues: {
+		roles: []
+	}
 })
 
 const onSubmit = handleSubmit((values) => {
-    userRoles.value = values.roles as RoleType[];
-    mutate()
+	userRoles.value = values.roles as RoleType[]
+	mutate()
 })
 
 </script>
@@ -115,7 +115,7 @@ const onSubmit = handleSubmit((values) => {
                     type="text" v-model="userName" />
             </div>
 
-            <form @submit.prevent="onSubmit" class="flex flex-col">  
+            <form @submit.prevent="onSubmit" class="flex flex-col">
                     <FormField name="items">
                         <FormItem>
                             <div class="mb-4">

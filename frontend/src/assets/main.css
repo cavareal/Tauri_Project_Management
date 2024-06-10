@@ -36,7 +36,20 @@
 		--popover: 0 0% 100%;
 		--popover-foreground: 0 0% 3.9%;
 
-		--primary: 225 48% 23%;
+		/* sidebar */
+		/* --primary: 254 48% 14%; */
+
+		/* indigo */
+		--primary: 253 57% 28%;
+
+		/* bleu foncé */
+		/* --primary: 252 90% 33%; */
+ 
+		/* bleu clair */
+		/* --primary: 204 100% 60%;  */
+
+		/* violet bizarre */
+		/* --primary: 254 49% 34; */
 		--primary-foreground: 0 85.7% 97.3%;
 
 		--secondary: 0 0% 96.1%;

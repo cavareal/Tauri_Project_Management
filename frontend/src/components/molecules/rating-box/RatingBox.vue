@@ -47,7 +47,7 @@ const updateGrade = () => {
 	status.value = "IDLE"
 }
 
-const checkGradeScaleUploaded = async () => {
+const checkGradeScaleUploaded = async() => {
 	try {
 		const gradeType = await getGradeTypeByName(props.gradeTypeName)
 		isGradeScaleUploaded.value = !!gradeType.scaleTXTBlob // Check if the grade scale is present

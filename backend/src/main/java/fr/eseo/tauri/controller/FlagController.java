@@ -7,7 +7,6 @@ import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Create;
 import fr.eseo.tauri.util.valid.Update;
-import fr.eseo.tauri.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,6 @@ public class FlagController {
 
     private final FlagService flagService;
     private final ResponseMessage responseMessage = new ResponseMessage("flag");
-	private final AuthService authService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Flag> getFlagById(@PathVariable Integer id) {
@@ -71,4 +69,10 @@ public class FlagController {
 		List<Flag> flags = flagService.getFlagsByAuthorAndType(authorId, type);
         return ResponseEntity.ok(flags);
 	}
+
+    @GetMapping("/team/{teamId}")
+    public ResponseEntity<List<Flag>> getFlagsByConcernedTeamId(@PathVariable Integer teamId) {
+        List<Flag> flags = flagService.getFlagsByConcernedTeamId(teamId);
+        return ResponseEntity.ok(flags);
+    }
 }

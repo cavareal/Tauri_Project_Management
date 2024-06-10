@@ -2,7 +2,6 @@ import type { Sprint } from "@/types/sprint"
 import { SprintSchema } from "@/types/sprint"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
-import { Cookies } from "@/utils/cookie"
 
 
 export const getSprints = async(): Promise<Sprint[]> => {
@@ -21,6 +20,11 @@ export const getSprints = async(): Promise<Sprint[]> => {
 	}
 
 	return response.data
+}
+
+export const getGradedSprints = async(): Promise<Sprint[]> => {
+	const allSprints = await getSprints()
+	return allSprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
 }
 
 export const addSprint = async(sprint: unknown): Promise<void> => {

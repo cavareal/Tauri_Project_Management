@@ -10,7 +10,6 @@ import fr.eseo.tauri.util.CustomLogger;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 

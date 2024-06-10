@@ -1,67 +1,67 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { Column } from '@/components/atoms/containers';
-import { Button } from '@/components/ui/button';
-import { useMutation } from '@tanstack/vue-query';
-import { createToast } from '@/utils/toast';
-import { type User } from '@/types/user';
-import { Trash } from 'lucide-vue-next';
-import { deleteUser } from '@/services/user/user.service';
-import { formatRole, type RoleType } from '@/types/role';
+import { ref, watch } from "vue"
+import { Column } from "@/components/atoms/containers"
+import { Button } from "@/components/ui/button"
+import { useMutation } from "@tanstack/vue-query"
+import { createToast } from "@/utils/toast"
+import { type User } from "@/types/user"
+import { Trash } from "lucide-vue-next"
+import { deleteUser } from "@/services/user/user.service"
+import { formatRole } from "@/types/role"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
+} from "@/components/ui/dialog"
 import { Cookies } from "@/utils/cookie"
 
-const props = defineProps<{
+defineProps<{
     users: Array<User & { role: string[] }>;
     usersLoading: boolean;
     usersError: any;
     rolesLoading: boolean;
     rolesError: any;
-}>();
+}>()
 
 
 const emits = defineEmits(["delete:user"])
-const userToDelete = ref<number | null>(null);
-const isDialogOpen = ref<boolean>(false);
+const userToDelete = ref<number | null>(null)
+const isDialogOpen = ref<boolean>(false)
 const pojectLeaderId = Cookies.getUserId()
 
-function openDelete(userId: number) {
-    userToDelete.value = userId;
-    isDialogOpen.value = true;
+const openDelete = (userId: number) => {
+	userToDelete.value = userId
+	isDialogOpen.value = true
 }
 
-function getRoleDescription(role: string[]) {
-    return role.map(formatRole);
+const getRoleDescription = (role: string[]) => {
+	return role.map(formatRole)
 }
 
 const { mutate: deleteUserMutate } = useMutation({
-    mutationKey: ['delete-user'],
-    mutationFn: async () => {
-        if (userToDelete.value !== null) {
-            await deleteUser(userToDelete.value)
-                .then(() => {
-                    createToast("L'utilisateur a été supprimé.");
-                    isDialogOpen.value = false;
-                    emits('delete:user')
-                })
-                .catch(() => {
-                    createToast("Erreur lors de la suppression de l'utilisateur.");
-                });
-        }
-    },
-});
+	mutationKey: ["delete-user"],
+	mutationFn: async() => {
+		if (userToDelete.value !== null) {
+			await deleteUser(userToDelete.value)
+				.then(() => {
+					createToast("L'utilisateur a été supprimé.")
+					isDialogOpen.value = false
+					emits("delete:user")
+				})
+				.catch(() => {
+					createToast("Erreur lors de la suppression de l'utilisateur.")
+				})
+		}
+	}
+})
 
 watch(isDialogOpen, (newVal) => {
-    if (!newVal) userToDelete.value = null;
-});
+	if (!newVal) userToDelete.value = null
+})
 </script>
 
 <template>

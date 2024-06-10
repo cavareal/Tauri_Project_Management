@@ -1,12 +1,12 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.Permission;
-import fr.eseo.tauri.model.Role;
-import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
+import fr.eseo.tauri.repository.StudentRepository;
+import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.service.PermissionService;
 import fr.eseo.tauri.service.RoleService;
 import fr.eseo.tauri.service.UserService;
@@ -34,6 +34,12 @@ class RoleServiceTest {
 
     @Mock
     private PermissionService permissionService;
+
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private StudentRepository studentRepository;
 
     @InjectMocks
     private RoleService roleService;
@@ -156,4 +162,52 @@ class RoleServiceTest {
         assertFalse(result);
     }
 
+//    @Test
+//    void createRolesShouldCreateStudentRoleAndDeleteUserWhenRoleTypeIsOptionStudent() {
+//        String email = "test.test@test.com";
+//        RoleType[] roles = {RoleType.OPTION_STUDENT};
+//        Integer projectId = 1;
+//
+//        User user = new User();
+//        user.email(email);
+//
+//        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+//        when(studentRepository.save(any())).thenReturn(new Student());
+//        when(GradeTypeRepository.findByNameAndProjectId(any(), projectId)).thenReturn(new GradeType());
+//
+//        roleService.createRoles(email, roles, projectId);
+//
+//        verify(userRepository, times(1)).delete(user);
+//        verify(roleService, times(1)).createStudentRoleAndGrades(email, projectId, RoleType.OPTION_STUDENT);
+//    }
+
+    @Test
+    void createRolesShouldCreateRoleWhenRoleTypeIsNotOptionStudent() {
+        String email = "test@test.com";
+        RoleType[] roles = {RoleType.OPTION_LEADER};
+        Integer projectId = 1;
+
+        User user = new User();
+        user.email(email);
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+        roleService.createRoles(email, roles, projectId);
+
+        verify(roleRepository, times(1)).save(any(Role.class));
+    }
+
+    /*@Test
+    void createRolesShouldNotCreateRoleWhenUserNotFound() {
+        String email = "test@test.com";
+        RoleType[] roles = {RoleType.OPTION_LEADER};
+        Integer projectId = 1;
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        roleService.createRoles(email, roles, projectId);
+
+        verify(roleRepository, never()).save(any(Role.class));
+    }
+*/
 }

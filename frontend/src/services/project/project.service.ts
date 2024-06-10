@@ -45,51 +45,51 @@ export const updateProject = async(body: UpdateProject): Promise<void> => {
 
 
 export const createProject = async(body: CreateProject): Promise<void> => {
-    const response = await mutateAndValidate({
-        method: "POST",
-        route: `projects`,
-        body,
-        bodySchema: CreateProjectSchema
-    })
+	const response = await mutateAndValidate({
+		method: "POST",
+		route: "projects",
+		body,
+		bodySchema: CreateProjectSchema
+	})
 
-    if (response.status === "error") {
-        throw new Error(response.error)
-    }
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }
 
 export const setActualProject = async(idNewActualProject: number): Promise<void> => {
-    const response = await mutateAndValidate({
-        method: "POST",
-        route: `projects/actual/${idNewActualProject}`,
-    })
+	const response = await mutateAndValidate({
+		method: "POST",
+		route: `projects/actual/${idNewActualProject}`
+	})
 
-    if (response.status === "error") {
-        throw new Error(response.error)
-    }
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }
 
 
 export const getAllProjects = async(): Promise<Project[]> => {
-    const response = await queryAndValidate({
-        route: `projects`,
-        responseSchema: ProjectSchema.array()
-    })
+	const response = await queryAndValidate({
+		route: "projects",
+		responseSchema: ProjectSchema.array()
+	})
 
-    if (response.status === "error") {
-        throw new Error(response.error)
-    }
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 
-    return response.data
+	return response.data
 }
 
 
 export const deleteProject = async(id: number): Promise<void> => {
-    const response = await mutateAndValidate({
-        method: "DELETE",
-        route: `projects/${id}`,
-    })
+	const response = await mutateAndValidate({
+		method: "DELETE",
+		route: `projects/${id}`
+	})
 
-    if (response.status === "error") {
-        throw new Error(response.error)
-    }
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }

@@ -1,62 +1,61 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { hasPermission } from '@/services/user/user.service';
-import UserAdd from './../../organisms/project/UserAdd.vue';
-import UserList from './../../organisms/project/UserList.vue';
-import { getAllUsers } from '@/services/user/user.service';
-import { getAllRoles } from '@/services/role/role.service';
-import { type User } from '@/types/user';
-import { type Role, type RoleType } from '@/types/role';
-import Column from '@/components/atoms/containers/Column.vue';
+import { ref, computed, onMounted } from "vue"
+import { hasPermission } from "@/services/user/user.service"
+import UserAdd from "./../../organisms/project/UserAdd.vue"
+import UserList from "./../../organisms/project/UserList.vue"
+import { getAllUsers } from "@/services/user/user.service"
+import { getAllRoles } from "@/services/role/role.service"
+import { type User } from "@/types/user"
+import { type Role, type RoleType } from "@/types/role"
+import Column from "@/components/atoms/containers/Column.vue"
 
-const users = ref<User[]>([]);
-const roles = ref<Role[]>([]);
-const usersLoading = ref(true);
-const rolesLoading = ref(true);
-const usersError = ref(false);
-const rolesError = ref(false);
+const users = ref<User[]>([])
+const roles = ref<Role[]>([])
+const usersLoading = ref(true)
+const rolesLoading = ref(true)
+const usersError = ref(false)
+const rolesError = ref(false)
 
-onMounted(async () => {
-    refetch()
-});
+onMounted(async() => {
+	refetch()
+})
 
-async function refetch() {
-    try {
-        users.value = await getAllUsers();
-    } catch (error) {
-        usersError.value = true;
-    } finally {
-        usersLoading.value = false;
-        usersError.value = false;
-    }
+const refetch = async() => {
+	try {
+		users.value = await getAllUsers()
+	} catch (error) {
+		usersError.value = true
+	} finally {
+		usersLoading.value = false
+		usersError.value = false
+	}
 
-    try {
-        roles.value = await getAllRoles();
-    } catch (error) {
-        rolesError.value = true;
-    } finally {
-        rolesLoading.value = false;
-        rolesError.value = false;
-    }
+	try {
+		roles.value = await getAllRoles()
+	} catch (error) {
+		rolesError.value = true
+	} finally {
+		rolesLoading.value = false
+		rolesError.value = false
+	}
 }
 
 
-
 const combinedData = computed(() => {
-    return users.value.map(user => ({
-        ...user,
-        role: getListOfRoles(user)
-    }));
-});
+	return users.value.map(user => ({
+		...user,
+		role: getListOfRoles(user)
+	}))
+})
 
-function getListOfRoles(user: User) {
-    const rolesOfUser: RoleType[] = [];
-    roles.value.forEach(role => {
-        if (role.user.id === user.id) {
-            rolesOfUser.push(role.type);
-        }
-    });
-    return rolesOfUser;
+const getListOfRoles = (user: User) => {
+	const rolesOfUser: RoleType[] = []
+	roles.value.forEach(role => {
+		if (role.user.id === user.id) {
+			rolesOfUser.push(role.type)
+		}
+	})
+	return rolesOfUser
 }
 
 </script>

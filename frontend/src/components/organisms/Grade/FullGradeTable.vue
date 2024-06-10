@@ -1,7 +1,7 @@
 <script setup lang="ts">
+
 import {
 	Blocks,
-	Info,
 	LucideCircleFadingPlus,
 	LucideCirclePlus,
 	Play,
@@ -10,7 +10,6 @@ import {
 	User,
 	Users
 } from "lucide-vue-next"
-import Tooltip from "@/components/molecules/tooltip/Tooltip.vue"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Row } from "@/components/atoms/containers"
 import { cn } from "@/utils/style"
@@ -26,6 +25,8 @@ import {
 	getTeamAverage,
 	getTeamTotalGrade
 } from "@/services/grade"
+import { GradeTooltip } from "@/components/molecules/tooltip"
+import { getGradeFormula } from "@/types/grade-type"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2 ")
 const cellClass = cn("py-2 h-auto mt-2 mb-2 text-center")
@@ -71,12 +72,10 @@ const { data: totalGrade, ...queryTotalGrade } = useQuery({
 	queryFn: () => getTeamTotalGrade(Number(props.teamId), Number(props.sprintId))
 })
 
-
 const { data: totalIndividualGrades, ...queryTotalIndividualGrades } = useQuery({
 	queryKey: ["individual", props.teamId, props.sprintId],
 	queryFn: () => getIndividualTotalGrades(Number(props.teamId), Number(props.sprintId))
 })
-
 
 watch(() => props.teamId, async() => {
 	if (props.teamId !== oldTeamId) {
@@ -121,9 +120,7 @@ watch(() => props.teamId, async() => {
 					<div class="flex items-center justify-center">
 						<Row>
 							<div class="mr-2">Total équipe</div>
-							<Tooltip expression="\text{Total équipe}= \\ \frac{\text{Solution Technique} + \text{Gestion de projet} + \text{Conformité au sprint} + \text{Présentation}} {4}" position="left-0">
-								<Info :stroke-width="1" :size="20"/>
-							</Tooltip>
+							<GradeTooltip :formula="getGradeFormula('TE')" />
 						</Row>
 					</div>
 				</TableHead>
@@ -140,9 +137,7 @@ watch(() => props.teamId, async() => {
 				<TableHead :class="rowClass" >
 					<Row>
 						<div class="mr-2 flex items-center justify-center">Total Bonus</div>
-						<Tooltip expression="\text{Total Bonus}= \text{Bonus/Malus limités} + \text{Bonus/Malus illimités}" position="right-0">
-							<Info :stroke-width="1" :size="20"/>
-						</Tooltip>
+						<GradeTooltip :formula="getGradeFormula('TB')" />
 					</Row>
 				</TableHead>
 				<TableHead :class="rowClass" title="Performance globale de l'équipe">
@@ -158,24 +153,20 @@ watch(() => props.teamId, async() => {
 				<TableHead :class="rowClass" >
 					<Row>
 						<div class="mr-2 flex items-center justify-center">Total individuel</div>
-						<Tooltip expression="\text{Total Individuel}= \\ \frac{\text{Performance Globale} + 2 \times \text{Performance Individuelle}}{3}" position="right-0">
-							<Info :stroke-width="1" :size="20"/>
-						</Tooltip>
+						<GradeTooltip :formula="getGradeFormula('TI')" />
 					</Row>
 				</TableHead>
 				<TableHead :class="rowClass" >
 					<Row>
 						<div class="mr-2 flex items-center justify-center">Note finale</div>
-						<Tooltip expression="\text{Note finale}= \\ 0.7 \times (\text{Total équipes + Total Bonus}) + \ 0.3 \times \text{Total Individuel}" position="right-0">
-							<Info :stroke-width="1" :size="20"/>
-						</Tooltip>
+						<GradeTooltip :formula="getGradeFormula('NF')" />
 					</Row>
 				</TableHead>
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="(student, index) in teamStudents">
-				<TableCell class="font-medium" :class="cellClass">{{student.name}}</TableCell>
+			<TableRow v-for="(student, index) in teamStudents" :key="student.id">
+				<TableCell class="font-medium" :class="cn(cellClass, 'text-left')">{{student.name}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass" >{{averageTeam["Solution Technique"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Gestion de projet"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
@@ -192,7 +183,3 @@ watch(() => props.teamId, async() => {
 		</TableBody>
 	</Table>
 </template>
-
-<style scoped>
-
-</style>

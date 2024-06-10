@@ -72,3 +72,16 @@ export const updateFlag = async(id: number, body: Partial<Flag>): Promise<void> 
 		throw new Error(response.error)
 	}
 }
+
+export const getFlagsByConcernedTeam = async(teamId: number): Promise<Flag[]> => {
+	const response = await queryAndValidate({
+		route: `flags/team/${teamId}`,
+		responseSchema: z.array(FlagSchema)
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}

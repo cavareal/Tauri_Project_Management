@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.model.Sprint;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -26,6 +26,8 @@ public class SprintService {
     private final StudentService studentService;
     private final PresentationOrderService presentationOrderService;
     private final BonusService bonusService;
+    @Lazy
+    private final TeamService teamService;
 
     public Sprint getSprintById(Integer id) {
 
@@ -41,11 +43,18 @@ public class SprintService {
 
         sprint.project(projectService.getProjectById(sprint.projectId()));
         sprintRepository.save(sprint);
-        List<Student> students = studentService.getAllStudentsByProject(sprint.projectId());
+		List<Student> students = studentService.getAllStudentsByProject(sprint.projectId());
         if(!students.isEmpty()) {
+            var teamsIndexes = new HashMap<Integer, Integer>();
+            for (var team : teamService.getAllTeamsByProject(sprint.projectId())) {
+                teamsIndexes.put(team.id(), 0);
+            }
             for (Student student : students) {
-                PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
-                presentationOrderService.createPresentationOrder(presentationOrder);
+				var presentationOrder = new PresentationOrder(sprint, student);
+				var value = teamsIndexes.get(student.team().id());
+				presentationOrder.value(value);
+				teamsIndexes.put(student.team().id(), value + 1);
+				presentationOrderService.createPresentationOrder(presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
                 bonusService.createBonus(limitedBonus);

@@ -42,10 +42,9 @@ const { data: myTeam } = useQuery({
 })
 
 const getTeamName = (team: Team) => {
-	//let name = team.name ?? `Équipe ${team.id}`
 	if (myTeam.value?.id === team.id) {
 		let name = team.name ?? `Équipe ${team.id}`
-		return name += " (Mon équipe)"
+		return name + " (Mon équipe)"
 	}
 }
 
@@ -61,8 +60,8 @@ const style = cn("w-56")
 			<SelectValue />
 		</SelectTrigger>
 		<SelectContent>
-			<SelectItem  :value="myTeam.id.toString()" v-if="myTeam">{{ getTeamName(myTeam) }}</SelectItem>
-			<SelectItem  value="autres équipes">Autres équipes</SelectItem>
+			<SelectItem :value="myTeam.id.toString()" v-if="myTeam">{{ getTeamName(myTeam) }}</SelectItem>
+			<SelectItem value="autres équipes">Autres équipes</SelectItem>
 		</SelectContent>
 	</Select>
 </template>

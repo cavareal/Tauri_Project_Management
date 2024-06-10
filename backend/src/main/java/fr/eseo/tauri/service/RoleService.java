@@ -58,7 +58,7 @@ public class RoleService {
 		}
 	}
 
-	private void createStudentRoleAndGrades(String email,Integer projectId, RoleType roleType){
+	public void createStudentRoleAndGrades(String email, Integer projectId, RoleType roleType){
 
 		Student student = new Student();
 		student.project(new Project().id(projectId));

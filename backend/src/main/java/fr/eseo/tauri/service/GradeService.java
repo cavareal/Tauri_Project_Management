@@ -10,7 +10,6 @@ import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.GradeRepository;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
-import static fr.eseo.tauri.util.ListUtil.contains;
 import static fr.eseo.tauri.util.ListUtil.filter;
 
 @Service
@@ -53,18 +51,28 @@ public class GradeService {
     }
 
     public void createGrade(Grade grade) {
+        checkForExistingGrade(grade);
+        setGradeAttributes(grade);
+        validateGrade(grade);
+        gradeRepository.save(grade);
+    }
+
+    public void checkForExistingGrade(Grade grade) {
         var ratedGrades = gradeRepository.findAllByAuthorId(grade.authorId());
-        if (!ratedGrades.isEmpty()) {
-            for (Grade ratedGrade : ratedGrades) {
-                if (ratedGrade.sprint().id().equals(grade.sprintId())
-                        && ratedGrade.gradeType().id().equals(grade.gradeTypeId())
-                        && ((ratedGrade.student() != null && ratedGrade.student().id().equals(grade.studentId())) || (ratedGrade.team() != null && ratedGrade.team().id().equals(grade.teamId())))
-                ) {
-                    throw new IllegalArgumentException("A grade with the same author, sprint, grade type, student and team already exists");
-                }
+        for (Grade ratedGrade : ratedGrades) {
+            if (isSameGrade(grade, ratedGrade)) {
+                throw new IllegalArgumentException("A grade with the same author, sprint, grade type, student and team already exists");
             }
         }
+    }
 
+    public boolean isSameGrade(Grade grade, Grade ratedGrade) {
+        return ratedGrade.sprint().id().equals(grade.sprintId())
+                && ratedGrade.gradeType().id().equals(grade.gradeTypeId())
+                && ((ratedGrade.student() != null && ratedGrade.student().id().equals(grade.studentId())) || (ratedGrade.team() != null && ratedGrade.team().id().equals(grade.teamId())));
+    }
+
+    private void setGradeAttributes(Grade grade) {
         if (grade.authorId() != null) grade.author(userService.getUserById(grade.authorId()));
         if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(grade.sprintId()));
         if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(grade.gradeTypeId()));
@@ -76,12 +84,12 @@ public class GradeService {
             grade.team(null);
             if (grade.studentId() != null) grade.student(studentService.getStudentById(grade.studentId()));
         }
+    }
 
+    public void validateGrade(Grade grade) {
         if ((grade.team() == null) == (grade.student() == null)) {
             throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
         }
-
-        gradeRepository.save(grade);
     }
 
     public void updateGrade(Integer id, Grade updatedGrade) {

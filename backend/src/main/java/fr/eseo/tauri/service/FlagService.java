@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.model.enumeration.FlagType;
@@ -65,4 +64,8 @@ public class FlagService {
 	public List<Flag> getFlagsByAuthorAndType(Integer authorId , FlagType type) {
         return flagRepository.findByAuthorIdAndType(authorId, type);
 	}
+
+    public List<Flag> getFlagsByConcernedTeamId(Integer teamId) {
+        return flagRepository.findByConcernedTeamId(teamId);
+    }
 }

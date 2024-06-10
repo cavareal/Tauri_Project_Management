@@ -85,8 +85,8 @@ public class TeamController {
      * @return a response entity with a success message if the update was successful, otherwise an error message
      */
     @PostMapping
-    public ResponseEntity<String> generateTeams(@RequestParam("projectId") Integer projectId, @Validated(Create.class) @RequestBody Project projectDetails) {
-        teamService.generateTeams(projectId, projectDetails);
+    public ResponseEntity<String> generateTeams(@RequestParam("projectId") Integer projectId, @RequestParam("autoWomenRatio") Boolean autoWomenRatio, @Validated(Create.class) @RequestBody Project projectDetails) {
+        teamService.generateTeams(projectId, projectDetails, autoWomenRatio);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
@@ -121,7 +121,7 @@ public class TeamController {
         return ResponseEntity.ok(sprintGrade);
     }
 
-    @GetMapping("/{id}/presentationOrder")
+    @GetMapping("/{id}/presentation-order")
     public ResponseEntity<List<PresentationOrder>> getPresentationOrderByTeamIdAndSprintId(@PathVariable Integer id, @RequestParam Integer sprintId) {
         List<PresentationOrder> presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(id, sprintId);
         return ResponseEntity.ok(presentationOrder);
