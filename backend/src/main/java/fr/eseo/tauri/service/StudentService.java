@@ -45,7 +45,6 @@ public class StudentService {
     public static final String MAP_KEY_GENDERS = "genders";
     public static final String MAP_KEY_BACHELORS = "bachelors";
     public static final String MAP_KEY_GRADES = "grades";
-    private static final String PASSWORD = "password";
 
     public Student getStudentById(Integer id) {
         return studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("student", id));

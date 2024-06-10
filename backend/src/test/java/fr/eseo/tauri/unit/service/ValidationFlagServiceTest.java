@@ -1,8 +1,11 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.model.*;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.ValidationFlagRepository;
 import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.TeamService;
+import fr.eseo.tauri.service.UserService;
 import fr.eseo.tauri.service.ValidationFlagService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,12 @@ class ValidationFlagServiceTest {
 
     @Mock
     ValidationFlagRepository validationFlagRepository;
+
+    @Mock
+    UserService userService;
+
+    @Mock
+    TeamService teamService;
 
     @InjectMocks
     ValidationFlagService validationFlagService;
@@ -72,5 +81,43 @@ class ValidationFlagServiceTest {
         validationFlagService.updateValidationFlag(flagId, authorId, updatedValidationFlag);
 
         verify(validationFlagRepository, times(1)).save(any(ValidationFlag.class));
+    }
+
+
+    @Test
+    void createValidationFlagsShouldNotCreateFlagsWhenUserIsNotOptionStudent() {
+        Flag flag = new Flag().author(new User().id(1));
+        List<RoleType> roles = Collections.singletonList(RoleType.TEAM_MEMBER);
+
+        when(userService.getRolesByUserId(flag.author().id())).thenReturn(roles);
+
+        validationFlagService.createValidationFlags(flag);
+
+        verify(validationFlagRepository, times(0)).save(any(ValidationFlag.class));
+    }
+
+    @Test
+    void createValidationFlagShouldCreateFlagWhenUserExists() {
+        Integer flagId = 1;
+        Integer authorId = 1;
+        ValidationFlag validationFlag = new ValidationFlag().authorId(authorId);
+        User user = new User().id(authorId);
+
+        when(userService.getUserById(authorId)).thenReturn(user);
+
+        validationFlagService.createValidationFlag(flagId, validationFlag);
+
+        verify(validationFlagRepository, times(1)).save(any(ValidationFlag.class));
+    }
+
+    @Test
+    void createValidationFlagShouldThrowExceptionWhenUserDoesNotExist() {
+        Integer flagId = 1;
+        Integer authorId = 1;
+        ValidationFlag validationFlag = new ValidationFlag().authorId(authorId);
+
+        when(userService.getUserById(authorId)).thenReturn(null);
+
+       assertDoesNotThrow(() -> validationFlagService.createValidationFlag(flagId, validationFlag));
     }
 }

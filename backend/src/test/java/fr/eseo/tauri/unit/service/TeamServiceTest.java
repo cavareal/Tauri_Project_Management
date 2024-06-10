@@ -2,12 +2,9 @@ package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
-import fr.eseo.tauri.model.enumeration.Gender;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.*;
-import fr.eseo.tauri.service.AuthService;
-import fr.eseo.tauri.service.ProjectService;
-import fr.eseo.tauri.service.StudentService;
-import fr.eseo.tauri.service.TeamService;
+import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -22,9 +19,6 @@ import static org.mockito.Mockito.*;
 
 @Nested
 class TeamServiceTest {
-
-    private static final String READ_PERMISSION = "readTeam";
-    private static final String DELETE_PERMISSION = "deleteTeam";
 
     @Mock
     private TeamRepository teamRepository;
@@ -45,7 +39,10 @@ class TeamServiceTest {
     private GradeRepository gradeRepository;
 
     @Mock
-    private StudentService studentService;
+    private SprintService sprintService;
+
+    @Mock
+    private PresentationOrderService presentationOrderService;
 
     @InjectMocks
     private TeamService teamService;
@@ -95,22 +92,6 @@ class TeamServiceTest {
         verify(studentRepository, times(1)).removeAllStudentsFromTeams(projectId);
         verify(teamRepository, times(1)).deleteAllByProject(projectId);
     }
-
-    /*@Test
-    void generateTeamsThrowsIllegalArgumentExceptionWhenNotEnoughStudents() {
-        Integer projectId = 1;
-        Project projectDetails = new Project();
-        projectDetails.nbTeams(3);
-        projectDetails.nbWomen(2);
-
-        List<Student> women = List.of(new Student());
-        List<Student> men = Arrays.asList(new Student(), new Student());
-
-        when(studentRepository.findByGenderAndProjectId(Gender.WOMAN, projectId)).thenReturn(women);
-        when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN, projectId)).thenReturn(men);
-
-        assertThrows(IllegalArgumentException.class, () -> teamService.generateTeams(projectId, projectDetails));
-    }*/
 
     @Test
     void createTeamsShouldCreateTeamsWhenNumberOfTeamsIsGreaterThanZero() {
@@ -384,4 +365,205 @@ class TeamServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> teamService.getSprintGrades(1, 1));
     }
 
+    @Test
+    void getStudentsByTeamIdOrderedShouldReturnOrderedStudentsWhenCurrentSprintExistsAndPresentationOrderMatchesStudentSize() {
+        Integer id = 1;
+        Team team = new Team();
+        Sprint currentSprint = new Sprint();
+        Project project = new Project();
+        project.id(1);
+        team.project(project);
+        List<Student> students = Arrays.asList(new Student(), new Student());
+
+        when(teamRepository.findById(id)).thenReturn(Optional.of(team));
+        when(teamService.getTeamById(id)).thenReturn(team);
+        when(sprintService.getCurrentSprint(team.project().id())).thenReturn(currentSprint);
+        when(studentRepository.findByTeam(id)).thenReturn(students);
+
+        List<Student> result = teamService.getStudentsByTeamIdOrdered(id);
+
+        assertEquals(students.get(1), result.get(0));
+        assertEquals(students.get(0), result.get(1));
+    }
+
+    @Test
+    void getStudentsByTeamIdOrderedShouldReturnUnorderedStudentsWhenCurrentSprintExistsAndPresentationOrderDoesNotMatchStudentSize() {
+        Integer id = 1;
+        Team team = new Team();
+        Project project = new Project();
+        project.id(1);
+        team.project(project);
+        Sprint currentSprint = new Sprint();
+        List<Student> students = Arrays.asList(new Student(), new Student());
+
+        when(teamRepository.findById(id)).thenReturn(Optional.of(team));
+        when(teamService.getTeamById(id)).thenReturn(team);
+        when(sprintService.getCurrentSprint(team.project().id())).thenReturn(currentSprint);
+        when(studentRepository.findByTeam(id)).thenReturn(students);
+
+        List<Student> result = teamService.getStudentsByTeamIdOrdered(id);
+
+        assertEquals(students, result);
+    }
+
+    @Test
+    void getStudentsByTeamIdOrderedShouldReturnUnorderedStudentsWhenCurrentSprintDoesNotExist() {
+        Integer id = 1;
+        Team team = new Team();
+        Project project = new Project();
+        project.id(1);
+        team.project(project);
+        List<Student> students = Arrays.asList(new Student(), new Student());
+
+        when(teamRepository.findById(id)).thenReturn(Optional.of(team));
+        when(teamService.getTeamById(id)).thenReturn(team);
+        when(sprintService.getCurrentSprint(team.project().id())).thenReturn(null);
+        when(studentRepository.findByTeam(id)).thenReturn(students);
+
+        List<Student> result = teamService.getStudentsByTeamIdOrdered(id);
+
+        assertEquals(students, result);
+    }
+
+    @Test
+    void getAverageSprintGradesShouldReturnAverageGradesWhenTeamsExist() {
+        Integer sprintId = 1;
+        Team team = new Team();
+        team.id(1);
+        Project project = new Project();
+        project.id(1);
+        team.project(project);
+        Team team2 = new Team();
+        team2.project(project);
+        team2.id(2);
+        List<Team> teams = Arrays.asList(team, team2);
+        List<Double> sprintGradesTeam1 = Arrays.asList(15.0, 16.0, 17.0);
+        List<Double> sprintGradesTeam2 = Arrays.asList(18.0, 19.0, 20.0);
+
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(teamRepository.findById(2)).thenReturn(Optional.of(team2));
+        when(teamRepository.findAll()).thenReturn(teams);
+        when(teamService.getSprintGrades(teams.get(0).id(), sprintId)).thenReturn(sprintGradesTeam1);
+        when(teamService.getSprintGrades(teams.get(1).id(), sprintId)).thenReturn(sprintGradesTeam2);
+
+        List<Double> result = teamService.getAverageSprintGrades(sprintId);
+
+        assertEquals(2, result.size());
+        assertEquals(16.0, result.get(0));
+        assertEquals(19.0, result.get(1));
+    }
+
+    @Test
+    void getAverageSprintGradesShouldReturnEmptyListWhenNoTeamsExist() {
+        Integer sprintId = 1;
+        List<Team> teams = Collections.emptyList();
+
+        when(teamRepository.findAll()).thenReturn(teams);
+
+        List<Double> result = teamService.getAverageSprintGrades(sprintId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAverageSprintGradesShouldReturnListWithNegativeOneWhenNoSprintGradesExist() {
+        Integer sprintId = 1;
+        Team team = new Team();
+        team.id(1);
+        Project project = new Project();
+        project.id(1);
+        team.project(project);
+        List<Team> teams = Collections.singletonList(team);
+        List<Double> sprintGradesTeam1 = Collections.singletonList(-1.0);
+
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(teamRepository.findAll()).thenReturn(teams);
+        when(teamService.getSprintGrades(teams.get(0).id(), sprintId)).thenReturn(sprintGradesTeam1);
+
+        List<Double> result = teamService.getAverageSprintGrades(sprintId);
+
+        assertEquals(1, result.size());
+        assertEquals(-1.0, result.get(0));
+    }
+
+    @Test
+    void getIndividualTotalGradesShouldReturnCorrectGradesWhenBothTeamAndIndividualGradesExist() {
+        Integer id = 1;
+        Integer sprintId = 1;
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        Team team = new Team();
+        team.id(1);
+        List<Student> students = Arrays.asList(student1, student2);
+        Double teamGrade = 15.0;
+        Double individualGrade1 = 16.0;
+        Double individualGrade2 = 17.0;
+
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(id)).thenReturn(students);
+        when(gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName())).thenReturn(teamGrade);
+        when(gradeRepository.findAverageByGradeTypeForStudent(students.get(0).id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(individualGrade1);
+        when(gradeRepository.findAverageByGradeTypeForStudent(students.get(1).id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(individualGrade2);
+
+        List<Double> result = teamService.getIndividualTotalGrades(id, sprintId);
+
+        assertEquals(2, result.size());
+        assertEquals(15.67, result.get(0));
+        assertEquals(16.33, result.get(1));
+    }
+
+    @Test
+    void getIndividualTotalGradesShouldReturnTeamGradesWhenIndividualGradesDoNotExist() {
+        Integer id = 1;
+        Integer sprintId = 1;
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        Team team = new Team();
+        team.id(1);
+        List<Student> students = Arrays.asList(student1, student2);
+        Double teamGrade = 15.0;
+
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(id)).thenReturn(students);
+        when(gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName())).thenReturn(teamGrade);
+        when(gradeRepository.findAverageByGradeTypeForStudent(students.get(0).id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(null);
+        when(gradeRepository.findAverageByGradeTypeForStudent(students.get(1).id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(null);
+
+        List<Double> result = teamService.getIndividualTotalGrades(id, sprintId);
+
+        assertEquals(2, result.size());
+        assertEquals(teamGrade, result.get(0));
+        assertEquals(teamGrade, result.get(1));
+    }
+
+    @Test
+    void getIndividualTotalGradesShouldReturnIndividualGradesWhenTeamGradesDoNotExist() {
+        Integer id = 1;
+        Integer sprintId = 1;
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        Team team = new Team();
+        team.id(1);
+        List<Student> students = Arrays.asList(student1, student2);
+        Double individualGrade1 = 16.0;
+        Double individualGrade2 = 17.0;
+
+        when(teamRepository.findById(1)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(id)).thenReturn(students);
+        when(gradeRepository.findAverageByGradeTypeForTeam(id, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName())).thenReturn(null);
+        when(gradeRepository.findAverageByGradeTypeForStudent(students.get(0).id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(individualGrade1);
+        when(gradeRepository.findAverageByGradeTypeForStudent(students.get(1).id(), sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(individualGrade2);
+
+        List<Double> result = teamService.getIndividualTotalGrades(id, sprintId);
+
+        assertEquals(2, result.size());
+        assertEquals(individualGrade1, result.get(0));
+        assertEquals(individualGrade2, result.get(1));
+    }
 }
