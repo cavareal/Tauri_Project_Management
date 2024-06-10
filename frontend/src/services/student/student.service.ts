@@ -65,12 +65,12 @@ export const createStudent = async(body: Omit<CreateStudent, "privateKey" | "ema
 		route: "students",
 		body: {
 			...body,
-			email: "coucou",
-			password: "password",
+			email: "",
+			password: null,
 			privateKey: null,
 			projectId: currentProjectId
 		},
-		bodySchema: CreateStudentSchema
+		bodySchema: z.unknown()
 	})
 
 	if (response.status === "error") {

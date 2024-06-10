@@ -27,8 +27,7 @@ export const CreateStudentSchema = StudentSchema.omit({
 	bachelor: z.boolean(),
 	name: z.string(),
 	teamId: z.coerce.number().optional(),
-	projectId: z.coerce.number(),
-	grade: z.number()
+	projectId: z.coerce.number()
 })
 export type CreateStudent = z.infer<typeof CreateStudentSchema>
 
