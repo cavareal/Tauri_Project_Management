@@ -1,7 +1,7 @@
 <script setup lang="ts">
+
 import {
 	Blocks,
-	Info,
 	LucideCircleFadingPlus,
 	LucideCirclePlus,
 	Play,
@@ -10,7 +10,6 @@ import {
 	User,
 	Users
 } from "lucide-vue-next"
-import Tooltip from "@/components/molecules/tooltip/Tooltip.vue"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Row } from "@/components/atoms/containers"
 import { cn } from "@/utils/style"
@@ -73,12 +72,10 @@ const { data: totalGrade, ...queryTotalGrade } = useQuery({
 	queryFn: () => getTeamTotalGrade(Number(props.teamId), Number(props.sprintId))
 })
 
-
 const { data: totalIndividualGrades, ...queryTotalIndividualGrades } = useQuery({
 	queryKey: ["individual", props.teamId, props.sprintId],
 	queryFn: () => getIndividualTotalGrades(Number(props.teamId), Number(props.sprintId))
 })
-
 
 watch(() => props.teamId, async() => {
 	if (props.teamId !== oldTeamId) {
@@ -186,7 +183,3 @@ watch(() => props.teamId, async() => {
 		</TableBody>
 	</Table>
 </template>
-
-<style scoped>
-
-</style>

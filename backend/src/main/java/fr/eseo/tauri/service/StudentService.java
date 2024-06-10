@@ -67,8 +67,15 @@ public class StudentService {
 
         List<Sprint> sprints = sprintService.getAllSprintsByProject(student.projectId());
         if(!sprints.isEmpty()) {
+            var teamsIndexes = new HashMap<Integer, Integer>();
+            for (var team : teamService.getAllTeamsByProject(student.projectId())) {
+                teamsIndexes.put(team.id(), 0);
+            }
             for (Sprint sprint : sprints) {
-                PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
+                var presentationOrder = new PresentationOrder(sprint, student);
+                var value = teamsIndexes.get(student.team().id());
+                presentationOrder.value(value);
+                teamsIndexes.put(student.team().id(), value + 1);
                 presentationOrderService.createPresentationOrder(presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);

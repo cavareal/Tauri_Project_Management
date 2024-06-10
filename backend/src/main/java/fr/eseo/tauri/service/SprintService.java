@@ -44,11 +44,11 @@ public class SprintService {
         sprint.project(projectService.getProjectById(sprint.projectId()));
         sprintRepository.save(sprint);
 		List<Student> students = studentService.getAllStudentsByProject(sprint.projectId());
-		var teamsIndexes = new HashMap<Integer, Integer>();
-		for (var team : teamService.getAllTeamsByProject(sprint.projectId())) {
-			teamsIndexes.put(team.id(), 0);
-		}
         if(!students.isEmpty()) {
+            var teamsIndexes = new HashMap<Integer, Integer>();
+            for (var team : teamService.getAllTeamsByProject(sprint.projectId())) {
+                teamsIndexes.put(team.id(), 0);
+            }
             for (Student student : students) {
 				var presentationOrder = new PresentationOrder(sprint, student);
 				var value = teamsIndexes.get(student.team().id());
