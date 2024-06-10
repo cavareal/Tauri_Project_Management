@@ -2,6 +2,7 @@
 	"prettier.enable": false,
 	"css.lint.unknownAtRules": "ignore",
 	"editor.formatOnSave": false,
+	"editor.lightbulb.enabled": "off",
 	"tailwindCSS.experimental.classRegex": [
 		[
 			"cn\\(([^)]*)\\)",
