@@ -13,18 +13,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -75,12 +69,7 @@ public class ApplicationSecurity {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
-        PasswordEncoder passwordEncoder = new LdapShaPasswordEncoder();
-
-//        PasswordEncoder passwordEncoder = passwordEncoderr();
-//        PasswordEncoder passwordEncoder = new PasswordEncoder();
-//        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
+        PasswordEncoder passwordEncoder =  new LdapShaPasswordEncoder();
 
         auth
             .ldapAuthentication()
@@ -102,20 +91,4 @@ public class ApplicationSecurity {
                 .orElseThrow(() -> new UsernameNotFoundException("User or password incorrect"));
     }
 
-//    @Bean
-//    public BCryptPasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-
-
-
-    @Bean
-    public PasswordEncoder passwordEncoderr() {
-        String encodingId = "SSHA";
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-        encoders.put(encodingId, new SSHAPasswordEncoder());
-        encoders.put("bcrypt", new BCryptPasswordEncoder());
-
-        return new DelegatingPasswordEncoder(encodingId, encoders);
-    }
 }
