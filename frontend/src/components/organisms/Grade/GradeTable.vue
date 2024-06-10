@@ -8,7 +8,6 @@ import {
 import { hasPermission } from "@/services/user/user.service"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId, getTeams } from "@/services/team/team.service"
-import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
 import FullGradeTable from "@/components/organisms/Grade/FullGradeTable.vue"
 import TeamGradeTable from "@/components/organisms/Grade/TeamGradeTable.vue"
 import FeedbacksAndCommentsView from "@/components/organisms/Grade/FeedbacksAndCommentsView.vue"
