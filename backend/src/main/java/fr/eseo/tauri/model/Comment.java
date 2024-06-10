@@ -12,7 +12,6 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "comments", uniqueConstraints = {
         //@UniqueConstraint(columnNames = {"student_id", "sprint_id", "feedback", "author_id"}),
-        @UniqueConstraint(columnNames = {"team_id", "sprint_id", "feedback", "author_id"})
 })
 @Data
 public class Comment {
