@@ -31,7 +31,7 @@ const { mutate: addStudent, isPending, error } = useMutation({ mutationKey: ["ad
 	await createStudent({
 		name: lastName.value + firstName.value,
 		gender: gendered.value,
-		grade: grade.value,
+		grade: Number(grade.value),
 		bachelor: bachelor.value
 	})
 		.then(() => lastName.value = "")
