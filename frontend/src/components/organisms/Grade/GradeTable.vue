@@ -8,9 +8,10 @@ import {
 import { hasPermission } from "@/services/user/user.service"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId, getTeams } from "@/services/team/team.service"
-import CommentContainer from "@/components/organisms/rating/CommentContainer.vue"
 import FullGradeTable from "@/components/organisms/Grade/FullGradeTable.vue"
 import TeamGradeTable from "@/components/organisms/Grade/TeamGradeTable.vue"
+import FeedbacksAndCommentsView from "@/components/organisms/Grade/FeedbacksAndCommentsView.vue"
+import { Row } from "@/components/atoms/containers"
 
 const gradeConfirmed = cn("bg-green-100")
 const gradeNotConfirmed = cn("bg-red-100")
@@ -60,10 +61,11 @@ const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
 		<div class="border bg-white rounded-md mb-4">
 			<FullGradeTable :sprint-id="props.sprintId" :team-id="props.teamId" :is-grades-confirmed="props.isGradesConfirmed"></FullGradeTable>
 		</div>
-		<div class="border bg-white rounded-md">
-			<CommentContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId" :feedback="true"/>
-		</div>
 	</div>
+  <Row class="justify-between">
+    <FeedbacksAndCommentsView v-if="canViewAllOg || canViewAllWg || canViewOwnTeamGrade" :teamId="props.teamId" :sprintId="props.sprintId" :isFeedback="true"/>
+    <FeedbacksAndCommentsView class="ml-2" v-if="((canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched)" :sprint-id="props.teamId" :is-feedback="false" :team-id="props.teamId" />
+  </Row>
 	<div  v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) !== Number(props.teamId))"  class="border bg-white rounded-md">
 		<TeamGradeTable :sprint-id="props.sprintId" :team-id="props.teamId"></TeamGradeTable>
 	</div>

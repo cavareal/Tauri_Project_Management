@@ -1,6 +1,7 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.model.Bonus;
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.service.*;
@@ -27,11 +28,6 @@ class BonusServiceTest {
     @Mock
     UserService userService;
 
-    @Mock
-    StudentService studentService;
-
-    @Mock
-    SprintService sprintService;
 
     @InjectMocks
     BonusService bonusService;
@@ -90,23 +86,18 @@ class BonusServiceTest {
         assertTrue(result.isEmpty());
     }
 
-//    @Test
-//    void createBonusShouldSaveBonusWhenPermissionExistsAndBonusIsValid() {
-//        String token = "validToken";
-//        Bonus bonus = new Bonus();
-//        bonus.limited(true);
-//        bonus.value(3F);
-//
-//        when(authService.checkAuth(token, "addBonus")).thenReturn(true);
-//        when(userService.getUserById(token, bonus.authorId())).thenReturn(new User());
-//        when(studentService.getStudentById(token, bonus.studentId())).thenReturn(new Student());
-//        when(sprintService.getSprintById(token, bonus.sprintId())).thenReturn(new Sprint());
-//
-//        bonusService.createBonus(token, bonus);
-//
-//        verify(bonusRepository, times(1)).save(bonus);
-//        verify(validationBonusService, times(1)).createValidationBonuses(token, bonus);
-//    }
+    @Test
+    void createBonusShouldSaveBonusWhenBonusIsValid() {
+        Bonus bonus = new Bonus();
+        bonus.id(1);
+        bonus.value(3F);
+
+        when(bonusRepository.save(any(Bonus.class))).thenReturn(bonus);
+
+        bonusService.createBonus(bonus);
+
+        verify(bonusRepository, times(1)).save(bonus);
+    }
 
 
     @Test
@@ -130,4 +121,57 @@ class BonusServiceTest {
 
         verify(bonusRepository, times(1)).deleteAllByProject(projectId);
     }
+
+    @Test
+    void deleteBonusShouldDeleteBonusWhenBonusExists() {
+        Integer id = 1;
+        Bonus bonus = new Bonus();
+
+        when(bonusRepository.findById(id)).thenReturn(Optional.of(bonus));
+
+        bonusService.deleteBonus(id);
+
+        verify(bonusRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteBonusShouldThrowResourceNotFoundExceptionWhenBonusDoesNotExist() {
+        Integer id = 1;
+
+        when(bonusRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> bonusService.deleteBonus(id));
+    }
+
+    @Test
+    void updateBonusShouldUpdateBonusWhenBonusIsValidAndNotLimited() {
+        Integer id = 1;
+        Bonus updatedBonus = new Bonus();
+        updatedBonus.limited(false);
+        updatedBonus.value(2F);
+
+        when(bonusRepository.findById(id)).thenReturn(Optional.of(new Bonus()));
+        when(userService.getUserById(any())).thenReturn(new User());
+
+        bonusService.updateBonus(id, updatedBonus);
+
+        verify(bonusRepository, times(1)).save(any(Bonus.class));
+    }
+
+    @Test
+    void updateBonusShouldUpdateBonusAndDeleteValidationsWhenBonusIsValidAndLimited() {
+        Integer id = 1;
+        Bonus updatedBonus = new Bonus();
+        updatedBonus.value(2F);
+        updatedBonus.limited(true);
+
+        when(bonusRepository.findById(id)).thenReturn(Optional.of(new Bonus()));
+        when(userService.getUserById(any())).thenReturn(new User());
+
+        bonusService.updateBonus(id, updatedBonus);
+
+        verify(bonusRepository, times(1)).save(any(Bonus.class));
+        verify(validationBonusService, times(1)).deleteAllValidationBonuses(id);
+    }
+
 }

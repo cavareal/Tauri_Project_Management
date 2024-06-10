@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.BonusRepository;
@@ -49,12 +48,12 @@ public class BonusService {
      * @param updatedBonus the updated bonus
      */
     public void updateBonus(Integer id, Bonus updatedBonus) {
-        if(Boolean.TRUE.equals(updatedBonus.limited()) && Math.abs(updatedBonus.value()) > 4) {
+        boolean isLimited = updatedBonus.limited();
+        if(isLimited && Math.abs(updatedBonus.value()) > 4) {
             throw new IllegalArgumentException("The value of a limited bonus must be between -4 and 4");
         }
 
         Bonus bonus = getBonusById(id);
-
 
         bonus.value(updatedBonus.value());
         if(updatedBonus.authorId() != null) bonus.author(userService.getUserById(updatedBonus.authorId()));
@@ -63,7 +62,7 @@ public class BonusService {
 
         bonusRepository.save(bonus);
 
-        if(bonus.limited()) validationBonusService.deleteAllValidationBonuses(id);
+        if(isLimited) validationBonusService.deleteAllValidationBonuses(id);
     }
 
     /**

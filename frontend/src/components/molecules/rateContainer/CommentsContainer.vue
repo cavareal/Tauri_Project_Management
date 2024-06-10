@@ -52,7 +52,7 @@ const { mutate } = useMutation({
 watch(() => props.teamId, () => refetchFeedbacks())
 watch(() => props.sprintId, () => refetchFeedbacks())
 
-const placeholderText = props.isFeedback ? "saissisez un feedback" : "saissisez un commentaire"
+const placeholderText = props.isFeedback ? "feedback" : "commentaire"
 const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le commentaire a été enregistré."
 </script>
 
@@ -76,7 +76,7 @@ const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le co
     </Column>
     <div class="w-1/2">
       <div class="bg-background">
-        <CommentsView :authors="authorsComments" :comments="commentsFiltered" :isFeedback="props.isFeedback"/>
+        <CommentsView class="bg-gray-50" :authors="authorsComments" :comments="commentsFiltered" :isFeedback="props.isFeedback"/>
       </div>
     </div>
   </Row>
