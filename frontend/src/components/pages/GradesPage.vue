@@ -31,6 +31,7 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
 	queryFn: async() => {
 		if (sprintId.value === null || teamId.value === null) return false
+		console.log(ssTeam)
 		if (ssTeam.value?.id !== undefined) {
 			return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value), ssTeam.value?.id)
 		}
@@ -39,6 +40,10 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 
 const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
 const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
+
+console.log(isGradesConfirmed.value)
+console.log(ssTeam?.id, teamId.value)
+
 
 </script>
 

@@ -64,7 +64,7 @@ public class AuthService {
 
                 user = userRepository.findByEmail(userDetails.getUsername())
                         .orElseThrow(() -> new SecurityException("Wrong credentials"));
-            } else {                // Auth without LDAP for dev mode
+            } else {                               // Auth without LDAP for dev mode
                 user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new SecurityException("Wrong credentials"));
             }
