@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue"
 import { Button } from "@/components/ui/button"
-import { createToast } from '@/utils/toast'
-import { Cookies } from '@/utils/cookie/cookie.util'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
-import { type Project } from '@/types/project'
-import { setActualProject } from '@/services/project'
-import Column from '@/components/atoms/containers/Column.vue'
+import { createToast } from "@/utils/toast"
+import { Cookies } from "@/utils/cookie/cookie.util"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { type Project } from "@/types/project"
+import { setActualProject } from "@/services/project"
+import Column from "@/components/atoms/containers/Column.vue"
 
 const emits = defineEmits(["choose:project"])
 
@@ -16,35 +16,35 @@ const props = defineProps<{
 
 const selectedProjectId = ref<string | null>(null)
 
-function handleSelectChange(value: string) {
-    selectedProjectId.value = value
+const handleSelectChange = (value: string) => {
+	selectedProjectId.value = value
 }
 
-function getNameById(id: string | null): string {
-    if(id === null) return ""
-    const project = props.projects.find(project => project.id === Number(id))
-    return project?.name ?? ""
+const getNameById = (id: string | null): string => {
+	if (id === null) return ""
+	const project = props.projects.find(project => project.id === Number(id))
+	return project?.name ?? ""
 }
 
 const handleValidate = () => {
-    if (selectedProjectId.value !== null) {
-        setActualProject(Number(selectedProjectId.value))
-            .then(() => {
-                emits('choose:project')
-                console.log()
-                Cookies.setProjectId(Number(selectedProjectId.value))
-                createToast("Projet "+ getNameById(selectedProjectId.value) +" sélectionné")
-            })
-    } else {
-        createToast("Veuillez sélectionner un projet")
-    }
+	if (selectedProjectId.value !== null) {
+		setActualProject(Number(selectedProjectId.value))
+			.then(() => {
+				emits("choose:project")
+				console.log()
+				Cookies.setProjectId(Number(selectedProjectId.value))
+				createToast("Projet " + getNameById(selectedProjectId.value) + " sélectionné")
+			})
+	} else {
+		createToast("Veuillez sélectionner un projet")
+	}
 }
 
 onMounted(() => {
-    const currentProjectId = Cookies.getProjectId()
-    if (currentProjectId !== undefined && currentProjectId !== null) {
-        selectedProjectId.value = currentProjectId.toString()
-    }
+	const currentProjectId = Cookies.getProjectId()
+	if (currentProjectId !== undefined && currentProjectId !== null) {
+		selectedProjectId.value = currentProjectId.toString()
+	}
 })
 </script>
 

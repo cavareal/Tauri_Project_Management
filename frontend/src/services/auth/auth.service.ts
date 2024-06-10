@@ -7,7 +7,7 @@ import { AuthRequestSchema } from "@/types/auth-request"
 export const login = async(login: string, password: string) => {
 	Cookies.removeAll()
 	Cookies.setProjectId(0)
-	
+
 	const response = await loginAndValidate({
 		route: "auth/login",
 		responseSchema: AuthResponseSchema,

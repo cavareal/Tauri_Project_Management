@@ -17,5 +17,5 @@ const style = cn(
 <template>
 	<div v-if="props.checked === null"></div>
 	<Check v-else-if="props.checked" :class="style" />
-	<XIcon v-else="!props.checked" :class="style" />
+	<XIcon v-else :class="style" />
 </template>
