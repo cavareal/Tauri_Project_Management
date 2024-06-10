@@ -16,11 +16,14 @@ import { Loading } from "@/components/organisms/loading"
 import { hasPermission } from "@/services/user/user.service"
 import { sendManyNotifications } from "@/services/notification/notification.service"
 import { getCurrentPhase } from "@/services/project/project.service"
+import SwitchStudentsFlags from "@/components/organisms/teams/switch-student/SwitchStudentsFlags.vue"
+import { Cookies } from "@/utils/cookie"
 
 const queryClient = useQueryClient()
 
 const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()
+const isPl = Cookies.getRole() === "PROJECT_LEADER"
 
 const { data: currentPhase } = useQuery({ queryKey: ["current-phase"], queryFn: getCurrentPhase })
 
@@ -86,12 +89,14 @@ const style = (teamId: number) => cn(
 )
 
 const canEdit = hasPermission("TEAM_MANAGEMENT")
+const canSeeStudentFlags = hasPermission("FLAG_TEAM_WITH_STUDENTS")
 
 </script>
 
 <template>
 	<Loading v-if="isLoading" />
 	<Accordion v-else type="multiple" :default-value="teams && teams.map(team => team.id.toString())" class="space-y-4">
+    <SwitchStudentsFlags v-if="canSeeStudentFlags" :isPl="isPl"/>
 		<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
 			<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
 				v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"

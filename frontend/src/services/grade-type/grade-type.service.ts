@@ -48,3 +48,26 @@ export const getGradeTypeByName = async(name: string): Promise<GradeType> => {
 	}
 	return response.data
 }
+
+
+export const downloadGradeScaleTXT = async(gradeTypeName: string): Promise<void> => {
+	const gradeType = await getGradeTypeByName(gradeTypeName)
+
+	const response = await queryAndValidate({
+		route: `grade-types/${gradeType.id}/download-grade-scale`,
+		responseSchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+	const blob = new Blob([response.data])
+	console.log(blob)
+	const url = window.URL.createObjectURL(blob)
+	const link = document.createElement("a")
+	link.href = url
+	link.setAttribute("download", "gradescale.txt")
+	document.body.appendChild(link)
+	link.click()
+	document.body.removeChild(link)
+}

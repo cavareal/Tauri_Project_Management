@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
 import NotAutorized from "../organisms/errors/NotAuthorized.vue"
 import { ref } from "vue"
 import { hasPermission } from "@/services/user"
@@ -18,6 +17,7 @@ import { SprintSelect, TeamSelect } from "../molecules/select"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId } from "@/services/team"
 import { TeamSelect2 } from "@/components/molecules/select"
+import { NotAuthorized } from "@/components/organisms/errors"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
@@ -62,7 +62,7 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 				</ExportGrades>
 			</Header>
 			<Column v-if="teamId !== null && sprintId !== null">
-				<Grade v-if="authorized" :teamId="teamId ?? ''" :sprintId="sprintId ?? ''" />
+				<Grade v-if="authorized" :teamId="teamId ?? ''" :sprintId="sprintId ?? ''"/>
 				<NotAutorized v-else />
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">

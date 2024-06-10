@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Flag;
 import fr.eseo.tauri.model.enumeration.FlagType;
@@ -14,7 +13,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FlagService {
 
-    private final AuthService authService;
     private final FlagRepository flagRepository;
     private final UserService userService;
     private final StudentService studentService;
@@ -30,14 +28,14 @@ public class FlagService {
     }
 
     public void createFlag(Flag flag) {
-        flag.author(userService.getUserById("token", flag.authorId()));
-        flag.project(projectService.getProjectById("token", flag.projectId()));
-        if (flag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById("token", flag.firstStudentId()));
-        if (flag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById("token", flag.secondStudentId()));
+        flag.author(userService.getUserById(flag.authorId()));
+        flag.project(projectService.getProjectById(flag.projectId()));
+        if (flag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById(flag.firstStudentId()));
+        if (flag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById(flag.secondStudentId()));
 
         flagRepository.save(flag);
 
-        validationFlagService.createValidationFlags("token", flag);
+        validationFlagService.createValidationFlags(flag);
     }
 
     public void updateFlag(Integer id, Flag updatedFlag) {
@@ -46,10 +44,10 @@ public class FlagService {
         if (updatedFlag.description() != null) flag.description(updatedFlag.description());
         if (updatedFlag.type() != null) flag.type(updatedFlag.type());
         if (updatedFlag.status() != null) flag.status(updatedFlag.status());
-        if (updatedFlag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById("token", updatedFlag.firstStudentId()));
-        if (updatedFlag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById("token", updatedFlag.secondStudentId()));
-        if (updatedFlag.authorId() != null) flag.author(userService.getUserById("token", updatedFlag.authorId()));
-        if (updatedFlag.projectId() != null) flag.project(projectService.getProjectById("token", updatedFlag.projectId()));
+        if (updatedFlag.firstStudentId() != null) flag.firstStudent(studentService.getStudentById(updatedFlag.firstStudentId()));
+        if (updatedFlag.secondStudentId() != null) flag.secondStudent(studentService.getStudentById(updatedFlag.secondStudentId()));
+        if (updatedFlag.authorId() != null) flag.author(userService.getUserById(updatedFlag.authorId()));
+        if (updatedFlag.projectId() != null) flag.project(projectService.getProjectById(updatedFlag.projectId()));
 
         flagRepository.save(flag);
     }
@@ -66,4 +64,8 @@ public class FlagService {
 	public List<Flag> getFlagsByAuthorAndType(Integer authorId , FlagType type) {
         return flagRepository.findByAuthorIdAndType(authorId, type);
 	}
+
+    public List<Flag> getFlagsByConcernedTeamId(Integer teamId) {
+        return flagRepository.findByConcernedTeamId(teamId);
+    }
 }

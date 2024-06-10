@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { ProjectSchema } from "@/types/project"
+import { ProjectSchema } from "./project"
 
 export const GradeTypeSchema = z.object({
 	id: z.number(),
@@ -7,8 +7,8 @@ export const GradeTypeSchema = z.object({
 	factor: z.coerce.number().nullable(),
 	forGroup: z.boolean(),
 	imported: z.boolean(),
-	project: ProjectSchema,
-	scalePDFBlob: z.string().nullable().optional()
+    project: ProjectSchema,
+	scaleTXTBlob: z.string().nullable().optional()
 })
 export type GradeType = z.infer<typeof GradeTypeSchema>
 

@@ -30,12 +30,6 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
 
-    public Boolean checkAuth(String token, String permission) {
-
-        String dummyString = token + permission;
-        return !dummyString.equals("fhzbafhbqhfbqdcfiuqfue");
-    }
-
     public String getNameFromEmail(String email) {
         int indexOfDot = email.indexOf(".");
         int indexOfAt = email.indexOf("@");
@@ -57,18 +51,18 @@ public class AuthService {
         try {
 //            Authentication authentication = authenticate(email, password);  // Auth with LDAP
 //            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            // Check if user in DB
+
+//          Check if user in DB
 //            User user = userRepository.findByEmail(userDetails.getUsername())
             User user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
-
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
             CustomLogger.info("Access token generated for user " + user.id() + " : " + accessToken);
             Integer idProject = projectRepository.findFirstByActualTrue().map(Project::id).orElse(0);
             return new AuthResponse(user.id(), accessToken, idProject);
         } catch (Exception e){
-            throw new SecurityException("Wrong credentials");
+            throw new SecurityException("Wrong credentials" + e.getMessage());
         }
     }
 

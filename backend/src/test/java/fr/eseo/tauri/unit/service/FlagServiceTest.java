@@ -27,8 +27,6 @@ import static org.mockito.Mockito.times;
 @Nested
 class FlagServiceTest {
 
-    private final String TEST_TOKEN = "testToken";
-
     @InjectMocks
     private FlagService flagService;
 

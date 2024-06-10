@@ -126,7 +126,7 @@ export const getTeamByUserId = async(userId: number): Promise<Team | null> => {
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
-
+	console.log("response.data : ", response.data)
 	return response.data === "" ? null : response.data
 }
 

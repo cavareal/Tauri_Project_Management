@@ -48,17 +48,23 @@ dependencies {
 }
 
 
-// Unit tests
 test {
 	useJUnitPlatform()
-	include '**/unit/**'
-	finalizedBy 'jacocoTestReport'			// Use to coverage code in sonarQube
+	exclude "**/selenium/**"
+	finalizedBy 'jacocoTestReport'
 }
+
 
 // Selenium tests
 tasks.register('seleniumTest', Test) {
 	useJUnitPlatform()
-	include '**/selenium/**'
+	exclude "**/unit/**"
+
+	if (System.getProperty('seleniumServerUrl') && System.getProperty('seleniumOptions')) {
+		System.out.println("Running Selenium tests on " + System.getProperty('seleniumServerUrl') + " with options " + System.getProperty('seleniumOptions'));
+		systemProperty 'seleniumServerUrl', System.getProperty('seleniumServerUrl')
+		systemProperty 'seleniumOptions', System.getProperty('seleniumOptions')
+	}
 }
 
 kotlin {

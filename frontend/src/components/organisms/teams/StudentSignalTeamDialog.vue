@@ -19,7 +19,7 @@ import {
 	SelectItem,
 	SelectLabel
 } from "@/components/ui/select"
-import { useQuery } from "@tanstack/vue-query"
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
 import { getTeamByUserId } from "@/services/team/team.service"
 import { Cookies } from "@/utils/cookie"
 import { getAllStudents } from "@/services/student"
@@ -31,9 +31,11 @@ import { ArrowLeftRight } from "lucide-vue-next"
 const open = ref(false)
 const description = ref("")
 const othersTeams = ref<Team[]>([])
+const myTeam  = ref<Team | null>(null)
 const selectedMyTeamStudent = ref("")
 const selectedOtherTeamStudent = ref("")
 const userId = Cookies.getUserId()
+const client = useQueryClient()
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"], mutationFn: async() => {
 	if (!description.value) return
@@ -42,16 +44,17 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["signal-teams"]
 		.then(() => description.value = "")
 		.then(() => selectedMyTeamStudent.value = "")
 		.then(() => selectedOtherTeamStudent.value = "")
+		.then(() => client.invalidateQueries({ queryKey: ["flagForConcerned"] }))
 		.then(() => createToast("Le signalement a été envoyé."))
 } })
 
 const { data: students } = useQuery({ queryKey: ["students"], queryFn: async() => {
-	const myTeam = await getTeamByUserId(userId)
+	myTeam.value = await getTeamByUserId(userId)
 	const students = await getAllStudents()
 	let myTeamStudents: Student[] = []
-	if (myTeam) {
-		othersTeams.value = (await getTeams()).filter(team => team.id !== myTeam.id)
-		myTeamStudents = filteredStudents(students, myTeam.id)
+	if (myTeam.value) {
+		othersTeams.value = (await getTeams()).filter(team => team.id !== myTeam.value!.id)
+		myTeamStudents = filteredStudents(students, myTeam.value!.id)
 	}
 	return { myTeamStudents, students }
 } })

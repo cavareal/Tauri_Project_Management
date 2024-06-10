@@ -17,7 +17,8 @@ import java.time.Duration;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SeleniumLoginTest {
-        private static final String URL = System.getProperty("selenium.server.url", "http://localhost:5173/");
+        private static final String URL = System.getProperty("seleniumServerUrl", "http://localhost:5173/");
+        private static final String settings = System.getProperty("seleniumOptions", "off");
         private static final String TITLE = "Bienvenue sur Tauri !";
         private static WebDriver webdriver;
         private static WebDriverWait wait;
@@ -26,6 +27,11 @@ public class SeleniumLoginTest {
         public static void beforeTest(){
                 WebDriverManager.safaridriver().setup();
                 ChromeOptions options = new ChromeOptions();
+                if(settings.equals("on")){
+                        options.addArguments("--no-sandbox");
+                        options.addArguments("--headless");
+                        options.addArguments(   "--ignore-certificate-errors");
+                }
                 SeleniumLoginTest.webdriver = new ChromeDriver(options);
                 wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
                 SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");
