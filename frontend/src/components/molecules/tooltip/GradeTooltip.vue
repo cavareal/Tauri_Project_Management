@@ -1,24 +1,26 @@
 <script setup lang="ts">
 
+import { Column } from "@/components/atoms/containers"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Info } from "lucide-vue-next"
 import { VueLatex } from "vatex"
 
 defineProps<{
-	expression: string
+	formula: string[]
 }>()
 
 </script>
 
 <template>
-	<TooltipProvider :delay-duration="200" >
+	<TooltipProvider :delay-duration="200">
 		<Tooltip>
 			<TooltipTrigger>
-				<slot />
+				<Info class="size-4" />
 			</TooltipTrigger>
 			<TooltipContent>
-				<p class="max-w-96">
-					<VueLatex expression="x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}." />
-				</p>
+				<Column class="pb-2 px-2 items-start gap-2">
+					<VueLatex v-for="(expression, i) in formula" :expression="expression" :key="i" :display-mode="i === 0"/>
+				</Column>
 			</TooltipContent>
 		</Tooltip>
 	</TooltipProvider>
