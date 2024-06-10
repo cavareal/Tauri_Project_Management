@@ -4,7 +4,6 @@ import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.NotificationRepository;
-import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.NotificationService;
 import fr.eseo.tauri.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,5 +109,91 @@ class NotificationServiceTest {
         List<Notification> result = notificationService.getNotificationsByUser(userId);
 
         assertEquals(notifications, result);
+    }
+
+    @Test
+    void updateNotificationShouldNotUpdateFieldsWhenNotProvided() {
+        Integer id = 1;
+        Notification existingNotification = new Notification();
+        existingNotification.id(id);
+        Notification updatedNotification = new Notification();
+
+        when(notificationRepository.findById(id)).thenReturn(Optional.of(existingNotification));
+
+        notificationService.updateNotification(id, updatedNotification);
+
+        assertNull(existingNotification.message());
+        assertFalse(existingNotification.checked());
+        assertNull(existingNotification.userTo());
+        assertNull(existingNotification.userFrom());
+        verify(notificationRepository, times(1)).save(existingNotification);
+    }
+
+    @Test
+    void updateNotificationShouldUpdateFieldsWhenProvided() {
+        Integer id = 1;
+        Notification existingNotification = new Notification();
+        existingNotification.id(id);
+        Notification updatedNotification = new Notification();
+        updatedNotification.message("UpdatedMessage");
+        updatedNotification.checked(true);
+        updatedNotification.userToId(2);
+        updatedNotification.userFromId(1);
+
+        when(notificationRepository.findById(id)).thenReturn(Optional.of(existingNotification));
+        when(userService.getUserById(updatedNotification.userToId())).thenReturn(new User());
+        when(userService.getUserById(updatedNotification.userFromId())).thenReturn(new User());
+
+        notificationService.updateNotification(id, updatedNotification);
+
+        assertEquals(updatedNotification.message(), existingNotification.message());
+        assertEquals(updatedNotification.checked(), existingNotification.checked());
+        verify(notificationRepository, times(1)).save(existingNotification);
+    }
+
+    @Test
+    void changeCheckedNotificationShouldToggleCheckedStateWhenNotificationExists() {
+        Integer id = 1;
+        Notification existingNotification = new Notification();
+        existingNotification.id(id);
+        existingNotification.checked(false);
+
+        when(notificationRepository.findById(id)).thenReturn(Optional.of(existingNotification));
+
+        notificationService.changeCheckedNotification(id);
+
+        assertTrue(existingNotification.checked());
+        verify(notificationRepository, times(1)).save(existingNotification);
+    }
+
+    @Test
+    void changeCheckedNotificationShouldThrowResourceNotFoundExceptionWhenNotificationDoesNotExist() {
+        Integer id = 1;
+
+        when(notificationRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> notificationService.changeCheckedNotification(id));
+    }
+
+    @Test
+    void deleteNotificationByIdShouldDeleteNotificationWhenIdExists() {
+        Integer id = 1;
+        Notification existingNotification = new Notification();
+        existingNotification.id(id);
+
+        when(notificationRepository.findById(id)).thenReturn(Optional.of(existingNotification));
+
+        notificationService.deleteNotificationById(id);
+
+        verify(notificationRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteNotificationByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        Integer id = 1;
+
+        when(notificationRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> notificationService.deleteNotificationById(id));
     }
 }
