@@ -24,9 +24,6 @@ import static org.mockito.Mockito.*;
 class CommentServiceTest {
 
     @Mock
-    AuthService authService;
-
-    @Mock
     CommentRepository commentRepository;
 
     @Mock
