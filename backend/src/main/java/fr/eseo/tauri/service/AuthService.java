@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
 import net.datafaker.providers.base.Bool;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.el.parser.BooleanNode;
 import org.springframework.beans.factory.annotation.Value;
 import fr.eseo.tauri.repository.ProjectRepository;
@@ -57,6 +58,7 @@ public class AuthService {
         try {
 
             CustomLogger.info("prod : " + prodProperty);
+            prodProperty = true;
             User user;
 
             if(prodProperty){       // Auth with LDAP
@@ -64,10 +66,10 @@ public class AuthService {
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
                 user = userRepository.findByEmail(userDetails.getUsername())
-                        .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
+                        .orElseThrow(() -> new SecurityException("Wrong credentials"));
             } else {                // Auth without LDAP for dev mode
                 user = userRepository.findByEmail(email)
-                        .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
+                        .orElseThrow(() -> new SecurityException("Wrong credentials"));
             }
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
@@ -80,8 +82,10 @@ public class AuthService {
     }
 
     private Authentication authenticate(String email, String password) {
+        String safeEmail = StringEscapeUtils.escapeHtml4(email);
+        String safePassword = StringEscapeUtils.escapeHtml4(password);
         return authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
+                new UsernamePasswordAuthenticationToken(safeEmail, safePassword)
         );
     }
 }
