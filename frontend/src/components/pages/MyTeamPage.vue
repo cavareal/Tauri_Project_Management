@@ -7,11 +7,11 @@ import { NotAuthorized } from "@/components/organisms/errors"
 import { getCurrentProject } from "@/services/project/project.service"
 import { Header } from "@/components/molecules/header"
 import { useQuery } from "@tanstack/vue-query"
-import MyTeamAccordion from "@/components/organisms/my-team/MyTeamAccordion.vue"
 import { getTeamByUserId } from "@/services/team/team.service"
 import { hasPermission } from "@/services/user/user.service"
 import { PageSkeleton } from "../atoms/skeletons"
 import { TeamsNotCreated } from "../organisms/teams"
+import { MyTeamBox } from "../organisms/my-team"
 
 const role = Cookies.getRole()
 const userId = Cookies.getUserId()
@@ -31,7 +31,7 @@ const canDisplayTeam = computed(() => role === "SUPERVISING_STAFF" || (role === 
 		<Header title="Mon équipe" />
 		<NotAuthorized v-if="!hasPermission('MY_TEAM_PAGE')" />
 		<PageSkeleton v-else-if="phaseLoading || teamLoading" />
-		<MyTeamAccordion v-else-if="canDisplayTeam && team" :team="team"/>
+		<MyTeamBox v-else-if="canDisplayTeam && team" :team="team"/>
 		<TeamsNotCreated v-else />
 	</SidebarTemplate>
 </template>

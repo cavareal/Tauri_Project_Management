@@ -23,20 +23,20 @@ public class ValidationBonusController {
     private final ResponseMessage responseMessage = new ResponseMessage("validationBonus");
 
     @GetMapping("/{authorId}")
-    public ResponseEntity<ValidationBonus> getValidationBonusByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId, @PathVariable Integer authorId) {
-        var validationBonus = validationBonusService.getValidationBonusByAuthorId(token, bonusId, authorId);
+    public ResponseEntity<ValidationBonus> getValidationBonusByAuthorId(@PathVariable Integer bonusId, @PathVariable Integer authorId) {
+        var validationBonus = validationBonusService.getValidationBonusByAuthorId(bonusId, authorId);
         return ResponseEntity.ok(validationBonus);
     }
 
     @GetMapping
-    public ResponseEntity<List<ValidationBonus>> getAllValidationBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer bonusId) {
-        List<ValidationBonus> validationBonuses = validationBonusService.getAllValidationBonuses(token, bonusId);
+    public ResponseEntity<List<ValidationBonus>> getAllValidationBonuses(@PathVariable Integer bonusId) {
+        List<ValidationBonus> validationBonuses = validationBonusService.getAllValidationBonuses(bonusId);
         return ResponseEntity.ok(validationBonuses);
     }
 
     @PostMapping
-    public ResponseEntity<String> createValidationBonuses(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody ValidationBonus validationBonus ) {
-        validationBonusService.createValidationBonus(token, validationBonus);
+    public ResponseEntity<String> createValidationBonuses(@Validated(Create.class) @RequestBody ValidationBonus validationBonus ) {
+        validationBonusService.createValidationBonus(validationBonus);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }

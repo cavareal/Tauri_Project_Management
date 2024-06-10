@@ -10,6 +10,9 @@ import { createToast } from "@/utils/toast"
 import { onMounted, ref, watch } from "vue"
 import { CheckIcon, Loader } from "@/components/atoms/icons"
 import { getGradeTypeDescription, type GradeTypeName } from "@/types/grade-type"
+import { Button } from "@/components/ui/button"
+import { downloadGradeScaleTXT } from "@/services/grade-type"
+import { getGradeTypeByName } from "@/services/grade-type"
 import type { Grade } from "@/types/grade"
 
 const props = defineProps<{
@@ -27,6 +30,7 @@ const status = ref<"IDLE" | "LOADING" | "DONE">("IDLE")
 const grade = ref("")
 const comment = ref("")
 const oldValues = ref({ grade: "", comment: "" })
+const isGradeScaleUploaded = ref(false)
 
 const updateGrade = () => {
 	const data = getRatedGrade(props.allGrades, {
@@ -43,25 +47,36 @@ const updateGrade = () => {
 	status.value = "IDLE"
 }
 
-
-const { mutate, isPending, isError } = useMutation({ mutationFn: async() => {
-	if (grade.value === oldValues.value.grade && comment.value === oldValues.value.comment) {
-		return
+const checkGradeScaleUploaded = async() => {
+	try {
+		const gradeType = await getGradeTypeByName(props.gradeTypeName)
+		isGradeScaleUploaded.value = !!gradeType.scaleTXTBlob // Check if the grade scale is present
+	} catch (error) {
+		console.error("Error checking grade scale:", error)
+		isGradeScaleUploaded.value = false
 	}
+}
 
-	status.value = "LOADING"
-	await createOrUpdateGrade({
-		value: Number(grade.value),
-		comment: comment.value,
-		sprintId: Number(props.sprintId),
-		teamId: props.teamId ? Number(props.teamId) : null,
-		studentId: props.studentId ? Number(props.studentId) : null,
-		gradeTypeName: props.gradeTypeName
-	})
-		.then(() => createToast("La note a bien été enregistrée."))
-		.then(() => oldValues.value = { grade: grade.value, comment: comment.value })
-		.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
-} })
+const { mutate, isPending, isError } = useMutation({
+	mutationFn: async() => {
+		if (grade.value === oldValues.value.grade && comment.value === oldValues.value.comment) {
+			return
+		}
+
+		status.value = "LOADING"
+		await createOrUpdateGrade({
+			value: Number(grade.value),
+			comment: comment.value,
+			sprintId: Number(props.sprintId),
+			teamId: props.teamId ? Number(props.teamId) : null,
+			studentId: props.studentId ? Number(props.studentId) : null,
+			gradeTypeName: props.gradeTypeName
+		})
+			.then(() => createToast("La note a bien été enregistrée."))
+			.then(() => oldValues.value = { grade: grade.value, comment: comment.value })
+			.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
+	}
+})
 
 const onGradeChange = (value: string | number) => {
 	if (Number(value) > 20) {
@@ -95,6 +110,15 @@ watch(() => [props.teamId, props.sprintId], () => {
 
 onMounted(() => {
 	updateGrade()
+	checkGradeScaleUploaded()
+})
+
+const download = useMutation({
+	mutationFn: async() => {
+		await downloadGradeScaleTXT(props.gradeTypeName)
+			.then(() => createToast("Le fichier a été téléchargé."))
+	},
+	onError: () => createToast("Erreur lors du téléchargement du fichier.")
 })
 
 </script>
@@ -112,11 +136,19 @@ onMounted(() => {
 
 		<Row class="items-center justify-between gap-6">
 			<InfoText class="flex-1">{{ getGradeTypeDescription(gradeTypeName) }}</InfoText>
-			<Input v-if="gradeAuthorization" class="w-16" type="number" min="0" max="20" v-model="grade" @update:model-value="onGradeChange" v-on:blur="mutate" :disabled="isPending" />
+			<Input v-if="gradeAuthorization" class="w-16" type="number" min="0" max="20" v-model="grade"
+				@update:model-value="onGradeChange" v-on:blur="mutate" :disabled="isPending" />
 		</Row>
 
-		<Textarea v-if="commentAuthorization" placeholder="Ajouter un commentaire" v-model="comment" :disabled="isPending" v-on:blur="mutate" />
+		<Textarea v-if="commentAuthorization" placeholder="Ajouter un commentaire" v-model="comment"
+			:disabled="isPending" v-on:blur="mutate" />
 
 		<ErrorText v-if="status === 'DONE' && isError">Une erreur est survenue.</ErrorText>
+
+		<Row class="items-center justify-end mt-4" v-if="isGradeScaleUploaded">
+			<Button variant="outline" @click="download.mutate">
+				Télécharger le barème
+			</Button>
+		</Row>
 	</Column>
 </template>

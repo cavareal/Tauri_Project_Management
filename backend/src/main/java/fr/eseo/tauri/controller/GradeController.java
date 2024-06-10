@@ -32,54 +32,54 @@ public class GradeController {
     private final GradeTypeRepository gradeTypeRepository;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Grade> getGradeById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Grade grade = gradeService.getGradeById(token, id);
+    public ResponseEntity<Grade> getGradeById(@PathVariable Integer id) {
+        Grade grade = gradeService.getGradeById(id);
         return ResponseEntity.ok(grade);
     }
 
     @GetMapping("/unimported")
-    public ResponseEntity<List<Grade>> getAllUnimportedGradesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        List<Grade> grades = gradeService.getAllUnimportedGradesByProject(token, projectId);
+    public ResponseEntity<List<Grade>> getAllUnimportedGradesByProject(@RequestParam("projectId") Integer projectId) {
+        List<Grade> grades = gradeService.getAllUnimportedGradesByProject(projectId);
         return ResponseEntity.ok(grades);
     }
 
     @GetMapping("/imported")
-    public ResponseEntity<List<Grade>> getAllImportedGradesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        List<Grade> importedGrades = gradeService.getAllImportedGradesByProject(token, projectId);
+    public ResponseEntity<List<Grade>> getAllImportedGradesByProject(@RequestParam("projectId") Integer projectId) {
+        List<Grade> importedGrades = gradeService.getAllImportedGradesByProject(projectId);
         return ResponseEntity.ok(importedGrades);
     }
 
     @PostMapping
-    public ResponseEntity<String> createGrade(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Grade grade) {
-        gradeService.createGrade(token, grade);
+    public ResponseEntity<String> createGrade(@Validated(Create.class) @RequestBody Grade grade) {
+        gradeService.createGrade(grade);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Grade updatedGrade) {
-        gradeService.updateGrade(token, id, updatedGrade);
+    public ResponseEntity<String> updateGrade(@PathVariable Integer id, @Validated(Update.class) @RequestBody Grade updatedGrade) {
+        gradeService.updateGrade(id, updatedGrade);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        gradeService.deleteGrade(token, id);
+    public ResponseEntity<String> deleteGrade(@PathVariable Integer id) {
+        gradeService.deleteGrade(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllGradesByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        gradeService.deleteAllGradesByProject(token, projectId);
+    public ResponseEntity<String> deleteAllGradesByProject(@RequestParam("projectId") Integer projectId) {
+        gradeService.deleteAllGradesByProject(projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 
     //@GetMapping("/unimported/averages") => On peut récup le user dans le token ?
     @GetMapping("/average-grades-by-grade-type-by-role/{userId}")
-    public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
+    public ResponseEntity<List<List<Double>>> getAverageGradesByGradeTypeByRole(@PathVariable Integer userId) {
         ArrayList<List<Double>> gradeByTypes = new ArrayList<>();
         ArrayList<Double> gradeByRoles;
 
@@ -111,15 +111,15 @@ public class GradeController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<byte[]> downloadStudentGrades(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) throws IOException {
-        byte[] gradesCSV = gradeService.createStudentIndividualGradesCSVReport(token, projectId);
+    public ResponseEntity<byte[]> downloadStudentGrades(@RequestParam("projectId") Integer projectId) throws IOException {
+        byte[] gradesCSV = gradeService.createStudentIndividualGradesCSVReport(projectId);
         return ResponseEntity.ok(gradesCSV);
     }
 
     @GetMapping("/average/{id}")
-    public double getAverageGradeTypeByStudentIdOrTeamId(@PathVariable Integer id,@RequestParam("sprintId") Integer sprintId,@RequestParam("gradeTypeName") String gradeTypeName) {
+    public double getAverageGradeTypeByStudentIdOrTeamId(@PathVariable Integer id,@RequestParam("sprintId") Integer sprintId,@RequestParam("gradeTypeName") String gradeTypeName, @RequestParam("projectId") Integer projectId) {
         try{
-            return gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName);
+            return gradeService.getAverageByGradeTypeByStudentIdOrTeamId(id, sprintId,gradeTypeName, projectId);
         } catch (NullPointerException e){
             return -1.0;
         }
@@ -138,13 +138,13 @@ public class GradeController {
     }
 
     @GetMapping("/confirmation/{sprintId}/team/{teamId}")
-    public ResponseEntity<Boolean> getGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId) {
-        return ResponseEntity.ok(gradeService.getGradesConfirmation(sprintId, teamId));
+    public ResponseEntity<Boolean> getGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId, @RequestParam("projectId") Integer projectId) {
+        return ResponseEntity.ok(gradeService.getGradesConfirmation(sprintId, teamId, projectId));
     }
 
     @PostMapping("/confirmation/{sprintId}/team/{teamId}")
-    public ResponseEntity<Boolean> setGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId) {
-        return ResponseEntity.ok(gradeService.setGradesConfirmation(sprintId, teamId));
+    public ResponseEntity<Boolean> setGradesConfirmations(@PathVariable Integer sprintId, @PathVariable Integer teamId, @RequestParam("projectId") Integer projectId) {
+        return ResponseEntity.ok(gradeService.setGradesConfirmation(sprintId, teamId, projectId));
     }
 
 }

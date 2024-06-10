@@ -4,7 +4,7 @@ import { cn } from "@/utils/style"
 import { Check, XIcon } from "lucide-vue-next"
 
 const props = defineProps<{
-	checked?: boolean
+	checked?: boolean | null
 }>()
 
 const style = cn(
@@ -15,6 +15,7 @@ const style = cn(
 </script>
 
 <template>
-	<Check v-if="props.checked" :class="style" />
+	<div v-if="props.checked === null"></div>
+	<Check v-else-if="props.checked" :class="style" />
 	<XIcon v-else :class="style" />
 </template>

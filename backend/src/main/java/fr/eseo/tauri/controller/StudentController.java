@@ -29,41 +29,41 @@ public class StudentController {
 	private final ResponseMessage responseMessage = new ResponseMessage("student");
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Student> getStudentById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-		Student student = studentService.getStudentById(token, id);
+	public ResponseEntity<Student> getStudentById(@PathVariable Integer id) {
+		Student student = studentService.getStudentById(id);
 		return ResponseEntity.ok(student);
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Student>> getAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-		List<Student> students = studentService.getAllStudentsByProject(token, projectId);
+	public ResponseEntity<List<Student>> getAllStudentsByProject(@RequestParam("projectId") Integer projectId) {
+		List<Student> students = studentService.getAllStudentsByProject(projectId);
 		return ResponseEntity.ok(students);
 	}
 
 	@PostMapping
-	public ResponseEntity<String> createStudent(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Student student, @RequestParam("projectId") Integer projectId) {
+	public ResponseEntity<String> createStudent(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Student student) {
 		studentService.createStudent(token, student);
 		CustomLogger.info(responseMessage.create());
 		return ResponseEntity.ok(responseMessage.create());
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<String> updateStudent(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody Student updatedStudent) {
-		studentService.updateStudent(token, id, updatedStudent);
+	public ResponseEntity<String> updateStudent(@PathVariable Integer id, @Validated(Update.class) @RequestBody Student updatedStudent) {
+		studentService.updateStudent(id, updatedStudent);
 		CustomLogger.info(responseMessage.update());
 		return ResponseEntity.ok(responseMessage.update());
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteStudent(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-		studentService.deleteStudent(token, id);
+	public ResponseEntity<String> deleteStudent(@PathVariable Integer id) {
+		studentService.deleteStudent(id);
 		CustomLogger.info(responseMessage.delete());
 		return ResponseEntity.ok(responseMessage.delete());
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> deleteAllStudentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-		studentService.deleteAllStudentsByProject(token, projectId);
+	public ResponseEntity<String> deleteAllStudentsByProject(@RequestParam("projectId") Integer projectId) {
+		studentService.deleteAllStudentsByProject(projectId);
 		CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
 		return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
 	}
@@ -79,44 +79,44 @@ public class StudentController {
 	 * If an error occurs during the processing of the file, it returns an internal server error response with a message indicating the error.
 	 */
 	@PostMapping("/upload")
-	public ResponseEntity<String> handleFileUpload(@RequestHeader("Authorization") String token, @RequestParam("file-upload") MultipartFile file, @RequestParam("projectId") Integer projectId) throws IOException, CsvValidationException {
-		studentService.populateDatabaseFromCSV(token, file, projectId);
+	public ResponseEntity<String> handleFileUpload(@RequestParam("file-upload") MultipartFile file, @RequestParam("projectId") Integer projectId) throws IOException, CsvValidationException {
+		studentService.populateDatabaseFromCSV(file, projectId);
 		return ResponseEntity.ok("File uploaded successfully");
 	}
 
 	@GetMapping("/download")
-	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) throws IOException {
-		byte[] studentsCSV = studentService.createStudentsCSV(token, projectId);
+	public ResponseEntity<byte[]> downloadStudentsCSV(@RequestParam("projectId") Integer projectId) throws IOException {
+		byte[] studentsCSV = studentService.createStudentsCSV(projectId);
 		return ResponseEntity.ok(studentsCSV);
 	}
 
 	@GetMapping("/{id}/bonus")
-	public ResponseEntity<Bonus> getStudentBonus(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("limited") Boolean limited, @RequestParam("sprintId") Integer sprintId) {
-		Bonus bonus = studentService.getStudentBonus(token, id, limited, sprintId);
+	public ResponseEntity<Bonus> getStudentBonus(@PathVariable Integer id, @RequestParam("limited") Boolean limited, @RequestParam("sprintId") Integer sprintId) {
+		Bonus bonus = studentService.getStudentBonus(id, limited, sprintId);
 		return ResponseEntity.ok(bonus);
 	}
 
 	@GetMapping("/{id}/bonuses")
-	public ResponseEntity<List<Bonus>> getStudentBonuses(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("sprintId") Integer sprintId) {
-		List<Bonus> bonuses = studentService.getStudentBonuses(token, id, sprintId);
+	public ResponseEntity<List<Bonus>> getStudentBonuses(@PathVariable Integer id, @RequestParam("sprintId") Integer sprintId) {
+		List<Bonus> bonuses = studentService.getStudentBonuses(id, sprintId);
 		return ResponseEntity.ok(bonuses);
 	}
 
 	@GetMapping("/{id}/sprint/{sprintId}/total")
-	public ResponseEntity<Double> getIndividualTotalGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
-		Double totalGrade = studentService.getIndividualTotalGrade(token, id, sprintId);
+	public ResponseEntity<Double> getIndividualTotalGrade(@PathVariable Integer id, @PathVariable Integer sprintId) {
+		Double totalGrade = studentService.getIndividualTotalGrade(id, sprintId);
 		return ResponseEntity.ok(totalGrade);
 	}
 
 	@GetMapping("{id}/sprint/{sprintId}/grade")
-	public ResponseEntity<Double> getSprintGrade(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer sprintId) {
-		Double sprintGrade = studentService.getSprintGrade(token, id, sprintId);
+	public ResponseEntity<Double> getSprintGrade(@PathVariable Integer id, @PathVariable Integer sprintId) {
+		Double sprintGrade = studentService.getSprintGrade(id, sprintId);
 		return ResponseEntity.ok(sprintGrade);
 	}
 
 	@GetMapping("{id}/gradeType/{gradeTypeId}/author/{authorId}")
-	public ResponseEntity<Grade> getGradeByTypeAndAuthor(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable Integer gradeTypeId, @PathVariable Integer authorId, @RequestParam("sprintId") Integer sprintId) {
-		Grade grade = studentService.getGradeByTypeAndAuthor(token, id, gradeTypeId, authorId, sprintId);
+	public ResponseEntity<Grade> getGradeByTypeAndAuthor(@PathVariable Integer id, @PathVariable Integer gradeTypeId, @PathVariable Integer authorId, @RequestParam("sprintId") Integer sprintId) {
+		Grade grade = studentService.getGradeByTypeAndAuthor(id, gradeTypeId, authorId, sprintId);
 		return ResponseEntity.ok(grade);
 	}
 

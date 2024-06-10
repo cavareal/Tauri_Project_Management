@@ -17,6 +17,20 @@ export const getAllStudents = async(): Promise<Student[]> => {
 	return response.data
 }
 
+export const getStudentById = async(id: number): Promise<Student> => {
+	const response = await queryAndValidate({
+		route: `students/${id}`,
+		responseSchema: StudentSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+
+}
+
 export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/students`,

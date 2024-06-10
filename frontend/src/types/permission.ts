@@ -13,6 +13,7 @@ export const PermissionTypeSchema = z.enum([
 	"VALIDATION_TEAM_BEFORE_PREPUBLISH",
 	"FLAG_TEAM_WITHOUT_STUDENTS",
 	"FLAG_TEAM_WITH_STUDENTS",
+	"ADD_FLAG_TEAM_WITH_STUDENT",
 	"TEAM_MANAGEMENT",
 	"VIEW_TEAM_CHANGES",
 	"VALIDATION_OWN_TEAM",
@@ -72,9 +73,14 @@ export const PermissionTypeSchema = z.enum([
 	"RATING_PAGE",
 	"GRADE_SCALES_PAGE",
 	"ADD_USER",
-    "DELETE_USER",
-    "GET_ALL_USERS",
-	"MANAGE_PROJECT"
+	"DELETE_USER",
+	"GET_ALL_USERS",
+	"MANAGE_PROJECT",
+	"MANAGE_USER",
+	"ADD_PROJECT",
+	"DELETE_PROJECT",
+	"SET_ACTUAL_PROJECT",
+	"GET_ACTUAL_PROJECT"
 ])
 
 export type PermissionType = z.infer<typeof PermissionTypeSchema>

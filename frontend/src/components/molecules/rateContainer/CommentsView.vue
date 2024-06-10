@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps } from "vue"
+
 import type { User } from "@/types/user"
 import type { Feedback } from "@/types/feedback"
 import { Text } from "@/components/atoms/texts"

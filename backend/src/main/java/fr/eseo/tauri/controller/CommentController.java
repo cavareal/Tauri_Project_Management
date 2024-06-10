@@ -24,41 +24,41 @@ public class CommentController {
     private final ResponseMessage responseMessage = new ResponseMessage("comment");
 
     @GetMapping("/{id}")
-    public ResponseEntity<Comment> getCommentById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        Comment comment = commentService.getCommentById(token, id);
+    public ResponseEntity<Comment> getCommentById(@PathVariable Integer id) {
+        Comment comment = commentService.getCommentById(id);
         return ResponseEntity.ok(comment);
     }
 
     @GetMapping
-    public ResponseEntity<List<Comment>> getAllCommentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        List<Comment> comments = commentService.getAllCommentsByProject(token, projectId);
+    public ResponseEntity<List<Comment>> getAllCommentsByProject(@RequestParam("projectId") Integer projectId) {
+        List<Comment> comments = commentService.getAllCommentsByProject(projectId);
         return ResponseEntity.ok(comments);
     }
 
     @PostMapping
-    public ResponseEntity<String> createComment(@RequestHeader("Authorization") String token, @Validated(Create.class) @RequestBody Comment comment) {
-        commentService.createComment(token, comment);
+    public ResponseEntity<String> createComment(@Validated(Create.class) @RequestBody Comment comment) {
+        commentService.createComment(comment);
         CustomLogger.info(responseMessage.create());
         return ResponseEntity.ok(responseMessage.create());
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateComment(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class)@RequestBody Comment updatedComment) {
-        commentService.updateComment(token, id, updatedComment);
+    public ResponseEntity<String> updateComment(@PathVariable Integer id, @Validated(Update.class)@RequestBody Comment updatedComment) {
+        commentService.updateComment(id, updatedComment);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteComment(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        commentService.deleteComment(token, id);
+    public ResponseEntity<String> deleteComment(@PathVariable Integer id) {
+        commentService.deleteComment(id);
         CustomLogger.info(responseMessage.delete());
         return ResponseEntity.ok(responseMessage.delete());
     }
 
     @DeleteMapping
-    public ResponseEntity<String> deleteAllCommentsByProject(@RequestHeader("Authorization") String token, @RequestParam("projectId") Integer projectId) {
-        commentService.deleteAllCommentsByProject(token, projectId);
+    public ResponseEntity<String> deleteAllCommentsByProject(@RequestParam("projectId") Integer projectId) {
+        commentService.deleteAllCommentsByProject(projectId);
         CustomLogger.info(responseMessage.deleteAllFromCurrentProject());
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }

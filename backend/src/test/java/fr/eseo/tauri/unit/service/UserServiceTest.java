@@ -37,9 +37,6 @@ class UserServiceTest {
     @Mock
     PermissionService permissionService;
 
-    @Mock
-    AuthService authService;
-
     @BeforeEach
     public void init() {
         MockitoAnnotations.openMocks(this);
@@ -47,80 +44,50 @@ class UserServiceTest {
 
     @Test
     void getUserByIdReturnsUserWhenAuthorizedAndUserExists() {
-        String token = "validToken";
         Integer id = 1;
         User expectedUser = new User();
 
-        when(authService.checkAuth(token, "readUser")).thenReturn(true);
         when(userRepository.findById(id)).thenReturn(Optional.of(expectedUser));
 
-        User actualUser = userService.getUserById(token, id);
+        User actualUser = userService.getUserById(id);
 
         assertEquals(expectedUser, actualUser);
     }
 
     @Test
-    void getUserByIdThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "readUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.getUserById(token, id));
-    }
-
-    @Test
     void getUserByIdThrowsResourceNotFoundExceptionWhenUserDoesNotExist() {
-        String token = "validToken";
         Integer id = 1;
 
-        when(authService.checkAuth(token, "readUser")).thenReturn(true);
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(id));
     }
 
     @Test
     void getAllUsersReturnsAllUsersWhenAuthorized() {
-        String token = "validToken";
         List<User> expectedUsers = Arrays.asList(new User(), new User());
 
-        when(authService.checkAuth(token, "readUser")).thenReturn(true);
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
-        List<User> actualUsers = userService.getAllUsers(token);
+        List<User> actualUsers = userService.getAllUsers();
 
         assertEquals(expectedUsers, actualUsers);
-    }
-
-    @Test
-    void getAllUsersThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "readUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.getAllUsers(token));
     }
 
     @Test
     void getAllUsersReturnsEmptyListWhenNoUsers() {
-        String token = "validToken";
         List<User> expectedUsers = new ArrayList<>();
 
-        when(authService.checkAuth(token, "readUser")).thenReturn(true);
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
-        List<User> actualUsers = userService.getAllUsers(token);
+        List<User> actualUsers = userService.getAllUsers();
 
         assertEquals(expectedUsers, actualUsers);
     }
 
     @Test
-    void createUserSavesUserWhenAuthorized() {
-        String token = "validToken";
+    void createUserSavesUserWhenAuthorized() throws Exception {
         User user = new User();
-
-        when(authService.checkAuth(token, "createUser")).thenReturn(true);
 
         userService.createUser(user);
 
@@ -138,99 +105,11 @@ class UserServiceTest {
 //    }
 
     @Test
-    void updateUserThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-        User updatedUser = new User();
-
-        when(authService.checkAuth(token, "updateUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.updateUser(token, id, updatedUser));
-    }
-
-    @Test
-    void deleteUserByIdThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "deleteUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.deleteUserById(token, id));
-    }
-
-    @Test
     void deleteAllUsersDeletesAllUsersWhenAuthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "deleteUser")).thenReturn(true);
-
-        userService.deleteAllUsers(token);
+        userService.deleteAllUsers();
 
         verify(userRepository, times(1)).deleteAll();
     }
-
-    @Test
-    void deleteAllUsersThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "deleteUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.deleteAllUsers(token));
-    }
-
-    @Test
-    void getRolesByUserIdThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "readRoleByUserId")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.getRolesByUserId(token, id));
-    }
-
-    @Test
-    void getTeamByMemberIdThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer userId = 1;
-        Integer projectId = 1;
-
-        when(authService.checkAuth(token, "readTeamBySupervisor")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.getTeamByMemberId(token, userId, projectId));
-    }
-
-    @Test
-    void getPermissionsByUserThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.getPermissionsByUser(token, id));
-    }
-
-    @Test
-    void hasPermissionThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-        PermissionType permission = PermissionType.ADD_ALL_TEAMS_FEEDBACK;
-
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.hasPermission(token, id, permission));
-    }
-
-
-    @Test
-    void getPermissionsByUserShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.getPermissionsByUser(token, id));
-    }
-
 
 }
 

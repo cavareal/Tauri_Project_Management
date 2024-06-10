@@ -6,8 +6,7 @@ import { AuthRequestSchema } from "@/types/auth-request"
 
 export const login = async(login: string, password: string) => {
 	Cookies.removeAll()
-	// TODO: set the project id
-	Cookies.setProjectId(1)
+	Cookies.setProjectId(0)
 
 	const response = await loginAndValidate({
 		route: "auth/login",
@@ -19,9 +18,9 @@ export const login = async(login: string, password: string) => {
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
-
 	Cookies.setUserId(response.data.id)
 	Cookies.setToken(response.data.accessToken)
+	Cookies.setProjectId(response.data.idProject)
 
 	const roles = await getAllRoles(response.data.id)
 	// TODO: set all roles and not only the first one

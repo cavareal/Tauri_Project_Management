@@ -57,7 +57,7 @@ watch(() => props.teamId, async() => {
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			<TableRow v-for="team in teams" >
+			<TableRow v-for="team in teams" :key="team.id">
 				<TableCell class="font-medium" :class="rowClass">{{team.name}}</TableCell>
 				<TableCell v-if="sprintGrades && averageSprintGrades" :class="rowClass"> {{averageSprintGrades[team.id - 1]}}</TableCell>
 			</TableRow>

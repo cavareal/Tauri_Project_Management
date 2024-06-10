@@ -1,4 +1,3 @@
-
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { CreateNotificationSchema, NotificationSchema } from "@/types/notification"
 import type { Notification, CreateNotification } from "@/types/notification"
@@ -44,9 +43,9 @@ export const changeStateChecked = async(id: number): Promise<void> => {
 	}
 }
 
-export const addNotification = async(userToId: number, userFromId: number): Promise<void> => {
+export const addNotification = async(userToId: number, userFromId: number, message: string): Promise<void> => {
 	const notification: CreateNotification = {
-		message: "La composition des équipes a été prépubliée.",
+		message,
 		checked: false,
 		type: "CREATE_TEAMS",
 		userToId: userToId,

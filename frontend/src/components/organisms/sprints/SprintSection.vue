@@ -1,11 +1,13 @@
 <script setup lang="ts">
 
-import { EditSprintDialog, DeleteSprintDialog } from "."
+import { EditSprintDialog, DeleteSprintDialog, PresentationOrderBox } from "."
 import { formatSprintEndTypeWithDescription, type Sprint } from "@/types/sprint"
 import { ActionSection } from "@/components/molecules/action-section"
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/utils/date"
+import { Cookies } from "@/utils/cookie"
 
+const role = Cookies.getRole()
 const emits = defineEmits(["edit:sprint", "delete:sprint"])
 
 const props = defineProps<{
@@ -28,4 +30,6 @@ const DESCRIPTION = formatSprintEndTypeWithDescription(props.sprint.endType)
             <Button variant="outline">Supprimer</Button>
         </DeleteSprintDialog>
     </ActionSection>
+
+	<PresentationOrderBox v-if="role === 'TEAM_MEMBER' || role === 'OPTION_STUDENT'" :sprint="sprint" />
 </template>

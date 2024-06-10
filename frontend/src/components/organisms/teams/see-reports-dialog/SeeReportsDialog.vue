@@ -13,26 +13,25 @@ const reportFlags = ref<Flag[]>()
 const validationFlags = ref<Flag[]>()
 
 
-const { data: falgs } = useQuery({ queryKey: ["flags"], queryFn: async() => {
-	const flags = await getAllFlags()
-	reportFlags.value = flags.filter(flag => flag.type === "REPORTING" && flag.status === null)
-	validationFlags.value = flags.filter(flag => flag.type === "VALIDATION")
-	return flags
-}
+const { data: flags } = useQuery({
+	queryKey: ["flags"], queryFn: async() => {
+		const flags = await getAllFlags()
+		reportFlags.value = flags.filter(flag => flag.type === "REPORTING" && flag.status === null)
+		validationFlags.value = flags.filter(flag => flag.type === "VALIDATION")
+		return flags
+	}
 })
 
 </script>
 
 <template>
-  <CustomDialog :title="DIALOG_TITLE" description="">
-    <template #trigger>
-      <slot />
-    </template>
-    <ValidationProgress :validations="validationFlags"/>
-    <Reports :reports="reportFlags"/>
-  </CustomDialog>
+	<CustomDialog :title="DIALOG_TITLE" description="">
+		<template #trigger>
+			<slot />
+		</template>
+		<ValidationProgress :validations="validationFlags" />
+		<Reports :reports="reportFlags" />
+	</CustomDialog>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

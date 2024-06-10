@@ -23,22 +23,30 @@ public class ValidationFlagController {
     private final ResponseMessage responseMessage = new ResponseMessage("validationFlag");
 
     @GetMapping("/{authorId}")
-    public ResponseEntity<ValidationFlag> getValidationFlagByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer authorId, @PathVariable Integer flagId) {
-        ValidationFlag validationFlag = validationFlagService.getValidationFlagByAuthorId(token, flagId, authorId);
+    public ResponseEntity<ValidationFlag> getValidationFlagByAuthorId(@PathVariable Integer authorId, @PathVariable Integer flagId) {
+        ValidationFlag validationFlag = validationFlagService.getValidationFlagByAuthorId(flagId, authorId);
         return ResponseEntity.ok(validationFlag);
     }
 
     @GetMapping
-    public ResponseEntity<List<ValidationFlag>> getAllValidationFlags(@RequestHeader("Authorization") String token, @PathVariable Integer flagId) {
-        List<ValidationFlag> validationFlags = validationFlagService.getAllValidationFlags(token, flagId);
+    public ResponseEntity<List<ValidationFlag>> getAllValidationFlags(@PathVariable Integer flagId) {
+        List<ValidationFlag> validationFlags = validationFlagService.getAllValidationFlags(flagId);
         return ResponseEntity.ok(validationFlags);
     }
 
     @PatchMapping("/{authorId}")
-    public ResponseEntity<String> updateValidationFlag(@RequestHeader("Authorization") String token, @PathVariable Integer authorId, @PathVariable Integer flagId, @Validated(Update.class) @RequestBody ValidationFlag updatedValidationFlag) {
-        validationFlagService.updateValidationFlag(token, flagId, authorId, updatedValidationFlag);
+    public ResponseEntity<String> updateValidationFlag(@PathVariable Integer authorId, @PathVariable Integer flagId, @Validated(Update.class) @RequestBody ValidationFlag updatedValidationFlag) {
+        validationFlagService.updateValidationFlag(flagId, authorId, updatedValidationFlag);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createValidationFlagsForAFlag(@PathVariable Integer flagId, @Validated(Update.class) @RequestBody ValidationFlag validationFlag) {
+        System.out.println("flagId: " + flagId);
+        validationFlagService.createValidationFlag(flagId, validationFlag);
+        CustomLogger.info(responseMessage.create());
+        return ResponseEntity.ok(responseMessage.create());
     }
 
 }
