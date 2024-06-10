@@ -107,6 +107,8 @@ tasks.register('setLoginDb') {
 		properties.setProperty('spring.datasource.username', dbUsername)
 		properties.setProperty('spring.datasource.password', dbPassword)
 		properties.store(new FileOutputStream(propertiesFile), null)
+
+
 	}
 }
 
