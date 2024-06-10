@@ -34,9 +34,6 @@ public class TeamService {
     @Lazy
     private final StudentService studentService;
 
-    private static final String READ_PERMISSION = "readTeam";
-    private static final String DELETE_PERMISSION = "deleteTeam";
-
     public Team getTeamById(Integer id) {
         return teamRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("team", id));
     }
