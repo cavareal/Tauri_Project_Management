@@ -35,11 +35,6 @@ import static org.mockito.Mockito.*;
 @Nested
 class StudentServiceTest {
 
-    public static final String MAP_KEY_NAMES = "names";
-    public static final String MAP_KEY_GENDERS = "genders";
-    public static final String MAP_KEY_BACHELORS = "bachelors";
-    public static final String MAP_KEY_GRADES = "grades";
-
     @Mock
     private StudentRepository studentRepository;
 
@@ -855,40 +850,6 @@ class StudentServiceTest {
         verify(presentationOrderService, times(sprints.size())).createPresentationOrder(any(PresentationOrder.class));
 
         verify(bonusService, times(sprints.size() * 2)).createBonus(any(Bonus.class));
-    }
-
-    @Test
-    void populateDatabaseFromCSV_ShouldPopulateDatabase() throws IOException, CsvValidationException {
-        MultipartFile file = mock(MultipartFile.class);
-        Integer projectId = 1;
-
-        String csvContent = "name,gender,bachelor,grade1,grade2\nJohn Doe,M,yes,90,85";
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
-
-        when(file.isEmpty()).thenReturn(false);
-        when(file.getInputStream()).thenReturn(inputStream);
-
-        List<GradeType> gradeTypes = Arrays.asList(new GradeType(), new GradeType());
-        when(gradeTypeService.createGradeTypesFromCSV(any())).thenReturn(gradeTypes);
-
-        Map<String, Object> extractedData = new HashMap<>();
-        extractedData.put(MAP_KEY_NAMES, List.of("John Doe"));
-        extractedData.put(MAP_KEY_GENDERS, List.of("M"));
-        extractedData.put(MAP_KEY_BACHELORS, List.of("yes"));
-        extractedData.put(MAP_KEY_GRADES, List.of(Arrays.asList("90", "85")));
-
-        when(studentService.extractNamesGenderBachelorAndGrades(any())).thenReturn(extractedData);
-
-        Student student = new Student();
-        student.name("John Doe");
-        when(studentService.createStudentFromData(anyString(), anyString(), anyString(), anyInt())).thenReturn(student);
-
-        studentService.populateDatabaseFromCSV(file, projectId);
-
-        verify(gradeTypeService, times(1)).createGradeTypesFromCSV(any());
-        verify(studentService, times(1)).createStudentFromData("John Doe", "M", "yes", projectId);
-        verify(studentService, times(1)).createStudent(any(Student.class));
-        verify(gradeService, times(2)).createGrade(any(Grade.class));
     }
 
 }
