@@ -56,9 +56,6 @@ public class AuthService {
 
     public AuthResponse login(String email, String password) {
         try {
-
-            CustomLogger.info("prod : " + prodProperty);
-            prodProperty = true;
             User user;
 
             if(prodProperty){       // Auth with LDAP

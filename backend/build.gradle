@@ -108,11 +108,7 @@ tasks.register('setLoginDb') {
 		properties.setProperty('spring.datasource.password', dbPassword)
 		System.getProperty("prod") ? properties.setProperty('app.log.with.ldap', true) : properties.setProperty('spring.logwith.ldap', false)
 
-
 		properties.store(new FileOutputStream(propertiesFile), null)
-
-
-
 	}
 }
 
