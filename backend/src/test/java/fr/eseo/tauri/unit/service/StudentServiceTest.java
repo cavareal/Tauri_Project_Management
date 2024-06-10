@@ -475,17 +475,6 @@ class StudentServiceTest {
         assertEquals(bonuses, result);
     }
 
-    // @Test
-    // void getStudentBonusesShouldThrowSecurityExceptionWhenUnauthorized() {
-    //     String token = "validToken";
-    //     Integer idStudent = 1;
-    //     Integer idSprint = 1;
-
-    //     when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
-
-    //     assertThrows(SecurityException.class, () -> studentService.getStudentBonuses(token, idStudent, idSprint));
-    // }
-
     @Test
     void getStudentBonusesShouldReturnEmptyListWhenNoBonusesFound() {
         Integer idStudent = 1;
@@ -496,6 +485,97 @@ class StudentServiceTest {
         List<Bonus> result = studentService.getStudentBonuses(idStudent, idSprint);
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void updateStudentShouldUpdateGenderWhenProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.gender(Gender.MAN);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(updatedStudent.gender(), existingStudent.gender());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateBachelorStatusWhenProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.bachelor(true);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(updatedStudent.bachelor(), existingStudent.bachelor());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateTeamRoleWhenProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.teamRole("NewRole");
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(updatedStudent.teamRole(), existingStudent.teamRole());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateProjectWhenProjectIdIsProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.projectId(2);
+        Project project = new Project();
+        project.id(2);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+        when(projectService.getProjectById(updatedStudent.projectId())).thenReturn(project);
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(project, existingStudent.project());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateTeamWhenTeamIdIsProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.teamId(2);
+        Team team = new Team();
+        team.id(2);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+        when(teamService.getTeamById(updatedStudent.teamId())).thenReturn(team);
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(team, existingStudent.team());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldThrowResourceNotFoundExceptionWhenStudentDoesNotExist() {
+        Integer id = 1;
+        Student updatedStudent = new Student();
+
+        when(studentRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> studentService.updateStudent(id, updatedStudent));
     }
 
 }
