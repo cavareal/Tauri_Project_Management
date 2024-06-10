@@ -37,7 +37,7 @@ public class AuthService {
     private String prodProperty;
 
 
-    public String getNameFromEmail(String email) {
+    /*public String getNameFromEmail(String email) {
         int indexOfDot = email.indexOf(".");
         int indexOfAt = email.indexOf("@");
         String name = "";
@@ -52,7 +52,7 @@ public class AuthService {
             name = lastName + " " + firstName;
         }
         return name;
-    }
+    }*/
 
     public AuthResponse login(String email, String password) {
         try {
