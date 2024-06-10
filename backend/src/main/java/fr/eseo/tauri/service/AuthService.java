@@ -3,7 +3,9 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
-import fr.eseo.tauri.model.enumeration.RoleType;
+import net.datafaker.providers.base.Bool;
+import org.apache.el.parser.BooleanNode;
+import org.springframework.beans.factory.annotation.Value;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
@@ -30,6 +32,10 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
 
+    @Value("${app.log.with.ldap}")
+    private Boolean prodProperty;
+
+
     public String getNameFromEmail(String email) {
         int indexOfDot = email.indexOf(".");
         int indexOfAt = email.indexOf("@");
@@ -49,17 +55,17 @@ public class AuthService {
 
     public AuthResponse login(String email, String password) {
         try {
-            String prodProperty = System.getProperty("prod");
+
             CustomLogger.info("prod : " + prodProperty);
             User user;
 
-            if(prodProperty != null){       // Auth with LDAP
+            if(prodProperty){       // Auth with LDAP
                 Authentication authentication = authenticate(email, password);
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
                 user = userRepository.findByEmail(userDetails.getUsername())
                         .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
-            } else {
+            } else {                // Auth without LDAP for dev mode
                 user = userRepository.findByEmail(email)
                         .orElseThrow(() -> new SecurityException("Wrong credentials")); // User exist in LDAP, but not in DB
             }
