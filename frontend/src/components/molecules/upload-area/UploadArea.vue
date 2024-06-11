@@ -10,8 +10,12 @@ import { Label } from "@/components/ui/label"
 import Column from "@/components/atoms/containers/Column.vue"
 import InfoText from "@/components/atoms/texts/InfoText.vue"
 
-const file = defineModel<File | null>()
+const props = defineProps<{
+	extension: string
+	class?: string
+}>()
 
+const file = defineModel<File | null>()
 const dragging = ref(false)
 
 const handleChangeFile = (event: Event) => {
@@ -24,7 +28,7 @@ const handleChangeFile = (event: Event) => {
 const handleDropFile = (event: DragEvent) => {
 	event.preventDefault()
 	if (event.dataTransfer && event.dataTransfer.files) {
-		if (event.dataTransfer.files[0].name.endsWith(".csv")) file.value = event.dataTransfer.files[0]
+		if (event.dataTransfer.files[0].name.endsWith(`.${props.extension}`)) file.value = event.dataTransfer.files[0]
 		dragging.value = false
 	}
 }
@@ -47,16 +51,17 @@ const handleDragLeave = (event: DragEvent) => {
 
 const uploadAreaStyle = computed(() => cn(
 	"flex flex-col justify-center",
-	"p-4 mt-4",
+	"p-4",
 	"text-center text-slate-500 font-normal",
 	"rounded-md border transition-all cursor-pointer border-dashed",
-	dragging.value ? "bg-slate-50" : " bg-white hover:bg-slate-50"
+	dragging.value ? "bg-slate-50" : " bg-white hover:bg-slate-50",
+	props.class
 ))
 
 </script>
 
 <template>
-	<Row v-if="file" class="gap-2 items-center justify-stretch px-2 py-1.5 my-4 whitespace-nowrap rounded-md bg-slate-100 text-slate-900">
+	<Row v-if="file" class="gap-2 items-center justify-stretch px-2 py-1.5 my-4 whitespace-nowrap rounded-md bg-slate-100 text-slate-900" :class="props.class">
 		<Sheet class="w-4 h-4" />
 		<Text class="flex-1">{{ file?.name }}</Text>
 		<X class="w-4 h-4 cursor-pointer" @click="() => file = null" />
@@ -70,7 +75,7 @@ const uploadAreaStyle = computed(() => cn(
 			<CloudUpload class="w-16 h-16 stroke-[1.2]" />
 			<Text>Déposez un fichier ici ou cliquez ici pour sélectionnez un fichier</Text>
 		</Column>
-		<Input id="file-upload" type="file" @change="handleChangeFile" class="hidden" accept=".csv" />
+		<Input id="file-upload" type="file" @change="handleChangeFile" class="hidden" :accept="`.${extension}`" />
 	</Label>
-	<InfoText v-if="!file" class="text-slate-400 mb-4">Format accepté : .csv</InfoText>
+	<InfoText v-if="!file" class="text-slate-400 mb-4">Format accepté : .{{ extension }}</InfoText>
 </template>

@@ -213,6 +213,8 @@ public class GradeTypeService {
     }
 
     public void deleteGradeScale(Integer id) {
-        gradeTypeRepository.deleteById(id);
+        var gradeType = gradeTypeRepository.findById(id).orElseThrow();
+        gradeType.scaleTXTBlob(null);
+        gradeTypeRepository.save(gradeType);
     }
 }
