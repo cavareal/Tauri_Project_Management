@@ -97,7 +97,7 @@ public class BonusService {
             CustomLogger.info("Student : " + student);
             User user = userService.getUserById(student.id());
             CustomLogger.info("User auth: " + user);
-            bonuses.add(bonusRepository.findAllByAuthorId(user.id()));
+//            bonuses.add(bonusRepository.findAllByAuthorId(user.id()));
         }
 
         CustomLogger.info("Get all bonuses by team : " + bonuses);
