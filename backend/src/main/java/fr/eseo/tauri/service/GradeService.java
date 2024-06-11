@@ -312,7 +312,6 @@ public class GradeService {
     public List<Grade> getInduvidualGradesByTeam(Integer sprintId, Integer teamId){
         return gradeRepository.findIndividualGradesByTeam(sprintId, teamId);
     }
-
 }
 
 

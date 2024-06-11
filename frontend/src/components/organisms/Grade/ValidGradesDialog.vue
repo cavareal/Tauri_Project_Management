@@ -20,19 +20,51 @@ const props = defineProps<{
 }>()
 
 
-// Get all the grades of the team, 
-const { data: individualsGradeByTeam } = useQuery({ queryKey: ["individual-grade-team"], queryFn: async () => {
-	console.log("ouaoijpoidfhblkdsfjvnrlsekj")
-	await getIndividualGradesByTeam(Number(props.selectedSprint), Number(props.selectedTeam))
-}})
-// Get all validations bonuses
-const { data: validationBonusesByTeam } = useQuery({ queryKey: ["validation-bonuses-team"], queryFn: async () => {
-	await getValidationBonusesByTeam(Number(props.selectedTeam))
-}})
+const selectedTeam = ref(props.selectedTeam)
+const selectedSprint = ref(props.selectedSprint)
+
+
+const fetchIndividualGradesByTeam = async () => {
+	if (selectedTeam.value && selectedSprint.value) {
+		return getIndividualGradesByTeam(Number(selectedSprint.value), Number(selectedTeam.value))
+	}
+}
+
+
+const fetchValidationBonusesByTeam = async () => {
+	if (selectedTeam.value) {
+		return getValidationBonusesByTeam(Number(selectedTeam.value))
+	}
+}
+
+
+const { data: individualsGradeByTeam, refetch: refetchIndividualGradesByTeam } = useQuery({
+	queryKey: ["individual-grade-team", selectedTeam, selectedSprint],
+	queryFn: fetchIndividualGradesByTeam,
+	enabled: !!selectedTeam.value && !!selectedSprint.value
+})
+
+
+const { data: validationBonusesByTeam, refetch: refetchValidationBonusesByTeam } = useQuery({
+	queryKey: ["validation-bonuses-team", selectedTeam],
+	queryFn: fetchValidationBonusesByTeam,
+	enabled: !!selectedTeam.value
+})
+
+
+watch(
+	() => [props.selectedTeam, props.selectedSprint],
+	([newTeam, newSprint]) => {
+		selectedTeam.value = newTeam
+		selectedSprint.value = newSprint
+		refetchIndividualGradesByTeam()
+		refetchValidationBonusesByTeam()
+	}
+)
 
 
 const { mutate, isPending, error } = useMutation({
-	mutationKey: ["individual-grades"], mutationFn: async() => {
+	mutationKey: ["individual-grades"], mutationFn: async () => {
 		console.log(props)
 		await setGradesConfirmation(Number(props.selectedTeam), Number(props.selectedSprint))
 			.then(() => open.value = false)
@@ -41,9 +73,6 @@ const { mutate, isPending, error } = useMutation({
 	}
 })
 
-watch(() => props.selectedSprint, () => {
-	console.log("refresh les notes et tout")
-})
 
 const DIALOG_TITLE = "Valider les notes individuelles"
 const DIALOG_DESCRIPTION
