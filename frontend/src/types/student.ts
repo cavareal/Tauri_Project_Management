@@ -23,6 +23,9 @@ export const CreateStudentSchema = StudentSchema.omit({
 	team: true,
 	project: true
 }).extend({
+	gender: GenderSchema,
+	bachelor: z.boolean(),
+	name: z.string(),
 	teamId: z.coerce.number().optional(),
 	projectId: z.coerce.number()
 })

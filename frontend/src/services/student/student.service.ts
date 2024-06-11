@@ -1,7 +1,8 @@
-import type { Student, UpdateStudent } from "@/types/student"
+import { type CreateStudent, CreateStudentSchema, type Student, type UpdateStudent } from "@/types/student"
 import { StudentSchema } from "@/types/student"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"
+import { Cookies } from "@/utils/cookie"
 
 export const getAllStudents = async(): Promise<Student[]> => {
 	const response = await queryAndValidate({
@@ -70,6 +71,38 @@ export const deleteAllStudents = async(): Promise<void> => {
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+}
+
+export const deleteStudent = async(id : number): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "DELETE",
+		route: `students/${id.toString()}`
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const createStudent = async(body: Omit<CreateStudent, "privateKey" | "email" | "password">): Promise<void> => {
+	const currentProjectId = Cookies.getProjectId()
+	const response = await mutateAndValidate({
+		method: "POST",
+		route: "students",
+		body: {
+			...body,
+			email: "",
+			password: "",
+			privateKey: "",
+			projectId: currentProjectId
+		},
+		bodySchema: z.unknown()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
 }
 
 export const updateStudent = async(id: string | null, body: UpdateStudent): Promise<void> => {
