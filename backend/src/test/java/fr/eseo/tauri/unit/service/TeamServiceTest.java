@@ -2,6 +2,7 @@ package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
+import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.*;
 import fr.eseo.tauri.service.*;
@@ -40,6 +41,9 @@ class TeamServiceTest {
 
     @Mock
     private SprintService sprintService;
+
+    @Mock
+    private RoleRepository roleRepository;
 
     @Mock
     private PresentationOrderService presentationOrderService;
@@ -566,4 +570,182 @@ class TeamServiceTest {
         assertEquals(individualGrade1, result.get(0));
         assertEquals(individualGrade2, result.get(1));
     }
+
+    @Test
+    void assignWomenPerTeamShouldAssignWomenAndMenToTeams() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Arrays.asList(new Student(), new Student());
+        Integer womenPerTeam = 1;
+
+        teamService.assignWomenPerTeam(teams, women, men, womenPerTeam);
+
+        verify(roleRepository, times(2)).save(any(Role.class));
+        verify(studentRepository, times(2)).save(any(Student.class));
+    }
+
+    @Test
+    void assignWomenPerTeamShouldAssignOnlyWomenToTeamsWhenNoMen() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Collections.emptyList();
+        Integer womenPerTeam = 1;
+
+        teamService.assignWomenPerTeam(teams, women, men, womenPerTeam);
+
+        verify(roleRepository, times(2)).save(any(Role.class));
+        verify(studentRepository, times(2)).save(any(Student.class));
+    }
+
+    @Test
+    void assignWomenPerTeamShouldNotAssignAnyStudentWhenNoTeams() {
+        List<Team> teams = Collections.emptyList();
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Arrays.asList(new Student(), new Student());
+        Integer womenPerTeam = 1;
+
+        teamService.assignWomenPerTeam(teams, women, men, womenPerTeam);
+
+        verify(roleRepository, times(0)).save(any(Role.class));
+        verify(studentRepository, times(0)).save(any(Student.class));
+    }
+
+    @Test
+    void assignWomenPerTeamShouldNotAssignAnyStudentWhenNoStudents() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Collections.emptyList();
+        List<Student> men = Collections.emptyList();
+        Integer womenPerTeam = 1;
+
+        teamService.assignWomenPerTeam(teams, women, men, womenPerTeam);
+
+        verify(roleRepository, times(0)).save(any(Role.class));
+        verify(studentRepository, times(0)).save(any(Student.class));
+    }
+
+    @Test
+    void assignStudentsEvenlyShouldAssignStudentsToTeams() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Arrays.asList(new Student(), new Student());
+        Integer projectId = 1;
+        int index = 0;
+
+        when(teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId)).thenReturn(teams);
+
+        teamService.assignStudentsEvenly(women, men, projectId, index, teams);
+
+        verify(roleRepository, times(4)).save(any(Role.class));
+        verify(studentRepository, times(4)).save(any(Student.class));
+    }
+
+    @Test
+    void assignStudentsEvenlyShouldAssignOnlyWomenToTeamsWhenNoMen() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Collections.emptyList();
+        Integer projectId = 1;
+        int index = 0;
+
+        when(teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId)).thenReturn(teams);
+
+        teamService.assignStudentsEvenly(women, men, projectId, index, teams);
+
+        verify(roleRepository, times(2)).save(any(Role.class));
+        verify(studentRepository, times(2)).save(any(Student.class));
+    }
+
+    @Test
+    void assignStudentsEvenlyShouldNotAssignAnyStudentWhenNoStudents() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Collections.emptyList();
+        List<Student> men = Collections.emptyList();
+        Integer projectId = 1;
+        int index = 0;
+
+        teamService.assignStudentsEvenly(women, men, projectId, index, teams);
+
+        verify(roleRepository, times(0)).save(any(Role.class));
+        verify(studentRepository, times(0)).save(any(Student.class));
+    }
+
+    @Test
+    void fillTeamsShouldAssignStudentsToTeams() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Arrays.asList(new Student(), new Student());
+        Integer womenPerTeam = 1;
+        Integer projectId = 1;
+
+        when(teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId)).thenReturn(teams);
+
+        teamService.fillTeams(teams, women, men, womenPerTeam, false, projectId);
+
+        verify(roleRepository, times(4)).save(any(Role.class));
+        verify(studentRepository, times(4)).save(any(Student.class));
+    }
+
+    @Test
+    void fillTeamsShouldAssignOnlyWomenToTeamsWhenNoMen() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Collections.emptyList();
+        Integer womenPerTeam = 1;
+        Integer projectId = 1;
+
+        when(teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId)).thenReturn(teams);
+
+        teamService.fillTeams(teams, women, men, womenPerTeam, false, projectId);
+
+        verify(roleRepository, times(2)).save(any(Role.class));
+        verify(studentRepository, times(2)).save(any(Student.class));
+    }
+
+    @Test
+    void fillTeamsShouldNotAssignAnyStudentWhenNoStudents() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Collections.emptyList();
+        List<Student> men = Collections.emptyList();
+        Integer womenPerTeam = 1;
+        Integer projectId = 1;
+
+        teamService.fillTeams(teams, women, men, womenPerTeam, false, projectId);
+
+        verify(roleRepository, times(0)).save(any(Role.class));
+        verify(studentRepository, times(0)).save(any(Student.class));
+    }
+
+    @Test
+    void fillTeamsShouldAssignStudentsEvenlyWhenAutoWomenRatioIsTrue() {
+        List<Team> teams = Arrays.asList(new Team(), new Team());
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Arrays.asList(new Student(), new Student());
+        Integer womenPerTeam = 1;
+        Integer projectId = 1;
+
+        when(teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId)).thenReturn(teams);
+
+        teamService.fillTeams(teams, women, men, womenPerTeam, true, projectId);
+
+        verify(roleRepository, times(4)).save(any(Role.class));
+        verify(studentRepository, times(4)).save(any(Student.class));
+    }
+
+    @Test
+    void generateTeamsShouldThrowExceptionWhenNotEnoughStudents() {
+        Integer projectId = 1;
+        Project projectDetails = new Project();
+        projectDetails.nbTeams(3);
+        projectDetails.nbWomen(2);
+        boolean autoWomenRatio = false;
+
+        List<Student> women = Arrays.asList(new Student(), new Student());
+        List<Student> men = Arrays.asList(new Student(), new Student());
+
+        when(studentRepository.findByGenderAndProjectId(Gender.WOMAN, projectId)).thenReturn(women);
+        when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN, projectId)).thenReturn(men);
+
+        assertThrows(IllegalArgumentException.class, () -> teamService.generateTeams(projectId, projectDetails, autoWomenRatio));
+    }
+
 }
