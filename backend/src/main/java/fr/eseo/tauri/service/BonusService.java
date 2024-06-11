@@ -92,19 +92,17 @@ public class BonusService {
 
 
     public List<Bonus> getValidationBonusesByTeam(Integer teamId) {
-
         List <Bonus> bonuses = new ArrayList<>();
         List <Student> students = studentRepository.findByTeam(teamId);
-        // Students bonus
+        // Students bonuses
         for(Student student : students) {
-            CustomLogger.info("Student : " + student);
             User user = userService.getUserById(student.id());
-            CustomLogger.info("User auth: " + user);
             Bonus bonus = bonusRepository.findAllByAuthorId(user.id());
             if (bonus != null){
                 bonuses.add(bonus);
             }
         }
+
         // SS bonus
         User leader = teamRepository.findLeaderByTeamId(teamId);
         Bonus leaderBonus = bonusRepository.findAllByAuthorId(leader.id());
@@ -112,7 +110,6 @@ public class BonusService {
             bonuses.add(leaderBonus);
         }
 
-        CustomLogger.info("Get all bonuses by team : " + bonuses);
         return bonuses;
     }
 
