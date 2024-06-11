@@ -10,6 +10,8 @@ import type { Student } from "@/types/student"
 import type { Grade } from "@/types/grade"
 import { Loading } from "@/components/organisms/loading"
 import { extractNames } from "@/utils/string"
+import UpdateDeleteMenu from "@/components/molecules/menu/UpdateDeleteMenu.vue"
+import { EditStudentDialog } from "@/components/organisms/students/index"
 
 const rowClass = cn("py-2 h-auto")
 
@@ -34,9 +36,9 @@ defineProps<{
 						<span v-if="gradeType.name === 'Moyenne'">Moyenne</span>
 						<span v-else>{{ gradeType.name }} ({{ gradeType.factor }})</span>
 					</TableHead>
+					<TableHead :class="rowClass"></TableHead>
 				</TableRow>
 			</TableHeader>
-
 			<TableBody v-if="students" >
 				<TableRow v-for="student in students" :key="student.id">
 					<TableCell class="font-medium min-w-36" :class="rowClass">
@@ -57,6 +59,10 @@ defineProps<{
 							{{ grades?.find(grade => grade.student?.id === student.id && grade.gradeType.id === gradeType.id)?.value?.toPrecision(4) ?? "" }}
 						</span>
 					</TableCell>
+					<TableCell :class="rowClass">
+<!--						<UpdateDeleteMenu :student="student" :grade="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')" />-->
+						<UpdateDeleteMenu :student="student" :mark="Number(0)" />
+					</TableCell>
 				</TableRow>
 			</TableBody>
 
@@ -74,10 +80,12 @@ defineProps<{
 					<TableCell v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass">
 						<Skeleton class="w-5/6 h-5" />
 					</TableCell>
+					<TableCell :class="rowClass">
+						<Skeleton class="w-5/6 h-5" />
+					</TableCell>
 				</TableRow>
 			</TableBody>
 		</Table>
-
 		<Loading v-else />
 	</div>
 </template>
