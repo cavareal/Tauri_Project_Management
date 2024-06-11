@@ -1,11 +1,8 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Project;
-import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
-import net.datafaker.providers.base.Bool;
 import org.apache.commons.text.StringEscapeUtils;
-import org.apache.el.parser.BooleanNode;
 import org.springframework.beans.factory.annotation.Value;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.RoleRepository;
@@ -33,26 +30,10 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
 
+    private static final String WRONG_CREDENTIALS = "Wrong credentials";
+
     @Value("${app.log.with.ldap}")
     private String prodProperty;
-
-
-    /*public String getNameFromEmail(String email) {
-        int indexOfDot = email.indexOf(".");
-        int indexOfAt = email.indexOf("@");
-        String name = "";
-
-        if (indexOfDot!= -1 && indexOfAt!= -1) {
-            String firstName = email.substring(0, indexOfDot).trim();
-            String lastName = email.substring(indexOfDot + 1, indexOfAt).trim();
-
-            firstName = Character.toUpperCase(firstName.charAt(0)) + firstName.substring(1);
-            lastName = Character.toUpperCase(lastName.charAt(0)) + lastName.substring(1);
-
-            name = lastName + " " + firstName;
-        }
-        return name;
-    }*/
 
     public AuthResponse login(String email, String password) {
         try {
@@ -63,10 +44,10 @@ public class AuthService {
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
                 user = userRepository.findByEmail(userDetails.getUsername())
-                        .orElseThrow(() -> new SecurityException("Wrong credentials"));
+                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
             } else {                               // Auth without LDAP for dev mode
                 user = userRepository.findByEmail(email)
-                        .orElseThrow(() -> new SecurityException("Wrong credentials"));
+                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
             }
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
@@ -74,7 +55,7 @@ public class AuthService {
             Integer idProject = projectRepository.findFirstByActualTrue().map(Project::id).orElse(0);
             return new AuthResponse(user.id(), accessToken, idProject);
         } catch (Exception e){
-            throw new SecurityException("Wrong credentials" + e.getMessage());
+            throw new SecurityException(WRONG_CREDENTIALS + e.getMessage());
         }
     }
 
