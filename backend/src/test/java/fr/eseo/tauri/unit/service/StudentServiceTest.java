@@ -8,6 +8,7 @@ import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.BonusRepository;
+import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +55,21 @@ class StudentServiceTest {
 
     @Mock
     private BonusRepository bonusRepository;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private GradeTypeService gradeTypeService;
+
+    @Mock
+    private GradeRepository gradeRepository;
+
+    @Mock
+    private BonusService bonusService;
+
+    @Mock
+    private PresentationOrderService presentationOrderService;
 
     @InjectMocks
     private StudentService studentService;
@@ -475,17 +491,6 @@ class StudentServiceTest {
         assertEquals(bonuses, result);
     }
 
-    // @Test
-    // void getStudentBonusesShouldThrowSecurityExceptionWhenUnauthorized() {
-    //     String token = "validToken";
-    //     Integer idStudent = 1;
-    //     Integer idSprint = 1;
-
-    //     when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
-
-    //     assertThrows(SecurityException.class, () -> studentService.getStudentBonuses(token, idStudent, idSprint));
-    // }
-
     @Test
     void getStudentBonusesShouldReturnEmptyListWhenNoBonusesFound() {
         Integer idStudent = 1;
@@ -496,6 +501,355 @@ class StudentServiceTest {
         List<Bonus> result = studentService.getStudentBonuses(idStudent, idSprint);
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void updateStudentShouldUpdateGenderWhenProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.gender(Gender.MAN);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(updatedStudent.gender(), existingStudent.gender());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateTeamRoleWhenProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.teamRole("NewRole");
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(updatedStudent.teamRole(), existingStudent.teamRole());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateProjectWhenProjectIdIsProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.projectId(2);
+        Project project = new Project();
+        project.id(2);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+        when(projectService.getProjectById(updatedStudent.projectId())).thenReturn(project);
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(project, existingStudent.project());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateTeamWhenTeamIdIsProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.teamId(2);
+        Team team = new Team();
+        team.id(2);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+        when(teamService.getTeamById(updatedStudent.teamId())).thenReturn(team);
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(team, existingStudent.team());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldThrowResourceNotFoundExceptionWhenStudentDoesNotExist() {
+        Integer id = 1;
+        Student updatedStudent = new Student();
+
+        when(studentRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> studentService.updateStudent(id, updatedStudent));
+    }
+
+    @Test
+    void deleteStudentShouldDeleteStudentWhenStudentExists() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+
+        studentService.deleteStudent(id);
+
+        verify(studentRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteStudentShouldThrowResourceNotFoundExceptionWhenStudentDoesNotExist() {
+        Integer id = 1;
+
+        when(studentRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> studentService.deleteStudent(id));
+    }
+
+    @Test
+    void deleteAllStudentsByProjectShouldDeleteAllStudentsWhenStudentsExist() {
+        Integer projectId = 1;
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        List<Student> students = Arrays.asList(student1, student2);
+
+        when(studentRepository.findAllByProject(projectId)).thenReturn(students);
+
+        studentService.deleteAllStudentsByProject(projectId);
+
+        verify(userService, times(1)).deleteUserById(student1.id());
+        verify(userService, times(1)).deleteUserById(student2.id());
+        verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes();
+        verify(teamService, times(1)).deleteAllTeamsByProject(projectId);
+    }
+
+    @Test
+    void deleteAllStudentsByProjectShouldNotDeleteAnyStudentWhenNoStudentsExist() {
+        Integer projectId = 1;
+
+        when(studentRepository.findAllByProject(projectId)).thenReturn(Collections.emptyList());
+
+        studentService.deleteAllStudentsByProject(projectId);
+
+        verify(userService, times(0)).deleteUserById(anyInt());
+        verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes();
+        verify(teamService, times(1)).deleteAllTeamsByProject(projectId);
+    }
+
+    @Test
+    void createStudentsCSVShouldReturnByteArrayWhenStudentsExist() throws IOException {
+        Integer projectId = 1;
+        Student student = new Student();
+        student.projectId(projectId);
+        student.gender(Gender.MAN);
+        List<Student> students = Collections.singletonList(student);
+
+        when(gradeTypeService.getAllImportedGradeTypes(projectId)).thenReturn(Collections.emptyList());
+        when(studentService.getAllStudentsByProject(projectId)).thenReturn(students);
+
+        byte[] result = studentService.createStudentsCSV(projectId);
+
+        assertNotNull(result);
+        assertEquals(157, result.length);
+    }
+
+    @Test
+    void getIndividualTotalGradeShouldReturnCorrectGradeWhenGradesExist() {
+        Integer id = 1;
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Double expectedGrade = 16.666666666666668;
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(new Student().projectId(1)));
+        when(userService.getTeamByMemberId(id, studentService.getStudentById(id).projectId())).thenReturn(new Team().id(teamId));
+        when(gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName())).thenReturn(10.0);
+        when(gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(20.0);
+
+        Double result = studentService.getIndividualTotalGrade(id, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getSprintGradeShouldReturnCorrectGradeWhenBonusesAndGradesExist() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Double expectedGrade = 17.0;
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(new Student().projectId(1)));
+        when(userService.getTeamByMemberId(studentId, studentService.getStudentById(studentId).projectId())).thenReturn(new Team().id(teamId));
+        when(teamService.getTeamTotalGrade(teamId, sprintId)).thenReturn(20.0);
+        when(studentService.getStudentBonuses(studentId, sprintId)).thenReturn(Arrays.asList(new Bonus().value(2.0F), new Bonus().value(3.0F)));
+        when(studentService.getIndividualTotalGrade(studentId, sprintId)).thenReturn(15.0);
+
+        Double result = studentService.getSprintGrade(studentId, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getSprintGradeShouldReturnCorrectGradeWhenNoBonusesExist() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Double expectedGrade = 17.0;
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(new Student().projectId(1)));
+        when(userService.getTeamByMemberId(studentId, studentService.getStudentById(studentId).projectId())).thenReturn(new Team().id(teamId));
+        when(teamService.getTeamTotalGrade(teamId, sprintId)).thenReturn(20.0);
+        when(studentService.getStudentBonuses(studentId, sprintId)).thenReturn(Collections.emptyList());
+        when(studentService.getIndividualTotalGrade(studentId, sprintId)).thenReturn(15.0);
+
+        Double result = studentService.getSprintGrade(studentId, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getSprintGradeShouldReturnCorrectGradeWhenTeamGradeExceedsTwentyWithBonuses() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Double expectedGrade = 17.0;
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(new Student().projectId(1)));
+        when(userService.getTeamByMemberId(studentId, studentService.getStudentById(studentId).projectId())).thenReturn(new Team().id(teamId));
+        when(teamService.getTeamTotalGrade(teamId, sprintId)).thenReturn(25.0);
+        when(studentService.getStudentBonuses(studentId, sprintId)).thenReturn(Arrays.asList(new Bonus().value(2.0F), new Bonus().value(3.0F)));
+        when(studentService.getIndividualTotalGrade(studentId, sprintId)).thenReturn(15.0);
+
+        Double result = studentService.getSprintGrade(studentId, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getGradeByTypeAndAuthorShouldReturnGradeWhenGradeExists() {
+        Integer id = 1;
+        Integer gradeTypeId = 1;
+        Integer authorId = 1;
+        Integer sprintId = 1;
+        Grade expectedGrade = new Grade();
+
+        when(gradeRepository.findByStudentAndGradeTypeAndAuthor(id, gradeTypeId, authorId, sprintId)).thenReturn(expectedGrade);
+
+        Grade result = studentService.getGradeByTypeAndAuthor(id, gradeTypeId, authorId, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getGradeByTypeAndAuthorShouldReturnNullWhenGradeDoesNotExist() {
+        Integer id = 1;
+        Integer gradeTypeId = 1;
+        Integer authorId = 1;
+        Integer sprintId = 1;
+
+        when(gradeRepository.findByStudentAndGradeTypeAndAuthor(id, gradeTypeId, authorId, sprintId)).thenReturn(null);
+
+        Grade result = studentService.getGradeByTypeAndAuthor(id, gradeTypeId, authorId, sprintId);
+
+        assertNull(result);
+    }
+
+    @Test
+    void createStudentFromData_ShouldCreateStudent() {
+        String name = "John Doe";
+        String gender = "M";
+        String bachelor = "yes";
+        Integer projectId = 1;
+
+        Project project = new Project();
+        project.id(projectId);
+
+        when(projectService.getProjectById(projectId)).thenReturn(project);
+
+        Student student = studentService.createStudentFromData(name, gender, bachelor, projectId);
+
+        assertNotNull(student);
+        assertEquals(name, student.name());
+        assertEquals(Gender.MAN, student.gender());
+        assertTrue(student.bachelor());
+        assertEquals(project, student.project());
+        assertEquals("doe.john@reseau.eseo.fr", student.email());
+
+        verify(projectService, times(1)).getProjectById(projectId);
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenNameIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData(null, "M", "yes", 1);
+        });
+        assertEquals("Name cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenNameIsEmpty() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData("   ", "M", "yes", 1);
+        });
+        assertEquals("Name cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenGenderIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData("John Doe", null, "yes", 1);
+        });
+        assertEquals("Gender cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenGenderIsEmpty() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData("John Doe", "   ", "yes", 1);
+        });
+        assertEquals("Gender cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenBachelorIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData("John Doe", "M", null, 1);
+        });
+        assertEquals("Bachelor status cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void createStudent_ShouldCreateStudentAndAssignRolesAndBonuses() {
+        Integer projectId = 1;
+        Integer teamId = 1;
+        Student student = new Student();
+        student.projectId(projectId);
+        student.teamId(teamId);
+
+        Project project = new Project();
+        project.id(projectId);
+
+        Team team = new Team();
+        team.id(teamId);
+
+        Sprint sprint1 = new Sprint();
+        Sprint sprint2 = new Sprint();
+        sprint1.projectId(projectId);
+        sprint2.projectId(projectId);
+
+        List<Sprint> sprints = List.of(sprint1, sprint2);
+        List<Team> teams = List.of(team);
+
+        when(projectService.getProjectById(projectId)).thenReturn(project);
+        when(teamService.getTeamById(teamId)).thenReturn(team);
+        when(studentRepository.save(student)).thenReturn(student);
+        when(sprintService.getAllSprintsByProject(projectId)).thenReturn(sprints);
+        when(teamService.getAllTeamsByProject(projectId)).thenReturn(teams);
+
+        studentService.createStudent(student);
+
+        verify(studentRepository, times(1)).save(student);
+
+        verify(roleService, times(1)).createRole(any(Role.class));
+
+        verify(presentationOrderService, times(sprints.size())).createPresentationOrder(any(PresentationOrder.class));
+
+        verify(bonusService, times(sprints.size() * 2)).createBonus(any(Bonus.class));
     }
 
 }

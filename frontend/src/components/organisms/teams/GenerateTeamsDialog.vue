@@ -51,7 +51,21 @@ const DIALOG_DESCRIPTION = "Modifiez les paramètres de génération, puis cliqu
 				<Input id="nbTeams" type="number" v-model="nbTeams" class="w-2/5" :min="0" :max="nbStudents" />
 			</Row>
 			<Row class="items-center">
-				<Label for="womenPerTeam" class="w-3/5 text-left">Nombre de femmes par équipe</Label>
+				<Label for="womenPerTeam" class="w-3/5 text-left">
+					Nombre de femmes par équipe
+					<TooltipProvider :delay-duration="200">
+						<Tooltip>
+							<TooltipTrigger>
+								<Info class="size-4" />
+							</TooltipTrigger>
+							<TooltipContent>
+								<p class="max-w-96">
+									Si ce n'est pas possible d'avoir autant de femmes par équipe, alors les femmes seront d'abord réparties dans les premières équipes, de manière à ce qu'aucune femme ne soit dans les dernières équipes.
+								</p>
+							</TooltipContent>
+						</Tooltip>
+					</TooltipProvider>
+				</Label>
 				<Input id="womenPerTeam" type="number" v-model="womenPerTeam" class="w-2/5" :min="0" :max="nbStudents" :disabled="autoWomenRatio" />
 			</Row>
 			<Row class="items-center justify-between h-10">

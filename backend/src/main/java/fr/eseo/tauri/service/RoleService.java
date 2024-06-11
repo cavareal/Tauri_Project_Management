@@ -23,11 +23,6 @@ public class RoleService {
 	private final GradeRepository gradeRepository;
 	private final GradeTypeRepository gradeTypeRepository;
 
-	private static final String READ_PERMISSION = "readRole";
-	private static final String ADD_PERMISSION = "addRole";
-	private static final String UPDATE_PERMISSION = "updateRole";
-	private static final String DELETE_PERMISSION = "deleteRole";
-
 	public Role getRoleById(Integer id) {
 		return roleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("role", id));
 	}
@@ -83,7 +78,7 @@ public class RoleService {
 		}
 	}
 
-	private String emailToName(String email){
+	public String emailToName(String email){
 		String[] parts = email.split("@")[0].split("\\.");
 		return (parts.length == 2)
 				? parts[1].toUpperCase() + " " + parts[0].substring(0, 1).toUpperCase() + parts[0].substring(1).toLowerCase()
@@ -123,7 +118,5 @@ public class RoleService {
 		var permissions = permissionService.getAllPermissionsByRole(roleType);
 		return ListUtil.map(permissions, Permission::type).contains(permissionType);
 	}
-
-
 
 }

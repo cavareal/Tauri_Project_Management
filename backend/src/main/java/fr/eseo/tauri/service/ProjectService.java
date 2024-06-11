@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.exception.ResourceNotFoundException;

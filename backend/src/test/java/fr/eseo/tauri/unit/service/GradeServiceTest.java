@@ -519,7 +519,6 @@ class GradeServiceTest {
         Integer teamId = 1;
         Integer sprintId = 1;
         Integer projectId = 1;
-        String token = "ouai";
         Student student = new Student();
         student.id(1);
         List<Student> students = Collections.singletonList(student);
@@ -527,7 +526,7 @@ class GradeServiceTest {
         gradeType.name(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), token, projectId)).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId)).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(null);
 
         Boolean result = gradeService.getGradesConfirmation(teamId, sprintId, projectId);
@@ -554,7 +553,6 @@ class GradeServiceTest {
         Integer teamId = 1;
         Integer sprintId = 1;
         Integer projectId = 1;
-        String token = "ouai";
         Student student = new Student();
         student.id(1);
         List<Student> students = Collections.singletonList(student);
@@ -562,7 +560,7 @@ class GradeServiceTest {
         gradeType.name(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName());
 
         when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), token, projectId)).thenReturn(gradeType);
+        when(gradeTypeService.findByName(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId)).thenReturn(gradeType);
         when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(null);
 
         Boolean result = gradeService.setGradesConfirmation(teamId, sprintId, projectId);

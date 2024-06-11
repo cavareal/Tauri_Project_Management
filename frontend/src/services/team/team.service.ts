@@ -159,6 +159,8 @@ export const getPresentationOrder = async(teamId: string, sprintId: string): Pro
 		throw new Error(response.error)
 	}
 
+	console.log(response.data)
+
 	return response.data
 		.sort((a, b) => a.value - b.value)
 		.map(order => order.student)

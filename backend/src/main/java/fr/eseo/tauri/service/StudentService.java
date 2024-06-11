@@ -4,7 +4,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
@@ -13,7 +12,6 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.security.ApplicationSecurity;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -45,7 +43,6 @@ public class StudentService {
     public static final String MAP_KEY_GENDERS = "genders";
     public static final String MAP_KEY_BACHELORS = "bachelors";
     public static final String MAP_KEY_GRADES = "grades";
-    private static final String PASSWORD = "password";
 
     public Student getStudentById(Integer id) {
         return studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("student", id));
@@ -197,7 +194,6 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.project(projectService.getProjectById(projectId));
-//        student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
         student.privateKey("privateKey");
         String[] nameParts = name.split(" "); // Divise le nom en deux parties basées sur l'espace
         student.email(nameParts[1].toLowerCase() + "." + nameParts[0].toLowerCase() + "@reseau.eseo.fr");
