@@ -33,7 +33,7 @@ const { data: teams, refetch: refetchTeams, isLoading } = useQuery({
 
 		students.value = {}
 		await Promise.all(teams.map(async(team) => {
-			const teamStudents = await getStudentsByTeamId(team.id)
+			const teamStudents = await getStudentsByTeamId(team.id, false)
 			students.value = { ...students.value, [team.id]: teamStudents }
 		}))
 

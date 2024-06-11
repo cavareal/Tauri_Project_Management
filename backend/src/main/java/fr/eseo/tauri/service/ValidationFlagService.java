@@ -28,8 +28,8 @@ public class ValidationFlagService {
 
     public void createValidationFlags(Flag flag) {
         if(userService.getRolesByUserId(flag.author().id()).contains(RoleType.OPTION_STUDENT)){
-            List<Student> students = teamService.getStudentsByTeamId(flag.firstStudent().team().id());
-            students.addAll(teamService.getStudentsByTeamId(flag.secondStudent().team().id()));
+            List<Student> students = teamService.getStudentsByTeamId(flag.firstStudent().team().id(), false);
+            students.addAll(teamService.getStudentsByTeamId(flag.secondStudent().team().id(), false));
             for(Student student: students){
                 ValidationFlag validationFlag = new ValidationFlag();
                 validationFlag.flag(flag);

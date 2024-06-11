@@ -30,9 +30,10 @@ export const getStudentById = async(id: number): Promise<Student> => {
 
 }
 
-export const getStudentsByTeamId = async(teamId: number): Promise<Student[]> => {
+export const getStudentsByTeamId = async(teamId: number, ordered: boolean): Promise<Student[]> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/students`,
+		params: { ordered: ordered.toString() },
 		responseSchema: StudentSchema.array()
 	})
 

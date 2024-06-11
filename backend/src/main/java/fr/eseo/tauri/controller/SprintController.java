@@ -1,5 +1,6 @@
 package fr.eseo.tauri.controller;
 
+import fr.eseo.tauri.model.Comment;
 import fr.eseo.tauri.model.Sprint;
 import fr.eseo.tauri.service.SprintService;
 import fr.eseo.tauri.util.CustomLogger;
@@ -67,5 +68,11 @@ public class SprintController {
     public ResponseEntity<Sprint> getCurrentSprint(@RequestParam("projectId") Integer projectId) {
         Sprint sprint = sprintService.getCurrentSprint(projectId);
         return ResponseEntity.ok(sprint);
+    }
+
+    @GetMapping("/{sprintId}/author/{authorId}/student-comments")
+    public ResponseEntity<List<Comment>> getTeamStudentsComments(@PathVariable Integer sprintId, @PathVariable Integer authorId, @RequestParam("teamId") Integer teamId){
+        List<Comment> teamStudentComments = sprintService.getTeamStudentsComments(sprintId, authorId, teamId);
+        return ResponseEntity.ok(teamStudentComments);
     }
 }

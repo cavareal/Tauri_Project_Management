@@ -36,7 +36,7 @@ const updateGrade = () => {
 	const data = getRatedGrade(props.allGrades, {
 		sprintId: Number(props.sprintId),
 		teamId: props.teamId ? Number(props.teamId) : null,
-		studentId: props.studentId ? Number(props.studentId) : null,
+		studentId: null,
 		gradeTypeName: props.gradeTypeName
 	})
 
@@ -47,7 +47,7 @@ const updateGrade = () => {
 	status.value = "IDLE"
 }
 
-const checkGradeScaleUploaded = async () => {
+const checkGradeScaleUploaded = async() => {
 	try {
 		const gradeType = await getGradeTypeByName(props.gradeTypeName)
 		isGradeScaleUploaded.value = !!gradeType.scaleTXTBlob // Check if the grade scale is present
@@ -79,15 +79,20 @@ const { mutate, isPending, isError } = useMutation({
 })
 
 const onGradeChange = (value: string | number) => {
-	if (Number(value) > 20) {
+	const parsedValue = Number(value)
+	if (value === "" || isNaN(parsedValue)) {
+		grade.value = ""
+		return
+	}
+	if (parsedValue > 20) {
 		grade.value = "20"
 		return
 	}
-	if (Number(value) < 0) {
+	if (parsedValue < 0) {
 		grade.value = "0"
 		return
 	}
-	grade.value = value.toString()
+	grade.value = parsedValue.toString()
 }
 
 watch(isPending, (newValue) => {

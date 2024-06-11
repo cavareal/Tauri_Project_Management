@@ -28,7 +28,7 @@ const isDisabled = computed(() => comment.value === "")
 
 const { mutate, isPending, error } = useMutation({
 	mutationKey: ["add-comment"], mutationFn: async() => {
-		await createComment(props.selectedTeamId, comment.value, props.selectedSprintId, props.feedback)
+		await createComment(props.selectedTeamId, null, comment.value, props.selectedSprintId, props.feedback)
 			.then(() => open.value = false)
 			.then(() => emits("add-comment"))
 			.then(() => client.invalidateQueries({

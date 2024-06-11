@@ -15,8 +15,8 @@ import { createToast } from "@/utils/toast"
 
 const props = defineProps<{
   isFeedback: boolean,
-  teamId: number,
-  sprintId: number
+  teamId: string,
+  sprintId: string
 }>()
 
 const commentsFiltered = ref<Feedback[]>([])
@@ -29,7 +29,7 @@ const infoText = props.isFeedback ? "Vous pouvez donner un feedback sur les perf
 const { refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
 	queryKey: ["comments", props.teamId, props.sprintId, props.isFeedback],
 	queryFn: async() => {
-		const comments = await getCommentsBySprintAndTeam(props.teamId.toString(), props.sprintId.toString())
+		const comments = await getCommentsBySprintAndTeam(props.teamId, props.sprintId)
 		commentsFiltered.value = comments.filter(comment => comment.feedback === props.isFeedback)
 		authorsComments.value = commentsFiltered.value.map(comment => comment.author)
 			.filter((author, index, self) => index === self.findIndex((t) => (
@@ -42,7 +42,7 @@ const { refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
 
 const { mutate } = useMutation({
 	mutationKey: ["add-comment"], mutationFn: async() => {
-		await createComment(props.teamId.toString(), comment.value, props.sprintId.toString(), props.isFeedback)
+		await createComment(props.teamId, null, comment.value, props.sprintId, props.isFeedback)
 			.then(() => refetchFeedbacks())
 			.then(() => comment.value = "")
 			.then(() => createToast(toastText))
@@ -57,8 +57,8 @@ const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le co
 </script>
 
 <template>
-  <Row class="border rounded-lg p-2 md:p-6 w-1/2 bg-white">
-    <Column class="w-1/2 pr-5 h-full flex justify-between">
+  <Row class="border rounded-lg p-2 md:p-6 bg-white">
+    <Column class="w-1/2 pr-5 flex justify-between">
       <div>
         <Row class="pb-5">
           <MessageSquareReply v-if="props.isFeedback" class="w-[20%]" :size="40" :stroke-width="1"/>
@@ -67,8 +67,8 @@ const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le co
         </Row>
       <InfoText>{{infoText}}</InfoText>
       </div>
-      <Row>
-        <Textarea v-model="comment" :placeholder="placeholderText" class="w-full mr-2 resize-none min-h-[10px] max-h-[40px] overflow-auto"/>
+      <Row class="">
+        <Textarea v-model="comment" :placeholder="placeholderText" class="w-full mr-2 resize-none min-h-[10px] max-h-[40px] overflow-auto "/>
         <Button variant="default" size="icon" class="rounded-full h-10 w-14" @click="mutate">
           <SendHorizontal class="w-5 h-5"/>
         </Button>

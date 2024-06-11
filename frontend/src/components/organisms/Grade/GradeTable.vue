@@ -61,7 +61,7 @@ const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
 			<FullGradeTable :sprint-id="props.sprintId" :team-id="props.teamId" :is-grades-confirmed="props.isGradesConfirmed"></FullGradeTable>
 		</div>
 		<div class="border bg-white rounded-md">
-			<CommentContainer  title="Feedback" infoText="Visualisez les feedbacks donner à votre équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId" :feedback="true"/>
+			<CommentContainer  title="Feedback" infoText="Visualisez les feedbacks donnés à votre équipe durant le sprint" :sprintId="props.sprintId" :teamId="props.teamId" :feedback="true"/>
 		</div>
 	</div>
 	<div  v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) !== Number(props.teamId))"  class="border bg-white rounded-md">

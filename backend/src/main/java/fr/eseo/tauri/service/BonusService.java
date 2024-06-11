@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.BonusRepository;
@@ -54,7 +53,6 @@ public class BonusService {
         }
 
         Bonus bonus = getBonusById(id);
-
 
         bonus.value(updatedBonus.value());
         if(updatedBonus.authorId() != null) bonus.author(userService.getUserById(updatedBonus.authorId()));

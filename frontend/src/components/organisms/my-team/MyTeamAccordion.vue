@@ -14,7 +14,7 @@ const props = defineProps<{
 	team: Team
 }>()
 
-const { data: students, isLoading } = useQuery({ queryKey: ["team-students", props.team.id], queryFn: () => getStudentsByTeamId(props.team.id) })
+const { data: students, isLoading } = useQuery({ queryKey: ["team-students", props.team.id], queryFn: () => getStudentsByTeamId(props.team.id, false) })
 
 const rowClass = cn("py-2 h-auto")
 

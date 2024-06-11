@@ -4,16 +4,15 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.BonusRepository;
+import fr.eseo.tauri.repository.CommentRepository;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.security.ApplicationSecurity;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -40,6 +39,7 @@ public class StudentService {
     private final BonusService bonusService;
     private final GradeRepository gradeRepository;
     private final UserService userService;
+    private final CommentRepository commentRepository;
 
     public static final String MAP_KEY_NAMES = "names";
     public static final String MAP_KEY_GENDERS = "genders";
@@ -405,6 +405,10 @@ public class StudentService {
 
     public Grade getGradeByTypeAndAuthor(Integer id, Integer gradeTypeId, Integer authorId, Integer sprintId) {
         return gradeRepository.findByStudentAndGradeTypeAndAuthor(id, gradeTypeId, authorId, sprintId);
+    }
+
+    public List<Comment> getFeedbacksByStudentAndSprint(Integer studentId, Integer sprintId) {
+        return commentRepository.findAllByStudentIdAndSprintId(studentId, sprintId);
     }
 
 }

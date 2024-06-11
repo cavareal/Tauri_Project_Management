@@ -10,7 +10,6 @@ import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Grade;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.GradeRepository;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
-import static fr.eseo.tauri.util.ListUtil.contains;
 import static fr.eseo.tauri.util.ListUtil.filter;
 
 @Service
@@ -53,17 +51,6 @@ public class GradeService {
     }
 
     public void createGrade(Grade grade) {
-        var ratedGrades = gradeRepository.findAllByAuthorId(grade.authorId());
-        if (!ratedGrades.isEmpty()) {
-            for (Grade ratedGrade : ratedGrades) {
-                if (ratedGrade.sprint().id().equals(grade.sprintId())
-                        && ratedGrade.gradeType().id().equals(grade.gradeTypeId())
-                        && ((ratedGrade.student() != null && ratedGrade.student().id().equals(grade.studentId())) || (ratedGrade.team() != null && ratedGrade.team().id().equals(grade.teamId())))
-                ) {
-                    throw new IllegalArgumentException("A grade with the same author, sprint, grade type, student and team already exists");
-                }
-            }
-        }
 
         if (grade.authorId() != null) grade.author(userService.getUserById(grade.authorId()));
         if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(grade.sprintId()));
@@ -86,12 +73,11 @@ public class GradeService {
 
     public void updateGrade(Integer id, Grade updatedGrade) {
         Grade grade = getGradeById(id);
-        if (updatedGrade.value() != null) grade.value(updatedGrade.value());
-        if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
+        grade.value(updatedGrade.value());
+        grade.comment(updatedGrade.comment());
         if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(updatedGrade.sprintId()));
         if (updatedGrade.authorId() != null) grade.author(userService.getUserById(updatedGrade.authorId()));
-        if (updatedGrade.studentId() != null)
-            grade.student(studentService.getStudentById(updatedGrade.studentId()));
+        if (updatedGrade.studentId() != null) grade.student(studentService.getStudentById(updatedGrade.studentId()));
         if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(updatedGrade.teamId()));
 
         if ((grade.team() == null) == (grade.student() == null)) {

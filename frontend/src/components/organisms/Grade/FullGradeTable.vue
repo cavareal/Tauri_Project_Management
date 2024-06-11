@@ -43,7 +43,7 @@ const { data: teamStudents, ...queryTeamStudents } = useQuery({
 	queryKey: ["team-students", props.teamId],
 	queryFn: async() => {
 		if (props.teamId === "") return
-		const students = await getStudentsByTeamId(Number(props.teamId))
+		const students = await getStudentsByTeamId(Number(props.teamId, false))
 		studentBonuses.value = await Promise.all(students.map(student => getStudentBonuses(student.id, props.sprintId)))
 		return students
 	}

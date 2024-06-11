@@ -1,11 +1,8 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
-import fr.eseo.tauri.model.Bonus;
-import fr.eseo.tauri.model.PresentationOrder;
-import fr.eseo.tauri.model.Sprint;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.repository.CommentRepository;
 import fr.eseo.tauri.repository.SprintRepository;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,6 +24,8 @@ public class SprintService {
     private final StudentService studentService;
     private final PresentationOrderService presentationOrderService;
     private final BonusService bonusService;
+    private final CommentRepository commentRepository;
+    private final TeamService teamService;
 
     public Sprint getSprintById(Integer id) {
 
@@ -105,5 +105,17 @@ public class SprintService {
         }
 
         return currentSprint != null ? currentSprint : closestSprint;
+    }
+
+    public List<Comment> getTeamStudentsComments(Integer sprintId, Integer authorId, Integer teamId){
+
+        List<Comment> studentsComments = new ArrayList<>();
+        List<Student> students = teamService.getStudentsByTeamId(teamId, true);
+
+        for(Student student : students){
+            studentsComments.addAll(commentRepository.findAllByTeamAndSprintAndAuthor(student.id(), sprintId, authorId));
+        }
+
+        return studentsComments;
     }
 }

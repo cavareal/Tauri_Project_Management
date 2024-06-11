@@ -21,4 +21,9 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     @Query("SELECT c FROM Comment c WHERE c.team.id = :teamId AND c.sprint.id = :sprintId")
     List<Comment> findAllByTeamIdAndSprintId(Integer teamId, Integer sprintId);
 
+    @Query("SELECT c FROM Comment c WHERE c.student.id = :studentId AND c.sprint.id = :sprintId")
+    List<Comment> findAllByStudentIdAndSprintId(Integer studentId, Integer sprintId);
+
+    @Query("SELECT c FROM Comment c WHERE c.student.id = :studentId AND c.sprint.id = :sprintId AND c.author.id = :authorId")
+    List<Comment> findAllByTeamAndSprintAndAuthor(Integer studentId, Integer sprintId, Integer authorId);
 }

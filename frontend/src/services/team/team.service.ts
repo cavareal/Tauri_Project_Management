@@ -44,30 +44,6 @@ export const updateTeam = async(id: number, body: UpdateTeam): Promise<void> => 
 	}
 }
 
-export const setTeamName = async(id: number, value: string): Promise<void> => {
-	const response = await mutateAndValidate({
-		route: `teams/update-name-team/${id}`,
-		params: { newName: value },
-		method: "PUT"
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
-}
-
-export const setTeamLeader = async(id: number, value: string): Promise<void> => {
-	const response = await mutateAndValidate({
-		route: `teams/update-leader-team/${id}`,
-		params: { idLeader: value },
-		method: "PUT"
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
-}
-
 export const generateTeams = async(nbTeams: string, nbWomen: string): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
@@ -128,30 +104,4 @@ export const getTeamByUserId = async(userId: number): Promise<Team | null> => {
 	}
 	console.log("response.data : ", response.data)
 	return response.data === "" ? null : response.data
-}
-
-export const getTeamByLeaderId = async(leaderId: string | null, projectId: string | null): Promise<Team> => {
-	const response = await queryAndValidate({
-		route: `teams/leader/${leaderId}`,
-		params: { projectId: projectId ?? "" },
-		responseSchema: TeamSchema
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
-
-	return response.data
-}
-
-export const moveTeamStudent = async(teamId: number, studentId: number): Promise<void> => {
-	const response = await apiQuery({
-		route: `teams/${teamId}/move-student?studentId=${studentId}`,
-		responseSchema: TeamSchema,
-		method: "PUT"
-	})
-
-	if (response.status === "error") {
-		throw new Error(response.error)
-	}
 }

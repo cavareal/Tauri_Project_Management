@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Comment;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.CommentRepository;
@@ -16,6 +15,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final TeamService teamService;
+    private final StudentService studentService;
     private final SprintService sprintService;
 
     public Comment getCommentById(Integer id) {
@@ -29,7 +29,13 @@ public class CommentService {
     public void createComment(Comment comment) {
         comment.author(userService.getUserById(comment.authorId()));
         comment.sprint(sprintService.getSprintById(comment.sprintId()));
-        comment.team(teamService.getTeamById(comment.teamId()));
+
+        if ((comment.team() == null) == (comment.student() == null)) {
+            throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
+        } else {
+            comment.team(teamService.getTeamById(comment.teamId()));
+            comment.student(studentService.getStudentById(comment.studentId()));
+        }
 
         commentRepository.save(comment);
     }
@@ -42,6 +48,7 @@ public class CommentService {
         if (updatedComment.sprintId() != null) comment.sprint(sprintService.getSprintById(updatedComment.sprintId()));
         if (updatedComment.authorId() != null) comment.author(userService.getUserById(updatedComment.authorId()));
         if (updatedComment.teamId() != null) comment.team(teamService.getTeamById(updatedComment.teamId()));
+        if (updatedComment.studentId() != null) comment.student(studentService.getStudentById(updatedComment.studentId()));
 
         commentRepository.save(comment);
     }
