@@ -69,7 +69,7 @@ public class ApplicationSecurity {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
-        PasswordEncoder passwordEncoder =  new LdapShaPasswordEncoder();
+        PasswordEncoder passwordEncoder = new LdapShaPasswordEncoder();
 
         auth
             .ldapAuthentication()
@@ -90,5 +90,4 @@ public class ApplicationSecurity {
         return userEmail -> userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User or password incorrect"));
     }
-
 }

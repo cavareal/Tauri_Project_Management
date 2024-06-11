@@ -26,7 +26,6 @@ public class Team implements Serializable {
     @JsonProperty
     private Integer id;
 
-    @NonNull
     @JsonProperty
     private String name;
 

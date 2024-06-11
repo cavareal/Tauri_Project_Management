@@ -85,7 +85,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUserSavesUserWhenAuthorized() throws Exception {
+    void createUserSavesUserWhenAuthorized() throws IllegalArgumentException {
         User user = new User();
 
         userService.createUser(user);

@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.ValidationBonusRepository;
 import lombok.RequiredArgsConstructor;

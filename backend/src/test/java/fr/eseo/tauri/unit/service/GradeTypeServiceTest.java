@@ -322,13 +322,12 @@ class GradeTypeServiceTest {
 
     @Test
     void findByNameShouldReturnNullWhenNameDoesNotExist() {
-        String token = "validToken";
         String name = "NonexistentType";
         Integer projectId = 1;
 
         when(gradeTypeRepository.findByName(name)).thenReturn(null);
 
-        GradeType result = gradeTypeService.findByName(name, token, projectId);
+        GradeType result = gradeTypeService.findByName(name, projectId);
 
         assertNull(result);
     }
@@ -345,7 +344,7 @@ class GradeTypeServiceTest {
         when(file.getBytes()).thenReturn(new byte[0]);
         when(gradeTypeRepository.findById(id)).thenReturn(Optional.of(gradeType));
 
-        gradeTypeService.saveGradeScale(id, file, "token");
+        gradeTypeService.saveGradeScale(id, file);
 
         verify(gradeTypeRepository, times(1)).save(gradeType);
     }
@@ -357,7 +356,7 @@ class GradeTypeServiceTest {
 
         when(file.getContentType()).thenReturn("application/pdf");
 
-        assertThrows(IllegalArgumentException.class, () -> gradeTypeService.saveGradeScale(id, file, "token"));
+        assertThrows(IllegalArgumentException.class, () -> gradeTypeService.saveGradeScale(id, file));
     }
 
     @Test
@@ -368,7 +367,7 @@ class GradeTypeServiceTest {
         when(file.getContentType()).thenReturn("text/plain");
         when(file.getSize()).thenReturn(66L * 1024);
 
-        assertThrows(IllegalArgumentException.class, () -> gradeTypeService.saveGradeScale(id, file, "token"));
+        assertThrows(IllegalArgumentException.class, () -> gradeTypeService.saveGradeScale(id, file));
     }
 
     @Test
@@ -380,7 +379,7 @@ class GradeTypeServiceTest {
         when(file.getSize()).thenReturn(64L * 1024);
         when(gradeTypeRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> gradeTypeService.saveGradeScale(id, file, "token"));
+        assertThrows(EntityNotFoundException.class, () -> gradeTypeService.saveGradeScale(id, file));
     }
 
     @Test
@@ -392,7 +391,7 @@ class GradeTypeServiceTest {
 
         when(gradeTypeRepository.findById(id)).thenReturn(Optional.of(gradeType));
 
-        byte[] actualBlob = gradeTypeService.getBLOBScale(id, "token");
+        byte[] actualBlob = gradeTypeService.getBLOBScale(id);
 
         assertArrayEquals(expectedBlob, actualBlob);
     }
@@ -403,7 +402,7 @@ class GradeTypeServiceTest {
 
         when(gradeTypeRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> gradeTypeService.getBLOBScale(id, "token"));
+        assertThrows(EntityNotFoundException.class, () -> gradeTypeService.getBLOBScale(id));
     }
 
     @Test
@@ -412,7 +411,7 @@ class GradeTypeServiceTest {
 
         when(gradeTypeRepository.findById(id)).thenReturn(Optional.of(new GradeType()));
 
-        gradeTypeService.deleteGradeScale(id, "token");
+        gradeTypeService.deleteGradeScale(id);
 
         verify(gradeTypeRepository, times(1)).deleteById(id);
     }

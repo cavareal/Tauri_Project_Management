@@ -1,12 +1,8 @@
 package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Project;
-import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.User;
-import net.datafaker.providers.base.Bool;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.el.parser.BooleanNode;
-import org.springframework.beans.factory.annotation.Value;
+import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
@@ -17,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +31,8 @@ public class AuthService {
     @Value("${app.log.with.ldap}")
     private String prodProperty;
     
+
+    private final static String WRONG_CREDENTIALS = "Wrong credentials";
 
     public AuthResponse login(String email, String password) {
         try {
@@ -57,7 +54,7 @@ public class AuthService {
             Integer idProject = projectRepository.findFirstByActualTrue().map(Project::id).orElse(0);
             return new AuthResponse(user.id(), accessToken, idProject);
         } catch (Exception e){
-            throw new SecurityException("Wrong credentials" + e.getMessage());
+            throw new SecurityException(WRONG_CREDENTIALS + e.getMessage());
         }
     }
 

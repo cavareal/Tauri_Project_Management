@@ -1,6 +1,5 @@
 package fr.eseo.tauri.selenium;
 
-import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebElement;
@@ -8,17 +7,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
-import java.util.logging.Level;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class SeleniumTauriTest {
+class SeleniumTauriTest {
         private static final String URL = System.getProperty("seleniumServerUrl", "http://localhost:5173/");
         private static final String settings = System.getProperty("seleniumOptions", "off");
         private static final String LOGIN = "p.l@tauri.com";

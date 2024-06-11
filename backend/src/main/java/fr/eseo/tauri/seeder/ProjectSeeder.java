@@ -2,7 +2,6 @@ package fr.eseo.tauri.seeder;
 
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.repository.ProjectRepository;
-import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
