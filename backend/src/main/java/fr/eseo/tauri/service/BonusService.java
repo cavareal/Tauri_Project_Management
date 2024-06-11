@@ -8,6 +8,7 @@ import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -91,35 +92,37 @@ public class BonusService {
     }
 
 
-    public List<ValidationBonus> getValidationBonusesByTeam(Integer teamId, Integer sprintId) {
+    public List<ValidationBonus> getValidationBonusesByTeam(Integer teamId) {
         List <ValidationBonus> validationBonuses = new ArrayList<>();
         List <Student> students = studentRepository.findByTeam(teamId);
-
         // Students bonuses
         for(Student student : students) {
-            User user = userService.getUserById(student.id());
-            Bonus bonus = bonusRepository.findAllByAuthorId(user.id(), sprintId);
-            ValidationBonus validationBonus = validationBonusService.getValidationBonusByAuthorId(bonus.id() ,user.id());
-            validationBonuses.add(validationBonus);
+            List<ValidationBonus> validationBonus = validationBonusService.getValidationByAuthorId(student.id());
+            CustomLogger.info("ValidationBonus : " + validationBonus);
+            validationBonuses.addAll(validationBonus);
         }
 
         // SS bonus
         User leader = teamRepository.findLeaderByTeamId(teamId);
-        Bonus leaderBonus = bonusRepository.findAllByAuthorId(leader.id(), sprintId);
-        ValidationBonus validationBonus = validationBonusService.getValidationBonusByAuthorId(leaderBonus.id() ,leader.id());
-
-        if (validationBonus != null){
-            validationBonuses.add(validationBonus);
-        }
+        List<ValidationBonus> validationBonusSs = validationBonusService.getValidationByAuthorId(leader.id());
+        validationBonuses.addAll(validationBonusSs);
 
         return validationBonuses;
     }
 
 
-    public void setValidationBonusesByTeam(Integer teamId, Integer sprintId) {
+    public void setValidationBonusesByTeam(Integer teamId, Integer sprintId, Integer userId) {
+        List <Student> students = studentRepository.findByTeam(teamId);
 
+        for(Student student : students) {
+            Bonus bonus = bonusRepository.findStudentBonus(student.id(), false, sprintId);
 
+            ValidationBonus validationBonus = new ValidationBonus();
+            validationBonus.bonusId(bonus.id());
+            validationBonus.authorId(userId);
 
+            validationBonusService.createValidationBonus(validationBonus);
+        }
     }
 
 }

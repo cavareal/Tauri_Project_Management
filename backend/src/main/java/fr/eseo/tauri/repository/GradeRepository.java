@@ -63,9 +63,14 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 	@Query("SELECT g FROM Grade g WHERE g.sprint.id = :sprintId AND g.student.id = :studentId AND g.gradeType.id = :gradeType")
 	Grade findIsConfirmedBySprindAndStudent(Integer sprintId, Integer studentId, Integer gradeType);
 
+	@Query("SELECT g FROM Grade g WHERE g.sprint.id = :sprintId AND g.student.id = :studentId AND g.gradeType.id = :gradeType")
+	List<Grade> findIsConfirmedBySprindAndStudents(Integer sprintId, Integer studentId, Integer gradeType);
+
+
+	@Transactional
 	@Modifying
-	@Query("UPDATE Grade g SET g.confirmed = true WHERE g.sprint.id = :sprintId AND g.student.id = :studentId AND g.gradeType.id = :gradeType")
-	void setConfirmedBySprintAndStudent(Integer sprintId, Integer studentId, Integer gradeType);
+	@Query("UPDATE Grade g SET g.confirmed = true WHERE g.id = :gradeId")
+	void setConfirmedBySprintAndStudent(Integer gradeId);
 
 
 	@Query("SELECT g FROM Grade g WHERE g.student.id = :studentId AND g.gradeType.id = :gradeTypeId AND g.author.id = :authorId AND g.sprint.id = :sprintId")
@@ -74,6 +79,6 @@ public interface GradeRepository extends JpaRepository<Grade, Integer> {
 	@Query("SELECT g FROM Grade g WHERE g.author.id = :authorId")
 	List<Grade> findAllByAuthorId(Integer authorId);
 
-	@Query("SELECT g FROM Grade g WHERE g.sprint.id = :sprintId AND g.team.id = :teamId AND g.gradeType.name = 'Performance individuelle'")
+	@Query("SELECT g FROM Grade g WHERE g.sprint.id = :sprintId AND g.student.team.id = :teamId AND g.gradeType.name = 'Performance individuelle'")
 	List<Grade> findIndividualGradesByTeam(Integer sprintId, Integer teamId);
 }

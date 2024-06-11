@@ -96,15 +96,15 @@ public class BonusController {
     }
 
 
-    @GetMapping("/teams/{teamId}/{sprintId}")
-    public ResponseEntity<List<ValidationBonus>> getValidationBonusesByTeam(@PathVariable Integer teamId, @PathVariable Integer sprintId) {
-        List<ValidationBonus> bonuses = bonusService.getValidationBonusesByTeam(teamId, sprintId);
+    @GetMapping("/teams/{teamId}")
+    public ResponseEntity<List<ValidationBonus>> getValidationBonusesByTeam(@PathVariable Integer teamId) {
+        List<ValidationBonus> bonuses = bonusService.getValidationBonusesByTeam(teamId);
         return ResponseEntity.ok(bonuses);
     }
 
-    @PatchMapping("/teams/{teamId}/{sprintId}")
-    public ResponseEntity setValidationBonusesByTeam(@PathVariable Integer teamId, @PathVariable Integer sprintId) {
-        bonusService.setValidationBonusesByTeam(teamId, sprintId);
+    @PatchMapping("/teams/{teamId}/{sprintId}/{userId}")
+    public ResponseEntity setValidationBonusesByTeam(@PathVariable Integer teamId, @PathVariable Integer sprintId, @PathVariable Integer userId) {
+        bonusService.setValidationBonusesByTeam(teamId, sprintId, userId);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
     }

@@ -21,6 +21,10 @@ public class ValidationBonusService {
         return validationBonusRepository.findByAuthorIdAndBonusId(bonusId, authorId);
     }
 
+    public List<ValidationBonus> getValidationByAuthorId(Integer authorId) {
+        return validationBonusRepository.getValidationByAuthorId(authorId);
+    }
+
     public List<ValidationBonus> getAllValidationBonuses(Integer bonusId) {
         return validationBonusRepository.findAllByBonusId(bonusId);
     }

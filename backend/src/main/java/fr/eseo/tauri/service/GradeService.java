@@ -293,12 +293,20 @@ public class GradeService {
 
             for (Student student : students) {
                 GradeType gradeType = gradeTypeRepository.findByNameAndProjectId(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId);
-                Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
-                grade.confirmed(true);
-                gradeRepository.save(grade);
-            }
 
-            // Then valid bonus for each students
+                List<Grade> grades = gradeRepository.findIsConfirmedBySprindAndStudents(sprintId, student.id(), gradeType.id());
+                if (grades.size() <= 0) {
+                    throw new IllegalStateException("No grades found");
+                }
+                for (Grade grade : grades) {
+                    if (Boolean.FALSE.equals(grade.confirmed())) {
+                        gradeRepository.setConfirmedBySprintAndStudent(grade.id());
+                    }
+                }
+
+//                CustomLogger.info("grade type : " + gradeType + "sprin : " + sprintId + "student : " + student.id());
+//                gradeRepository.setConfirmedBySprintAndStudent(sprintId, student.id(), gradeType.id());
+            }
 
             return true;
         } catch (NullPointerException e) {
@@ -312,7 +320,9 @@ public class GradeService {
     }
 
     public List<Grade> getIndividualGradesByTeam(Integer sprintId, Integer teamId){
-        return gradeRepository.findIndividualGradesByTeam(sprintId, teamId);
+        CustomLogger.info("Looking for individual grades for team with id " + teamId + " and sprint with id " + sprintId);
+        List <Grade> grades = gradeRepository.findIndividualGradesByTeam(sprintId, teamId);
+        return grades;
     }
 }
 

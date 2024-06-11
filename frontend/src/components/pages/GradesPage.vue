@@ -18,6 +18,9 @@ import { SprintSelect, TeamSelect } from "../molecules/select"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId } from "@/services/team"
 import { TeamSelect2 } from "@/components/molecules/select"
+import { setValidationBonusesByTeam } from "@/services/bonus/bonus.service"
+import { LoadingButton } from "../molecules/buttons"
+import { createToast } from "@/utils/toast"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
@@ -25,15 +28,26 @@ const sprintId = ref<string | null>(null)
 const authorized = hasPermission("GRADES_PAGE")
 const canConfirmOwnTeamGrade = hasPermission("GRADE_CONFIRMATION")
 
-const { data: ssTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()], queryFn: () => getTeamByUserId(Cookies.getUserId()) })
+const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()], queryFn: () => getTeamByUserId(Cookies.getUserId()) })
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
 	queryFn: async () => {
-		if (sprintId.value === null || teamId.value === null || ssTeam.value?.id == undefined) return false
-		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value), ssTeam.value?.id)
+		if (sprintId.value === null || teamId.value === null || actualTeam.value?.id == undefined) return false
+		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value), actualTeam.value?.id)
 	}
 })
+
+const { refetch: studentValidLimitedBonus, isLoading: studentBtnLoading } = useQuery({
+	queryKey: ["student-valid-bonus", sprintId.value, teamId.value],
+	queryFn: async () => {
+		if (sprintId.value === null || teamId.value === null || actualTeam.value?.id == undefined) return false
+		await setValidationBonusesByTeam(parseInt(teamId.value), parseInt(sprintId.value), Cookies.getUserId())
+			.then(() => createToast("Les bonus limités ont été validés avec succès"))
+		return true
+	}
+})
+
 
 const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
 const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
@@ -46,11 +60,16 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 		<Column v-else class="gap-4">
 			<Header title="Notes">
 				<ValidGradesDialog
-					v-if="teamId !== null && sprintId !== null && canConfirmOwnTeamGrade && ssTeam?.id.toString() == teamId"
+					v-if="teamId !== null && sprintId !== null && canConfirmOwnTeamGrade && actualTeam?.id.toString() == teamId"
 					@valid:individual-grades="refetchGradesConfirmation" :selectedTeam="teamId"
 					:selectedSprint="sprintId">
 					<Button variant="default">Valider toutes les notes de l'équipe</Button>
 				</ValidGradesDialog>
+				<LoadingButton v-if="Cookies.getRole() == 'OPTION_STUDENT' && actualTeam?.id.toString() == teamId"
+					type="submit" @click="studentValidLimitedBonus" :loading="studentBtnLoading">
+					Valider les bonus limités
+				</LoadingButton>
+
 				<SprintSelect v-model="sprintId" />
 				<TeamSelect v-model="teamId" v-if="canViewAllWg || canViewAllOg" />
 				<TeamSelect2 v-model="teamId" v-else />
@@ -60,7 +79,8 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 				</ExportGrades>
 			</Header>
 			<Column v-if="teamId !== null && sprintId !== null">
-				<Grade v-if="authorized" :teamId="teamId ?? ''" :sprintId="sprintId ?? ''" :is-grades-confirmed="isGradesConfirmed ?? false" />
+				<Grade v-if="authorized" :teamId="teamId ?? ''" :sprintId="sprintId ?? ''"
+					:is-grades-confirmed="isGradesConfirmed ?? false" />
 				<NotAutorized v-else />
 			</Column>
 			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">

@@ -25,6 +25,6 @@ RUN wget -q -O /tmp/chromedriver.zip https://storage.googleapis.com/chrome-for-t
 
 RUN chmod +x /usr/bin/chromedriver
 
-# Commande pour garder le conteneur actif
-# CMD ["bash"]
 
+# Build : docker build -t charlo56/pgl-gradlew-chrome .
+# Push : docker push charlo56/pgl-gradlew-chrome
