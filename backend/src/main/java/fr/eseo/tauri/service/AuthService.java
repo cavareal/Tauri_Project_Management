@@ -30,7 +30,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
 
-    private static final String WRONG_CREDENTIALS = "Wrong credentials";
+    private final String WRONG_CREDENTIALS = "Wrong credentials";
 
     @Value("${app.log.with.ldap}")
     private String prodProperty;
