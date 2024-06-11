@@ -5,7 +5,6 @@ import { LoadingButton } from "@/components/molecules/buttons"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { createToast } from "@/utils/toast"
-import { createStudent } from "@/services/student"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { ref, watch } from "vue"
 import { Row } from "@/components/atoms/containers"
@@ -18,21 +17,10 @@ import type { Student } from "@/types/student"
 import type { Grade } from "@/types/grade"
 import { getUserByName } from "@/services/user"
 import { updateGrade } from "@/services/grade"
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger
-} from "@/components/ui/alert-dialog"
 
 const props = defineProps<{
 	student: Student
-	grade : number
+	grade : Grade
 }>()
 
 const open = ref(false)
@@ -92,72 +80,52 @@ watch([lastName, firstName], () => {
 </script>
 
 <template>
-<!--	<CustomDialog :title="DIALOG_TITLE" :description="DIALOG_DESCRIPTION" v-model:open="open">-->
-<!--		<template #trigger>-->
-<!--			<slot @click.stop/>-->
-<!--		</template>-->
+	<CustomDialog :title="DIALOG_TITLE" :description="DIALOG_DESCRIPTION" v-model:open="open">
+		<template #trigger>
+			<slot @click.stop/>
+		</template>
 
-<!--		<ErrorText v-if="error">Une erreur est survenue.</ErrorText>-->
-<!--		<Row :class="rowClass">-->
-<!--			<Label>Nom : </Label>-->
-<!--			<Input v-model="lastName" class="w-full"/>-->
-<!--		</Row>-->
-<!--		<Row :class="rowClass">-->
-<!--			<Label>Prénom : </Label>-->
-<!--			<Input v-model="firstName" class="w-full"/>-->
-<!--		</Row>-->
-<!--		<Row :class="rowClass">-->
-<!--			<Label>Genre : </Label>-->
-<!--			<Select v-model="gendered">-->
-<!--				<SelectTrigger >-->
-<!--					<SelectValue placeholder="Genre" />-->
-<!--				</SelectTrigger>-->
-<!--				<SelectContent>-->
-<!--					<SelectGroup>-->
-<!--						<SelectItem value='MAN'>Homme</SelectItem>-->
-<!--						<SelectItem value='WOMAN'>Femme</SelectItem>-->
-<!--					</SelectGroup>-->
-<!--				</SelectContent>-->
-<!--			</Select>-->
-<!--		</Row>-->
-<!--		<Row :class="rowClass">-->
-<!--			<Label>Bachelor :</Label>-->
-<!--			<div class="flex justify-end">-->
-<!--&lt;!&ndash;				<Switch id="Bachelor" :checked="bachelor" @update:checked="value => bachelor = value"/>&ndash;&gt;-->
-<!--			</div>-->
-<!--		</Row>-->
-<!--		<Row :class="rowClass">-->
-<!--			<Label>Moyenne :</Label>-->
-<!--			<Input  type="number" min="0" max="20"  @update:model-value="onGradeChange"/>-->
-<!--		</Row>-->
+		<ErrorText v-if="error">Une erreur est survenue.</ErrorText>
+		<Row :class="rowClass">
+			<Label>Nom : </Label>
+			<Input v-model="lastName" class="w-full"/>
+		</Row>
+		<Row :class="rowClass">
+			<Label>Prénom : </Label>
+			<Input v-model="firstName" class="w-full"/>
+		</Row>
+		<Row :class="rowClass">
+			<Label>Genre : </Label>
+			<Select v-model="gendered">
+				<SelectTrigger >
+					<SelectValue placeholder="Genre" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						<SelectItem value='MAN'>Homme</SelectItem>
+						<SelectItem value='WOMAN'>Femme</SelectItem>
+					</SelectGroup>
+				</SelectContent>
+			</Select>
+		</Row>
+		<Row :class="rowClass">
+			<Label>Bachelor :</Label>
+			<div class="flex justify-end">
+				<Switch id="Bachelor" :checked="bachelor" @update:checked="value => bachelor = value"/>
+			</div>
+		</Row>
+		<Row :class="rowClass">
+			<Label>Moyenne :</Label>
+			<Input  type="number" min="0" max="20"  @update:model-value="onGradeChange"/>
+		</Row>
 
-<!--		<template #footer>-->
-<!--			<DialogClose v-if="!isPending">-->
-<!--				<Button variant="outline">Annuler</Button>-->
-<!--			</DialogClose>-->
-<!--			<LoadingButton type="submit" @click="mutate" :loading="isPending">-->
-<!--				Ajouter-->
-<!--			</LoadingButton>-->
-<!--		</template>-->
-<!--	</CustomDialog>-->
-	<AlertDialog>
-		<AlertDialogTrigger as-child>
-			<Button variant="outline">
-				Show Dialog
-			</Button>
-		</AlertDialogTrigger>
-		<AlertDialogContent>
-			<AlertDialogHeader>
-				<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-				<AlertDialogDescription>
-					This action cannot be undone. This will permanently delete your
-					account and remove your data from our servers.
-				</AlertDialogDescription>
-			</AlertDialogHeader>
-			<AlertDialogFooter>
-				<AlertDialogCancel>Cancel</AlertDialogCancel>
-				<AlertDialogAction>Continue</AlertDialogAction>
-			</AlertDialogFooter>
-		</AlertDialogContent>
-	</AlertDialog>
+		<template #footer>
+			<DialogClose v-if="!isPending">
+				<Button variant="outline">Annuler</Button>
+			</DialogClose>
+			<LoadingButton type="submit" @click="mutate" :loading="isPending">
+				Ajouter
+			</LoadingButton>
+		</template>
+	</CustomDialog>
 </template>

@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button"
 
 const props = defineProps<{
 	student: Student
-	mark : number
+	mark : Grade
 }>()
 
 // const {mutate : update, error, isPending} = useMutation({mutationKey: ["update-student"], mutationFn: async() => {
@@ -47,29 +47,9 @@ const props = defineProps<{
 				<DropdownMenuItem>
 					<PencilLine class="mr-2 h-4 w-4" />
 <!--					<span>Modifier</span>-->
-<!--					<EditStudentDialog :student="props.student" :grade="props.mark" @click.stop>-->
-<!--						<Button>Modifier</Button>-->
-<!--					</EditStudentDialog>-->
-					<AlertDialog>
-						<AlertDialogTrigger as-child>
-							<Button variant="outline">
-								Show Dialog
-							</Button>
-						</AlertDialogTrigger>
-						<AlertDialogContent>
-							<AlertDialogHeader>
-								<AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-								<AlertDialogDescription>
-									This action cannot be undone. This will permanently delete your
-									account and remove your data from our servers.
-								</AlertDialogDescription>
-							</AlertDialogHeader>
-							<AlertDialogFooter>
-								<AlertDialogCancel>Cancel</AlertDialogCancel>
-								<AlertDialogAction>Continue</AlertDialogAction>
-							</AlertDialogFooter>
-						</AlertDialogContent>
-					</AlertDialog>
+					<EditStudentDialog :student="props.student" :grade="props.mark">
+						<Button>Modifier</Button>
+					</EditStudentDialog>
 				</DropdownMenuItem>
 				<DropdownMenuItem>
 					<Trash2 class="mr-2 h-4 w-4" />

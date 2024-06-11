@@ -11,7 +11,6 @@ import type { Grade } from "@/types/grade"
 import { Loading } from "@/components/organisms/loading"
 import { extractNames } from "@/utils/string"
 import UpdateDeleteMenu from "@/components/molecules/menu/UpdateDeleteMenu.vue"
-import { EditStudentDialog } from "@/components/organisms/students/index"
 
 const rowClass = cn("py-2 h-auto")
 
@@ -60,8 +59,8 @@ defineProps<{
 						</span>
 					</TableCell>
 					<TableCell :class="rowClass">
-<!--						<UpdateDeleteMenu :student="student" :grade="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')" />-->
-						<UpdateDeleteMenu :student="student" :mark="Number(0)" />
+						<UpdateDeleteMenu :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')" />
+<!--						<UpdateDeleteMenu :student="student" :mark="Number(0)" />-->
 					</TableCell>
 				</TableRow>
 			</TableBody>
