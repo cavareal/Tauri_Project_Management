@@ -64,7 +64,8 @@ public class TeamService {
 
         // Create the teams
         for (int i = 0; i < nbTeams; i++) {
-            Team team = new Team("Équipe " + (i + 1), project);
+            Team team = new Team(project);
+            team.name("Team " + (i + 1));
             this.teamRepository.save(team);
             teams.add(team);
         }
@@ -75,7 +76,7 @@ public class TeamService {
     public void updateTeam(Integer id, Team updatedTeam) {
         Team team = getTeamById(id);
 
-        if (updatedTeam.name() != null) team.name(updatedTeam.name());
+        if (null != updatedTeam.name()) team.name(updatedTeam.name());
         if (updatedTeam.leaderId() != null) team.leader(userService.getUserById(updatedTeam.leaderId()));
 
         teamRepository.save(team);
