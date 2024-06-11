@@ -27,11 +27,6 @@ public class GradeTypeService {
     private final GradeTypeRepository gradeTypeRepository;
     private final GradeService gradeService;
     private final ProjectService projectService;
-    
-    private static final String READ_PERMISSION = "readGradeType";
-    private static final String ADD_PERMISSION = "addGradeType";
-    private static final String UPDATE_PERMISSION = "updateGradeType";
-    private static final String DELETE_PERMISSION = "deleteGradeType";
 
     public GradeType getGradeTypeById(Integer id) {
         return gradeTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("gradeType", id));
@@ -190,11 +185,11 @@ public class GradeTypeService {
     }
 
 
-    public GradeType findByName(String name, String token, Integer projectId) {
+    public GradeType findByName(String name, Integer projectId) {
         return gradeTypeRepository.findByNameAndProjectId(name, projectId);
     }
 
-    public void saveGradeScale(Integer id, MultipartFile file, String token) throws IOException {
+    public void saveGradeScale(Integer id, MultipartFile file) throws IOException {
         if (!Objects.equals(file.getContentType(), "text/plain")) {
             CustomLogger.info("File type: " + file.getContentType());
             throw new IllegalArgumentException("Only TXT files are allowed");
@@ -210,14 +205,14 @@ public class GradeTypeService {
             gradeTypeRepository.save(gradeType);
     }
 
-    public byte[] getBLOBScale(int id, String token) {
+    public byte[] getBLOBScale(int id) {
         GradeType gradeType = gradeTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("GradeType not found"));
         CustomLogger.info("Size of the PDF: " + gradeType.scaleTXTBlob().length);
         return gradeType.scaleTXTBlob();
     }
 
-    public void deleteGradeScale(Integer id, String token) {
+    public void deleteGradeScale(Integer id) {
         gradeTypeRepository.deleteById(id);
     }
 }

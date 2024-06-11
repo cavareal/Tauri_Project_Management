@@ -1,8 +1,6 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.Role;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
@@ -36,10 +34,10 @@ public class UserService {
 		return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user", id));
 	}
 
-	public User createUser(User user) throws Exception {
+	public User createUser(User user) throws IllegalArgumentException {
 		User userCheck = userRepository.findByEmail(user.email()).orElse(null);
 		if (userCheck != null) {
-			throw new Exception("User already exists in the database");
+			throw new IllegalArgumentException("User already exists in the database");
 		}
 		return userRepository.save(user);
 	}

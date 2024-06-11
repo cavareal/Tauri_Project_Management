@@ -46,7 +46,7 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
 		if (!ListUtil.contains(List.of(HIBERNATE_MODES), hibernateMode)) return;
 
-		userSeeder.seed(faker);
+		userSeeder.seed();
 		permissionSeeder.seed();
 		roleSeeder.seed();
 		projectSeeder.seed();
