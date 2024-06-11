@@ -8,8 +8,8 @@ import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { setGradesConfirmation } from "@/services/grade"
 import { createToast } from "@/utils/toast"
-import { getIndividualGradesByTeam } from "@/services/grade"
-import { getValidationBonusesByTeam } from "@/services/bonus"
+import { getIndividualGradesByTeam } from "@/services/grade/grade.service"
+import { getValidationBonusesByTeam } from "@/services/bonus/bonus.service"
 
 const emits = defineEmits(["valid:individual-grades"])
 const open = ref(false)
