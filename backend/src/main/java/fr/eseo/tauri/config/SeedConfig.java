@@ -2,7 +2,6 @@ package fr.eseo.tauri.config;
 
 import fr.eseo.tauri.seeder.*;
 import fr.eseo.tauri.util.ListUtil;
-import net.datafaker.Faker;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +11,10 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Locale;
 
 @Component
 public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 
-	private static final String FAKER_LANGUAGE = "fr-FR";
 	private static final String[] HIBERNATE_MODES = {"create", "create-drop"};
 
 	private final UserSeeder userSeeder;
