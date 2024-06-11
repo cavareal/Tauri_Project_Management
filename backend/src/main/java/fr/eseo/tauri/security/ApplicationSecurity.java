@@ -77,11 +77,6 @@ public class ApplicationSecurity {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         PasswordEncoder passwordEncoder = new LdapShaPasswordEncoder();
 
-//        PasswordEncoder passwordEncoder = passwordEncoderr();
-//        PasswordEncoder passwordEncoder = new PasswordEncoder();
-//        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-
         auth
             .ldapAuthentication()
                 .contextSource()
@@ -100,22 +95,5 @@ public class ApplicationSecurity {
     public UserDetailsService userDetailsService() {
         return userEmail -> userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User or password incorrect"));
-    }
-
-//    @Bean
-//    public BCryptPasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-
-
-
-    @Bean
-    public PasswordEncoder passwordEncoderr() {
-        String encodingId = "SSHA";
-        Map<String, PasswordEncoder> encoders = new HashMap<>();
-        encoders.put(encodingId, new SSHAPasswordEncoder());
-        encoders.put("bcrypt", new BCryptPasswordEncoder());
-
-        return new DelegatingPasswordEncoder(encodingId, encoders);
     }
 }

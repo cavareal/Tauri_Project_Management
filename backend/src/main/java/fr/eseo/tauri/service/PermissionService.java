@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.enumeration.RoleType;

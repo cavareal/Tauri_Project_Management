@@ -71,27 +71,27 @@ public class GradeTypeController {
     }
 
     @GetMapping("/name")
-    public ResponseEntity<GradeType> getGradeTypeByName(@RequestHeader("Authorization") String token, @RequestParam("name") String name, @RequestParam("projectId") Integer projectId) {
-        GradeType gradeType = gradeTypeService.findByName(name, token, projectId);
+    public ResponseEntity<GradeType> getGradeTypeByName(@RequestParam("name") String name, @RequestParam("projectId") Integer projectId) {
+        GradeType gradeType = gradeTypeService.findByName(name, projectId);
         return ResponseEntity.ok(gradeType);
     }
 
     @PostMapping("/{id}/upload-grade-scale")
-    public ResponseEntity<String> uploadGradeScaleTXT(@RequestHeader("Authorization") String token,
+    public ResponseEntity<String> uploadGradeScaleTXT(
             @PathVariable Integer id,
             @RequestParam("file") MultipartFile file) throws IOException {
-            gradeTypeService.saveGradeScale(id, file, token);
+            gradeTypeService.saveGradeScale(id, file);
             return ResponseEntity.ok(responseMessage.create());
     }
 
     @GetMapping("/{id}/download-grade-scale")
-    public ResponseEntity<byte[]> downloadGradeScaleTXT(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        return ResponseEntity.ok(gradeTypeService.getBLOBScale(id, token));
+    public ResponseEntity<byte[]> downloadGradeScaleTXT(@PathVariable Integer id) {
+        return ResponseEntity.ok(gradeTypeService.getBLOBScale(id));
     }
 
     @DeleteMapping("/{id}/delete-grade-scale")
-    public ResponseEntity<String> deleteGradeScaleTXT(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-        gradeTypeService.deleteGradeScale(id, token);
+    public ResponseEntity<String> deleteGradeScaleTXT(@PathVariable Integer id) {
+        gradeTypeService.deleteGradeScale(id);
         return ResponseEntity.ok(responseMessage.delete());
     }
 
