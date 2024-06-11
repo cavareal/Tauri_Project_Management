@@ -86,7 +86,7 @@ const { data: notifications } = useQuery({ queryKey: ["notifications"], queryFn:
 				<SidebarLink>
 					<Bell /> Notifications
 					<Row
-						class="relative -top-2 -left-32 size-5 bg-primary rounded-full items-center justify-center text-sm"
+						class="relative -top-2 -left-32 size-5 bg-tauri-red rounded-full items-center justify-center text-sm"
 						v-if="notifications && notifications.length > 0"
 					>
 						{{ notifications.length }}

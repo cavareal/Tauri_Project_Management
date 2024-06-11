@@ -7,7 +7,9 @@ import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.security.JwtTokenUtil;
 import fr.eseo.tauri.util.CustomLogger;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @RequiredArgsConstructor
@@ -26,10 +27,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
 
+    @Getter
+    @Setter
     @Value("${app.log.with.ldap}")
     private String prodProperty;
 
-    private final static String WRONG_CREDENTIALS = "Wrong credentials";
+    private static final String WRONG_CREDENTIALS = "Wrong credentials";
 
     public AuthResponse login(String email, String password) {
         try {
@@ -62,4 +65,5 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(safeEmail, safePassword)
         );
     }
+
 }
