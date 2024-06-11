@@ -3,7 +3,7 @@ import { type Bonus, BonusSchema, type CreateBonus, CreateBonusSchema, type Upda
 import { getConnectedUser } from "@/services/user"
 import { z } from "zod"
 
-export const createBonus = async(body: Omit<CreateBonus, "authorId">): Promise<void> => {
+export const createBonus = async (body: Omit<CreateBonus, "authorId">): Promise<void> => {
 	const user = await getConnectedUser()
 
 	const response = await mutateAndValidate({
@@ -18,7 +18,7 @@ export const createBonus = async(body: Omit<CreateBonus, "authorId">): Promise<v
 	}
 }
 
-export const updateBonus = async(id: number, body: UpdateBonus): Promise<void> => {
+export const updateBonus = async (id: number, body: UpdateBonus): Promise<void> => {
 
 	const response = await mutateAndValidate({
 		method: "PATCH",
@@ -32,7 +32,7 @@ export const updateBonus = async(id: number, body: UpdateBonus): Promise<void> =
 	}
 }
 
-export const getStudentBonus = async(studentId: number, limited: boolean, sprintId: string): Promise<Bonus> => {
+export const getStudentBonus = async (studentId: number, limited: boolean, sprintId: string): Promise<Bonus> => {
 	const response = await queryAndValidate({
 		route: `students/${studentId}/bonus`,
 		responseSchema: BonusSchema,
@@ -46,7 +46,7 @@ export const getStudentBonus = async(studentId: number, limited: boolean, sprint
 	return response.data
 }
 
-export const getStudentBonuses = async(studentId: number, sprintId: string): Promise<Bonus[]> => {
+export const getStudentBonuses = async (studentId: number, sprintId: string): Promise<Bonus[]> => {
 	const response = await queryAndValidate({
 		route: `students/${studentId}/bonuses`,
 		responseSchema: z.array(BonusSchema),
@@ -60,9 +60,9 @@ export const getStudentBonuses = async(studentId: number, sprintId: string): Pro
 	return response.data
 }
 
-export const getValidationBonusesByTeam = async(teamId: number): Promise<Bonus[]> => {
+export const getValidationBonusesByTeam = async (teamId: number, sprintId: number): Promise<Bonus[]> => {
 	const response = await queryAndValidate({
-		route: `bonuses/teams/${teamId}`,
+		route: `bonuses/teams/${teamId}/${sprintId}`,
 		responseSchema: z.array(BonusSchema),
 	})
 
@@ -71,4 +71,19 @@ export const getValidationBonusesByTeam = async(teamId: number): Promise<Bonus[]
 	}
 
 	return response.data
+}
+
+
+
+export const setBonusesTeamValidation = async (teamId: number, sprintId: number, userId: number): Promise<void> => {
+
+	const response = await mutateAndValidate({
+		method: "PATCH",
+		route: `bonuses/teams/${teamId}/${sprintId}`,
+		bodySchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }

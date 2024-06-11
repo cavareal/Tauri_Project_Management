@@ -298,6 +298,9 @@ public class GradeService {
                 grade.confirmed(true);
                 gradeRepository.save(grade);
             }
+
+            // Then valid bonus for each students
+
             return true;
         } catch (NullPointerException e) {
             CustomLogger.info("No student or no grades found");

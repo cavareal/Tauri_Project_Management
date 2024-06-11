@@ -1,6 +1,7 @@
 package fr.eseo.tauri.controller;
 
 import fr.eseo.tauri.model.Bonus;
+import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.service.BonusService;
 import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
@@ -95,9 +96,17 @@ public class BonusController {
     }
 
 
-    @GetMapping("/teams/{teamId}")
-    public ResponseEntity<List<Bonus>> getValidationBonusesByTeam(@PathVariable Integer teamId) {
-        List<Bonus> bonuses = bonusService.getValidationBonusesByTeam(teamId);
+    @GetMapping("/teams/{teamId}/{sprintId}")
+    public ResponseEntity<List<ValidationBonus>> getValidationBonusesByTeam(@PathVariable Integer teamId, @PathVariable Integer sprintId) {
+        List<ValidationBonus> bonuses = bonusService.getValidationBonusesByTeam(teamId, sprintId);
         return ResponseEntity.ok(bonuses);
     }
+
+    @PatchMapping("/teams/{teamId}/{sprintId}")
+    public ResponseEntity setValidationBonusesByTeam(@PathVariable Integer teamId, @PathVariable Integer sprintId) {
+        bonusService.setValidationBonusesByTeam(teamId, sprintId);
+        CustomLogger.info(responseMessage.update());
+        return ResponseEntity.ok(responseMessage.update());
+    }
+
 }

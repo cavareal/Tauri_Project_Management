@@ -4,6 +4,7 @@ import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
@@ -91,26 +92,35 @@ public class BonusService {
     }
 
 
-    public List<Bonus> getValidationBonusesByTeam(Integer teamId) {
-        List <Bonus> bonuses = new ArrayList<>();
+    public List<ValidationBonus> getValidationBonusesByTeam(Integer teamId, Integer sprintId) {
+        List <ValidationBonus> validationBonuses = new ArrayList<>();
         List <Student> students = studentRepository.findByTeam(teamId);
+
         // Students bonuses
         for(Student student : students) {
             User user = userService.getUserById(student.id());
-            Bonus bonus = bonusRepository.findAllByAuthorId(user.id());
-            if (bonus != null){
-                bonuses.add(bonus);
-            }
+            Bonus bonus = bonusRepository.findAllByAuthorId(user.id(), sprintId);
+            ValidationBonus validationBonus = validationBonusService.getValidationBonusByAuthorId(bonus.id() ,user.id());
+            validationBonuses.add(validationBonus);
         }
 
         // SS bonus
         User leader = teamRepository.findLeaderByTeamId(teamId);
-        Bonus leaderBonus = bonusRepository.findAllByAuthorId(leader.id());
-        if (leaderBonus != null){
-            bonuses.add(leaderBonus);
+        Bonus leaderBonus = bonusRepository.findAllByAuthorId(leader.id(), sprintId);
+        ValidationBonus validationBonus = validationBonusService.getValidationBonusByAuthorId(leaderBonus.id() ,leader.id());
+
+        if (validationBonus != null){
+            validationBonuses.add(validationBonus);
         }
 
-        return bonuses;
+        return validationBonuses;
+    }
+
+
+    public void setValidationBonusesByTeam(Integer teamId, Integer sprintId) {
+
+
+
     }
 
 }
