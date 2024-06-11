@@ -40,11 +40,11 @@ const DIALOG_DESCRIPTION = "Vous pouvez modifier un étudiant en remplissant les
 
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["add-student"], mutationFn: async() => {
-	await updateStudent(props.student.id.toString(), {
-		name: fullName,
-		gender: gendered.value,
-		bachelor: bachelor.value
-	})
+	// await updateStudent(props.student.id.toString(), {
+	// 	name: fullName,
+	// 	gender: gendered.value,
+	// 	bachelor: bachelor.value
+	// })
 	await updateGrade(Number(props.mark.id), {
 		value: Number(newGrade.value),
 		teamId: null,
@@ -90,15 +90,15 @@ watch([lastName, firstName], () => {
 		<ErrorText v-if="error">Une erreur est survenue.</ErrorText>
 		<Row :class="rowClass">
 			<Label>Nom : </Label>
-			<Input v-model="lastName" class="w-full"/>
+			<Input v-model="lastName" class="w-full" disabled/>
 		</Row>
 		<Row :class="rowClass">
 			<Label>Prénom : </Label>
-			<Input v-model="firstName" class="w-full"/>
+			<Input v-model="firstName" class="w-full" disabled/>
 		</Row>
 		<Row :class="rowClass">
 			<Label>Genre : </Label>
-			<Select v-model="gendered">
+			<Select v-model="gendered" disabled>
 				<SelectTrigger >
 					<SelectValue placeholder="Genre" />
 				</SelectTrigger>
@@ -113,7 +113,7 @@ watch([lastName, firstName], () => {
 		<Row :class="rowClass">
 			<Label>Bachelor :</Label>
 			<div class="flex justify-end">
-				<Switch id="Bachelor" :checked="bachelor" @update:checked="value => bachelor = value"/>
+				<Switch id="Bachelor" :checked="bachelor" @update:checked="value => bachelor = value" disabled/>
 			</div>
 		</Row>
 		<Row :class="rowClass">

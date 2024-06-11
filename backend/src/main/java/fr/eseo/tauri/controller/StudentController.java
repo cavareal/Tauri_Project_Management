@@ -48,7 +48,7 @@ public class StudentController {
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<String> updateStudent(@PathVariable Integer id, @Validated(Update.class) @RequestBody Student updatedStudent, @RequestParam Integer projectId ) {
+	public ResponseEntity<String> updateStudent(@PathVariable Integer id, @Validated(Update.class) @RequestBody Student updatedStudent, @RequestParam("projectId") Integer projectId ) {
 		studentService.updateStudent(id, updatedStudent);
 		CustomLogger.info(responseMessage.update());
 		return ResponseEntity.ok(responseMessage.update());
