@@ -149,6 +149,6 @@ public class GradeController {
 
     @GetMapping("/individual-grades-by-team/{sprintId}/{teamId}")
     public List<Grade> getInduvidualGradesByTeam(@PathVariable Integer sprintId, @PathVariable Integer teamId) {
-        return ResponseEntity.ok(gradeService.getInduvidualGradesByTeam(sprintId, teamId)).getBody();
+        return ResponseEntity.ok(gradeService.getIndividualGradesByTeam(sprintId, teamId)).getBody();
     }
 }

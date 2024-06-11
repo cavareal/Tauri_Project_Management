@@ -946,5 +946,29 @@ class GradeServiceTest {
         verify(gradeRepository, times(1)).save(grade);
     }
 
+    @Test
+    void getIndividualGradesByTeamShouldReturnGradesWhenExist() {
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        List<Grade> expectedGrades = Arrays.asList(new Grade(), new Grade());
+
+        when(gradeRepository.findIndividualGradesByTeam(sprintId, teamId)).thenReturn(expectedGrades);
+
+        List<Grade> actualGrades = gradeService.getIndividualGradesByTeam(sprintId, teamId);
+
+        assertEquals(expectedGrades, actualGrades);
+    }
+
+    @Test
+    void getIndividualGradesByTeamShouldReturnEmptyListWhenNoGradesExist() {
+        Integer sprintId = 1;
+        Integer teamId = 1;
+
+        when(gradeRepository.findIndividualGradesByTeam(sprintId, teamId)).thenReturn(Collections.emptyList());
+
+        List<Grade> actualGrades = gradeService.getIndividualGradesByTeam(sprintId, teamId);
+
+        assertTrue(actualGrades.isEmpty());
+    }
 
 }

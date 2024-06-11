@@ -200,4 +200,41 @@ class FlagServiceTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void updateFlagShouldUpdateAllFieldsWhenAllFieldsAreNonNull() {
+        Integer id = 1;
+        Flag updatedFlag = new Flag();
+        updatedFlag.description("New Description");
+        updatedFlag.type(FlagType.REPORTING);
+        updatedFlag.status(true);
+        updatedFlag.firstStudentId(1);
+        updatedFlag.secondStudentId(2);
+        updatedFlag.authorId(3);
+        updatedFlag.projectId(4);
+
+        Flag existingFlag = new Flag();
+        existingFlag.description("Old Description");
+        existingFlag.type(FlagType.VALIDATION);
+        existingFlag.status(true);
+        existingFlag.firstStudent(new Student());
+        existingFlag.secondStudent(new Student());
+        existingFlag.author(new User());
+        existingFlag.project(new Project());
+
+        when(flagRepository.findById(id)).thenReturn(Optional.of(existingFlag));
+        when(studentService.getStudentById(updatedFlag.firstStudentId())).thenReturn(new Student());
+        when(studentService.getStudentById(updatedFlag.secondStudentId())).thenReturn(new Student());
+        when(userService.getUserById(updatedFlag.authorId())).thenReturn(new User());
+        when(projectService.getProjectById(updatedFlag.projectId())).thenReturn(new Project());
+
+        flagService.updateFlag(id, updatedFlag);
+
+        assertEquals("New Description", existingFlag.description());
+        assertNotNull(existingFlag.firstStudent());
+        assertNotNull(existingFlag.secondStudent());
+        assertNotNull(existingFlag.author());
+        assertNotNull(existingFlag.project());
+        verify(flagRepository, times(1)).save(existingFlag);
+    }
 }
