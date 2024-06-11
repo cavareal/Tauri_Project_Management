@@ -89,5 +89,19 @@ public class BonusService {
     }
 
 
+    public List<Bonus> getValidationBonusesByTeam(Integer teamId) {
+        List <Student> students = studentRepository.findAllByTeamId(teamId);
+        List <Bonus> bonuses = null;
+
+        for(Student student : students) {
+            CustomLogger.info("Student : " + student);
+            User user = userService.getUserById(student.id());
+            CustomLogger.info("User auth: " + user);
+            bonuses.add(bonusRepository.findAllByAuthorId(user.id()));
+        }
+
+        CustomLogger.info("Get all bonuses by team : " + bonuses);
+        return bonuses;
+    }
 
 }

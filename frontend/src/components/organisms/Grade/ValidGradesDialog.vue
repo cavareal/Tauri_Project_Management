@@ -9,7 +9,7 @@ import { LoadingButton } from "@/components/molecules/buttons"
 import { setGradesConfirmation } from "@/services/grade"
 import { createToast } from "@/utils/toast"
 import { getIndividualGradesByTeam } from "@/services/grade"
-import { getStudentBonusesByTeam } from "@/services/bonus"
+import { getValidationBonusesByTeam } from "@/services/bonus"
 
 const emits = defineEmits(["valid:individual-grades"])
 const open = ref(false)
@@ -21,12 +21,12 @@ const props = defineProps<{
 
 
 // Get all the grades of the team, 
-const { data: induvialsGradeByTeam } = useQuery({ queryKey: ["individual-grade-ss"], queryFn: async () => {
+const { data: individualsGradeByTeam } = useQuery({ queryKey: ["individual-grade-team"], queryFn: async () => {
 	await getIndividualGradesByTeam(Number(props.selectedSprint), Number(props.selectedTeam))
 }})
-
-const { data: bonusesByTeam } = useQuery({ queryKey: ["individual-grade-ss"], queryFn: async () => {
-	await getStudentBonusesByTeam(Number(props.selectedTeam))
+// Get all validations bonuses
+const { data: validationBonusesByTeam } = useQuery({ queryKey: ["validation-bonuses-team"], queryFn: async () => {
+	await getValidationBonusesByTeam(Number(props.selectedTeam))
 }})
 
 
@@ -39,6 +39,7 @@ const { mutate, isPending, error } = useMutation({
 			.then(() => createToast("Les notes individuelles ont été validées."))
 	}
 })
+
 
 const DIALOG_TITLE = "Valider les notes individuelles"
 const DIALOG_DESCRIPTION
@@ -53,8 +54,10 @@ const DIALOG_DESCRIPTION
 		</template>
 
 		<ErrorText v-if="error" class="mb-2">Une erreur est survenue.</ErrorText>
-		induvialsGradeByTeam : {{ induvialsGradeByTeam }}
-		bonusesByTeam : {{ bonusesByTeam }}
+
+		individualsGradeByTeam : {{ individualsGradeByTeam }}
+
+		Mmebres ayant validé le bonus (students + ss) : {{ validationBonusesByTeam }}
 		<template #footer>
 			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>

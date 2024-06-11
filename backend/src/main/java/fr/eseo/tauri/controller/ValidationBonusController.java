@@ -42,10 +42,5 @@ public class ValidationBonusController {
         return ResponseEntity.ok(responseMessage.create());
     }
 
-    @GetMapping("/teams/{teamId}")
-    public ResponseEntity<List<Bonus>> getStudentValidationBonusesByTeam(@PathVariable Integer teamId) {
-        List<Bonus> bonuses = validationBonusService.getStudentValidationBonusesByTeam(teamId);
-        return ResponseEntity.ok(bonuses);
-    }
 
 }
