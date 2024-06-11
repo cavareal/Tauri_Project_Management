@@ -115,8 +115,8 @@ public class UserController {
 		return ResponseEntity.ok(grades);
 	}
 
-	@GetMapping("/name")
-	public ResponseEntity<User> getUserByName(@RequestBody String name){
+	@GetMapping("/name/{name}")
+	public ResponseEntity<User> getUserByName(@PathVariable String name){
 		User user = userService.getUserByName(name);
 		return ResponseEntity.ok(user);
 	}

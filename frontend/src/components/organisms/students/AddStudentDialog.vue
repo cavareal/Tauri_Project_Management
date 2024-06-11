@@ -6,13 +6,15 @@ import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { createToast } from "@/utils/toast"
 import { createStudent } from "@/services/student"
-import { useMutation } from "@tanstack/vue-query"
-import { ref } from "vue"
+import { useMutation, useQuery } from "@tanstack/vue-query"
+import { ref, watch } from "vue"
 import { Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/utils/style"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import { createGrade } from "@/services/grade"
+import { getUserByName } from "@/services/user"
 
 const open = ref(false)
 const rowClass = cn("grid grid-cols-2 items-center mb-2 justify-between")
@@ -20,6 +22,7 @@ const gendered = ref("")
 const grade = ref("")
 const lastName = ref("")
 const firstName = ref("")
+let fullName = ref("")
 const bachelor = ref(false)
 
 
@@ -31,9 +34,17 @@ const { mutate: addStudent, isPending, error } = useMutation({ mutationKey: ["ad
 	await createStudent({
 		name: lastName.value + " " +  firstName.value,
 		gender: gendered.value,
-		//grade: Number(grade.value),
 		bachelor: bachelor.value
 	})
+	await createGrade({
+		value: Number(grade.value),
+		teamId: null,
+		sprintId: null,
+		studentId: (await getUserByName(fullName.value)).id,
+		comment: null,
+		gradeTypeName: "Moyenne"
+	})
+		.then(() => grade.value = "")
 		.then(() => lastName.value = "")
 		.then(() => firstName.value = "")
 		.then(() => gendered.value = "")
@@ -42,6 +53,30 @@ const { mutate: addStudent, isPending, error } = useMutation({ mutationKey: ["ad
 		.then(() => createToast("L'étudiant a bien été ajouté."))
 		.then(() => open.value = false)
 } })
+
+watch([lastName, firstName], () => {
+	fullName.value = lastName.value + " " + firstName.value
+	useQuery({ queryKey: ["user"], queryFn: () => getUserByName(fullName.value) })
+})
+
+// const { mutate: addGrade, ...QueryCreateGrade } = useMutation({ mutationKey: ["create-grade"], mutationFn: async() => {
+// 	await createGrade({
+// 		value: Number(grade.value),
+// 		teamId: null,
+// 		sprintId: null,
+// 		studentId: (await getUserByName(fullName.value)).id,
+// 		comment: null,
+// 		gradeTypeName: "Moyenne"
+// 	})
+// 		.then(() => grade.value = "")
+// 		.then(() => lastName.value = "")
+// 		.then(() => firstName.value = "")
+// 		.then(() => gendered.value = "")
+// 		//.then(() => grade.value = "")
+// 		.then(() => bachelor.value = false)
+// 		.then(() => createToast("L'étudiant a bien été ajouté."))
+// 		.then(() => open.value = false)
+// })
 
 const onGradeChange = (value: string | number) => {
 	if (Number(value) > 20) {
@@ -53,8 +88,13 @@ const onGradeChange = (value: string | number) => {
 		return
 	}
 	grade.value = value.toString()
-	console.log(bachelor.value)
+	console.log("nom +" + fullName.value)
 }
+//
+// const addStudentAndGrade = () => {
+// 	void addStudent
+// 	void addGrade
+// }
 
 </script>
 

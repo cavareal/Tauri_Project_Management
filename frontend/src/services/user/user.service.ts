@@ -74,6 +74,19 @@ export const getUserById = async(id: number): Promise<User> => {
 	return response.data
 }
 
+export const getUserByName = async(name: string) : Promise<User> => {
+	const response = await queryAndValidate({
+		route: `users/name/${name}`,
+		responseSchema: UserSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
 export const getAllPermissions = async(id: number): Promise<PermissionType[]> => {
 	const response = await queryAndValidate({
 		route: `users/${id}/permissions`,
