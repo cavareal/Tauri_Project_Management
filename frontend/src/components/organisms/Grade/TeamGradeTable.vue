@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-import { Info } from "lucide-vue-next"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Row } from "@/components/atoms/containers"
 import { cn } from "@/utils/style"

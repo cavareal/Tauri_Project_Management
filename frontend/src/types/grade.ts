@@ -31,7 +31,7 @@ export const CreateGradeSchema = GradeSchema.omit({
 	authorId: z.coerce.number(),
 	studentId: z.coerce.number().nullable(),
 	teamId: z.coerce.number().nullable(),
-	sprintId: z.coerce.number()
+	sprintId: z.coerce.number().nullable()
 })
 export type CreateGrade = z.infer<typeof CreateGradeSchema>
 

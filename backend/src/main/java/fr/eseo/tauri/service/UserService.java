@@ -111,4 +111,8 @@ public class UserService {
 		return permissions.contains(permission);
 	}
 
+	public User getUserByName(String name){
+		return userRepository.findByName(name);
+	}
+
 }

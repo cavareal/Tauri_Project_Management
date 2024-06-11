@@ -42,14 +42,14 @@ public class StudentController {
 	}
 
 	@PostMapping
-	public ResponseEntity<String> createStudent(@Validated(Create.class) @RequestBody Student student) {
-		studentService.createStudent(student);
+	public ResponseEntity<String> createStudent(@Validated(Create.class) @RequestBody Student student, @RequestParam Integer projectId ) {
+		studentService.createStudent( student);
 		CustomLogger.info(responseMessage.create());
 		return ResponseEntity.ok(responseMessage.create());
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<String> updateStudent(@PathVariable Integer id, @Validated(Update.class) @RequestBody Student updatedStudent) {
+	public ResponseEntity<String> updateStudent(@PathVariable Integer id, @Validated(Update.class) @RequestBody Student updatedStudent, @RequestParam("projectId") Integer projectId ) {
 		studentService.updateStudent(id, updatedStudent);
 		CustomLogger.info(responseMessage.update());
 		return ResponseEntity.ok(responseMessage.update());

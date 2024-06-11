@@ -1,14 +1,11 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
-import NotAutorized from "../organisms/errors/NotAuthorized.vue"
 import { ref } from "vue"
 import { hasPermission } from "@/services/user"
 import { useQuery } from "@tanstack/vue-query"
 import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
-import { ListChecks } from "lucide-vue-next"
 import Grade from "@/components/organisms/Grade/GradeTable.vue"
 import { Button } from "@/components/ui/button"
 import ValidGradesDialog from "@/components/organisms/Grade/ValidGradesDialog.vue"
@@ -21,6 +18,8 @@ import { TeamSelect2 } from "@/components/molecules/select"
 import { setValidationBonusesByTeam } from "@/services/bonus/bonus.service"
 import { LoadingButton } from "../molecules/buttons"
 import { createToast } from "@/utils/toast"
+import { NotAuthorized } from "@/components/organisms/errors"
+import GradeNotSelected from "../organisms/Grade/GradeNotSelected.vue"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
@@ -57,7 +56,7 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 <template>
 	<SidebarTemplate>
 		<NotAuthorized v-if="!authorized" />
-		<Column v-else class="gap-4">
+		<Column v-else class="gap-4 h-full">
 			<Header title="Notes">
 				<ValidGradesDialog
 					v-if="teamId !== null && sprintId !== null && canConfirmOwnTeamGrade && actualTeam?.id.toString() == teamId"
@@ -83,10 +82,8 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 					:is-grades-confirmed="isGradesConfirmed ?? false" />
 				<NotAutorized v-else />
 			</Column>
-			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
-				<ListChecks class="size-12 stroke-1 text-dark-blue" />
-				<p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe.</p>
-			</Column>
+
+			<GradeNotSelected v-else />
 		</Column>
 	</SidebarTemplate>
 </template>

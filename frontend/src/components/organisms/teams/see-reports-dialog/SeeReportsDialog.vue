@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { CustomDialog } from "@/components/molecules/dialog"
 import Reports from "@/components/organisms/teams/see-reports-dialog/Reports.vue"
 import { useQuery } from "@tanstack/vue-query"
@@ -9,12 +10,12 @@ import ValidationProgress from "@/components/organisms/teams/see-reports-dialog/
 
 const DIALOG_TITLE = "Avis"
 
-const reportFlags = ref<Flag[]>()
-const validationFlags = ref<Flag[]>()
+const reportFlags = ref<Flag[]>([])
+const validationFlags = ref<Flag[]>([])
 
-
-const { data: flags } = useQuery({
-	queryKey: ["flags"], queryFn: async() => {
+useQuery({
+	queryKey: ["flags"],
+	queryFn: async() => {
 		const flags = await getAllFlags()
 		reportFlags.value = flags.filter(flag => flag.type === "REPORTING" && flag.status === null)
 		validationFlags.value = flags.filter(flag => flag.type === "VALIDATION")
@@ -33,5 +34,3 @@ const { data: flags } = useQuery({
 		<Reports :reports="reportFlags" />
 	</CustomDialog>
 </template>
-
-<style scoped></style>

@@ -24,7 +24,7 @@ const selectedTeam = ref(props.selectedTeam)
 const selectedSprint = ref(props.selectedSprint)
 
 
-const fetchIndividualGradesByTeam = async () => {
+const fetchIndividualGradesByTeam = async() => {
 	if (selectedTeam.value && selectedSprint.value) {
 		const data = await getIndividualGradesByTeam(Number(selectedSprint.value), Number(selectedTeam.value))
 		const authorMap = {};

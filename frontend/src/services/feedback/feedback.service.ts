@@ -22,8 +22,8 @@ export const addComment = async(feedback: CreateFeedback): Promise<void> => {
 export const createComment = async(teamId: string | null, studentId: string | null, feedbackContent: string, sprintId: string, feedback: boolean): Promise<void> => {
 	const authorId = currentUserId
 	const comment: CreateFeedback = {
-		teamId: Number(teamId) ?? null,
-		studentId: Number(studentId) ?? null,
+		teamId: teamId ? Number(teamId) : null,
+		studentId: studentId ? Number(studentId) : null,
 		content: feedbackContent,
 		feedback,
 		sprintId: Number(sprintId),

@@ -51,7 +51,7 @@ public class GradeService {
     }
 
     public void createGrade(Grade grade) {
-        checkForExistingGrade(grade);
+        //checkForExistingGrade(grade);
         setGradeAttributes(grade);
         validateGrade(grade);
         gradeRepository.save(grade);

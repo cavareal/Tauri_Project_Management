@@ -176,7 +176,7 @@ watch(() => props.teamId, async() => {
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Contenu de la présentation"]}}</TableCell>
 				<TableCell v-if="totalGrade" :class="cellClass"> {{totalGrade}} </TableCell>
-				
+
 				<TableCell v-if="studentBonuses && role === 'OPTION_STUDENT' && !isGradesConfirmed" :class="cellClass">{{ studentBonuses[index][1].value}} </TableCell>
 				<TableCell v-else-if="studentBonuses" :class="cn(cellClass, isGradesConfirmed ? gradeNotConfirmed : gradeNotConfirmed )">{{ studentBonuses[index][1].value}} </TableCell>
 

@@ -27,7 +27,8 @@ export const GradeTypeNameSchema = z.enum([
 	"Contenu de la présentation",
 	// "Support de présentation",
 	"Performance globale de l'équipe",
-	"Performance individuelle"
+	"Performance individuelle",
+	"Moyenne"
 ])
 export type GradeTypeName = z.infer<typeof GradeTypeNameSchema>
 
@@ -47,6 +48,8 @@ export const getGradeTypeDescription = (gradeTypeName: GradeTypeName): string =>
 		return "Vous devez évaluer chaque équipe sur sa présentation globale."
 	case "Performance individuelle":
 		return "Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation."
+	case "Moyenne":
+		return "La moyenne de l'étudiant importée."
 	}
 }
 
