@@ -308,7 +308,7 @@ public class GradeService {
         return gradeRepository.findAllByAuthorId(authorId);
     }
 
-    public List<Grade> getInduvidualGradesByTeam(Integer sprintId, Integer teamId){
+    public List<Grade> getIndividualGradesByTeam(Integer sprintId, Integer teamId){
         return gradeRepository.findIndividualGradesByTeam(sprintId, teamId);
     }
 }
