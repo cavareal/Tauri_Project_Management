@@ -2,6 +2,7 @@ import type { RoleType } from "@/types/role"
 import type { CookieName } from "./cookie.type"
 import { redirect } from "@/utils/router"
 import type { PermissionType } from "@/types/permission"
+import { decrypt, encrypt } from "@/utils/crypt"
 
 const COOKIE_EXPIRATION = 60 * 60 * 24 * 7 // in seconds
 
@@ -22,7 +23,9 @@ const getCookie = <T = string>(name: CookieName): T => {
 	// remove the ';' at the end of the cookie
 	let end = cookies.indexOf(";", index)
 	end = end === -1 ? cookies.length : end
-	return cookies.slice(index + name.length + 1, end) as T
+	const value = cookies.slice(index + name.length + 1, end)
+
+	return decrypt(value) as T
 }
 
 /**
@@ -31,7 +34,10 @@ const getCookie = <T = string>(name: CookieName): T => {
  * @param value The value of the cookie
  */
 const setCookie = (name: CookieName, value: string): void => {
-	document.cookie = `${name}=${value}; path=/; max-age=${COOKIE_EXPIRATION}`
+	console.log("Setting cookie", name, value)
+	const encryptedValue = encrypt(value)
+	console.log("Encrypted value", encryptedValue)
+	document.cookie = `${name}=${encryptedValue}; path=/; max-age=${COOKIE_EXPIRATION}`
 }
 
 /**
