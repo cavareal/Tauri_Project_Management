@@ -3,7 +3,6 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.ProjectRepository;
-import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.security.JwtTokenUtil;
@@ -15,8 +14,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 
@@ -24,11 +21,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
 
     @Value("${app.log.with.ldap}")
@@ -46,11 +41,8 @@ public class AuthService {
 
                 user = userRepository.findByEmail(userDetails.getUsername())
                         .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
-                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
             } else {                               // Auth without LDAP for dev mode
                 user = userRepository.findByEmail(email)
-                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
-            }
                         .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
             }
 
