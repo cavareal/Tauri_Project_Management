@@ -12,7 +12,6 @@ import { dateToCalendarDate } from "@/utils/date"
 import { hasPermission } from "@/services/user"
 import { Column } from "@/components/atoms/containers"
 import { AddSprint, SprintNotCreated, SprintSection } from "@/components/organisms/sprints"
-import { ActionSection } from "../molecules/action-section"
 
 const lastSprintOrder = ref<number>(0)
 const lastSprintEndDate = ref<CalendarDate | undefined>()

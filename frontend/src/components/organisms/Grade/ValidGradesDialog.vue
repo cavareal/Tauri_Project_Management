@@ -24,14 +24,14 @@ const selectedTeam = ref(props.selectedTeam)
 const selectedSprint = ref(props.selectedSprint)
 
 
-const fetchIndividualGradesByTeam = async () => {
+const fetchIndividualGradesByTeam = async() => {
 	if (selectedTeam.value && selectedSprint.value) {
 		return getIndividualGradesByTeam(Number(selectedSprint.value), Number(selectedTeam.value))
 	}
 }
 
 
-const fetchValidationBonusesByTeam = async () => {
+const fetchValidationBonusesByTeam = async() => {
 	if (selectedTeam.value) {
 		return getValidationBonusesByTeam(Number(selectedTeam.value), Number(selectedSprint.value))
 	}
@@ -64,7 +64,7 @@ watch(
 
 
 const { mutate: mutateIndividual, isPending: isPendingIndividual, error: errorIndividual } = useMutation({
-	mutationKey: ["individual-grades"], mutationFn: async () => {
+	mutationKey: ["individual-grades"], mutationFn: async() => {
 		console.log(props)
 		await setGradesConfirmation(Number(props.selectedTeam), Number(props.selectedSprint))
 			.then(() => open.value = false)
@@ -75,7 +75,7 @@ const { mutate: mutateIndividual, isPending: isPendingIndividual, error: errorIn
 
 
 const { mutate: mutateBonuses, isPending: isPendingBonuses, error: errorBonuses } = useMutation({
-	mutationKey: ["individual-grades"], mutationFn: async () => {
+	mutationKey: ["individual-grades"], mutationFn: async() => {
 		console.log(props)
 		await setBonusesTeamValidation(Number(props.selectedTeam), Number(props.selectedSprint), Cookies.getUserId())
 			.then(() => open.value = false)

@@ -1,4 +1,4 @@
-import { type CreateStudent, CreateStudentSchema, type Student, type UpdateStudent } from "@/types/student"
+import { type CreateStudent, type Student, type UpdateStudent } from "@/types/student"
 import { StudentSchema } from "@/types/student"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
 import { z } from "zod"

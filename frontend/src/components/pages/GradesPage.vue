@@ -1,14 +1,11 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
-import NotAutorized from "../organisms/errors/NotAuthorized.vue"
 import { ref } from "vue"
 import { hasPermission } from "@/services/user"
 import { useQuery } from "@tanstack/vue-query"
 import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
-import { ListChecks } from "lucide-vue-next"
 import Grade from "@/components/organisms/Grade/GradeTable.vue"
 import { Button } from "@/components/ui/button"
 import ValidGradesDialog from "@/components/organisms/Grade/ValidGradesDialog.vue"

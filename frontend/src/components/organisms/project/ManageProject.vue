@@ -15,7 +15,7 @@ onMounted(async() => {
 	await refetch()
 })
 
-async function refetch() {
+const refetch = async() => {
 	projectsLoading.value = true
 	projectsError.value = false
 	try {
@@ -26,16 +26,17 @@ async function refetch() {
 		projectsLoading.value = false
 	}
 }
+
 </script>
 
 <template>
-    <Column class="items-center border rounded-md bg-white">
-      <p v-if="projectsLoading">Chargement...</p>
-      <p v-else-if="projectsError">Erreur lors du chargement des projets.</p>
-      <div v-else class="w-full">
-        <ProjectSelector :projects="projects" @choose:project="refetch" />
-        <ProjectList :projects="projects" @delete:project="refetch" />
-        <ProjectAdd @add:project="refetch" />
-      </div>
-    </Column>
+	<Column class="items-center border rounded-md bg-white">
+		<p v-if="projectsLoading">Chargement...</p>
+		<p v-else-if="projectsError">Erreur lors du chargement des projets.</p>
+		<div v-else class="w-full">
+			<ProjectSelector :projects="projects" @choose:project="refetch" />
+			<ProjectList :projects="projects" @delete:project="refetch" />
+			<ProjectAdd @add:project="refetch" />
+		</div>
+	</Column>
 </template>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -6,32 +7,16 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { Ellipsis, Trash2, PencilLine  } from "lucide-vue-next"
+import { Ellipsis, Trash2, PencilLine } from "lucide-vue-next"
 import type { Student } from "@/types/student"
-import { useMutation } from "@tanstack/vue-query"
-import { updateStudent } from "@/services/student"
-import UpdateStudentDialog from "../../organisms/students/EditStudentDialog.vue"
 import type { Grade } from "@/types/grade"
 import { EditStudentDialog } from "@/components/organisms/students"
-import {
-	AlertDialog, AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription, AlertDialogFooter,
-	AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 
 const props = defineProps<{
 	student: Student
-	mark : Grade
+	mark: Grade
 }>()
-
-// const {mutate : update, error, isPending} = useMutation({mutationKey: ["update-student"], mutationFn: async() => {
-// 	await updateStudent(props.student.id, {
-// 	}
-// 	})
-// })
 
 </script>
 
@@ -39,15 +24,14 @@ const props = defineProps<{
 	<DropdownMenu>
 		<DropdownMenuTrigger as-child>
 			<div>
-				<Ellipsis class="stroke-gray-800"/>
+				<Ellipsis class="stroke-gray-800" />
 			</div>
 		</DropdownMenuTrigger>
 		<DropdownMenuContent>
 			<DropdownMenuGroup>
 				<DropdownMenuItem>
 					<PencilLine class="mr-2 h-4 w-4" />
-<!--					<span>Modifier</span>-->
-					<EditStudentDialog :student="props.student" :grade="props.mark">
+					<EditStudentDialog :student="props.student" :mark="props.mark">
 						<Button>Modifier</Button>
 					</EditStudentDialog>
 				</DropdownMenuItem>
@@ -59,7 +43,3 @@ const props = defineProps<{
 		</DropdownMenuContent>
 	</DropdownMenu>
 </template>
-
-<style scoped>
-
-</style>
