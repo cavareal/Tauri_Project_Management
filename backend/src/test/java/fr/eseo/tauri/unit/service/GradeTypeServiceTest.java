@@ -406,7 +406,7 @@ class GradeTypeServiceTest {
     }
 
     @Test
-    void deleteGradeScaleShouldDeleteWhenIdExists() {
+    void deleteGradeScaleShouldDeleteWhenIdExists() throws NoSuchElementException{
         Integer id = 1;
         GradeType gradeType = new GradeType();
         gradeType.id(id);
