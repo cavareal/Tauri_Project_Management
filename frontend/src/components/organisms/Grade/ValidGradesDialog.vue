@@ -22,6 +22,7 @@ const props = defineProps<{
 
 // Get all the grades of the team, 
 const { data: individualsGradeByTeam } = useQuery({ queryKey: ["individual-grade-team"], queryFn: async () => {
+	console.log("ouaoijpoidfhblkdsfjvnrlsekj")
 	await getIndividualGradesByTeam(Number(props.selectedSprint), Number(props.selectedTeam))
 }})
 // Get all validations bonuses
@@ -40,6 +41,9 @@ const { mutate, isPending, error } = useMutation({
 	}
 })
 
+watch(() => props.selectedSprint, () => {
+	console.log("refresh les notes et tout")
+})
 
 const DIALOG_TITLE = "Valider les notes individuelles"
 const DIALOG_DESCRIPTION
