@@ -1,9 +1,13 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.model.Bonus;
+import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.repository.StudentRepository;
+import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -12,9 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -31,6 +33,12 @@ class BonusServiceTest {
 
     @InjectMocks
     BonusService bonusService;
+
+    @Mock
+    StudentRepository studentRepository;
+
+    @Mock
+    TeamRepository teamRepository;
 
     @Mock
     BonusRepository bonusRepository;
@@ -172,6 +180,65 @@ class BonusServiceTest {
 
         verify(bonusRepository, times(1)).save(any(Bonus.class));
         verify(validationBonusService, times(1)).deleteAllValidationBonuses(id);
+    }
+
+    @Test
+    void getValidationBonusesByTeamShouldReturnBonusesWhenStudentsAndLeaderExist() {
+        Integer teamId = 1;
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        List<Student> students = Arrays.asList(student1, student2);
+        User leader = new User().id(3);
+        Bonus bonus1 = new Bonus().id(1);
+        Bonus bonus2 = new Bonus().id(2);
+        Bonus leaderBonus = new Bonus().id(3);
+
+        when(studentRepository.findByTeam(teamId)).thenReturn(students);
+        when(userService.getUserById(1)).thenReturn(new User().id(1));
+        when(userService.getUserById(2)).thenReturn(new User().id(2));
+        when(bonusRepository.findAllByAuthorId(1)).thenReturn(bonus1);
+        when(bonusRepository.findAllByAuthorId(2)).thenReturn(bonus2);
+        when(teamRepository.findLeaderByTeamId(teamId)).thenReturn(leader);
+        when(bonusRepository.findAllByAuthorId(3)).thenReturn(leaderBonus);
+
+        List<Bonus> result = bonusService.getValidationBonusesByTeam(teamId);
+
+        assertTrue(result.contains(bonus1));
+        assertTrue(result.contains(bonus2));
+        assertTrue(result.contains(leaderBonus));
+    }
+
+    @Test
+    void getValidationBonusesByTeamShouldReturnEmptyListWhenNoStudentsExist() {
+        Integer teamId = 1;
+        Team team = new Team().id(1);
+        User leader = new User().id(1);
+        team.leader(leader);
+
+        when(teamRepository.findLeaderByTeamId(teamId)).thenReturn(leader);
+        when(studentRepository.findByTeam(teamId)).thenReturn(Collections.emptyList());
+
+        List<Bonus> result = bonusService.getValidationBonusesByTeam(teamId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getValidationBonusesByTeamShouldReturnOnlyLeaderBonusWhenNoStudentsExist() {
+        Integer teamId = 1;
+        User leader = new User().id(1);
+        Bonus leaderBonus = new Bonus().id(1);
+
+        when(studentRepository.findByTeam(teamId)).thenReturn(Collections.emptyList());
+        when(teamRepository.findLeaderByTeamId(teamId)).thenReturn(leader);
+        when(bonusRepository.findAllByAuthorId(1)).thenReturn(leaderBonus);
+
+        List<Bonus> result = bonusService.getValidationBonusesByTeam(teamId);
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(leaderBonus));
     }
 
 }

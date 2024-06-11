@@ -8,7 +8,6 @@ import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
-import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -57,12 +56,12 @@ public class BonusService {
      * @param updatedBonus the updated bonus
      */
     public void updateBonus(Integer id, Bonus updatedBonus) {
-        boolean isLimited = updatedBonus.limited();
+        Bonus bonus = getBonusById(id);
+
+        boolean isLimited = bonus.limited();
         if(isLimited && Math.abs(updatedBonus.value()) > 4) {
             throw new IllegalArgumentException("The value of a limited bonus must be between -4 and 4");
         }
-
-        Bonus bonus = getBonusById(id);
 
         bonus.value(updatedBonus.value());
         if(updatedBonus.authorId() != null) bonus.author(userService.getUserById(updatedBonus.authorId()));

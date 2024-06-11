@@ -94,12 +94,11 @@ public class GradeService {
 
     public void updateGrade(Integer id, Grade updatedGrade) {
         Grade grade = getGradeById(id);
-        if (updatedGrade.value() != null) grade.value(updatedGrade.value());
-        if (updatedGrade.comment() != null) grade.comment(updatedGrade.comment());
+        grade.value(updatedGrade.value());
+        grade.comment(updatedGrade.comment());
         if (updatedGrade.sprintId() != null) grade.sprint(sprintService.getSprintById(updatedGrade.sprintId()));
         if (updatedGrade.authorId() != null) grade.author(userService.getUserById(updatedGrade.authorId()));
-        if (updatedGrade.studentId() != null)
-            grade.student(studentService.getStudentById(updatedGrade.studentId()));
+        if (updatedGrade.studentId() != null) grade.student(studentService.getStudentById(updatedGrade.studentId()));
         if (updatedGrade.teamId() != null) grade.team(teamService.getTeamById(updatedGrade.teamId()));
 
         if ((grade.team() == null) == (grade.student() == null)) {
@@ -312,7 +311,7 @@ public class GradeService {
         return gradeRepository.findAllByAuthorId(authorId);
     }
 
-    public List<Grade> getInduvidualGradesByTeam(Integer sprintId, Integer teamId){
+    public List<Grade> getIndividualGradesByTeam(Integer sprintId, Integer teamId){
         return gradeRepository.findIndividualGradesByTeam(sprintId, teamId);
     }
 }

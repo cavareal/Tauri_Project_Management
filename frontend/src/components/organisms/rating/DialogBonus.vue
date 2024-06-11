@@ -2,7 +2,7 @@
 
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
-import { Row } from "@/components/atoms/containers"
+import { Column, Row } from "@/components/atoms/containers"
 import { Input } from "@/components/ui/input"
 import { getStudentsByTeamId } from "@/services/student"
 import { Label } from "@/components/ui/label"
@@ -24,7 +24,7 @@ const props = defineProps<{
 const open = ref(false)
 let updatedStudentBonuses: Bonus[] = reactive([])
 
-const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => getStudentsByTeamId(Number(props.teamId)) })
+const { data: teamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => getStudentsByTeamId(Number(props.teamId), true) })
 
 const { data: studentBonuses, refetch: refetchBonuses } = useQuery({
 	queryKey: ["student-bonuses", props.teamId, props.sprintId],

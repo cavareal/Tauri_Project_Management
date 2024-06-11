@@ -27,4 +27,3 @@ public interface BonusRepository extends JpaRepository<Bonus, Integer> {
     @Query("SELECT b FROM Bonus b WHERE b.author.id = :id AND b.sprint.id = :sprintId")
     Bonus findAllByAuthorId(Integer id, Integer sprintId);
 }
-

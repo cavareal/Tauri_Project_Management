@@ -35,8 +35,6 @@ class CommentServiceTest {
     @Mock
     SprintService sprintService;
 
-
-
     @InjectMocks
     CommentService commentService;
 
@@ -140,6 +138,39 @@ class CommentServiceTest {
         assertEquals("Existing Content", existingComment.content());
         verify(commentRepository, times(1)).save(any(Comment.class));
     }
+
+    @Test
+    void updateCommentShouldUpdateAllFieldsWhenAllFieldsAreNonNull() {
+        Integer id = 1;
+        Comment updatedComment = new Comment();
+        updatedComment.content("New Content");
+        updatedComment.feedback(true);
+        updatedComment.sprintId(1);
+        updatedComment.authorId(1);
+        updatedComment.teamId(1);
+
+        Comment existingComment = new Comment();
+        existingComment.content("Old Content");
+        existingComment.feedback(false);
+        existingComment.sprint(new Sprint());
+        existingComment.author(new User());
+        existingComment.team(new Team());
+
+        when(commentRepository.findById(id)).thenReturn(Optional.of(existingComment));
+        when(sprintService.getSprintById(updatedComment.sprintId())).thenReturn(new Sprint());
+        when(userService.getUserById(updatedComment.authorId())).thenReturn(new User());
+        when(teamService.getTeamById(updatedComment.teamId())).thenReturn(new Team());
+
+        commentService.updateComment(id, updatedComment);
+
+        assertEquals("New Content", existingComment.content());
+        assertTrue(existingComment.feedback());
+        verify(sprintService, times(1)).getSprintById(updatedComment.sprintId());
+        verify(userService, times(1)).getUserById(updatedComment.authorId());
+        verify(teamService, times(1)).getTeamById(updatedComment.teamId());
+        verify(commentRepository, times(1)).save(existingComment);
+    }
+
 
 }
 

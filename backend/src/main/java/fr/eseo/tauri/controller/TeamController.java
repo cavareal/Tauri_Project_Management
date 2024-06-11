@@ -56,14 +56,8 @@ public class TeamController {
     }
 
     @GetMapping("/{id}/students")
-    public ResponseEntity<List<Student>> getStudentsByTeamId(@PathVariable Integer id) {
-        var students = teamService.getStudentsByTeamId(id);
-        return ResponseEntity.ok(students);
-    }
-
-    @GetMapping("/{id}/orderedStudents")
-    public ResponseEntity<List<Student>> getStudentsByTeamIdOrdered(@PathVariable Integer id) {
-        var students = teamService.getStudentsByTeamIdOrdered(id);
+    public ResponseEntity<List<Student>> getStudentsByTeamId(@PathVariable Integer id, @RequestParam("ordered") Boolean ordered) {
+        var students = teamService.getStudentsByTeamId(id, ordered);
         return ResponseEntity.ok(students);
     }
 

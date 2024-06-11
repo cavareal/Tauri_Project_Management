@@ -15,9 +15,9 @@ import type { GradeTypeName } from "@/types/grade-type"
 import { getGradeTypeByName } from "@/services/grade-type"
 import type { $ } from "vitest/dist/reporters-yx5ZTtEV"
 
+const user = await getConnectedUser()
 
 export const getAllRatedGradesFromConnectedUser = async(): Promise<Grade[]> => {
-	const user = await getConnectedUser()
 
 	const response = await queryAndValidate({
 		route: `users/${user.id}/rated-grades`,
@@ -40,7 +40,6 @@ export const getRatedGrade = (allGrades: Grade[], body: IdentifyGrade): Grade | 
 }
 
 export const createGrade = async(body: Omit<CreateGrade, "authorId" | "gradeTypeId"> & { gradeTypeName: GradeTypeName }): Promise<void> => {
-	const user = await getConnectedUser()
 	const gradeType = await getGradeTypeByName(body.gradeTypeName)
 
 	const response	= await mutateAndValidate({
@@ -74,9 +73,9 @@ export const updateGrade = async(id: number, body: UpdateGrade): Promise<void> =
 
 export const createOrUpdateGrade = async(body: Omit<CreateGrade, "authorId" | "gradeTypeId"> & { gradeTypeName: GradeTypeName }): Promise<void> => {
 	const allGrades = await getAllRatedGradesFromConnectedUser()
-	const grade = await getRatedGrade(allGrades, body)
+	const grade = getRatedGrade(allGrades, body)
 
-	console.log(grade)
+	console.log(body)
 
 	if (grade) {
 		await updateGrade(grade.id, body)

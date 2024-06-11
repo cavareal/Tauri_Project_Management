@@ -22,6 +22,7 @@ import { Cookies } from "@/utils/cookie"
 
 const queryClient = useQueryClient()
 
+const open = ref<boolean[]>([])
 const dragging = ref<number | null>(null)
 const students = ref<Record<number, Student[]>>()
 const isPl = Cookies.getRole() === "PROJECT_LEADER"
@@ -32,9 +33,11 @@ const { data: teams, refetch: refetchTeams, isLoading } = useQuery({
 	queryKey: ["teams"], queryFn: async() => {
 		const teams = await getTeams()
 
+		open.value = teams.map(() => true)
+
 		students.value = {}
 		await Promise.all(teams.map(async(team) => {
-			const teamStudents = await getStudentsByTeamId(team.id)
+			const teamStudents = await getStudentsByTeamId(team.id, false)
 			students.value = { ...students.value, [team.id]: teamStudents }
 		}))
 
@@ -99,11 +102,13 @@ const canSeeStudentFlags = hasPermission("FLAG_TEAM_WITH_STUDENTS")
 	<Column v-else>
 		<SwitchStudentsFlags v-if="canSeeStudentFlags" :isPl="isPl" />
 		<Accordion type="multiple" :default-value="teams && teams.map(team => team.id.toString())" class="space-y-4">
-			<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
+			<Row v-for="(team, i) in teams" :key="team.id" class="w-full items-start gap-8">
 				<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
 					v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"
 					v-on:dragenter="(e: DragEvent) => handleDragEnter(e, team.id)"
-					v-on:dragover="(e: DragEvent) => handleDragEnter(e, team.id)" v-on:dragleave="handleDragLeave">
+					v-on:dragover="(e: DragEvent) => handleDragEnter(e, team.id)" v-on:dragleave="handleDragLeave"
+					v-model:open="open[i]"
+				>
 					<AccordionTrigger>
 						<Row class="items-center justify-between w-full mr-4">
 							<Subtitle>
@@ -111,7 +116,7 @@ const canSeeStudentFlags = hasPermission("FLAG_TEAM_WITH_STUDENTS")
 								{{ team.leader?.name ? `(${team.leader.name})` : "" }}
 							</Subtitle>
 							<EditTeamDialog v-if="canEdit" :team="team" @edit:team="refetchTeams">
-								<Button variant="ghost" size="icon" @click="e => e.preventDefault()">
+								<Button variant="ghost" size="icon" @click="() => open[i] = !open[i]">
 									<Pencil class="w-4" />
 								</Button>
 							</EditTeamDialog>

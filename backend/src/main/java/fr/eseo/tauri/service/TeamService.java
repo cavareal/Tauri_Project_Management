@@ -30,6 +30,7 @@ public class TeamService {
     private final GradeRepository gradeRepository;
     private final GradeTypeRepository gradeTypeRepository;
     private final PresentationOrderService presentationOrderService;
+    @Lazy
     private final SprintService sprintService;
     @Lazy
     private final StudentService studentService;
@@ -65,7 +66,7 @@ public class TeamService {
         // Create the teams
         for (int i = 0; i < nbTeams; i++) {
             Team team = new Team(project);
-            team.name("Team " + (i + 1));
+            team.name("Équipe " + (i + 1));
             this.teamRepository.save(team);
             teams.add(team);
         }
@@ -109,18 +110,15 @@ public class TeamService {
         return teamRepository.countBachelorInTeam(id);
     }
 
-    public List<Student> getStudentsByTeamId(Integer id) {
-        getTeamById(id);
-        return studentRepository.findByTeam(id);
-    }
-
-    public List<Student> getStudentsByTeamIdOrdered(Integer id) {
+    public List<Student> getStudentsByTeamId(Integer id, Boolean ordered) {
         Team team = getTeamById(id);
-        Sprint currentSprint = sprintService.getCurrentSprint(team.project().id());
-        var students = studentRepository.findByTeam(id);
-        if(currentSprint != null){
-            var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(id, currentSprint.id());
-            if(presentationOrder.size() == students.size()) students.sort(Comparator.comparingInt(presentationOrder::indexOf));
+        if(ordered) {
+            Sprint currentSprint = sprintService.getCurrentSprint(team.project().id());
+            var students = studentRepository.findByTeam(id);
+            if(currentSprint != null){
+                var presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(id, currentSprint.id());
+                students.sort(Comparator.comparingInt(presentationOrder::indexOf));
+            }
         }
         return studentRepository.findByTeam(id);
     }
@@ -285,7 +283,8 @@ public class TeamService {
     }
 
     public List<Double> getIndividualTotalGrades(Integer id, Integer sprintId) {
-        List<Student> students = getStudentsByTeamId(id);
+
+        List<Student> students = getStudentsByTeamId(id, false);
         List<Double> individualGrades = new ArrayList<>();
 
         for(Student student : students){
@@ -309,7 +308,7 @@ public class TeamService {
     public List<Double> getSprintGrades(Integer id, Integer sprintId) {
         double teamGrade = getTeamTotalGrade(id, sprintId);
 
-        List<Student> students = getStudentsByTeamId(id);
+        List<Student> students = getStudentsByTeamId(id, false);
         List<Double> sprintGrades = new ArrayList<>();
 
         for(int i = 0; i < students.size(); i++){
