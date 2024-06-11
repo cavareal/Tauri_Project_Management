@@ -2,10 +2,15 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.BonusRepository;
+import fr.eseo.tauri.repository.StudentRepository;
+import fr.eseo.tauri.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,6 +20,8 @@ public class BonusService {
     private final BonusRepository bonusRepository;
     private final ValidationBonusService validationBonusService;
     private final UserService userService;
+    private final StudentRepository studentRepository;
+    private final TeamRepository teamRepository;
 
     /**
      * Get a bonus by its id
@@ -48,7 +55,8 @@ public class BonusService {
      * @param updatedBonus the updated bonus
      */
     public void updateBonus(Integer id, Bonus updatedBonus) {
-        if(Boolean.TRUE.equals(updatedBonus.limited()) && Math.abs(updatedBonus.value()) > 4) {
+        boolean isLimited = updatedBonus.limited();
+        if(isLimited && Math.abs(updatedBonus.value()) > 4) {
             throw new IllegalArgumentException("The value of a limited bonus must be between -4 and 4");
         }
 
@@ -61,7 +69,7 @@ public class BonusService {
 
         bonusRepository.save(bonus);
 
-        if(bonus.limited()) validationBonusService.deleteAllValidationBonuses(id);
+        if(isLimited) validationBonusService.deleteAllValidationBonuses(id);
     }
 
     /**
@@ -79,6 +87,29 @@ public class BonusService {
      */
     public void deleteAllBonusesByProject(Integer projectId) {
         bonusRepository.deleteAllByProject(projectId);
+    }
+
+
+    public List<Bonus> getValidationBonusesByTeam(Integer teamId) {
+        List <Bonus> bonuses = new ArrayList<>();
+        List <Student> students = studentRepository.findByTeam(teamId);
+        // Students bonuses
+        for(Student student : students) {
+            User user = userService.getUserById(student.id());
+            Bonus bonus = bonusRepository.findAllByAuthorId(user.id());
+            if (bonus != null){
+                bonuses.add(bonus);
+            }
+        }
+
+        // SS bonus
+        User leader = teamRepository.findLeaderByTeamId(teamId);
+        Bonus leaderBonus = bonusRepository.findAllByAuthorId(leader.id());
+        if (leaderBonus != null){
+            bonuses.add(leaderBonus);
+        }
+
+        return bonuses;
     }
 
 }

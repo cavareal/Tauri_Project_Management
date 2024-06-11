@@ -1,8 +1,13 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.model.Bonus;
+import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.repository.StudentRepository;
+import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -11,9 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,14 +30,15 @@ class BonusServiceTest {
     @Mock
     UserService userService;
 
-    @Mock
-    StudentService studentService;
-
-    @Mock
-    SprintService sprintService;
 
     @InjectMocks
     BonusService bonusService;
+
+    @Mock
+    StudentRepository studentRepository;
+
+    @Mock
+    TeamRepository teamRepository;
 
     @Mock
     BonusRepository bonusRepository;
@@ -90,23 +94,18 @@ class BonusServiceTest {
         assertTrue(result.isEmpty());
     }
 
-//    @Test
-//    void createBonusShouldSaveBonusWhenPermissionExistsAndBonusIsValid() {
-//        String token = "validToken";
-//        Bonus bonus = new Bonus();
-//        bonus.limited(true);
-//        bonus.value(3F);
-//
-//        when(authService.checkAuth(token, "addBonus")).thenReturn(true);
-//        when(userService.getUserById(token, bonus.authorId())).thenReturn(new User());
-//        when(studentService.getStudentById(token, bonus.studentId())).thenReturn(new Student());
-//        when(sprintService.getSprintById(token, bonus.sprintId())).thenReturn(new Sprint());
-//
-//        bonusService.createBonus(token, bonus);
-//
-//        verify(bonusRepository, times(1)).save(bonus);
-//        verify(validationBonusService, times(1)).createValidationBonuses(token, bonus);
-//    }
+    @Test
+    void createBonusShouldSaveBonusWhenBonusIsValid() {
+        Bonus bonus = new Bonus();
+        bonus.id(1);
+        bonus.value(3F);
+
+        when(bonusRepository.save(any(Bonus.class))).thenReturn(bonus);
+
+        bonusService.createBonus(bonus);
+
+        verify(bonusRepository, times(1)).save(bonus);
+    }
 
 
     @Test
@@ -130,4 +129,116 @@ class BonusServiceTest {
 
         verify(bonusRepository, times(1)).deleteAllByProject(projectId);
     }
+
+    @Test
+    void deleteBonusShouldDeleteBonusWhenBonusExists() {
+        Integer id = 1;
+        Bonus bonus = new Bonus();
+
+        when(bonusRepository.findById(id)).thenReturn(Optional.of(bonus));
+
+        bonusService.deleteBonus(id);
+
+        verify(bonusRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteBonusShouldThrowResourceNotFoundExceptionWhenBonusDoesNotExist() {
+        Integer id = 1;
+
+        when(bonusRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> bonusService.deleteBonus(id));
+    }
+
+    @Test
+    void updateBonusShouldUpdateBonusWhenBonusIsValidAndNotLimited() {
+        Integer id = 1;
+        Bonus updatedBonus = new Bonus();
+        updatedBonus.limited(false);
+        updatedBonus.value(2F);
+
+        when(bonusRepository.findById(id)).thenReturn(Optional.of(new Bonus()));
+        when(userService.getUserById(any())).thenReturn(new User());
+
+        bonusService.updateBonus(id, updatedBonus);
+
+        verify(bonusRepository, times(1)).save(any(Bonus.class));
+    }
+
+    @Test
+    void updateBonusShouldUpdateBonusAndDeleteValidationsWhenBonusIsValidAndLimited() {
+        Integer id = 1;
+        Bonus updatedBonus = new Bonus();
+        updatedBonus.value(2F);
+        updatedBonus.limited(true);
+
+        when(bonusRepository.findById(id)).thenReturn(Optional.of(new Bonus()));
+        when(userService.getUserById(any())).thenReturn(new User());
+
+        bonusService.updateBonus(id, updatedBonus);
+
+        verify(bonusRepository, times(1)).save(any(Bonus.class));
+        verify(validationBonusService, times(1)).deleteAllValidationBonuses(id);
+    }
+
+    @Test
+    void getValidationBonusesByTeamShouldReturnBonusesWhenStudentsAndLeaderExist() {
+        Integer teamId = 1;
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        List<Student> students = Arrays.asList(student1, student2);
+        User leader = new User().id(3);
+        Bonus bonus1 = new Bonus().id(1);
+        Bonus bonus2 = new Bonus().id(2);
+        Bonus leaderBonus = new Bonus().id(3);
+
+        when(studentRepository.findByTeam(teamId)).thenReturn(students);
+        when(userService.getUserById(1)).thenReturn(new User().id(1));
+        when(userService.getUserById(2)).thenReturn(new User().id(2));
+        when(bonusRepository.findAllByAuthorId(1)).thenReturn(bonus1);
+        when(bonusRepository.findAllByAuthorId(2)).thenReturn(bonus2);
+        when(teamRepository.findLeaderByTeamId(teamId)).thenReturn(leader);
+        when(bonusRepository.findAllByAuthorId(3)).thenReturn(leaderBonus);
+
+        List<Bonus> result = bonusService.getValidationBonusesByTeam(teamId);
+
+        assertTrue(result.contains(bonus1));
+        assertTrue(result.contains(bonus2));
+        assertTrue(result.contains(leaderBonus));
+    }
+
+    @Test
+    void getValidationBonusesByTeamShouldReturnEmptyListWhenNoStudentsExist() {
+        Integer teamId = 1;
+        Team team = new Team().id(1);
+        User leader = new User().id(1);
+        team.leader(leader);
+
+        when(teamRepository.findLeaderByTeamId(teamId)).thenReturn(leader);
+        when(studentRepository.findByTeam(teamId)).thenReturn(Collections.emptyList());
+
+        List<Bonus> result = bonusService.getValidationBonusesByTeam(teamId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getValidationBonusesByTeamShouldReturnOnlyLeaderBonusWhenNoStudentsExist() {
+        Integer teamId = 1;
+        User leader = new User().id(1);
+        Bonus leaderBonus = new Bonus().id(1);
+
+        when(studentRepository.findByTeam(teamId)).thenReturn(Collections.emptyList());
+        when(teamRepository.findLeaderByTeamId(teamId)).thenReturn(leader);
+        when(bonusRepository.findAllByAuthorId(1)).thenReturn(leaderBonus);
+
+        List<Bonus> result = bonusService.getValidationBonusesByTeam(teamId);
+
+        assertEquals(1, result.size());
+        assertTrue(result.contains(leaderBonus));
+    }
+
 }

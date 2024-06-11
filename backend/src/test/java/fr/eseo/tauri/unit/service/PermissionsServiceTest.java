@@ -2,9 +2,9 @@ package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Permission;
+import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.PermissionRepository;
-import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.PermissionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -127,5 +127,49 @@ class PermissionsServiceTest {
         permissionService.deleteAllPermissions();
 
         verify(permissionRepository, times(1)).deleteAll();
+    }
+
+    @Test
+    void updatePermissionShouldUpdateFieldsWhenProvided() {
+        Integer id = 1;
+        Permission existingPermission = new Permission();
+        existingPermission.id(id);
+        Permission updatedPermission = new Permission();
+        updatedPermission.type(PermissionType.VIEW_TEAM_CHANGES);
+        updatedPermission.role(RoleType.SUPERVISING_STAFF);
+
+        when(permissionRepository.findById(id)).thenReturn(Optional.of(existingPermission));
+
+        permissionService.updatePermission(id, updatedPermission);
+
+        assertEquals(updatedPermission.type(), existingPermission.type());
+        assertEquals(updatedPermission.role(), existingPermission.role());
+        verify(permissionRepository, times(1)).save(existingPermission);
+    }
+
+    @Test
+    void updatePermissionShouldNotUpdateFieldsWhenNotProvided() {
+        Integer id = 1;
+        Permission existingPermission = new Permission();
+        existingPermission.id(id);
+        Permission updatedPermission = new Permission();
+
+        when(permissionRepository.findById(id)).thenReturn(Optional.of(existingPermission));
+
+        permissionService.updatePermission(id, updatedPermission);
+
+        assertNull(existingPermission.type());
+        assertNull(existingPermission.role());
+        verify(permissionRepository, times(1)).save(existingPermission);
+    }
+
+    @Test
+    void updatePermissionShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        Integer id = 1;
+        Permission updatedPermission = new Permission();
+
+        when(permissionRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> permissionService.updatePermission(id, updatedPermission));
     }
 }

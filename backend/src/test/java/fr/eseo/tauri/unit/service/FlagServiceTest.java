@@ -2,10 +2,12 @@ package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Flag;
+import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.FlagType;
 import fr.eseo.tauri.repository.FlagRepository;
-import fr.eseo.tauri.service.AuthService;
-import fr.eseo.tauri.service.FlagService;
+import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
@@ -31,12 +32,20 @@ class FlagServiceTest {
     private FlagService flagService;
 
     @Mock
-    private AuthService authService;
-
-
+    private FlagRepository flagRepository;
 
     @Mock
-    private FlagRepository flagRepository;
+    private UserService userService;
+
+    @Mock
+    private ProjectService projectService;
+
+    @Mock
+    private ValidationFlagService validationFlagService;
+
+    @Mock
+    private StudentService studentService;
+
 
     @BeforeEach
     void setUp() {
@@ -132,6 +141,62 @@ class FlagServiceTest {
         when(flagRepository.findByAuthorIdAndType(authorId, type)).thenReturn(Collections.emptyList());
 
         List<Flag> result = flagService.getFlagsByAuthorAndType(authorId, type);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void createFlagShouldCreateFlagWhenAllFieldsAreValid() {
+        Flag flag = new Flag();
+        flag.authorId(1);
+        flag.projectId(1);
+        flag.firstStudentId(1);
+        flag.secondStudentId(1);
+
+        when(userService.getUserById(any())).thenReturn(new User());
+        when(projectService.getProjectById(any())).thenReturn(new Project());
+        when(studentService.getStudentById(any())).thenReturn(new Student());
+
+        flagService.createFlag(flag);
+
+        verify(flagRepository, times(1)).save(any(Flag.class));
+        verify(validationFlagService, times(1)).createValidationFlags(any(Flag.class));
+    }
+
+    @Test
+    void createFlagShouldCreateFlagWhenOnlyMandatoryFieldsAreValid() {
+        Flag flag = new Flag();
+        flag.authorId(1);
+        flag.projectId(1);
+
+        when(userService.getUserById(any())).thenReturn(new User());
+        when(projectService.getProjectById(any())).thenReturn(new Project());
+
+        flagService.createFlag(flag);
+
+        verify(flagRepository, times(1)).save(any(Flag.class));
+        verify(validationFlagService, times(1)).createValidationFlags(any(Flag.class));
+    }
+
+    @Test
+    void getFlagsByConcernedTeamIdShouldReturnFlagsWhenTeamIdExists() {
+        Integer teamId = 1;
+        List<Flag> flags = Collections.singletonList(new Flag());
+
+        when(flagRepository.findByConcernedTeamId(teamId)).thenReturn(flags);
+
+        List<Flag> result = flagService.getFlagsByConcernedTeamId(teamId);
+
+        assertEquals(flags, result);
+    }
+
+    @Test
+    void getFlagsByConcernedTeamIdShouldReturnEmptyListWhenNoFlagsFound() {
+        Integer teamId = 1;
+
+        when(flagRepository.findByConcernedTeamId(teamId)).thenReturn(Collections.emptyList());
+
+        List<Flag> result = flagService.getFlagsByConcernedTeamId(teamId);
 
         assertTrue(result.isEmpty());
     }

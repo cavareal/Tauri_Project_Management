@@ -6,15 +6,17 @@ import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.repository.GradeTypeRepository;
-import fr.eseo.tauri.service.AuthService;
+import fr.eseo.tauri.service.GradeService;
 import fr.eseo.tauri.service.GradeTypeService;
 import fr.eseo.tauri.service.ProjectService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,6 +34,9 @@ class GradeTypeServiceTest {
 
     @Mock
     private ProjectService projectService;
+
+    @Mock
+    GradeService gradeService;
 
     @Mock
     private GradeTypeRepository gradeTypeRepository;
@@ -117,6 +122,9 @@ class GradeTypeServiceTest {
         updatedGradeType.name("UpdatedName");
         GradeType existingGradeType = new GradeType();
         existingGradeType.id(1);
+        updatedGradeType.factor(0F);
+
+        doNothing().when(gradeService).updateImportedMean(1);
 
         when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.of(existingGradeType));
 
@@ -312,35 +320,104 @@ class GradeTypeServiceTest {
         assertTrue(names.isEmpty());
     }
 
-//    @Test
-//    void findByNameShouldReturnGradeTypeWhenAuthorizedAndNameExists() {
-//        String token = "validToken";
-//        String name = "Type1";
-//        GradeType gradeType = new GradeType();
-//        gradeType.name(name);
-//        Integer projectId = 1;
-//
-//        when(gradeTypeRepository.findByName(name)).thenReturn(gradeType);
-//
-//        GradeType result = gradeTypeService.findByName(name, "token", projectId);
-//
-//        assertEquals(gradeType, result);
-//    }
-
-
-
-
     @Test
     void findByNameShouldReturnNullWhenNameDoesNotExist() {
-        String token = "validToken";
         String name = "NonexistentType";
         Integer projectId = 1;
 
         when(gradeTypeRepository.findByName(name)).thenReturn(null);
 
-        GradeType result = gradeTypeService.findByName(name, token, projectId);
+        GradeType result = gradeTypeService.findByName(name, projectId);
 
         assertNull(result);
+    }
+
+    @Test
+    void saveGradeScaleShouldSaveWhenFileIsTxtAndSizeIsLessThan65KB() throws IOException {
+        Integer id = 1;
+        MultipartFile file = mock(MultipartFile.class);
+        GradeType gradeType = new GradeType();
+        gradeType.id(id);
+
+        when(file.getContentType()).thenReturn("text/plain");
+        when(file.getSize()).thenReturn(64L * 1024);
+        when(file.getBytes()).thenReturn(new byte[0]);
+        when(gradeTypeRepository.findById(id)).thenReturn(Optional.of(gradeType));
+
+        gradeTypeService.saveGradeScale(id, file);
+
+        verify(gradeTypeRepository, times(1)).save(gradeType);
+    }
+
+    @Test
+    void saveGradeScaleShouldThrowIllegalArgumentExceptionWhenFileIsNotTxt() {
+        Integer id = 1;
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(file.getContentType()).thenReturn("application/pdf");
+
+        assertThrows(IllegalArgumentException.class, () -> gradeTypeService.saveGradeScale(id, file));
+    }
+
+    @Test
+    void saveGradeScaleShouldThrowIllegalArgumentExceptionWhenFileSizeIsMoreThan65KB() {
+        Integer id = 1;
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(file.getContentType()).thenReturn("text/plain");
+        when(file.getSize()).thenReturn(66L * 1024);
+
+        assertThrows(IllegalArgumentException.class, () -> gradeTypeService.saveGradeScale(id, file));
+    }
+
+    @Test
+    void saveGradeScaleShouldThrowEntityNotFoundExceptionWhenGradeTypeDoesNotExist() {
+        Integer id = 1;
+        MultipartFile file = mock(MultipartFile.class);
+
+        when(file.getContentType()).thenReturn("text/plain");
+        when(file.getSize()).thenReturn(64L * 1024);
+        when(gradeTypeRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> gradeTypeService.saveGradeScale(id, file));
+    }
+
+    @Test
+    void getBLOBScaleShouldReturnBlobWhenGradeTypeExists() {
+        int id = 1;
+        GradeType gradeType = new GradeType();
+        byte[] expectedBlob = new byte[0];
+        gradeType.scaleTXTBlob(expectedBlob);
+
+        when(gradeTypeRepository.findById(id)).thenReturn(Optional.of(gradeType));
+
+        byte[] actualBlob = gradeTypeService.getBLOBScale(id);
+
+        assertArrayEquals(expectedBlob, actualBlob);
+    }
+
+    @Test
+    void getBLOBScaleShouldThrowEntityNotFoundExceptionWhenGradeTypeDoesNotExist() {
+        int id = 1;
+
+        when(gradeTypeRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> gradeTypeService.getBLOBScale(id));
+    }
+
+    @Test
+    void deleteGradeScaleShouldDeleteWhenIdExists() throws NoSuchElementException{
+        Integer id = 1;
+        GradeType gradeType = new GradeType();
+        gradeType.id(id);
+        gradeType.scaleTXTBlob(new byte[0]);
+
+        when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.of(gradeType));
+
+        gradeTypeService.deleteGradeScale(id);
+
+        assertNull(gradeType.scaleTXTBlob());
+        verify(gradeTypeRepository, times(1)).save(gradeType);
     }
 
 }

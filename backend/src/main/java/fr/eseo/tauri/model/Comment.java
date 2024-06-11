@@ -22,6 +22,7 @@ public class Comment {
     private Integer id;
 
     @NotNull(groups = { Create.class }, message = "The content field is required")
+    @Column(columnDefinition = "TEXT")
     @JsonProperty
     private String content;
 

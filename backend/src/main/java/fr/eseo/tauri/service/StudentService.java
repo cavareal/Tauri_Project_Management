@@ -45,7 +45,6 @@ public class StudentService {
     public static final String MAP_KEY_GENDERS = "genders";
     public static final String MAP_KEY_BACHELORS = "bachelors";
     public static final String MAP_KEY_GRADES = "grades";
-    private static final String PASSWORD = "password";
 
     public Student getStudentById(Integer id) {
         return studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("student", id));
@@ -67,8 +66,15 @@ public class StudentService {
 
         List<Sprint> sprints = sprintService.getAllSprintsByProject(student.projectId());
         if(!sprints.isEmpty()) {
+            var teamsIndexes = new HashMap<Integer, Integer>();
+            for (var team : teamService.getAllTeamsByProject(student.projectId())) {
+                teamsIndexes.put(team.id(), 0);
+            }
             for (Sprint sprint : sprints) {
-                PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
+                var presentationOrder = new PresentationOrder(sprint, student);
+                var value = teamsIndexes.get(student.team().id());
+                presentationOrder.value(value);
+                teamsIndexes.put(student.team().id(), value + 1);
                 presentationOrderService.createPresentationOrder(presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
@@ -190,7 +196,6 @@ public class StudentService {
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
         student.project(projectService.getProjectById(projectId));
-//        student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
         student.privateKey("privateKey");
         String[] nameParts = name.split(" "); // Divise le nom en deux parties basées sur l'espace
         student.email(nameParts[1].toLowerCase() + "." + nameParts[0].toLowerCase() + "@reseau.eseo.fr");

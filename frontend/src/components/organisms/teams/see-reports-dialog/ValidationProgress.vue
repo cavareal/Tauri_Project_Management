@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps } from "vue"
+
 import type { Flag } from "@/types/flag"
 import { useQuery } from "@tanstack/vue-query"
 import { getUsersByRole } from "@/services/user"

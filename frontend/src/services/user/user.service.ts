@@ -7,9 +7,9 @@ import { z } from "zod"
 import { RoleTypeSchema } from "@/types/role"
 
 
-export const getAllUsers = async (): Promise<User[]> => {
+export const getAllUsers = async(): Promise<User[]> => {
 	const response = await queryAndValidate({
-		route: `users`,
+		route: "users",
 		responseSchema: UserSchema.array()
 	})
 
@@ -20,7 +20,7 @@ export const getAllUsers = async (): Promise<User[]> => {
 	return response.data
 }
 
-export const getConnectedUser = async (): Promise<User> => {
+export const getConnectedUser = async(): Promise<User> => {
 	const userId = Cookies.getUserId()
 
 	const response = await queryAndValidate({
@@ -35,7 +35,7 @@ export const getConnectedUser = async (): Promise<User> => {
 	return response.data
 }
 
-export const getUsersByRole = async (role: RoleType): Promise<User[]> => {
+export const getUsersByRole = async(role: RoleType): Promise<User[]> => {
 	const response = await queryAndValidate({
 		route: `roles/${role}/users`,
 		responseSchema: UserSchema.array()
@@ -48,7 +48,7 @@ export const getUsersByRole = async (role: RoleType): Promise<User[]> => {
 	return response.data
 }
 
-export const updateUser = async (id: string | null, body: UpdateUser): Promise<void> => {
+export const updateUser = async(id: string | null, body: UpdateUser): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "PUT",
 		route: `users/${id}`,
@@ -61,7 +61,7 @@ export const updateUser = async (id: string | null, body: UpdateUser): Promise<v
 	}
 }
 
-export const getUserById = async (id: number): Promise<User> => {
+export const getUserById = async(id: number): Promise<User> => {
 	const response = await queryAndValidate({
 		route: `users/${id}`,
 		responseSchema: UserSchema
@@ -74,7 +74,7 @@ export const getUserById = async (id: number): Promise<User> => {
 	return response.data
 }
 
-export const getAllPermissions = async (id: number): Promise<PermissionType[]> => {
+export const getAllPermissions = async(id: number): Promise<PermissionType[]> => {
 	const response = await queryAndValidate({
 		route: `users/${id}/permissions`,
 		responseSchema: PermissionTypeSchema.array()
@@ -93,13 +93,13 @@ export const hasPermission = (permission: PermissionType): boolean => {
 	return permissions.includes(permission)
 }
 
-export const getCurrentUser = async (): Promise<User> => {
+export const getCurrentUser = async(): Promise<User> => {
 	const userId = Cookies.getUserId()
 
 	return await getUserById(userId)
 }
 
-export const getAllRoles = async (id: number): Promise<RoleType[]> => {
+export const getAllRoles = async(id: number): Promise<RoleType[]> => {
 	const response = await queryAndValidate({
 		route: `users/${id}/roles`,
 		responseSchema: RoleTypeSchema.array()
@@ -112,10 +112,10 @@ export const getAllRoles = async (id: number): Promise<RoleType[]> => {
 	return response.data
 }
 
-export const createUser = async (body: CreateUser): Promise<void> => {
+export const createUser = async(body: CreateUser): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
-		route: `users`,
+		route: "users",
 		body,
 		bodySchema: z.any()
 	})
@@ -126,10 +126,10 @@ export const createUser = async (body: CreateUser): Promise<void> => {
 }
 
 
-export const deleteUser = async (id: number): Promise<void> => {
+export const deleteUser = async(id: number): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "DELETE",
-		route: `users/delete/${id}`,
+		route: `users/delete/${id}`
 	})
 
 	if (response.status === "error") {

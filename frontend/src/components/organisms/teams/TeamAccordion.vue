@@ -6,7 +6,7 @@ import TeamAccordionContent from "@/components/organisms/teams/TeamAccordionCont
 import { Button } from "@/components/ui/button"
 import { Pencil } from "lucide-vue-next"
 import EditTeamDialog from "./EditTeamDialog.vue"
-import { Row } from "@/components/atoms/containers"
+import { Column, Row } from "@/components/atoms/containers"
 import { useQuery, useQueryClient } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { StudentSchema, type Student } from "@/types/student"
@@ -16,6 +16,7 @@ import { Loading } from "@/components/organisms/loading"
 import { hasPermission } from "@/services/user/user.service"
 import { sendManyNotifications } from "@/services/notification/notification.service"
 import { getCurrentPhase } from "@/services/project/project.service"
+import { Subtitle } from "@/components/atoms/texts"
 import SwitchStudentsFlags from "@/components/organisms/teams/switch-student/SwitchStudentsFlags.vue"
 import { Cookies } from "@/utils/cookie"
 
@@ -95,28 +96,30 @@ const canSeeStudentFlags = hasPermission("FLAG_TEAM_WITH_STUDENTS")
 
 <template>
 	<Loading v-if="isLoading" />
-	<Accordion v-else type="multiple" :default-value="teams && teams.map(team => team.id.toString())" class="space-y-4">
-    <SwitchStudentsFlags v-if="canSeeStudentFlags" :isPl="isPl"/>
-		<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
-			<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
-				v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"
-				v-on:dragenter="(e: DragEvent) => handleDragEnter(e, team.id)"
-				v-on:dragover="(e: DragEvent) => handleDragEnter(e, team.id)" v-on:dragleave="handleDragLeave">
-				<AccordionTrigger>
-					<Row class="items-center justify-between w-full mr-4">
-						<p>
-							{{ team.name }}
-							{{ team.leader?.name ? `(${team.leader.name})` : "" }}
-						</p>
-						<EditTeamDialog v-if="canEdit" :team="team" @edit:team="refetchTeams">
-							<Button variant="ghost" size="icon" @click="e => e.preventDefault()">
-								<Pencil class="w-4" />
-							</Button>
-						</EditTeamDialog>
-					</Row>
-				</AccordionTrigger>
-				<TeamAccordionContent :team-id="team.id" :students="(students && students[team.id]) ?? null" />
-			</AccordionItem>
-		</Row>
-	</Accordion>
+	<Column v-else>
+		<SwitchStudentsFlags v-if="canSeeStudentFlags" :isPl="isPl" />
+		<Accordion type="multiple" :default-value="teams && teams.map(team => team.id.toString())" class="space-y-4">
+			<Row v-for="team in teams" :key="team.id" class="w-full items-start gap-8">
+				<AccordionItem :value="team.id.toString()" class="flex-1" :class="style(team.id)"
+					v-on:drop="(e: DragEvent) => handleDrop(e, team.id)"
+					v-on:dragenter="(e: DragEvent) => handleDragEnter(e, team.id)"
+					v-on:dragover="(e: DragEvent) => handleDragEnter(e, team.id)" v-on:dragleave="handleDragLeave">
+					<AccordionTrigger>
+						<Row class="items-center justify-between w-full mr-4">
+							<Subtitle>
+								{{ team.name }}
+								{{ team.leader?.name ? `(${team.leader.name})` : "" }}
+							</Subtitle>
+							<EditTeamDialog v-if="canEdit" :team="team" @edit:team="refetchTeams">
+								<Button variant="ghost" size="icon" @click="e => e.preventDefault()">
+									<Pencil class="w-4" />
+								</Button>
+							</EditTeamDialog>
+						</Row>
+					</AccordionTrigger>
+					<TeamAccordionContent :team-id="team.id" :students="(students && students[team.id]) ?? null" />
+				</AccordionItem>
+			</Row>
+		</Accordion>
+	</Column>
 </template>

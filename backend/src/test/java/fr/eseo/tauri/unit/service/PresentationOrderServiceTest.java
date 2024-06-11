@@ -13,11 +13,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Nested
@@ -73,6 +73,93 @@ class PresentationOrderServiceTest {
         presentationOrderService.deleteAllPresentationOrdersByProject(projectId);
 
         verify(presentationOrderRepository, times(1)).deleteAllByProject(projectId);
+    }
+
+    @Test
+    void updatePresentationOrderShouldUpdateValueWhenIdExistsAndValueIsProvided() {
+        Integer id = 1;
+        PresentationOrder existingPresentationOrder = new PresentationOrder();
+        PresentationOrder updatedPresentationOrder = new PresentationOrder();
+        updatedPresentationOrder.value(1);
+
+        when(presentationOrderRepository.findById(id)).thenReturn(Optional.of(existingPresentationOrder));
+
+        presentationOrderService.updatePresentationOrder(id, updatedPresentationOrder);
+
+        assertEquals(updatedPresentationOrder.value(), existingPresentationOrder.value());
+        verify(presentationOrderRepository, times(1)).save(existingPresentationOrder);
+    }
+
+    @Test
+    void updatePresentationOrderShouldNotUpdateValueWhenIdExistsAndValueIsNotProvided() {
+        Integer id = 1;
+        PresentationOrder existingPresentationOrder = new PresentationOrder();
+        existingPresentationOrder.value(1);
+        PresentationOrder updatedPresentationOrder = new PresentationOrder();
+
+        when(presentationOrderRepository.findById(id)).thenReturn(Optional.of(existingPresentationOrder));
+
+        presentationOrderService.updatePresentationOrder(id, updatedPresentationOrder);
+
+        assertEquals(1, existingPresentationOrder.value());
+        verify(presentationOrderRepository, times(1)).save(existingPresentationOrder);
+    }
+
+    @Test
+    void updatePresentationOrderShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        Integer id = 1;
+        PresentationOrder updatedPresentationOrder = new PresentationOrder();
+
+        when(presentationOrderRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> presentationOrderService.updatePresentationOrder(id, updatedPresentationOrder));
+    }
+
+    @Test
+    void deletePresentationOrderShouldDeleteOrderWhenIdExists() {
+        Integer id = 1;
+        PresentationOrder existingPresentationOrder = new PresentationOrder();
+
+        when(presentationOrderRepository.findById(id)).thenReturn(Optional.of(existingPresentationOrder));
+
+        presentationOrderService.deletePresentationOrder(id);
+
+        verify(presentationOrderRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deletePresentationOrderShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        Integer id = 1;
+
+        when(presentationOrderRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> presentationOrderService.deletePresentationOrder(id));
+    }
+
+    @Test
+    void getPresentationOrderByTeamIdAndSprintIdShouldReturnOrdersWhenTeamIdAndSprintIdExist() {
+        Integer teamId = 1;
+        Integer sprintId = 1;
+        List<PresentationOrder> presentationOrders = Arrays.asList(new PresentationOrder(), new PresentationOrder());
+
+        when(presentationOrderRepository.findByTeamIdAndSprintId(teamId, sprintId)).thenReturn(presentationOrders);
+
+        List<PresentationOrder> result = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(teamId, sprintId);
+
+        assertEquals(presentationOrders, result);
+    }
+
+    @Test
+    void getPresentationOrderByTeamIdAndSprintIdShouldReturnEmptyListWhenNoOrdersExist() {
+        Integer teamId = 1;
+        Integer sprintId = 1;
+        List<PresentationOrder> presentationOrders = Collections.emptyList();
+
+        when(presentationOrderRepository.findByTeamIdAndSprintId(teamId, sprintId)).thenReturn(presentationOrders);
+
+        List<PresentationOrder> result = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(teamId, sprintId);
+
+        assertTrue(result.isEmpty());
     }
 
 }

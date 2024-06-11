@@ -55,9 +55,9 @@ const displayStudentReportingButton = computed(() => currentPhase.value === "PRE
 			<DeleteTeamsDialog v-if="canCreate && displayAdminComposingButtons" @delete:teams="refetchTeams">
 				<Button variant="outline">Supprimer les équipes</Button>
 			</DeleteTeamsDialog>
-      <SeeReportsDialog v-if="canCreate && displayAdminComposingButtons">
-        <Button variant="outline">Voir les avis</Button>
-      </SeeReportsDialog>
+			<SeeReportsDialog v-if="canCreate && displayAdminComposingButtons">
+				<Button variant="outline">Voir les avis</Button>
+			</SeeReportsDialog>
 			<PrepublishDialog v-if="canCreate && displayAdminComposingButtons" @prepublish:teams="refetchCurrentPhase">
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
@@ -73,7 +73,8 @@ const displayStudentReportingButton = computed(() => currentPhase.value === "PRE
 			<SignalTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons">
 				<Button variant="outline">Signaler</Button>
 			</SignalTeamDialog>
-			<ValidTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons" @valid:teams="handleValidTeams">
+			<ValidTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons"
+				@valid:teams="handleValidTeams">
 				<Button variant="default">Valider</Button>
 			</ValidTeamDialog>
 		</Header>
@@ -81,11 +82,10 @@ const displayStudentReportingButton = computed(() => currentPhase.value === "PRE
 		<NotAuthorized v-if="!authorized" />
 		<Loading v-else-if="loading" />
 		<RedirectImportStudents v-else-if="canCreate && nbStudents === 0" />
-		<GenerateTeams
-			v-else-if="canCreate && nbStudents && nbStudents > 0 && nbTeams === 0"
-			@generate:teams="refetchTeams" :nb-students="nbStudents"
-		/>
-		<TeamAccordion v-else-if="canCreate || (canPreview && nbTeams && nbTeams > 0) || currentPhase !== 'COMPOSING'" />
+		<GenerateTeams v-else-if="canCreate && nbStudents && nbStudents > 0 && nbTeams === 0"
+			@generate:teams="refetchTeams" :nb-students="nbStudents" />
+		<TeamAccordion
+			v-else-if="canCreate || (canPreview && nbTeams && nbTeams > 0) || currentPhase !== 'COMPOSING'" />
 		<TeamsNotCreated v-else-if="!canCreate && currentPhase === 'COMPOSING'" />
 		<NotAuthorized v-else />
 	</SidebarTemplate>

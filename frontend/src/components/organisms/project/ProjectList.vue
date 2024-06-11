@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useMutation } from '@tanstack/vue-query'
-import { createToast } from '@/utils/toast'
-import { Trash } from 'lucide-vue-next'
-import { deleteProject } from '@/services/project/project.service'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { type Project } from '@/types/project'
-import { Column } from '@/components/atoms/containers'
+import { ref } from "vue"
+import { useMutation } from "@tanstack/vue-query"
+import { createToast } from "@/utils/toast"
+import { Trash } from "lucide-vue-next"
+import { deleteProject } from "@/services/project/project.service"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { type Project } from "@/types/project"
+import { Column } from "@/components/atoms/containers"
 
-const props = defineProps<{
+defineProps<{
     projects: Array<Project>
 }>()
 
@@ -17,26 +17,26 @@ const emits = defineEmits(["delete:project"])
 const projectToDelete = ref<number | null>(null)
 const isDialogOpen = ref<boolean>(false)
 
-function openDelete(projectId: number) {
-    projectToDelete.value = projectId
-    isDialogOpen.value = true
+const openDelete = (projectId: number) => {
+	projectToDelete.value = projectId
+	isDialogOpen.value = true
 }
 
 const { mutate: deleteProjectMutate } = useMutation({
-    mutationKey: ['delete-project'],
-    mutationFn: async () => {
-        if (projectToDelete.value !== null) {
-            await deleteProject(projectToDelete.value)
-                .then(() => {
-                    createToast("Le projet a été supprimé.")
-                    isDialogOpen.value = false
-                    emits('delete:project')
-                })
-                .catch(() => {
-                    createToast("Erreur lors de la suppression du projet.")
-                })
-        }
-    },
+	mutationKey: ["delete-project"],
+	mutationFn: async() => {
+		if (projectToDelete.value !== null) {
+			await deleteProject(projectToDelete.value)
+				.then(() => {
+					createToast("Le projet a été supprimé.")
+					isDialogOpen.value = false
+					emits("delete:project")
+				})
+				.catch(() => {
+					createToast("Erreur lors de la suppression du projet.")
+				})
+		}
+	}
 })
 </script>
 

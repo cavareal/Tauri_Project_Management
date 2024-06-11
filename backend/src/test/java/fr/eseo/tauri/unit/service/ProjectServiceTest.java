@@ -1,8 +1,11 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
+import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.service.ProjectService;
 import org.junit.jupiter.api.*;
@@ -22,6 +25,9 @@ class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
+
+    @Mock
+    private GradeTypeRepository gradeTypeRepository;
 
     @InjectMocks
     private ProjectService projectService;
@@ -57,16 +63,6 @@ class ProjectServiceTest {
 
         assertEquals(projects, result);
     }
-
-    // TODO : je crois ce test marche pas dans la pipeline, psq projectService.createProject entraine la création de gradeType
-//    @Test
-//    void createProjectShouldCreateWhenAuthorized() {
-//        Project project = new Project();
-//
-//        projectService.createProject(project);
-//
-//        verify(projectRepository, times(1)).save(project);
-//    }
 
     @Test
     void updateProjectShouldUpdateWhenAuthorizedAndIdExists() {
@@ -113,42 +109,6 @@ class ProjectServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> projectService.deleteProjectById(1));
     }
 
-
-    @Test
-    void testGetProjectByIdShouldReturnProjectWhenAuthorizedAndIdExists() {
-        // Arrange
-        Project project = new Project();
-        when(projectRepository.findById(anyInt())).thenReturn(Optional.of(project));
-
-        // Act
-        Project result = projectService.getProjectById(1);
-
-        // Assert
-        assertEquals(project, result);
-    }
-
-    @Test
-    void testGetProjectByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
-        // Arrange
-        when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> projectService.getProjectById(1));
-    }
-
-    @Test
-    void testGetAllProjectsShouldReturnProjectsWhenAuthorized() {
-        // Arrange
-        List<Project> projects = new ArrayList<>();
-        when(projectRepository.findAll()).thenReturn(projects);
-
-        // Act
-        List<Project> result = projectService.getAllProjects();
-
-        // Assert
-        assertEquals(projects, result);
-    }
-
     @Test
     void getActualProjectShouldReturnProjectWhenExists() {
         Project project = new Project();
@@ -177,6 +137,7 @@ class ProjectServiceTest {
 
         verify(projectRepository, times(2)).save(any(Project.class));
     }
+
     @Test
     void setActualProjectShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
         when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
@@ -184,5 +145,32 @@ class ProjectServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> projectService.setActualProject(1));
     }
 
+    @Test
+    void createProjectShouldSaveProjectAndCreateGradeTypesWhenAuthorized() {
+        Project project = new Project();
+
+        projectService.createProject(project);
+
+        verify(projectRepository, times(1)).save(project);
+        verify(gradeTypeRepository, times(GradeTypeName.values().length - 1)).save(any(GradeType.class));
+    }
+
+    @Test
+    void createProjectShouldNotCreateAverageGradeType() {
+        Project project = new Project();
+
+        projectService.createProject(project);
+
+        verify(gradeTypeRepository, never()).save(argThat(gradeType -> gradeType.name().equals(GradeTypeName.AVERAGE.displayName())));
+    }
+
+    @Test
+    void createProjectShouldSetForGroupToFalseForIndividualPerformanceGradeType() {
+        Project project = new Project();
+
+        projectService.createProject(project);
+
+        verify(gradeTypeRepository).save(argThat(gradeType -> gradeType.name().equals(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName()) && !gradeType.forGroup()));
+    }
 
 }

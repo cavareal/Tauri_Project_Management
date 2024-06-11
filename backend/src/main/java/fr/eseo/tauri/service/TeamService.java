@@ -65,7 +65,8 @@ public class TeamService {
 
         // Create the teams
         for (int i = 0; i < nbTeams; i++) {
-            Team team = new Team("Équipe " + (i + 1), project);
+            Team team = new Team(project);
+            team.name("Équipe " + (i + 1));
             this.teamRepository.save(team);
             teams.add(team);
         }
@@ -76,7 +77,7 @@ public class TeamService {
     public void updateTeam(Integer id, Team updatedTeam) {
         Team team = getTeamById(id);
 
-        if (updatedTeam.name() != null) team.name(updatedTeam.name());
+        if (null != updatedTeam.name()) team.name(updatedTeam.name());
         if (updatedTeam.leaderId() != null) team.leader(userService.getUserById(updatedTeam.leaderId()));
 
         teamRepository.save(team);
@@ -138,7 +139,7 @@ public class TeamService {
      * Auto generate teams with students according to the given number of teams and the number of women per team.
      * FUTURE :  create teams with the same average grade
      */
-    public void generateTeams(Integer projectId, Project projectDetails) {
+    public void generateTeams(Integer projectId, Project projectDetails, boolean autoWomenRatio) {
         CustomLogger.info("TeamService.createTeams : Creating Teams");
 
         List<Student> women = this.studentRepository.findByGenderAndProjectId(Gender.WOMAN, projectId);
@@ -154,7 +155,7 @@ public class TeamService {
         }
         projectService.updateProject(projectId, projectDetails);
         List<Team> teams = this.createTeams(projectId, nbTeams);
-        this.fillTeams(teams, women, men, womenPerTeam, nbStudent, false, projectId);
+        this.fillTeams(teams, women, men, womenPerTeam, autoWomenRatio, projectId);
     }
 
     /**
@@ -164,50 +165,84 @@ public class TeamService {
      * @param men the list of men students
      * @param womenPerTeam the number of women per team
      */
-    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, Integer nbStudent, boolean autoRatio, Integer projectId) {
+    public void fillTeams(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam, boolean autoWomenRatio, Integer projectId) {
+        int nbTeams = teams.size();
+
+        List<Team> sortedTeams = teams;
+        int index = 0;
+
+        if (!autoWomenRatio && womenPerTeam != 0) {
+            assignWomenPerTeam(teams, women, men, womenPerTeam);
+
+            // re-order the teams by average grade
+            sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);
+
+            // find the next index
+            index = nbTeams * womenPerTeam;
+        }
+
+        // Assign the remaining students evenly to the teams
+        assignStudentsEvenly(women, men, projectId, index, sortedTeams);
+        CustomLogger.info("Teams have been filled with students");
+    }
+
+    /**
+     * Assign "womenPerTeam" women to the teams first then even the teams with men if needed
+     * @param teams the list of teams
+     * @param women the list of female students
+     * @param men   the list of male students
+     * @param womenPerTeam  the number of women to assign to every team
+     */
+    public void assignWomenPerTeam(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam) {
         int nbTeams = teams.size();
         int nbWomen = women.size();
+        int nbStudents = nbWomen + men.size();
 
         int index;
+        for (int i = 0; i < nbTeams; i++) {
+            for (int j = 0; j < womenPerTeam; j++) {
+                Student student;
+                Role role = new Role();
+                role.type(RoleType.TEAM_MEMBER);
+                index = i * womenPerTeam + j;
 
-        // Assign "womenPerTeam" women to the teams first then even the teams with men if needed
-        if (!autoRatio) {
-            for (int i = 0; i < nbTeams; i++) {
-                for (int j = 0; j < womenPerTeam; j++) {
-                    Student student;
-                    Role role = new Role();
-                    role.type(RoleType.TEAM_MEMBER);
-                    index = i * womenPerTeam + j;
-
-                    if (index < nbWomen) {
-                        student = women.get(index);
-                        student.team(teams.get(i));
-                        role.user(student);
-                        this.roleRepository.save(role);
-                        this.studentRepository.save(student);
-                    } else if (index < nbStudent) {
-                        student = men.get(index - nbWomen);
-                        student.team(teams.get(i));
-                        role.user(student);
-                        this.roleRepository.save(role);
-                        this.studentRepository.save(student);
-                    }
+                if (index < nbWomen) {
+                    student = women.get(index);
+                    student.team(teams.get(i));
+                    role.user(student);
+                    this.roleRepository.save(role);
+                    this.studentRepository.save(student);
+                } else if (index < nbStudents) {
+                    student = men.get(index - nbWomen);
+                    student.team(teams.get(i));
+                    role.user(student);
+                    this.roleRepository.save(role);
+                    this.studentRepository.save(student);
                 }
             }
         }
+    }
 
-        // re-order the teams by average grade
-        CustomLogger.info("Teams before sorting : " + teams);
-        List<Team>sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);
+    /**
+     * Assign the remaining students evenly to the teams
+     * @param women the list of female students
+     * @param men   the list of male students
+     * @param projectId the ID of the project
+     * @param index the index of the first student to assign
+     * @param sortedTeams the list of teams sorted by average grade
+     */
+    public void assignStudentsEvenly(List<Student> women, List<Student> men, Integer projectId, int index, List<Team> sortedTeams) {
+        int nbTeams = sortedTeams.size();
+        int nbWomen = women.size();
+        int nbStudent = nbWomen + men.size();
 
-        index = nbTeams * womenPerTeam;
-
-        // Assign the remaining students evenly to the teams
         for (int i = index; i < nbStudent; i++) {
-            if ((i - index) % nbTeams == 0) {
+            if (((i - index) % nbTeams == 0) && i != 0) {
                 sortedTeams = this.teamRepository.findAllOrderByAvgGradeOrderByAsc(projectId);
             }
-            
+
+            CustomLogger.info("Sorted teams : " + sortedTeams);
+
             Student student;
             Role role = new Role();
             role.type(RoleType.TEAM_MEMBER);
@@ -225,7 +260,6 @@ public class TeamService {
             this.roleRepository.save(role);
             this.studentRepository.save(student);
         }
-        CustomLogger.info("Teams have been filled with students");
     }
 
     public List<Comment> getFeedbacksByTeamAndSprint(Integer teamId, Integer sprintId) {

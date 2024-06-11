@@ -51,7 +51,28 @@ public class GradeService {
     }
 
     public void createGrade(Grade grade) {
+        checkForExistingGrade(grade);
+        setGradeAttributes(grade);
+        validateGrade(grade);
+        gradeRepository.save(grade);
+    }
 
+    public void checkForExistingGrade(Grade grade) {
+        var ratedGrades = gradeRepository.findAllByAuthorId(grade.authorId());
+        for (Grade ratedGrade : ratedGrades) {
+            if (isSameGrade(grade, ratedGrade)) {
+                throw new IllegalArgumentException("A grade with the same author, sprint, grade type, student and team already exists");
+            }
+        }
+    }
+
+    public boolean isSameGrade(Grade grade, Grade ratedGrade) {
+        return ratedGrade.sprint().id().equals(grade.sprintId())
+                && ratedGrade.gradeType().id().equals(grade.gradeTypeId())
+                && ((ratedGrade.student() != null && ratedGrade.student().id().equals(grade.studentId())) || (ratedGrade.team() != null && ratedGrade.team().id().equals(grade.teamId())));
+    }
+
+    private void setGradeAttributes(Grade grade) {
         if (grade.authorId() != null) grade.author(userService.getUserById(grade.authorId()));
         if (grade.sprintId() != null) grade.sprint(sprintService.getSprintById(grade.sprintId()));
         if (grade.gradeTypeId() != null) grade.gradeType(gradeTypeService.getGradeTypeById(grade.gradeTypeId()));
@@ -63,12 +84,12 @@ public class GradeService {
             grade.team(null);
             if (grade.studentId() != null) grade.student(studentService.getStudentById(grade.studentId()));
         }
+    }
 
+    public void validateGrade(Grade grade) {
         if ((grade.team() == null) == (grade.student() == null)) {
             throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
         }
-
-        gradeRepository.save(grade);
     }
 
     public void updateGrade(Integer id, Grade updatedGrade) {
@@ -242,7 +263,6 @@ public class GradeService {
 
     public Boolean getGradesConfirmation(Integer sprintId, Integer teamId, Integer projectId) {
         try {
-            // TODO check if team is ss's team
             List<Student> students = studentRepository.findByTeam(teamId);
             if (students.isEmpty()) {
                 return false;
@@ -288,6 +308,9 @@ public class GradeService {
         return gradeRepository.findAllByAuthorId(authorId);
     }
 
+    public List<Grade> getInduvidualGradesByTeam(Integer sprintId, Integer teamId){
+        return gradeRepository.findIndividualGradesByTeam(sprintId, teamId);
+    }
 }
 
 

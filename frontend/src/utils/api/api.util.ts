@@ -7,7 +7,6 @@ import { wait } from "@/utils/time"
 import type { SafeParseReturnType } from "zod"
 import { redirect } from "@/utils/router"
 
-
 const getApiUrl = () => {
 	let url = import.meta.env.VITE_TAURI_API_URL
 

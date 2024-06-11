@@ -147,4 +147,8 @@ public class GradeController {
         return ResponseEntity.ok(gradeService.setGradesConfirmation(sprintId, teamId, projectId));
     }
 
+    @GetMapping("/individual-grades-by-team/{sprintId}/{teamId}")
+    public List<Grade> getInduvidualGradesByTeam(@PathVariable Integer sprintId, @PathVariable Integer teamId) {
+        return ResponseEntity.ok(gradeService.getInduvidualGradesByTeam(sprintId, teamId)).getBody();
+    }
 }

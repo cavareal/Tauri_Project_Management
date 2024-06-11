@@ -32,6 +32,7 @@ public class Grade {
     private Float value;
 
     @JsonProperty
+    @Column(columnDefinition = "TEXT")
     private String comment;
 
     @ManyToOne
