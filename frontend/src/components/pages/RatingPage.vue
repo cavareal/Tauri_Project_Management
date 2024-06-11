@@ -9,6 +9,7 @@ import { hasPermission } from "@/services/user/user.service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import Rating from "@/components/organisms/Rate/Rating.vue"
 import { SprintSelect, TeamSelect } from "../molecules/select"
+import GradeNotSelected from "../organisms/Grade/GradeNotSelected.vue"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
@@ -18,7 +19,7 @@ const sprintId = ref<string | null>(null)
 <template>
 	<SidebarTemplate>
 		<NotAuthorized v-if="!hasPermission('RATING_PAGE')" />
-		<Column v-else class="gap-4">
+		<Column v-else class="gap-4 h-full">
 			<Header title="Évaluations">
 				<SprintSelect v-model="sprintId" />
 				<TeamSelect v-model="teamId" />
@@ -28,10 +29,7 @@ const sprintId = ref<string | null>(null)
 				<Rating :teamId="teamId" :sprintId="sprintId" />
 			</Column>
 
-            <Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
-				<ListChecks class="size-12 stroke-1 text-dark-blue" />
-                <p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer.</p>
-            </Column>
+            <GradeNotSelected v-else />
 		</Column>
 	</SidebarTemplate>
 </template>

@@ -11,7 +11,7 @@ import { PageSkeleton } from "@/components/atoms/skeletons"
 import { dateToCalendarDate } from "@/utils/date"
 import { hasPermission } from "@/services/user"
 import { Column } from "@/components/atoms/containers"
-import { AddSprint, SprintSection } from "@/components/organisms/sprints"
+import { AddSprint, SprintNotCreated, SprintSection } from "@/components/organisms/sprints"
 import { ActionSection } from "../molecules/action-section"
 
 const lastSprintOrder = ref<number>(0)
@@ -38,7 +38,7 @@ const canViewSprints = hasPermission("SPRINTS_PAGE")
 		<Header title="Sprints" />
 		<PageSkeleton v-if="isLoading || isFetching" />
 
-		<Column v-else-if="canViewSprints" class="gap-4">
+		<Column v-else-if="canViewSprints" class="gap-4 h-full">
 			<SprintSection v-for="sprint in sprints" :key="sprint.id" :can-edit-sprints="canEditSprints"
 				:sprint="sprint" @edit:sprint="refetchSprints" @delete:sprint="refetchSprints"
 			/>
@@ -46,10 +46,7 @@ const canViewSprints = hasPermission("SPRINTS_PAGE")
 				:first-sprint="!sprints || sprints.length === 0" @add:sprint="refetchSprints"
 				:lastSprintOrder="lastSprintOrder" :lastSprintEndDate="lastSprintEndDate"
 			/>
-			<ActionSection v-else-if="!sprints || sprints.length === 0"
-				title="Aucun sprint n'a été créé pour le moment."
-				description="Attendez que le leader de l'option ou le leader du projet crée un sprint."
-			/>
+			<SprintNotCreated v-else-if="!sprints || sprints.length === 0" />
 		</Column>
 
 		<NotAuthorized v-else />
