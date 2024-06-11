@@ -120,4 +120,5 @@ class ValidationFlagServiceTest {
 
        assertDoesNotThrow(() -> validationFlagService.createValidationFlag(flagId, validationFlag));
     }
+
 }

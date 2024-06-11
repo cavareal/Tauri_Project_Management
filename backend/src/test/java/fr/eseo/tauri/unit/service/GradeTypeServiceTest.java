@@ -408,12 +408,16 @@ class GradeTypeServiceTest {
     @Test
     void deleteGradeScaleShouldDeleteWhenIdExists() {
         Integer id = 1;
+        GradeType gradeType = new GradeType();
+        gradeType.id(id);
+        gradeType.scaleTXTBlob(new byte[0]);
 
-        when(gradeTypeRepository.findById(id)).thenReturn(Optional.of(new GradeType()));
+        when(gradeTypeRepository.findById(anyInt())).thenReturn(Optional.of(gradeType));
 
         gradeTypeService.deleteGradeScale(id);
 
-        verify(gradeTypeRepository, times(1)).deleteById(id);
+        assertNull(gradeType.scaleTXTBlob());
+        verify(gradeTypeRepository, times(1)).save(gradeType);
     }
 
 }
