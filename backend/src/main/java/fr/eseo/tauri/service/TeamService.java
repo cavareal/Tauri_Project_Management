@@ -195,7 +195,7 @@ public class TeamService {
      * @param men   the list of male students
      * @param womenPerTeam  the number of women to assign to every team
      */
-    private void assignWomenPerTeam(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam) {
+    public void assignWomenPerTeam(List<Team> teams, List<Student> women, List<Student> men, Integer womenPerTeam) {
         int nbTeams = teams.size();
         int nbWomen = women.size();
         int nbStudents = nbWomen + men.size();
@@ -233,7 +233,7 @@ public class TeamService {
      * @param index the index of the first student to assign
      * @param sortedTeams the list of teams sorted by average grade
      */
-    private void assignStudentsEvenly(List<Student> women, List<Student> men, Integer projectId, int index, List<Team> sortedTeams) {
+    public void assignStudentsEvenly(List<Student> women, List<Student> men, Integer projectId, int index, List<Team> sortedTeams) {
         int nbTeams = sortedTeams.size();
         int nbWomen = women.size();
         int nbStudent = nbWomen + men.size();
