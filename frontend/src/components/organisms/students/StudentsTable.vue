@@ -19,8 +19,7 @@ import { Row } from "@/components/atoms/containers"
 
 const rowClass = cn("py-2 h-auto")
 
-const emitDelete = defineEmits(["delete:student"])
-const emitUpdate = defineEmits(["update:student"])
+const emit = defineEmits(["delete:student", "update:student"])
 
 defineProps<{
 	students: Student[] | null
@@ -68,10 +67,10 @@ defineProps<{
 					</TableCell>
 					<TableCell :class="rowClass">
 						<Row>
-							<EditStudentDialog @update:student="emitUpdate('update:student')" :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')">
+							<EditStudentDialog @update:student="emit('update:student')" :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')">
 								<Button><Pencil class="stroke-gray-600 mr-2 h-4 w-4"/></Button>
 							</EditStudentDialog>
-							<DeleteStudentDialog :student="student" @delete:student="emitDelete('delete:student')">
+							<DeleteStudentDialog :student="student" @delete:student="emit('delete:student')">
 								<Button><Trash2 class="stroke-gray-600 mr-2 h-4 w-4"/></Button>
 							</DeleteStudentDialog>
 						</Row>
