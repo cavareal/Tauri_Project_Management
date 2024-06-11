@@ -2,13 +2,34 @@
 
 import { SidebarTemplate } from "@/components/templates"
 import { Header } from "@/components/molecules/header"
-import { Text } from "@/components/atoms/texts"
+import { AddGradeScale, GradeScaleSection } from "@/components/organisms/grade-scales"
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
+import { getAllUnimportedGradeTypes } from "@/services/grade-type"
+import { hasPermission } from "@/services/user"
+import { Column } from "../atoms/containers"
+import { NotAuthorized } from "../organisms/errors"
+
+const queryClient = useQueryClient()
+
+const { data: gradeTypes, refetch } = useQuery({
+	queryKey: ["grade-types-with-scale"],
+	queryFn: async() => {
+		const gradeTypes = await getAllUnimportedGradeTypes()
+		void queryClient.invalidateQueries({ queryKey: ["grade-types-without-scale"] })
+		return gradeTypes.filter(g => g.scaleTXTBlob !== null && g.scaleTXTBlob !== undefined)
+	}
+})
 
 </script>
 
 <template>
 	<SidebarTemplate>
 		<Header title="Barèmes" />
-		<Text>Ça arrive fort</Text>
+		<Column v-if="hasPermission('MANAGE_GRADE_SCALE')" class="gap-4">
+			<GradeScaleSection v-for="gradeType in gradeTypes" :key="gradeType.id" :gradeType="gradeType"
+				@delete:grade-scale="refetch" />
+			<AddGradeScale @add:grade-scale="refetch" />
+		</Column>
+		<NotAuthorized v-else />
 	</SidebarTemplate>
 </template>
