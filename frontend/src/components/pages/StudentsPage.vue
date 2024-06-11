@@ -46,7 +46,7 @@ const canExport = hasPermission("EXPORT_STUDENT_LIST") && hasPermission("EXPORT_
 			<ExportStudents v-if="displayButtons && canExport">
 				<Button variant="outline">Exporter</Button>
 			</ExportStudents>
-			<AddStudentDialog v-if="displayButtons && canExport" >
+			<AddStudentDialog v-if="displayButtons && canExport" @add:student="refetch">
 				<Button variant="default">Ajouter un étudiant</Button>
 			</AddStudentDialog>
 		</Header>

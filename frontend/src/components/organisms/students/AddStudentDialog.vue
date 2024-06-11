@@ -24,6 +24,7 @@ const lastName = ref("")
 const firstName = ref("")
 let fullName = ref("")
 const bachelor = ref(false)
+const emits = defineEmits(["add:student"])
 
 
 const DIALOG_TITLE = "Ajout d'un étudiant"
@@ -50,6 +51,7 @@ const { mutate: addStudent, isPending, error } = useMutation({ mutationKey: ["ad
 		.then(() => gendered.value = "")
 		.then(() => grade.value = "")
 		.then(() => bachelor.value = false)
+		.then(() => emits("add:student"))
 		.then(() => createToast("L'étudiant a bien été ajouté."))
 		.then(() => open.value = false)
 } })
