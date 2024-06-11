@@ -55,8 +55,6 @@ const updateGrades = async() => {
 		let filteredFeedback = studentComments.value?.filter(comment => comment.feedback && comment.student.id === teamStudents.value[i].id)
 		comments.value[i] = (filteredComment && filteredComment.length > 0) ? filteredComment[0].content : ""
 		feedbacks.value[i] = (filteredFeedback && filteredFeedback.length > 0) ? filteredFeedback[0].content : ""
-		//comments.value[i] = studentComments.value?.filter(comment => !comment.feedback && comment.student.id === teamStudents.value[i].id)[0].content ?? ""
-		//feedbacks.value[i] = studentComments.value?.filter(comment => comment.feedback && comment.student.id === teamStudents.value[i].id)[0].content ?? ""
 		oldValues.value = {	grades: JSON.parse(JSON.stringify(grades.value)), comments: JSON.parse(JSON.stringify(comments.value)), feedbacks: JSON.parse(JSON.stringify(feedbacks.value)) }
 	}
 	console.log(grades.value)
@@ -94,22 +92,27 @@ const checkGradeScaleUploaded = async() => {
 
 const { mutate, isPending, isError } = useMutation({
 	mutationFn: async(index: number) => {
-		if (grades.value[index] === oldValues.value.grades[index] && comments.value[index] === oldValues.value.comments[index]) {
+		status.value = "LOADING"
+
+		if (grades.value[index] !== oldValues.value.grades[index]) {
+			await createOrUpdateGrade({
+				value: Number(grades.value[index]),
+				comment: null,
+				sprintId: Number(props.sprintId),
+				teamId: null,
+				studentId: teamStudents.value[index].id,
+				gradeTypeName: props.gradeTypeName
+			})
+		} else if (comments.value[index] !== oldValues.value.comments[index]) {
+			return
+		} else if (feedbacks.value[index] !== oldValues.value.feedbacks[index]) {
 			return
 		}
 
-		status.value = "LOADING"
-		await createOrUpdateGrade({
-			value: Number(grades.value[index]),
-			comment: null,
-			sprintId: Number(props.sprintId),
-			teamId: null,
-			studentId: teamStudents.value[index].id,
-			gradeTypeName: props.gradeTypeName
-		})
-			.then(() => createToast("La note a bien été enregistrée."))
-			.then(() => oldValues.value = { grades: JSON.parse(JSON.stringify(grades.value)), comments: JSON.parse(JSON.stringify(comments.value)), feedbacks: JSON.parse(JSON.stringify(feedbacks.value)) })
-			.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
+
+		createToast("La note a bien été enregistrée.")
+		oldValues.value = { grades: JSON.parse(JSON.stringify(grades.value)), comments: JSON.parse(JSON.stringify(comments.value)), feedbacks: JSON.parse(JSON.stringify(feedbacks.value)) }
+		queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] })
 	}
 })
 

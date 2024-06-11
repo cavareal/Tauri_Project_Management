@@ -134,8 +134,8 @@ class ValidationFlagServiceTest {
 
 
         when(userService.getRolesByUserId(flag.author().id())).thenReturn(Collections.singletonList(RoleType.OPTION_STUDENT));
-        when(teamService.getStudentsByTeamId(flag.firstStudent().team().id())).thenReturn(Collections.emptyList());
-        when(teamService.getStudentsByTeamId(flag.secondStudent().team().id())).thenReturn(Collections.emptyList());
+        when(teamService.getStudentsByTeamId(flag.firstStudent().team().id(), false)).thenReturn(Collections.emptyList());
+        when(teamService.getStudentsByTeamId(flag.secondStudent().team().id(), false)).thenReturn(Collections.emptyList());
 
         validationFlagService.createValidationFlags(flag);
 
