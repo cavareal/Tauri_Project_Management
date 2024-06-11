@@ -3,16 +3,17 @@ package fr.eseo.tauri.service;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.ProjectRepository;
-import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
 import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.security.JwtTokenUtil;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 
@@ -20,24 +21,30 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final ProjectRepository projectRepository;
+
+    @Value("${app.log.with.ldap}")
+    private String prodProperty;
 
     private final static String WRONG_CREDENTIALS = "Wrong credentials";
 
     public AuthResponse login(String email, String password) {
         try {
-//            Authentication authentication = authenticate(email, password);  // Auth with LDAP
-//            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User user;
 
-//          Check if user in DB
-//            User user = userRepository.findByEmail(userDetails.getUsername())
-            User user = userRepository.findByEmail(email)
-                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS)); // User exist in LDAP, but not in DB
+            if(prodProperty.equals("true")){       // Auth with LDAP
+                Authentication authentication = authenticate(email, password);
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+                user = userRepository.findByEmail(userDetails.getUsername())
+                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
+            } else {                               // Auth without LDAP for dev mode
+                user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
+            }
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
             CustomLogger.info("Access token generated for user " + user.id() + " : " + accessToken);
@@ -49,8 +56,10 @@ public class AuthService {
     }
 
     public Authentication authenticate(String email, String password) {
+        String safeEmail = StringEscapeUtils.escapeHtml4(email);
+        String safePassword = StringEscapeUtils.escapeHtml4(password);
         return authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
+                new UsernamePasswordAuthenticationToken(safeEmail, safePassword)
         );
     }
 }

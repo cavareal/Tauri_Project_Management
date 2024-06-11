@@ -90,7 +90,7 @@ java-build:
     - cd backend
     - mkdir -p src/main/resources/static
     - cp -r ../frontend/dist/* src/main/resources/static/
-    - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -Pprod -x test
+    - gradle --no-daemon clean setLoginDb -DdatabaseUsername=$DATABASE_USERNAME -DdatabasePassword=$DATABASE_PASSWORD build -Dprod=true -x test
   retry: 2
   dependencies:    
     - vuejs-build-dev
@@ -166,7 +166,7 @@ quality-prod:
 ################
 push-dev:
   stage: deploy-server
-  image: charlo56/pgl-ssh-image:latest    # ESEO Firewall block curl or fetech command to install openssh in an image. So i use docker image with openssh installed
+  image: charlo56/pgl-ssh-image:latest
   dependencies:
     - vuejs-build-dev
     - java-build
@@ -175,13 +175,13 @@ push-dev:
     - echo "$SSH_PRIVATE_KEY_DEV" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - ssh-keyscan $SERVER_IP_DEV >> ~/.ssh/known_hosts
+    - ssh-keyscan -p $SSH_PORT $SERVER_IP_DEV >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
-    - ssh $SSH_USER@$SERVER_IP_DEV "if [ -f /srv/tomcat10/webapps/tauri.war ]; then rm -f /srv/tomcat10/webapps/tauri.war; fi"
-    - ssh $SSH_USER@$SERVER_IP_DEV "if [ -d /srv/tomcat10/webapps/tauri/ ]; then rm -rf /srv/tomcat10/webapps/tauri/; fi"
-    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_DEV:/srv/tomcat10/webapps
+    - ssh -p $SSH_PORT $SSH_USER@$SERVER_IP_DEV "if [ -f /srv/tomcat10/webapps/tauri.war ]; then rm -f /srv/tomcat10/webapps/tauri.war; fi"
+    - ssh -p $SSH_PORT $SSH_USER@$SERVER_IP_DEV "if [ -d /srv/tomcat10/webapps/tauri/ ]; then rm -rf /srv/tomcat10/webapps/tauri/; fi"
+    - scp -P $SSH_PORT -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_DEV:/srv/tomcat10/webapps
   retry: 2
   only:
     - dev
@@ -191,7 +191,7 @@ push-dev:
 #################
 push-prod:
   stage: deploy-server
-  image: charlo56/pgl-ssh-image:latest    # ESEO Firewall block curl or fetch command to install openssh in an image. So i use docker image with openssh pre-installed
+  image: charlo56/pgl-ssh-image:latest
   dependencies:
     - vuejs-build-prod
     - java-build
@@ -200,13 +200,13 @@ push-prod:
     - echo "$SSH_PRIVATE_KEY_PROD" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - ssh-keyscan $SERVER_IP_PROD >> ~/.ssh/known_hosts
+    - ssh-keyscan -p $SSH_PORT $SERVER_IP_PROD >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
     - mv backend/build/libs/tauri-0.0.1-SNAPSHOT-plain.war backend/build/libs/tauri.war
-    - ssh $SSH_USER@$SERVER_IP_PROD "if [ -f /srv/tomcat10/webapps/tauri.war ]; then rm -f /srv/tomcat10/webapps/tauri.war; fi"
-    - ssh $SSH_USER@$SERVER_IP_PROD "if [ -d /srv/tomcat10/webapps/tauri/ ]; then rm -rf /srv/tomcat10/webapps/tauri/; fi"
-    - scp -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_PROD:/srv/tomcat10/webapps
+    - ssh -p $SSH_PORT $SSH_USER@$SERVER_IP_PROD "if [ -f /srv/tomcat10/webapps/tauri.war ]; then rm -f /srv/tomcat10/webapps/tauri.war; fi"
+    - ssh -p $SSH_PORT $SSH_USER@$SERVER_IP_PROD "if [ -d /srv/tomcat10/webapps/tauri/ ]; then rm -rf /srv/tomcat10/webapps/tauri/; fi"
+    - scp -P $SSH_PORT -o StrictHostKeyChecking=no backend/build/libs/tauri.war $SSH_USER@$SERVER_IP_PROD:/srv/tomcat10/webapps
   retry: 2
   only:
     - main
