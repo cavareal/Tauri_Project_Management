@@ -2,12 +2,13 @@
 
 import { Button } from "@/components/ui/button"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
-import { ref } from "vue"
-import { useMutation } from "@tanstack/vue-query"
+import { ref, watch } from "vue"
+import { useMutation, useQuery } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { setGradesConfirmation } from "@/services/grade"
 import { createToast } from "@/utils/toast"
+import { getIndividualGradesByTeam } from "@/services/grade"
 
 const emits = defineEmits(["valid:individual-grades"])
 const open = ref(false)
@@ -16,6 +17,17 @@ const props = defineProps<{
 	selectedTeam?: string
 	selectedSprint?: string
 }>()
+
+
+// Get all the grades of the team, 
+const { data: induvialsGradeByTeam } = useQuery({ queryKey: ["individual-grade-ss"], queryFn: async () => {
+	await getIndividualGradesByTeam(Number(props.selectedSprint), Number(props.selectedTeam))
+}})
+
+const { data: bonusesByTeam } = useQuery({ queryKey: ["individual-grade-ss"], queryFn: async () => {
+	await getStudentBonusesByTeam(Number(props.selectedTeam))
+}})
+
 
 const { mutate, isPending, error } = useMutation({
 	mutationKey: ["individual-grades"], mutationFn: async() => {
@@ -40,7 +52,8 @@ const DIALOG_DESCRIPTION
 		</template>
 
 		<ErrorText v-if="error" class="mb-2">Une erreur est survenue.</ErrorText>
-
+		induvialsGradeByTeam : {{ induvialsGradeByTeam }}
+		bonusesByTeam : {{ bonusesByTeam }}
 		<template #footer>
 			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>

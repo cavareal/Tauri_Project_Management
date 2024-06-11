@@ -94,4 +94,10 @@ public class BonusController {
         return ResponseEntity.ok(responseMessage.deleteAllFromCurrentProject());
     }
 
+
+    @GetMapping("/teams/{teamId}")
+    public ResponseEntity<List<Bonus>> getStudentBonusesByTeam(@PathVariable Integer teamId) {
+        List<Bonus> bonuses = bonusService.getStudentBonusesByTeam(teamId);
+        return ResponseEntity.ok(bonuses);
+    }
 }

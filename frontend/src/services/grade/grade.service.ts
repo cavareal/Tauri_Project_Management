@@ -13,6 +13,7 @@ import { z } from "zod"
 import { getConnectedUser } from "@/services/user"
 import type { GradeTypeName } from "@/types/grade-type"
 import { getGradeTypeByName } from "@/services/grade-type"
+import type { $ } from "vitest/dist/reporters-yx5ZTtEV"
 
 
 export const getAllRatedGradesFromConnectedUser = async(): Promise<Grade[]> => {
@@ -300,6 +301,20 @@ export const getGradeByGradeTypeAndAuthorAndSprint = async(studentId: number, gr
 
 	if (response.status === "error") {
 		return null
+	}
+
+	return response.data
+}
+
+
+export const getIndividualGradesByTeam = async(sprintId: number, teamId: number): Promise<Grade[]> => {
+	const response = await queryAndValidate({
+		route: `grades/individual-grades-by-team/${sprintId}/${teamId}`,
+		responseSchema: GradeSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
 	}
 
 	return response.data

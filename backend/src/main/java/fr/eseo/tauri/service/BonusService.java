@@ -2,7 +2,10 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.BonusRepository;
+import fr.eseo.tauri.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ public class BonusService {
     private final BonusRepository bonusRepository;
     private final ValidationBonusService validationBonusService;
     private final UserService userService;
+    private final StudentRepository studentRepository;
 
     /**
      * Get a bonus by its id
@@ -81,5 +85,18 @@ public class BonusService {
     public void deleteAllBonusesByProject(Integer projectId) {
         bonusRepository.deleteAllByProject(projectId);
     }
+
+
+    public List<Bonus> getStudentBonusesByTeam(Integer teamId) {
+        List<Student> students = studentRepository.findAllByTeamId(teamId);
+        List <Bonus> bonuses = null;
+
+        for(Student student : students) {
+            bonuses.add(bonusRepository.findAllByStudent(student.id()));
+        }
+
+        return bonuses;
+    }
+
 
 }

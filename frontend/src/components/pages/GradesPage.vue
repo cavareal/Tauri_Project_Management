@@ -46,7 +46,7 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 		<Column v-else class="gap-4">
 			<Header title="Notes">
 				<ValidGradesDialog
-					v-if="teamId !== null && sprintId !== null && canConfirmOwnTeamGrade && !isGradesConfirmed && ssTeam?.id.toString() == teamId"
+					v-if="teamId !== null && sprintId !== null && canConfirmOwnTeamGrade && ssTeam?.id.toString() == teamId"
 					@valid:individual-grades="refetchGradesConfirmation" :selectedTeam="teamId"
 					:selectedSprint="sprintId">
 					<Button variant="default">Valider toutes les notes de l'équipe</Button>
