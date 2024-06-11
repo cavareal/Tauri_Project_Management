@@ -27,4 +27,3 @@ public interface BonusRepository extends JpaRepository<Bonus, Integer> {
     @Query("SELECT b FROM Bonus b WHERE b.author.id = :id")
     Bonus findAllByAuthorId(Integer id);
 }
-

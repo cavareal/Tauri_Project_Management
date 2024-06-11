@@ -2,6 +2,7 @@ package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.RoleType;
+import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.ValidationFlagRepository;
 import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.TeamService;
@@ -33,6 +34,9 @@ class ValidationFlagServiceTest {
 
     @Mock
     TeamService teamService;
+
+    @Mock
+    StudentRepository studentRepository;
 
     @InjectMocks
     ValidationFlagService validationFlagService;
@@ -119,6 +123,23 @@ class ValidationFlagServiceTest {
         when(userService.getUserById(authorId)).thenReturn(null);
 
        assertDoesNotThrow(() -> validationFlagService.createValidationFlag(flagId, validationFlag));
+    }
+
+    @Test
+    void createValidationFlagsShouldNotCreateFlagsWhenNoStudentsInTeams() {
+        Flag flag = new Flag().author(new User().id(1));
+        Student firstStudent = new Student().team(new Team().id(1));
+        Student secondStudent = new Student().team(new Team().id(2));
+        flag.firstStudent(firstStudent).secondStudent(secondStudent);
+
+
+        when(userService.getRolesByUserId(flag.author().id())).thenReturn(Collections.singletonList(RoleType.OPTION_STUDENT));
+        when(teamService.getStudentsByTeamId(flag.firstStudent().team().id())).thenReturn(Collections.emptyList());
+        when(teamService.getStudentsByTeamId(flag.secondStudent().team().id())).thenReturn(Collections.emptyList());
+
+        validationFlagService.createValidationFlags(flag);
+
+        verify(validationFlagRepository, times(0)).save(any(ValidationFlag.class));
     }
 
 }
