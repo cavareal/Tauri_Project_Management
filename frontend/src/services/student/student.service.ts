@@ -75,7 +75,7 @@ export const deleteAllStudents = async(): Promise<void> => {
 export const deleteStudent = async(id : number): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "DELETE",
-		route: `students/${id}`
+		route: `students/${id.toString()}`
 	})
 
 	if (response.status === "error") {

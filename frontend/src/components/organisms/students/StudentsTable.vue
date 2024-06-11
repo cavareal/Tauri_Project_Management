@@ -19,6 +19,8 @@ import { Row } from "@/components/atoms/containers"
 
 const rowClass = cn("py-2 h-auto")
 
+const emitDelete = defineEmits(["delete:student"])
+
 defineProps<{
 	students: Student[] | null
 	gradeTypes: GradeType[] | null
@@ -68,7 +70,7 @@ defineProps<{
 							<EditStudentDialog :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')">
 								<Button><Pencil class="stroke-gray-600 mr-2 h-4 w-4"/></Button>
 							</EditStudentDialog>
-							<DeleteStudentDialog :student="student">
+							<DeleteStudentDialog :student="student" @delete:student="emitDelete('delete:student')">
 								<Button><Trash2 class="stroke-gray-600 mr-2 h-4 w-4"/></Button>
 							</DeleteStudentDialog>
 						</Row>
