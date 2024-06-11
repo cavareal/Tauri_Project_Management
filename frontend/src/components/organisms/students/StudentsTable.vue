@@ -65,16 +65,14 @@ defineProps<{
 						</span>
 					</TableCell>
 					<TableCell :class="rowClass">
-						<Row>
-							<EditStudentDialog @update:student="emit('update:student')" :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')">
-								<Button><Pencil class="stroke-gray-600 mr-2 h-4 w-4"/></Button>
+						<Row class="items-center gap-1">
+							<EditStudentDialog @update:student="emit('update:student')" :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne') ?? null">
+								<Pencil class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors" />
 							</EditStudentDialog>
 							<DeleteStudentDialog :student="student" @delete:student="emit('delete:student')">
-								<Button><Trash2 class="stroke-gray-600 mr-2 h-4 w-4"/></Button>
+								<Trash2 class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors" />
 							</DeleteStudentDialog>
 						</Row>
-<!--						<UpdateDeleteMenu  />-->
-<!--						<UpdateDeleteMenu :student="student" :mark="Number(0)" />-->
 					</TableCell>
 				</TableRow>
 			</TableBody>
@@ -99,6 +97,6 @@ defineProps<{
 				</TableRow>
 			</TableBody>
 		</Table>
-		<Loading v-else />
+		<Loading class="min-h-24" v-else />
 	</div>
 </template>

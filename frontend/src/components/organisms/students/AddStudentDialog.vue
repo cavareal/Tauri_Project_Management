@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { Switch } from "@/components/ui/switch"
 import { createGrade } from "@/services/grade"
 import { getUserByName } from "@/services/user"
+import { Label } from "@/components/ui/label"
 
 const open = ref(false)
 const rowClass = cn("grid grid-cols-2 items-center mb-2 justify-between")

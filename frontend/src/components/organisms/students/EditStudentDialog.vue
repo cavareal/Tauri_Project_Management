@@ -12,19 +12,19 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/utils/style"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import type { Student } from "@/types/student"
+import type { Gender, Student } from "@/types/student"
 import type { Grade } from "@/types/grade"
 import { getUserByName } from "@/services/user"
 import { updateGrade } from "@/services/grade"
 
 const props = defineProps<{
 	student: Student
-	mark : Grade
+	mark: Grade | null
 }>()
 
 const open = ref(false)
 const rowClass = cn("grid grid-cols-2 items-center mb-2 justify-between")
-const gendered = ref(props.student.gender)
+const gendered = ref<Gender | "">(props.student.gender)
 const newGrade = ref("")
 let nameParts = props.student.name.split(" ")
 let firstName = nameParts.slice(1).join(" ")
@@ -39,11 +39,8 @@ const DIALOG_DESCRIPTION = "Vous pouvez modifier un étudiant en remplissant les
 
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["add-student"], mutationFn: async() => {
-	// await updateStudent(props.student.id.toString(), {
-	// 	name: fullName,
-	// 	gender: gendered.value,
-	// 	bachelor: bachelor.value
-	// })
+	if (!props.mark) return
+
 	await updateGrade(Number(props.mark.id), {
 		value: Number(newGrade.value),
 		teamId: null,
@@ -112,12 +109,12 @@ watch([lastName, firstName], () => {
 		<Row :class="rowClass">
 			<Label>Bachelor :</Label>
 			<div class="flex justify-end">
-				<Switch id="Bachelor" :checked="bachelor" @update:checked="value => bachelor = value" disabled/>
+				<Switch id="Bachelor" :checked="bachelor ?? false" @update:checked="value => bachelor = value" disabled/>
 			</div>
 		</Row>
 		<Row :class="rowClass">
 			<Label>Moyenne :</Label>
-			<Input  type="number" min="0" max="20"  @update:model-value="onGradeChange" v-model="props.mark.value"/>
+			<Input type="number" min="0" max="20" @update:model-value="onGradeChange" v-model="mark.value" />
 		</Row>
 
 		<template #footer>
