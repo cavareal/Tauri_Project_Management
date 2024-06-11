@@ -112,8 +112,9 @@ watch([lastName, firstName], () => {
 				<Switch id="Bachelor" :checked="bachelor ?? false" @update:checked="value => bachelor = value" disabled/>
 			</div>
 		</Row>
-		<Row :class="rowClass">
+		<Row :class="rowClass" v-if="mark">
 			<Label>Moyenne :</Label>
+			<!-- eslint-disable-next-line vue/no-mutating-props -->
 			<Input type="number" min="0" max="20" @update:model-value="onGradeChange" v-model="mark.value" />
 		</Row>
 
