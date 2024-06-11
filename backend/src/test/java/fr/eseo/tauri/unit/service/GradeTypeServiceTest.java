@@ -420,4 +420,69 @@ class GradeTypeServiceTest {
         verify(gradeTypeRepository, times(1)).save(gradeType);
     }
 
+    @Test
+    void updateGradeTypeShouldUpdateAllFieldsWhenAllFieldsAreNonNull() {
+        Integer id = 1;
+        Integer projectId = 2;
+        GradeType updatedGradeType = new GradeType();
+        updatedGradeType.name("New Name");
+        updatedGradeType.factor(2.0F);
+        updatedGradeType.forGroup(true);
+        updatedGradeType.imported(true);
+        updatedGradeType.project(new Project());
+
+        GradeType existingGradeType = new GradeType();
+        existingGradeType.name("Old Name");
+        existingGradeType.factor(1.0F);
+        existingGradeType.forGroup(false);
+        existingGradeType.imported(false);
+        existingGradeType.project(new Project());
+
+        when(gradeTypeRepository.findById(id)).thenReturn(Optional.of(existingGradeType));
+
+        gradeTypeService.updateGradeType(id, updatedGradeType, projectId);
+
+        assertEquals("New Name", existingGradeType.name());
+        assertEquals(2.0F, existingGradeType.factor());
+        assertTrue(existingGradeType.forGroup());
+        assertTrue(existingGradeType.imported());
+        assertNotNull(existingGradeType.project());
+        verify(gradeTypeRepository, times(1)).save(existingGradeType);
+        verify(gradeService, times(1)).updateImportedMean(projectId);
+    }
+
+    @Test
+    void updateGradeTypeShouldUpdateOnlyNonNullFields() {
+        Integer id = 1;
+        Integer projectId = 2;
+        GradeType updatedGradeType = new GradeType();
+        updatedGradeType.name("New Name");
+        updatedGradeType.factor(null); // should not update the existing factor
+        updatedGradeType.forGroup(null); // should not update the existing forGroup
+        updatedGradeType.imported(true);
+        updatedGradeType.scaleTXTBlob(new byte[0]); // should not update the existing scaleTXTBlob
+        updatedGradeType.project(null); // should not update the existing project
+
+        GradeType existingGradeType = new GradeType();
+        existingGradeType.name("Old Name");
+        existingGradeType.factor(1.0F);
+        existingGradeType.forGroup(false);
+        existingGradeType.imported(false);
+        existingGradeType.scaleTXTBlob(new byte[1]);
+        existingGradeType.project(new Project());
+
+        when(gradeTypeRepository.findById(id)).thenReturn(Optional.of(existingGradeType));
+
+        gradeTypeService.updateGradeType(id, updatedGradeType, projectId);
+
+        assertEquals("New Name", existingGradeType.name());
+        assertEquals(1.0F, existingGradeType.factor());
+        assertFalse(existingGradeType.forGroup());
+        assertTrue(existingGradeType.imported());
+        assertNotNull(existingGradeType.scaleTXTBlob());
+        assertNotNull(existingGradeType.project());
+        verify(gradeTypeRepository, times(1)).save(existingGradeType);
+        verify(gradeService, never()).updateImportedMean(projectId);
+    }
+
 }
