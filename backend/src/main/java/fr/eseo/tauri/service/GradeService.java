@@ -51,7 +51,7 @@ public class GradeService {
     }
 
     public void createGrade(Grade grade) {
-        checkForExistingGrade(grade);
+        //checkForExistingGrade(grade);
         setGradeAttributes(grade);
         validateGrade(grade);
         gradeRepository.save(grade);
@@ -297,6 +297,9 @@ public class GradeService {
                 grade.confirmed(true);
                 gradeRepository.save(grade);
             }
+
+            // Then valid bonus for each students
+
             return true;
         } catch (NullPointerException e) {
             CustomLogger.info("No student or no grades found");

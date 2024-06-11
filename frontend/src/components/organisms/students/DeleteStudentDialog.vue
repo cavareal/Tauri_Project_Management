@@ -1,31 +1,30 @@
 <script setup lang="ts">
 
 import { Button } from "@/components/ui/button"
-import { deleteSprint } from "@/services/sprint/sprint.service"
+import { deleteStudent } from "@/services/student/student.service"
 import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
 import { ref } from "vue"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { useMutation } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { createToast } from "@/utils/toast"
-
-const open = ref(false)
-const emits = defineEmits(["delete:sprint"])
+import type { Student } from "@/types/student"
 
 const props = defineProps<{
-    sprintId: number,
-	sprintOrder: number,
+	student: Student
 }>()
+const open = ref(false)
+const emits = defineEmits(["delete:student"])
 
-const { mutate, isPending, error } = useMutation({ mutationFn: async() => {
-	await deleteSprint(props.sprintId)
+const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-students"], mutationFn: async() => {
+	await deleteStudent(props.student.id)
 		.then(() => open.value = false)
-		.then(() => emits("delete:sprint"))
-		.then(() => createToast(`Le sprint ${props.sprintOrder} a bien été supprimé.`))
+		.then(() => emits("delete:student"))
+		.then(() => createToast("L'étudiant a été supprimé."))
 } })
 
-const DIALOG_TITLE = "Supprimer un sprint"
-const DIALOG_DESCRIPTION = `Êtes-vous bien sûr de supprimer le sprint ${props.sprintOrder} ?`
+const DIALOG_TITLE = "Supprimer un étudiant"
+const DIALOG_DESCRIPTION = "Êtes-vous bien sûr de vouloir supprimer " + props.student.name + " de la base de données ?"
 
 </script>
 
@@ -42,7 +41,7 @@ const DIALOG_DESCRIPTION = `Êtes-vous bien sûr de supprimer le sprint ${props.
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
 			<LoadingButton type="submit" @click="mutate" :loading="isPending" variant="destructive">
-				Confirmer
+				Supprimer
 			</LoadingButton>
 		</template>
 	</CustomDialog>

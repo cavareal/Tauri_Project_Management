@@ -1,14 +1,11 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import NotAuthorized from "@/components/organisms/errors/NotAuthorized.vue"
-import NotAutorized from "../organisms/errors/NotAuthorized.vue"
 import { ref } from "vue"
 import { hasPermission } from "@/services/user"
 import { useQuery } from "@tanstack/vue-query"
 import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
-import { ListChecks } from "lucide-vue-next"
 import Grade from "@/components/organisms/Grade/GradeTable.vue"
 import { Button } from "@/components/ui/button"
 import ValidGradesDialog from "@/components/organisms/Grade/ValidGradesDialog.vue"
@@ -18,6 +15,8 @@ import { SprintSelect, TeamSelect } from "../molecules/select"
 import { Cookies } from "@/utils/cookie"
 import { getTeamByUserId } from "@/services/team"
 import { TeamSelect2 } from "@/components/molecules/select"
+import { NotAuthorized } from "@/components/organisms/errors"
+import GradeNotSelected from "../organisms/Grade/GradeNotSelected.vue"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
@@ -29,7 +28,7 @@ const { data: ssTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()], que
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
-	queryFn: async () => {
+	queryFn: async() => {
 		if (sprintId.value === null || teamId.value === null || ssTeam.value?.id == undefined) return false
 		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value), ssTeam.value?.id)
 	}
@@ -43,7 +42,7 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 <template>
 	<SidebarTemplate>
 		<NotAuthorized v-if="!authorized" />
-		<Column v-else class="gap-4">
+		<Column v-else class="gap-4 h-full">
 			<Header title="Notes">
 				<ValidGradesDialog
 					v-if="teamId !== null && sprintId !== null && canConfirmOwnTeamGrade && ssTeam?.id.toString() == teamId"
@@ -63,10 +62,8 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 				<Grade v-if="authorized" :teamId="teamId ?? ''" :sprintId="sprintId ?? ''" :is-grades-confirmed="isGradesConfirmed ?? false" />
 				<NotAutorized v-else />
 			</Column>
-			<Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
-				<ListChecks class="size-12 stroke-1 text-dark-blue" />
-				<p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe.</p>
-			</Column>
+
+			<GradeNotSelected v-else />
 		</Column>
 	</SidebarTemplate>
 </template>

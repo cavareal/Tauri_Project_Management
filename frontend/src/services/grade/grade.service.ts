@@ -13,7 +13,6 @@ import { z } from "zod"
 import { getConnectedUser } from "@/services/user"
 import type { GradeTypeName } from "@/types/grade-type"
 import { getGradeTypeByName } from "@/services/grade-type"
-import type { $ } from "vitest/dist/reporters-yx5ZTtEV"
 
 const user = await getConnectedUser()
 

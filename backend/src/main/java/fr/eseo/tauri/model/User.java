@@ -27,6 +27,7 @@ public class User implements UserDetails {
 		this.password = password;
 		this.privateKey = privateKey;
 	}
+
 	public User(String email) {
 		this.email = email;
 	}
@@ -88,4 +89,5 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+
 }

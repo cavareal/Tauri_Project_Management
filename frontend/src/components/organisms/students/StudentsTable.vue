@@ -10,8 +10,15 @@ import type { Student } from "@/types/student"
 import type { Grade } from "@/types/grade"
 import { Loading } from "@/components/organisms/loading"
 import { extractNames } from "@/utils/string"
+import EditStudentDialog from "@/components/organisms/students/EditStudentDialog.vue"
+import { Trash2, Pencil  } from "lucide-vue-next"
+import DeleteStudentDialog from "@/components/organisms/students/DeleteStudentDialog.vue"
+import { Row } from "@/components/atoms/containers"
+
 
 const rowClass = cn("py-2 h-auto")
+
+const emit = defineEmits(["delete:student", "update:student"])
 
 defineProps<{
 	students: Student[] | null
@@ -34,9 +41,9 @@ defineProps<{
 						<span v-if="gradeType.name === 'Moyenne'">Moyenne</span>
 						<span v-else>{{ gradeType.name }} ({{ gradeType.factor }})</span>
 					</TableHead>
+					<TableHead :class="rowClass"></TableHead>
 				</TableRow>
 			</TableHeader>
-
 			<TableBody v-if="students" >
 				<TableRow v-for="student in students" :key="student.id">
 					<TableCell class="font-medium min-w-36" :class="rowClass">
@@ -57,6 +64,16 @@ defineProps<{
 							{{ grades?.find(grade => grade.student?.id === student.id && grade.gradeType.id === gradeType.id)?.value?.toPrecision(4) ?? "" }}
 						</span>
 					</TableCell>
+					<TableCell :class="rowClass">
+						<Row class="items-center gap-1">
+							<EditStudentDialog @update:student="emit('update:student')" :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne') ?? null">
+								<Pencil class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors" />
+							</EditStudentDialog>
+							<DeleteStudentDialog :student="student" @delete:student="emit('delete:student')">
+								<Trash2 class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors" />
+							</DeleteStudentDialog>
+						</Row>
+					</TableCell>
 				</TableRow>
 			</TableBody>
 
@@ -74,10 +91,12 @@ defineProps<{
 					<TableCell v-for="gradeType in gradeTypes" :key="gradeType.id" :class="rowClass">
 						<Skeleton class="w-5/6 h-5" />
 					</TableCell>
+					<TableCell :class="rowClass">
+						<Skeleton class="w-5/6 h-5" />
+					</TableCell>
 				</TableRow>
 			</TableBody>
 		</Table>
-
-		<Loading v-else />
+		<Loading class="min-h-24" v-else />
 	</div>
 </template>
