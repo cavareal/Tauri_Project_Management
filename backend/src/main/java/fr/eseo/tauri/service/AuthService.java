@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -45,8 +46,11 @@ public class AuthService {
 
                 user = userRepository.findByEmail(userDetails.getUsername())
                         .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
+                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
             } else {                               // Auth without LDAP for dev mode
                 user = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
+            }
                         .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
             }
 
