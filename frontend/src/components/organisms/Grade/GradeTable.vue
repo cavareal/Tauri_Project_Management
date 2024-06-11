@@ -13,12 +13,10 @@ import TeamGradeTable from "@/components/organisms/Grade/TeamGradeTable.vue"
 import FeedbacksAndCommentsView from "@/components/organisms/Grade/FeedbacksAndCommentsView.vue"
 import { Row } from "@/components/atoms/containers"
 
-const gradeConfirmed = cn("bg-green-100")
-const gradeNotConfirmed = cn("bg-red-100")
 const props = defineProps<{
 	teamId : string,
 	sprintId : string,
-	isGradesConfirmed: boolean,
+	isGradesConfirmed : boolean | undefined
 }>()
 
 let oldTeamId = ""

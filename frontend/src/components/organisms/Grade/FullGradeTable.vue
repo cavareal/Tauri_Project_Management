@@ -27,9 +27,13 @@ import {
 } from "@/services/grade"
 import { GradeTooltip } from "@/components/molecules/tooltip"
 import { getGradeFormula } from "@/types/grade-type"
+import { Cookies } from "@/utils/cookie"
 
 const rowClass = cn("py-2 h-auto mt-2 mb-2 ")
 const cellClass = cn("py-2 h-auto mt-2 mb-2 text-center")
+const gradeConfirmed = cn("bg-green-100")
+const gradeNotConfirmed = cn("bg-red-100")
+
 const props = defineProps<{
 	teamId : string,
 	sprintId : string,
@@ -37,7 +41,7 @@ const props = defineProps<{
 }>()
 
 const studentBonuses = ref<Bonus[][] | null>(null)
-
+const role = Cookies.getRole()
 let oldTeamId = ""
 
 const { data: teamStudents, ...queryTeamStudents } = useQuery({
@@ -167,14 +171,21 @@ watch(() => props.teamId, async() => {
 		<TableBody>
 			<TableRow v-for="(student, index) in teamStudents" :key="student.id">
 				<TableCell class="font-medium" :class="cn(cellClass, 'text-left')">{{student.name}}</TableCell>
-				<TableCell v-if="averageTeam" :class="cellClass" >{{averageTeam["Solution Technique"]}}</TableCell>
+				<TableCell v-if="averageTeam" :class="cellClass" >{{averageTeam["Solution Technique"]}} </TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Gestion de projet"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Contenu de la présentation"]}}</TableCell>
 				<TableCell v-if="totalGrade" :class="cellClass"> {{totalGrade}} </TableCell>
-				<TableCell v-if="studentBonuses" :class="cellClass">{{ studentBonuses[index][1].value}} </TableCell>
-				<TableCell v-if="studentBonuses" :class="cellClass">{{ studentBonuses[index][0].value }} </TableCell>
-				<TableCell v-if="studentBonuses" :class="cellClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
+				
+				<TableCell v-if="studentBonuses && role === 'OPTION_STUDENT' && !isGradesConfirmed" :class="cellClass">{{ studentBonuses[index][1].value}} </TableCell>
+				<TableCell v-else-if="studentBonuses" :class="cellClass">{{ studentBonuses[index][1].value}} </TableCell>
+
+				<TableCell v-if="studentBonuses && role === 'OPTION_STUDENT' && !isGradesConfirmed" :class="cellClass">{{ studentBonuses[index][0].value }} </TableCell>
+				<TableCell v-else-if="studentBonuses" :class="cellClass">{{ studentBonuses[index][0].value }} </TableCell>
+
+				<TableCell v-if="studentBonuses && role === 'OPTION_STUDENT' && !isGradesConfirmed" :class="cellClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
+				<TableCell v-else-if="studentBonuses " :class="cellClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
+
 				<TableCell v-if="averageTeam" :class="cellClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 				<TableCell v-if="averageStudents" :class="cellClass">{{averageStudents[student.id]}}</TableCell>
 				<TableCell v-if="totalIndividualGrades" :class="cellClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
