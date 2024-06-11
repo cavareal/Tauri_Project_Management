@@ -11,6 +11,11 @@ import type { Grade } from "@/types/grade"
 import { Loading } from "@/components/organisms/loading"
 import { extractNames } from "@/utils/string"
 import UpdateDeleteMenu from "@/components/molecules/menu/UpdateDeleteMenu.vue"
+import EditStudentDialog from "@/components/organisms/students/EditStudentDialog.vue"
+import { Ellipsis, Trash2, Pencil  } from "lucide-vue-next"
+import DeleteStudentDialog from "@/components/organisms/students/DeleteStudentDialog.vue"
+import { Row } from "@/components/atoms/containers"
+
 
 const rowClass = cn("py-2 h-auto")
 
@@ -59,7 +64,15 @@ defineProps<{
 						</span>
 					</TableCell>
 					<TableCell :class="rowClass">
-						<UpdateDeleteMenu :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')" />
+						<Row>
+							<EditStudentDialog :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')">
+								<Button><Pencil class="stroke-gray-600 mr-2 h-4 w-4"/></Button>
+							</EditStudentDialog>
+							<DeleteStudentDialog :student="student">
+								<Button><Trash2 class="stroke-gray-600 mr-2 h-4 w-4"/></Button>
+							</DeleteStudentDialog>
+						</Row>
+<!--						<UpdateDeleteMenu  />-->
 <!--						<UpdateDeleteMenu :student="student" :mark="Number(0)" />-->
 					</TableCell>
 				</TableRow>

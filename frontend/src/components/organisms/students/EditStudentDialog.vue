@@ -20,16 +20,16 @@ import { updateGrade } from "@/services/grade"
 
 const props = defineProps<{
 	student: Student
-	grade : Grade
+	mark : Grade
 }>()
 
 const open = ref(false)
 const rowClass = cn("grid grid-cols-2 items-center mb-2 justify-between")
-const gendered = ref("")
+const gendered = ref(props.student.gender)
 const newGrade = ref("")
 let nameParts = props.student.name.split(" ")
-let firstName = nameParts[0]
-let lastName = nameParts.slice(1).join(" ")
+let firstName = nameParts.slice(1).join(" ")
+let lastName = nameParts[0]
 let fullName = ref(props.student.name)
 const bachelor = ref(props.student.bachelor)
 
@@ -44,7 +44,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["add-student"],
 		gender: gendered.value,
 		bachelor: bachelor.value
 	})
-	await updateGrade(Number(props.grade.id), {
+	await updateGrade(Number(props.mark.id), {
 		value: Number(newGrade.value),
 		teamId: null,
 		sprintId: null,
@@ -82,7 +82,7 @@ watch([lastName, firstName], () => {
 <template>
 	<CustomDialog :title="DIALOG_TITLE" :description="DIALOG_DESCRIPTION" v-model:open="open">
 		<template #trigger>
-			<slot @click.stop/>
+			<slot/>
 		</template>
 
 		<ErrorText v-if="error">Une erreur est survenue.</ErrorText>
@@ -116,7 +116,7 @@ watch([lastName, firstName], () => {
 		</Row>
 		<Row :class="rowClass">
 			<Label>Moyenne :</Label>
-			<Input  type="number" min="0" max="20"  @update:model-value="onGradeChange"/>
+			<Input  type="number" min="0" max="20"  @update:model-value="onGradeChange" v-model="props.mark.value"/>
 		</Row>
 
 		<template #footer>
@@ -124,7 +124,7 @@ watch([lastName, firstName], () => {
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
 			<LoadingButton type="submit" @click="mutate" :loading="isPending">
-				Ajouter
+				Modifier
 			</LoadingButton>
 		</template>
 	</CustomDialog>

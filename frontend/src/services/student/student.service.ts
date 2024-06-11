@@ -72,6 +72,17 @@ export const deleteAllStudents = async(): Promise<void> => {
 	}
 }
 
+export const deleteStudent = async(id : number): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "DELETE",
+		route: `students/${id}`
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
 export const createStudent = async(body: Omit<CreateStudent, "privateKey" | "email" | "password">): Promise<void> => {
 	const currentProjectId = Cookies.getProjectId()
 	const response = await mutateAndValidate({
