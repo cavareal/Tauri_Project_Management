@@ -59,3 +59,16 @@ export const getStudentBonuses = async(studentId: number, sprintId: string): Pro
 
 	return response.data
 }
+
+export const getValidationBonusesByTeam = async(teamId: number): Promise<Bonus[]> => {
+	const response = await queryAndValidate({
+		route: `bonus/teams/${teamId}`,
+		responseSchema: z.array(BonusSchema),
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
