@@ -22,8 +22,8 @@ export const CreateFeedbackSchema = FeedbackSchema.omit({
 	sprint: true
 }).extend({
 	authorId: z.coerce.number(),
-	teamId: z.coerce.number(),
-	studentId: z.coerce.number(),
+	teamId: z.coerce.number().nullable(),
+	studentId: z.coerce.number().nullable(),
 	sprintId: z.coerce.number()
 })
 
