@@ -2,7 +2,6 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.User;
-import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.ProjectRepository;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.UserRepository;
@@ -10,9 +9,12 @@ import fr.eseo.tauri.security.AuthResponse;
 import fr.eseo.tauri.security.JwtTokenUtil;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +32,6 @@ public class AuthService {
 
     @Value("${app.log.with.ldap}")
     private String prodProperty;
-    
 
     private final static String WRONG_CREDENTIALS = "Wrong credentials";
 
@@ -43,10 +44,10 @@ public class AuthService {
                 UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
                 user = userRepository.findByEmail(userDetails.getUsername())
-                        .orElseThrow(() -> new SecurityException("Wrong credentials"));
+                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
             } else {                               // Auth without LDAP for dev mode
                 user = userRepository.findByEmail(email)
-                        .orElseThrow(() -> new SecurityException("Wrong credentials"));
+                        .orElseThrow(() -> new SecurityException(WRONG_CREDENTIALS));
             }
 
             String accessToken = jwtTokenUtil.generateAccessToken(user);
