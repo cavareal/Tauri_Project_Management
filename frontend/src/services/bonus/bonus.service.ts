@@ -62,7 +62,7 @@ export const getStudentBonuses = async(studentId: number, sprintId: string): Pro
 
 export const getValidationBonusesByTeam = async(teamId: number): Promise<Bonus[]> => {
 	const response = await queryAndValidate({
-		route: `bonus/teams/${teamId}`,
+		route: `bonuses/teams/${teamId}`,
 		responseSchema: z.array(BonusSchema),
 	})
 

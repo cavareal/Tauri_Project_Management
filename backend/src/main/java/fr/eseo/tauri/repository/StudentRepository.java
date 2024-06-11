@@ -50,6 +50,4 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 	@Query("SELECT COUNT(s) FROM Student s WHERE s.bachelor = true")
 	int countBachelor();
 
-    List<Student> findAllByTeamId(Integer teamId);
-
 }

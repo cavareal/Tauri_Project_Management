@@ -2,15 +2,15 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.util.CustomLogger;
+import fr.eseo.tauri.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +21,7 @@ public class BonusService {
     private final ValidationBonusService validationBonusService;
     private final UserService userService;
     private final StudentRepository studentRepository;
+    private final TeamRepository teamRepository;
 
     /**
      * Get a bonus by its id
@@ -90,17 +91,24 @@ public class BonusService {
 
 
     public List<Bonus> getValidationBonusesByTeam(Integer teamId) {
-        List <Student> students = studentRepository.findAllByTeamId(teamId);
-        List <Bonus> bonuses = null;
-
+        List <Bonus> bonuses = new ArrayList<>();
+        List <Student> students = studentRepository.findByTeam(teamId);
+        // Students bonuses
         for(Student student : students) {
-            CustomLogger.info("Student : " + student);
             User user = userService.getUserById(student.id());
-            CustomLogger.info("User auth: " + user);
-//            bonuses.add(bonusRepository.findAllByAuthorId(user.id()));
+            Bonus bonus = bonusRepository.findAllByAuthorId(user.id());
+            if (bonus != null){
+                bonuses.add(bonus);
+            }
         }
 
-        CustomLogger.info("Get all bonuses by team : " + bonuses);
+        // SS bonus
+        User leader = teamRepository.findLeaderByTeamId(teamId);
+        Bonus leaderBonus = bonusRepository.findAllByAuthorId(leader.id());
+        if (leaderBonus != null){
+            bonuses.add(leaderBonus);
+        }
+
         return bonuses;
     }
 
