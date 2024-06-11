@@ -53,7 +53,7 @@ const canExport = hasPermission("EXPORT_STUDENT_LIST") && hasPermission("EXPORT_
 
 		<NotAuthorized v-if="!authorized" />
 		<ImportStudents v-else-if="authorized && students && students.length === 0" @import:students="refetch" />
-		<StudentsTable v-else-if="authorized" :students="students ?? null" :grade-types="gradeTypes ?? null" :grades="grades ?? null" @delete:student="refetch"/>
+		<StudentsTable v-else-if="authorized" :students="students ?? null" :grade-types="gradeTypes ?? null" :grades="grades ?? null" @delete:student="refetch" @update:student="refetch"/>
 		<Error v-else />
 	</SidebarTemplate>
 </template>

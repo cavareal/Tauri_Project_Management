@@ -32,6 +32,7 @@ let firstName = nameParts.slice(1).join(" ")
 let lastName = nameParts[0]
 let fullName = ref(props.student.name)
 const bachelor = ref(props.student.bachelor)
+const emits = defineEmits(["update:student"])
 
 
 const DIALOG_TITLE = "Modification d'un étudiant"
@@ -56,6 +57,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["add-student"],
 		.then(() => firstName  = "")
 		.then(() => gendered.value = "")
 		.then(() => bachelor.value = false)
+		.then(() => emits("update:student"))
 		.then(() => createToast("L'étudiant a bien été modifié."))
 		.then(() => open.value = false)
 } })
