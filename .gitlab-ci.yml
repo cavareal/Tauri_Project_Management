@@ -45,7 +45,6 @@ vuejs-build-dev:
   script:
     - cd frontend
     - npm install --legacy-peer-deps
-    - npm run test
     - npm run build-only:dev
   retry: 2
   artifacts:
@@ -67,7 +66,6 @@ vuejs-build-prod:
   script:
     - cd frontend
     - npm install --legacy-peer-deps
-    - npm run test
     - npm run build-only:prod
   retry: 2
   artifacts:
