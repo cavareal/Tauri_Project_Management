@@ -2,7 +2,6 @@ package fr.eseo.tauri.seeder;
 
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.UserRepository;
-import fr.eseo.tauri.security.ApplicationSecurity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -20,8 +20,6 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	private static final String FAKER_LANGUAGE = "fr-FR";
 	private static final String[] HIBERNATE_MODES = {"create", "create-drop"};
 
-	private final Faker faker;
-
 	private final UserSeeder userSeeder;
 	private final GradeTypeSeeder gradeTypeSeeder;
 	private final PermissionSeeder permissionSeeder;
@@ -33,7 +31,6 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 
 	@Autowired
 	public SeedConfig(UserSeeder userSeeder, GradeTypeSeeder gradeTypeSeeder, PermissionSeeder permissionSeeder, RoleSeeder roleSeeder, ProjectSeeder projectSeeder) {
-		this.faker = new Faker(Locale.forLanguageTag(FAKER_LANGUAGE));
 
 		this.userSeeder = userSeeder;
 		this.gradeTypeSeeder = gradeTypeSeeder;
