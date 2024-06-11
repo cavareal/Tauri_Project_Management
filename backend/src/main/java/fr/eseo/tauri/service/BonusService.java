@@ -4,8 +4,10 @@ import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.Project;
 import fr.eseo.tauri.model.Student;
+import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
+import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -86,17 +88,6 @@ public class BonusService {
         bonusRepository.deleteAllByProject(projectId);
     }
 
-
-    public List<Bonus> getStudentBonusesByTeam(Integer teamId) {
-        List<Student> students = studentRepository.findAllByTeamId(teamId);
-        List <Bonus> bonuses = null;
-
-        for(Student student : students) {
-            bonuses.add(bonusRepository.findAllByStudent(student.id()));
-        }
-
-        return bonuses;
-    }
 
 
 }

@@ -9,6 +9,7 @@ import { LoadingButton } from "@/components/molecules/buttons"
 import { setGradesConfirmation } from "@/services/grade"
 import { createToast } from "@/utils/toast"
 import { getIndividualGradesByTeam } from "@/services/grade"
+import { getStudentBonusesByTeam } from "@/services/bonus"
 
 const emits = defineEmits(["valid:individual-grades"])
 const open = ref(false)
