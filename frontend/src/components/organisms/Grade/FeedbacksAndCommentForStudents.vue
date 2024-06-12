@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import IndividualComments from "@/components/organisms/Grade/IndividualComments.vue"
 import { useQuery } from "@tanstack/vue-query"
 import type { Feedback } from "@/types/feedback"
 import { getIndividualsCommentsBySprintIdAndTeamId } from "@/services/feedback"

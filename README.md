@@ -73,6 +73,17 @@ pnpm dev
 2. Ensuite, suivez les informations situées sur la section `Serveur`, de OpenProject, pour les différentes configurations à mettre en place pour déployer l'application
 
 
+## Pipeline Gitlab
+
+Le projet contient également une pipeline permettant un déploiement continue. Cette pipeline contient plusieurs stage : 
+  - build-frontend
+  - build-backend
+  - sonar
+  - deploy-server
+  - selenium
+
+
+
 ## Lancement des testes backend
 
 ### Via IntelliJ
@@ -87,4 +98,3 @@ pnpm dev
 2. Testes Selenium : gradlew seleniumTest
 
 
-## OUAI
