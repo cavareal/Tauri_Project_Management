@@ -40,13 +40,8 @@ class TeamServiceTest {
     private GradeRepository gradeRepository;
 
     @Mock
-    private SprintService sprintService;
-
-    @Mock
     private RoleRepository roleRepository;
 
-    @Mock
-    private PresentationOrderService presentationOrderService;
 
     @InjectMocks
     private TeamService teamService;

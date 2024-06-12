@@ -112,7 +112,7 @@ public class TeamService {
 
     public List<Student> getStudentsByTeamId(Integer id, Boolean ordered) {
         Team team = getTeamById(id);
-        if(ordered) {
+        if(Boolean.TRUE.equals(ordered)) {
             Sprint currentSprint = sprintService.getCurrentSprint(team.project().id());
             var students = studentRepository.findByTeam(id);
             if(currentSprint != null){

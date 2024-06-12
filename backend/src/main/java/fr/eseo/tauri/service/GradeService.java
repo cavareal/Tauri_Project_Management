@@ -294,7 +294,7 @@ public class GradeService {
                 GradeType gradeType = gradeTypeRepository.findByNameAndProjectId(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId);
 
                 List<Grade> grades = gradeRepository.findIsConfirmedBySprindAndStudents(sprintId, student.id(), gradeType.id());
-                if (grades.size() <= 0) {
+                if (grades.isEmpty()) {
                     throw new IllegalStateException("No grades found");
                 }
                 for (Grade grade : grades) {

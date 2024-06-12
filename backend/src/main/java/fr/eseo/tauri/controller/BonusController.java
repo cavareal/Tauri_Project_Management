@@ -103,7 +103,7 @@ public class BonusController {
     }
 
     @PatchMapping("/teams/{teamId}/{sprintId}/{userId}")
-    public ResponseEntity setValidationBonusesByTeam(@PathVariable Integer teamId, @PathVariable Integer sprintId, @PathVariable Integer userId) {
+    public ResponseEntity<String> setValidationBonusesByTeam(@PathVariable Integer teamId, @PathVariable Integer sprintId, @PathVariable Integer userId) {
         bonusService.setValidationBonusesByTeam(teamId, sprintId, userId);
         CustomLogger.info(responseMessage.update());
         return ResponseEntity.ok(responseMessage.update());
