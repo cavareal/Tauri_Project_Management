@@ -12,6 +12,7 @@ const emits = defineEmits(["read:notifications"])
 defineProps<{
 	title: string
 	description: string
+  link: string
 }>()
 
 const clickButton = () => {
@@ -30,7 +31,7 @@ const clickButton = () => {
 		</Row>
 		<Row class="mt-2.5 justify-end">
 			<SheetClose>
-				<LinkButton variant="outline" link="/teams">
+				<LinkButton variant="outline" :link="link">
 					<ExternalLink />Voir
 				</LinkButton>
 			</SheetClose>

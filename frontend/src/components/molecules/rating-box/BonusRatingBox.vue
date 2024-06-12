@@ -11,6 +11,7 @@ import { getStudentsByTeamId } from "@/services/student"
 import { getStudentBonus, updateBonus } from "@/services/bonus"
 import { createToast } from "@/utils/toast"
 import type { Student } from "@/types/student"
+import { sendNotificationsByTeam } from "@/services/notification"
 
 const props = defineProps<{
 	sprintId: string,
@@ -90,6 +91,7 @@ const { mutate, isPending, isError } = useMutation({
 			createToast("Les bonus ont bien été mis à jour.")
 			oldValues.value = { bonuses: JSON.parse(JSON.stringify(bonuses.value)), comments: JSON.parse(JSON.stringify(comments.value)) }
 			queryClient.invalidateQueries({ queryKey: ["student-bonuses", props.teamId, props.sprintId, props.limited] })
+			if (props.limited) sendNotificationsByTeam(`Les bonus pour le sprint ${props.sprintId} ont été modifiés`, Number(props.teamId), "BONUS_MALUS", true)
 		}
 	}
 })

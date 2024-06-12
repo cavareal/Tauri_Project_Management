@@ -9,6 +9,10 @@ import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
 import { useMutation } from "@tanstack/vue-query"
 import { createToast } from "@/utils/toast"
+import type { RoleType } from "@/types/role"
+import { Cookies } from "@/utils/cookie"
+import getRole = Cookies.getRole;
+import { sendNotificationsByRole } from "@/services/notification"
 
 const DIALOG_TITLE = "Importer les étudiants"
 const DIALOG_DESCRIPTION
@@ -19,6 +23,7 @@ const open = ref(false)
 const emits = defineEmits(["import:students"])
 
 const file = ref<File | null>(null)
+const oppositeRole: RoleType[] = getRole() === "OPTION_LEADER" ? ["PROJECT_LEADER"] : ["OPTION_LEADER"]
 
 const { error, isPending, mutate: upload } = useMutation({ mutationKey: ["import-students"], mutationFn: async() => {
 	if (!file.value) return
@@ -26,6 +31,7 @@ const { error, isPending, mutate: upload } = useMutation({ mutationKey: ["import
 		.then(() => open.value = false)
 		.then(() => emits("import:students"))
 		.then(() => createToast("Les étudiants ont été importés."))
+		.then(() => sendNotificationsByRole("Une liste d'étudiants a été importée.", oppositeRole, "IMPORT_STUDENTS"))
 } })
 
 </script>

@@ -8,7 +8,7 @@ import { updateProject } from "@/services/project/project.service"
 import { useMutation } from "@tanstack/vue-query"
 import { ref } from "vue"
 import { createToast } from "@/utils/toast"
-import { sendManyNotifications } from "@/services/notification"
+import { sendNotificationsByRole } from "@/services/notification"
 
 const emits = defineEmits(["prepublish:teams"])
 const open = ref(false)
@@ -18,7 +18,7 @@ const { mutate, error, isPending } = useMutation({ mutationKey: ["prepublish-tea
 		.then(() => open.value = false)
 		.then(() => emits("prepublish:teams"))
 		.then(() => createToast("La composition des équipes a été prépubliée."))
-		.then(() => sendManyNotifications("La composition des équipes a été prépubliée."))
+		.then(() => sendNotificationsByRole("La composition des équipes a été prépubliée.", ["SUPERVISING_STAFF", "TEAM_MEMBER"], "CREATE_TEAMS"))
 } })
 
 const DIALOG_TITLE = "Prépublier les équipes"

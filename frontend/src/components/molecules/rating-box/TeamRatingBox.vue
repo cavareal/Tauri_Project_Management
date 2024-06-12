@@ -75,8 +75,7 @@ const { mutate, isPending, isError } = useMutation({
 			.then(() => createToast("La note a bien été enregistrée."))
 			.then(() => oldValues.value = { grade: grade.value, comment: comment.value })
 			.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
-	}
-})
+	} })
 
 const onGradeChange = (value: string | number) => {
 	const parsedValue = Number(value)

@@ -95,7 +95,7 @@ describe("getStudentsByTeamId", () => {
 		vi.mocked(fetch).mockResolvedValueOnce(mockResponse)
 
 		// Call the function
-		const result = await getStudentsByTeamId(1)
+		const result = await getStudentsByTeamId(1, false)
 
 		// Assertions
 		expect(result).toEqual(students)
@@ -111,7 +111,7 @@ describe("getStudentsByTeamId", () => {
 		vi.mocked(fetch).mockResolvedValueOnce(mockResponse)
 
 		// Call the function
-		const promise = getStudentsByTeamId(1)
+		const promise = getStudentsByTeamId(1, false)
 
 		// Assertions
 		await expect(promise).rejects.toThrow("Failed to fetch GET teams/1/students: 500 Internal Server Error")

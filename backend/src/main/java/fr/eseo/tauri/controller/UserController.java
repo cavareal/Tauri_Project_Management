@@ -6,10 +6,7 @@ import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
-import fr.eseo.tauri.service.GradeService;
-import fr.eseo.tauri.service.NotificationService;
-import fr.eseo.tauri.service.RoleService;
-import fr.eseo.tauri.service.UserService;
+import fr.eseo.tauri.service.*;
 import fr.eseo.tauri.util.CustomLogger;
 import fr.eseo.tauri.util.ResponseMessage;
 import fr.eseo.tauri.util.valid.Create;
@@ -32,6 +29,7 @@ public class UserController {
 	private final ResponseMessage responseMessage = new ResponseMessage("user");
 	private final RoleService roleService;
 	private final GradeService gradeService;
+	private final TeamService teamService;
 	private final NotificationService notificationService;
 
 

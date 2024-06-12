@@ -30,7 +30,7 @@ public class Notification {
 
     @NotNull(groups = { Create.class }, message = "The type field is required")
     @Enumerated(EnumType.STRING)
-    @Column(name="type")
+    @Column(name="type", columnDefinition = "TEXT")
     @JsonProperty
     private NotificationType type;
 

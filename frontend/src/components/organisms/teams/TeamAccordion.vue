@@ -14,7 +14,7 @@ import { updateStudent, getStudentsByTeamId } from "@/services/student/student.s
 import { cn } from "@/utils/style"
 import { Loading } from "@/components/organisms/loading"
 import { hasPermission } from "@/services/user/user.service"
-import { sendManyNotifications } from "@/services/notification/notification.service"
+import { sendNotificationsByRole } from "@/services/notification/notification.service"
 import { getCurrentPhase } from "@/services/project/project.service"
 import { Subtitle } from "@/components/atoms/texts"
 import SwitchStudentsFlags from "@/components/organisms/teams/switch-student/SwitchStudentsFlags.vue"
@@ -71,7 +71,7 @@ const handleDrop = async(event: DragEvent, teamId: number) => {
 		.then(() => queryClient.invalidateQueries({ queryKey: ["average", originTeam.id] }))
 		.then(() => {
 			if (currentPhase.value === "COMPOSING") return
-			void sendManyNotifications(`L'étudiant ${student.name} a été déplacé de l'équipe "${originTeam.name}" à l'équipe "${teams.value?.find(t => t.id === teamId)?.name}".`)
+			void sendNotificationsByRole(`L'étudiant ${student.name} a été déplacé de l'équipe "${originTeam.name}" à l'équipe "${teams.value?.find(t => t.id === teamId)?.name}".`, ["SUPERVISING_STAFF", "TEAM_MEMBER"], "MOVE_STUDENT")
 		})
 }
 

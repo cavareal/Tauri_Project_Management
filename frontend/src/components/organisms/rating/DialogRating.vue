@@ -11,7 +11,7 @@ import { ref } from "vue"
 import { createGrade } from "@/services/grade/grade.service"
 import { createToast } from "@/utils/toast"
 import type { GradeType } from "@/types/grade-type"
-import { getGradeTypeByName } from "@/services/grade-type/grade-type.service"
+import { getGradeTypeByName } from "@/services/grade-type"
 
 let mark = ref("")
 const open = ref(false)
@@ -81,7 +81,3 @@ const handleNoteInput = (event: InputEvent) => {
 		</template>
 	</CustomDialog>
 </template>
-
-<style scoped>
-
-</style>

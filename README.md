@@ -2,11 +2,15 @@
 
 ## Présentation
 
-Ce projet à pour but de développer une application afin de permettre une gestion de projet, des équipes, des notes... pour la matière Projet Génie Logiciel !
+Ce projet a pour but de développer une application afin de permettre une gestion de projet, des équipes, des notes... pour la matière Projet Génie Logiciel !
 
 
 
 ## Lancement de l'application en local
+
+### BDD
+
+1. Avoir installé MariaDB ou MYSQL sur sa machine, sur le port 3306 de préférence
 
 ### Backend
 
@@ -64,7 +68,10 @@ pnpm dev
 
 ## Environnement des serveurs de dev/prod
 
-Un document dans le wiki de l'application OpenProject de l'équipe Nath Tauri, explique en détail toutes les étapes et installations afin d'obtenir le même environnement serveur. Section `Serveur/Préparation serveur`
+1. Un document dans le wiki de l'application OpenProject de l'équipe Nath Tauri, explique en détail toutes les étapes et installations afin d'obtenir le même environnement serveur. Section `Serveur/Préparation serveur`
+
+2. Ensuite, suivez les informations situées sur la section `Serveur`, de OpenProject, pour les différentes configurations à mettre en place pour déployer l'application
+
 
 ## Lancement des testes backend
 
@@ -78,3 +85,6 @@ Un document dans le wiki de l'application OpenProject de l'équipe Nath Tauri, e
 
 1. Testes unitaire : gradlew test
 2. Testes Selenium : gradlew seleniumTest
+
+
+## OUAI

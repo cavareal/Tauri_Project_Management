@@ -10,6 +10,7 @@ import { createToast } from "@/utils/toast"
 import { setGradesConfirmation, getIndividualGradesByTeam } from "@/services/grade/grade.service"
 import { setValidationBonusesByTeam, getValidationBonusesByTeam } from "@/services/bonus/bonus.service"
 import { Cookies } from "@/utils/cookie"
+import { sendNotificationsByTeam } from "@/services/notification"
 
 const emits = defineEmits(["valid:individual-grades", "valid:limited-bonus"])
 const open = ref(false)
@@ -67,6 +68,11 @@ const fetchValidationBonusesByTeam = async() => {
 				name: record.author.name
 			})
 		})
+
+		if(bonusMap[data[0].bonus.id].authorCount == 9){
+			sendNotificationsByTeam("Bonus limités validé par tous les membres de l'équipe", parseInt(selectedTeam.value), "BONUS_MALUS", false)
+		}
+
 		return Object.values(bonusMap)
 	}
 }

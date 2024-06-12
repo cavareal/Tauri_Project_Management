@@ -336,5 +336,4 @@ public class TeamService {
     private Double formattedResult(Double result) {
         return Double.parseDouble(String.format("%.2f", result).replace(',', '.'));
     }
-
 }
