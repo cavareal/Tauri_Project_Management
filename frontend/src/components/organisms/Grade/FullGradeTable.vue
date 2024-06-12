@@ -43,6 +43,7 @@ const props = defineProps<{
 const studentBonuses = ref<Bonus[][] | null>(null)
 const role = Cookies.getRole()
 let oldTeamId = ""
+let oldSprint = ""
 
 const { data: teamStudents, ...queryTeamStudents } = useQuery({
 	queryKey: ["team-students", props.teamId],
@@ -90,6 +91,18 @@ watch(() => props.teamId, async() => {
 		await queryTotalGrade.refetch()
 		await queryTotalIndividualGrades.refetch()
 		oldTeamId = props.teamId
+	}
+})
+
+watch(() => props.sprintId, async() => {
+	if (props.sprintId !== oldSprint) {
+		await queryTeamStudents.refetch()
+		await queryAverageTeam.refetch()
+		await queryAverageStudent.refetch()
+		await querySprintGrades.refetch()
+		await queryTotalGrade.refetch()
+		await queryTotalIndividualGrades.refetch()
+		oldSprint = props.sprintId
 	}
 })
 
@@ -189,7 +202,7 @@ watch(() => props.teamId, async() => {
 				<TableCell v-if="averageTeam" :class="cellClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 
 				<TableCell v-if="averageStudents" :class="cn(cellClass, isGradesConfirmed ? gradeNotConfirmed : gradeNotConfirmed )">{{averageStudents[student.id]}}</TableCell>
-				
+
 				<TableCell v-if="totalIndividualGrades" :class="cellClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
 				<TableCell v-if="sprintGrades" :class="cellClass"> {{sprintGrades[index]}} </TableCell>
 			</TableRow>
