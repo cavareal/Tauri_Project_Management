@@ -17,6 +17,7 @@ import { downloadGradeScaleTXT, getGradeTypeByName } from "@/services/grade-type
 import { Button } from "@/components/ui/button"
 import { getTeamStudentsCommentsBySprintAndAuthor, createComment, updateComment } from "@/services/feedback"
 import type { Feedback } from "@/types/feedback"
+import { sendNotificationsByTeam } from "@/services/notification"
 
 const props = defineProps<{
 	gradeTypeName: GradeTypeName,
@@ -105,8 +106,10 @@ const { mutate, isPending, isError } = useMutation({
 				await updateComment(studentComment.id, {
 					content: comments.value[index]
 				})
+					.then(() => sendNotificationsByTeam(`La note de "${props.gradeTypeName}" du sprint ${props.sprintId} a été modifiée.`, Number(props.teamId), "CREATE_GRADE", false))
 			} else {
 				await createComment(null, teamStudents.value[index].id, comments.value[index], props.sprintId, false)
+					.then(() => sendNotificationsByTeam(`La note de "${props.gradeTypeName}" du sprint ${props.sprintId} a été évaluée.`, Number(props.teamId), "CREATE_GRADE", false))
 			}
 		} else if (feedbacks.value[index] !== oldValues.value.feedbacks[index]) {
 			const studentFeedback = studentComments.value?.find(feedback => feedback.student.id === teamStudents.value[index].id && feedback.feedback)
@@ -114,8 +117,10 @@ const { mutate, isPending, isError } = useMutation({
 				await updateComment(studentFeedback.id, {
 					content: feedbacks.value[index]
 				})
+					.then(() => sendNotificationsByTeam(`La note de "${props.gradeTypeName}" du sprint ${props.sprintId} a été modifiée.`, Number(props.teamId), "CREATE_GRADE", false))
 			} else {
 				await createComment(null, teamStudents.value[index].id, feedbacks.value[index], props.sprintId, true)
+					.then(() => sendNotificationsByTeam(`La note de "${props.gradeTypeName}" du sprint ${props.sprintId} a été évaluée.`, Number(props.teamId), "CREATE_GRADE", false))
 			}
 		}
 		createToast("La note a bien été enregistrée.")

@@ -13,6 +13,7 @@ import { z } from "zod"
 import { getConnectedUser } from "@/services/user"
 import type { GradeTypeName } from "@/types/grade-type"
 import { getGradeTypeByName } from "@/services/grade-type"
+import { sendNotificationsByTeam } from "@/services/notification"
 
 
 export const getAllRatedGradesFromConnectedUser = async(): Promise<Grade[]> => {
@@ -79,8 +80,10 @@ export const createOrUpdateGrade = async(body: Omit<CreateGrade, "authorId" | "g
 
 	if (grade) {
 		await updateGrade(grade.id, body)
+			.then(() => sendNotificationsByTeam(`La note de "${body.gradeTypeName}" du sprint ${body.sprintId} a été modifiée.`, Number(body.teamId), "CREATE_GRADE", false))
 	} else {
 		await createGrade(body)
+			.then(() => sendNotificationsByTeam(`La note de "${body.gradeTypeName}" du sprint ${body.sprintId} a été évaluée.`, Number(body.teamId), "CREATE_GRADE", false))
 	}
 }
 
