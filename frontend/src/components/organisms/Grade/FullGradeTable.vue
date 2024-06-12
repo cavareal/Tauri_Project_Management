@@ -184,13 +184,13 @@ watch(() => props.sprintId, async() => {
 		<TableBody>
 			<TableRow v-for="(student, index) in teamStudents" :key="student.id">
 				<TableCell class="font-medium" :class="cn(cellClass, 'text-left')">{{student.name}}</TableCell>
-				<TableCell v-if="averageTeam" :class="cellClass" >{{averageTeam["Solution Technique"]}} </TableCell>
-				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Gestion de projet"]}}</TableCell>
-				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Conformité au sprint"]}}</TableCell>
-				<TableCell v-if="averageTeam" :class="cellClass">{{averageTeam["Contenu de la présentation"]}}</TableCell>
-				<TableCell v-if="totalGrade" :class="cellClass"> {{totalGrade}} </TableCell>
-				<TableCell v-if="studentBonuses" :class="cellClass">{{ studentBonuses[index][1].value}} </TableCell>
-				<TableCell v-if="studentBonuses" :class="cellClass">{{ studentBonuses[index][0].value }} </TableCell>
+				<TableCell :class="cellClass">{{averageTeam ? averageTeam["Solution Technique"] : ''}} </TableCell>
+				<TableCell :class="cellClass">{{averageTeam ? averageTeam["Gestion de projet"] : ''}}</TableCell>
+				<TableCell :class="cellClass">{{averageTeam ? averageTeam["Conformité au sprint"] : ''}}</TableCell>
+				<TableCell :class="cellClass">{{averageTeam ? averageTeam["Contenu de la présentation"] : ''}}</TableCell>
+				<TableCell :class="cellClass"> {{totalGrade ? totalGrade : ''}} </TableCell>
+				<TableCell :class="cellClass">{{ studentBonuses ? studentBonuses[index][1].value : ''}} </TableCell>
+				<TableCell :class="cellClass">{{ studentBonuses ? studentBonuses[index][0].value : '' }} </TableCell>
 				<TableCell v-if="studentBonuses " :class="cellClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 				<TableCell v-if="averageStudents" :class="cn(cellClass, isGradesConfirmed ? gradeConfirmed : gradeNotConfirmed )">{{ (role === 'OPTION_STUDENT' && !isGradesConfirmed) ? '' : averageStudents[student.id]?.toFixed(2)}}</TableCell>
