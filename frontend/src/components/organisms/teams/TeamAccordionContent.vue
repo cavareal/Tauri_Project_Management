@@ -13,6 +13,8 @@ import { cn } from "@/utils/style"
 import type { Student } from "@/types/student"
 import { GripVertical } from "lucide-vue-next"
 import { hasPermission } from "@/services/user"
+import { getAllImportedGrades } from "@/services/grade"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const props = defineProps<{
 	teamId: number
@@ -21,6 +23,8 @@ const props = defineProps<{
 
 const { data: criteria } = useQuery({ queryKey: ["criteria", props.teamId], queryFn: () => getCriteria(props.teamId) })
 const { data: average } = useQuery({ queryKey: ["average", props.teamId], queryFn: () => getTeamAverage(props.teamId) })
+const { data: grades } = useQuery({ queryKey: ["grades"], queryFn: getAllImportedGrades })
+
 
 const rowClass = cn("py-2 h-auto")
 
@@ -44,6 +48,7 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 					<TableHead :class="rowClass" class="min-w-28">Prénom</TableHead>
 					<TableHead :class="rowClass" class="min-w-16">Genre</TableHead>
 					<TableHead :class="rowClass" class="min-w-16">Bachelor</TableHead>
+					<TableHead :class="rowClass" class="min-w-16">Moyenne</TableHead>
 				</TableRow>
 			</TableHeader>
 
@@ -64,6 +69,12 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 					</TableCell>
 					<TableCell :class="rowClass">
 						<CheckIcon :checked="student.bachelor" />
+					</TableCell>
+					<TableCell>
+						<Skeleton v-if="!grades" class="w-5/6 h-5" />
+						<span v-else>
+							{{grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')?.value?.toPrecision(4) ?? "" }}
+						</span>
 					</TableCell>
 				</TableRow>
 			</TableBody>
