@@ -20,6 +20,7 @@ import { LoadingButton } from "../molecules/buttons"
 import { createToast } from "@/utils/toast"
 import { NotAuthorized } from "@/components/organisms/errors"
 import GradeNotSelected from "../organisms/Grade/GradeNotSelected.vue"
+import { wait } from "@/utils/time"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
@@ -32,7 +33,10 @@ const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()],
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
 	queryFn: async () => {
-		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value), actualTeam.value?.id)
+		console.log(sprintId.value, teamId.value)
+		// if (sprintId.value != null && teamId.value != null){
+			return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
+		// }	
 	}
 })
 

@@ -275,7 +275,6 @@ public class GradeService {
                         gradesConfirmed = false;
                     }
                 }
-
             }
             return gradesConfirmed;
         } catch (NullPointerException e) {
