@@ -51,7 +51,6 @@ public class GradeService {
     }
 
     public void createGrade(Grade grade) {
-        //checkForExistingGrade(grade);
         setGradeAttributes(grade);
         validateGrade(grade);
         gradeRepository.save(grade);
@@ -303,9 +302,6 @@ public class GradeService {
                         gradeRepository.setConfirmedBySprintAndStudent(grade.id());
                     }
                 }
-
-//                CustomLogger.info("grade type : " + gradeType + "sprin : " + sprintId + "student : " + student.id());
-//                gradeRepository.setConfirmedBySprintAndStudent(sprintId, student.id(), gradeType.id());
             }
 
             return true;
@@ -321,8 +317,7 @@ public class GradeService {
 
     public List<Grade> getIndividualGradesByTeam(Integer sprintId, Integer teamId){
         CustomLogger.info("Looking for individual grades for team with id " + teamId + " and sprint with id " + sprintId);
-        List <Grade> grades = gradeRepository.findIndividualGradesByTeam(sprintId, teamId);
-        return grades;
+        return gradeRepository.findIndividualGradesByTeam(sprintId, teamId);
     }
 }
 
