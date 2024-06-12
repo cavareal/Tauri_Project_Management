@@ -82,6 +82,7 @@ Le projet contient également une pipeline permettant un déploiement continue. 
   - deploy-server
   - selenium
 
+Chaque stage est effectué automatiquement, comprenant le build des différentes parties, les testes et le déploiement sur serveur.
 
 
 ## Lancement des testes backend
