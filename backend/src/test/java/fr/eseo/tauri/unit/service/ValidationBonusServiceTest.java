@@ -4,7 +4,6 @@ import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.ValidationBonusRepository;
-import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.BonusService;
 import fr.eseo.tauri.service.UserService;
 import fr.eseo.tauri.service.ValidationBonusService;
@@ -86,5 +85,28 @@ class ValidationBonusServiceTest {
         validationBonusService.deleteAllValidationBonuses(1);
 
         verify(validationBonusRepository, times(1)).deleteAllByBonusId(anyInt());
+    }
+
+    @Test
+    void getValidationByAuthorIdShouldReturnValidationBonusesWhenTheyExist() {
+        Integer authorId = 1;
+        List<ValidationBonus> expectedBonuses = Arrays.asList(new ValidationBonus(), new ValidationBonus());
+
+        when(validationBonusRepository.getValidationByAuthorId(authorId)).thenReturn(expectedBonuses);
+
+        List<ValidationBonus> result = validationBonusService.getValidationByAuthorId(authorId);
+
+        assertEquals(expectedBonuses, result);
+    }
+
+    @Test
+    void getValidationByAuthorIdShouldReturnEmptyListWhenNoValidationBonusesExist() {
+        Integer authorId = 1;
+
+        when(validationBonusRepository.getValidationByAuthorId(authorId)).thenReturn(Collections.emptyList());
+
+        List<ValidationBonus> result = validationBonusService.getValidationByAuthorId(authorId);
+
+        assertTrue(result.isEmpty());
     }
 }
