@@ -5,7 +5,7 @@ import { deleteAllStudents } from "@/services/student/student.service"
 import LoadingButton from "@/components/molecules/buttons/LoadingButton.vue"
 import { ref } from "vue"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
-import { useMutation } from "@tanstack/vue-query"
+import { useMutation, useQueryClient } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { createToast } from "@/utils/toast"
 import { sendNotificationsByRole } from "@/services/notification"
@@ -15,6 +15,7 @@ import type { RoleType } from "@/types/role"
 
 const open = ref(false)
 const emits = defineEmits(["delete:students"])
+const queryClient = useQueryClient()
 const oppositeRole: RoleType[] = getRole() === "OPTION_LEADER" ? ["PROJECT_LEADER"] : ["OPTION_LEADER"]
 
 const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-students"], mutationFn: async() => {
@@ -23,6 +24,7 @@ const { mutate, isPending, error } = useMutation({ mutationKey: ["delete-student
 		.then(() => emits("delete:students"))
 		.then(() => createToast("Les étudiants ont été supprimés."))
 		.then(() => sendNotificationsByRole("La liste des étudiants a été supprimée.", oppositeRole, "DELETE_STUDENTS"))
+		.then(() => queryClient.invalidateQueries({ queryKey: ["notifications"] }))
 } })
 
 const DIALOG_TITLE = "Supprimer les étudiants"

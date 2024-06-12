@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { ref, watch } from "vue"
-import { useMutation, useQuery } from "@tanstack/vue-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
 import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { createToast } from "@/utils/toast"
@@ -20,7 +20,7 @@ const props = defineProps<{
 	selectedSprint?: string
 }>()
 
-
+const queryClient = useQueryClient()
 const selectedTeam = ref(props.selectedTeam)
 const selectedSprint = ref(props.selectedSprint)
 
@@ -69,8 +69,9 @@ const fetchValidationBonusesByTeam = async() => {
 			})
 		})
 
-		if(bonusMap[data[0].bonus.id].authorCount == 9){
-			sendNotificationsByTeam("Bonus limités validé par tous les membres de l'équipe", parseInt(selectedTeam.value), "BONUS_MALUS", false)
+		if (bonusMap[data[0].bonus.id].authorCount == 9) {
+			await sendNotificationsByTeam("Bonus limités validé par tous les membres de l'équipe", parseInt(selectedTeam.value), "BONUS_MALUS", false)
+				.then(() => queryClient.invalidateQueries({ queryKey: ["notifications"] }))
 		}
 
 		return Object.values(bonusMap)

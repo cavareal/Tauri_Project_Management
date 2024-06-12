@@ -7,7 +7,7 @@ import ErrorText from "@/components/atoms/texts/ErrorText.vue"
 import { importStudentFile } from "@/services/student/student.service"
 import { CustomDialog, DialogClose } from "@/components/molecules/dialog"
 import { Button } from "@/components/ui/button"
-import { useMutation } from "@tanstack/vue-query"
+import { useMutation, useQueryClient } from "@tanstack/vue-query"
 import { createToast } from "@/utils/toast"
 import type { RoleType } from "@/types/role"
 import { Cookies } from "@/utils/cookie"
@@ -21,7 +21,7 @@ const DIALOG_DESCRIPTION
 const open = ref(false)
 
 const emits = defineEmits(["import:students"])
-
+const queryClient = useQueryClient()
 const file = ref<File | null>(null)
 const oppositeRole: RoleType[] = getRole() === "OPTION_LEADER" ? ["PROJECT_LEADER"] : ["OPTION_LEADER"]
 
@@ -32,6 +32,7 @@ const { error, isPending, mutate: upload } = useMutation({ mutationKey: ["import
 		.then(() => emits("import:students"))
 		.then(() => createToast("Les étudiants ont été importés."))
 		.then(() => sendNotificationsByRole("Une liste d'étudiants a été importée.", oppositeRole, "IMPORT_STUDENTS"))
+		.then(() => queryClient.invalidateQueries({ queryKey: ["notifications"] }))
 } })
 
 </script>

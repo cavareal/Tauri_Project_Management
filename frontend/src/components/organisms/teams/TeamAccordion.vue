@@ -73,6 +73,7 @@ const handleDrop = async(event: DragEvent, teamId: number) => {
 			if (currentPhase.value === "COMPOSING") return
 			void sendNotificationsByRole(`L'étudiant ${student.name} a été déplacé de l'équipe "${originTeam.name}" à l'équipe "${teams.value?.find(t => t.id === teamId)?.name}".`, ["SUPERVISING_STAFF", "TEAM_MEMBER"], "MOVE_STUDENT")
 		})
+		.then(() => queryClient.invalidateQueries({ queryKey: ["notifications"] }))
 }
 
 const handleDragEnter = (event: DragEvent, teamId: number) => {

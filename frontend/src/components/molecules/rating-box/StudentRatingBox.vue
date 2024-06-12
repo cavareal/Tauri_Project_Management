@@ -101,6 +101,7 @@ const { mutate, isPending, isError } = useMutation({
 				studentId: teamStudents.value[index].id,
 				gradeTypeName: props.gradeTypeName
 			})
+				.then(() => queryClient.invalidateQueries({ queryKey: ["notifications"] }))
 		} else if (comments.value[index] !== oldValues.value.comments[index]) {
 			const studentComment = studentComments.value?.find(comment => comment.student.id === teamStudents.value[index].id && !comment.feedback)
 			if (studentComment) {
