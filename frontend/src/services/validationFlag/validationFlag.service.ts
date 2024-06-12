@@ -16,7 +16,6 @@ export const getValidationFlagsByFlagId = async(flagId: number): Promise<Validat
 }
 
 export const updateValidationFlag = async(flagId: number, authorId: number, confirmed: boolean) => {
-	console.log(flagId, authorId, confirmed)
 	const response = await mutateAndValidate({
 		method: "PATCH",
 		route: `flags/${flagId}/validation/${authorId}`,

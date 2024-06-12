@@ -76,8 +76,6 @@ export const createOrUpdateGrade = async(body: Omit<CreateGrade, "authorId" | "g
 	const allGrades = await getAllRatedGradesFromConnectedUser()
 	const grade = await getRatedGrade(allGrades, body)
 
-	console.log(grade)
-
 	if (grade) {
 		await updateGrade(grade.id, body)
 			.then(() => {

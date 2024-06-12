@@ -1,6 +1,16 @@
 # Tauri
 
-## Setup
+## Présentation
+
+Ce projet a pour but de développer une application afin de permettre une gestion de projet, des équipes, des notes... pour la matière Projet Génie Logiciel !
+
+
+
+## Lancement de l'application en local
+
+### BDD
+
+1. Avoir installé MariaDB ou MYSQL sur sa machine, sur le port 3306 de préférence
 
 ### Backend
 
@@ -16,7 +26,7 @@ https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 
 3. Cliquer sur `Import Gradle Project` dans la fenêtre de notification
 
-4. Modifier dans le fichier "application.properties" : datasource.url, datasource.username et datasource.password
+4. Copier/coller le fichier `backend/src/main/resources/.env.example` et renomer en .env. Puis ajouter l'utilisateur et mot de passe de la BDD.
 
 4. Cliquer sur l'icône `Gradle` dans la sidebar de droite et cliquer sur `Tasks > application > bootRun`
 
@@ -55,6 +65,14 @@ pnpm dev
 ```
 
 
+
+## Environnement des serveurs de dev/prod
+
+1. Un document dans le wiki de l'application OpenProject de l'équipe Nath Tauri, explique en détail toutes les étapes et installations afin d'obtenir le même environnement serveur. Section `Serveur/Préparation serveur`
+
+2. Ensuite, suivez les informations situées sur la section `Serveur`, de OpenProject, pour les différentes configurations à mettre en place pour déployer l'application
+
+
 ## Lancement des testes backend
 
 ### Via IntelliJ
@@ -67,3 +85,6 @@ pnpm dev
 
 1. Testes unitaire : gradlew test
 2. Testes Selenium : gradlew seleniumTest
+
+
+## OUAI

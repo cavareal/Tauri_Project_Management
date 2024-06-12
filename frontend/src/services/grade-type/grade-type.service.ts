@@ -75,7 +75,6 @@ export const downloadGradeScaleTXT = async(gradeTypeName: string): Promise<void>
 		throw new Error(response.error)
 	}
 	const blob = new Blob([response.data])
-	console.log(blob)
 	const url = window.URL.createObjectURL(blob)
 	const link = document.createElement("a")
 	link.href = url

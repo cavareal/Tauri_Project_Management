@@ -76,7 +76,6 @@ export const sendManyNotifications = async(message: string): Promise<void> => {
 	const userFromId = Cookies.getUserId()
 
 	await Promise.all([...teamMembers, ...supervisors].map(async(userTo) => {
-		console.log(userTo)
 		const notification: CreateNotification = {
 			message: message,
 			checked: false,

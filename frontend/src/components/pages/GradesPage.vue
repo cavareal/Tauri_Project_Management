@@ -37,7 +37,6 @@ const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()],
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
 	queryFn: async() => {
-		console.log(sprintId.value, teamId.value)
 		// if (sprintId.value != null && teamId.value != null){
 		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
 		// }

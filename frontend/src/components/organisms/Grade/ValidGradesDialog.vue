@@ -27,50 +27,49 @@ const selectedSprint = ref(props.selectedSprint)
 const fetchIndividualGradesByTeam = async() => {
 	if (selectedTeam.value && selectedSprint.value) {
 		const data = await getIndividualGradesByTeam(Number(selectedSprint.value), Number(selectedTeam.value))
-		const authorMap = {};
+		const authorMap = {}
 		data.forEach(grade => {
-				if (grade.author == null) {
-					return
-				}
-				const authorId = grade.author.id
-				if (!authorMap[authorId]) {
-					authorMap[authorId] = { name: grade.author.name, count: 0, validCount: 0, students: [] };
-				}
-				authorMap[authorId].count++;
-				if (grade.confirmed) {
-					authorMap[authorId].validCount++;
-				}
-				authorMap[authorId].students.push({ id: grade.student.id, name: grade.student.name, grade: grade.value });
-			});
-			return Object.values(authorMap);
+			if (grade.author == null) {
+				return
+			}
+			const authorId = grade.author.id
+			if (!authorMap[authorId]) {
+				authorMap[authorId] = { name: grade.author.name, count: 0, validCount: 0, students: [] }
+			}
+			authorMap[authorId].count++
+			if (grade.confirmed) {
+				authorMap[authorId].validCount++
+			}
+			authorMap[authorId].students.push({ id: grade.student.id, name: grade.student.name, grade: grade.value })
+		})
+		return Object.values(authorMap)
 	}
 }
 
 
-const fetchValidationBonusesByTeam = async () => {
+const fetchValidationBonusesByTeam = async() => {
 	if (selectedTeam.value) {
-		const data = await getValidationBonusesByTeam(Number(selectedTeam.value), Number(selectedSprint.value));
-		const bonusMap = {};
+		const data = await getValidationBonusesByTeam(Number(selectedTeam.value), Number(selectedSprint.value))
+		const bonusMap = {}
 
 		data.forEach(record => {
-			const bonusId = record.bonus.id;
+			const bonusId = record.bonus.id
 			if (!bonusMap[bonusId]) {
 				bonusMap[bonusId] = {
 					bonus: record.bonus,
 					authorCount: 0,
 					authors: []
-				};
+				}
 			}
-			bonusMap[bonusId].authorCount++;
+			bonusMap[bonusId].authorCount++
 			bonusMap[bonusId].authors.push({
 				id: record.author.id,
-				name: record.author.name,
-			});
-		});
-		return Object.values(bonusMap);
+				name: record.author.name
+			})
+		})
+		return Object.values(bonusMap)
 	}
-};
-
+}
 
 
 const { data: individualGradesByTeam, refetch: refetchIndividualGradesByTeam } = useQuery({
@@ -84,8 +83,7 @@ const { data: validationBonusesByTeam, refetch: refetchValidationBonusesByTeam }
 	queryKey: ["validation-bonuses-team", selectedTeam, selectedSprint],
 	queryFn: fetchValidationBonusesByTeam,
 	enabled: !!selectedTeam.value && !!selectedSprint.value
-});
-
+})
 
 
 watch(
@@ -100,7 +98,7 @@ watch(
 
 
 const { mutate: mutateIndividual, isPending: isPendingIndividual, error: errorIndividual } = useMutation({
-	mutationKey: ["individual-grades"], mutationFn: async () => {
+	mutationKey: ["individual-grades"], mutationFn: async() => {
 		await setGradesConfirmation(Number(props.selectedTeam), Number(props.selectedSprint))
 			.then(() => {
 				emits("valid:individual-grades")
@@ -113,8 +111,7 @@ const { mutate: mutateIndividual, isPending: isPendingIndividual, error: errorIn
 
 
 const { mutate: mutateBonuses, isPending: isPendingBonuses, error: errorBonuses } = useMutation({
-	mutationKey: ["limited-bonus"], mutationFn: async () => {
-		console.log(props)
+	mutationKey: ["limited-bonus"], mutationFn: async() => {
 		await setValidationBonusesByTeam(Number(props.selectedTeam), Number(props.selectedSprint), Cookies.getUserId())
 			.then(() => {
 				emits("valid:limited-bonus")
@@ -124,7 +121,6 @@ const { mutate: mutateBonuses, isPending: isPendingBonuses, error: errorBonuses 
 			})
 	}
 })
-
 
 
 const DIALOG_TITLE = "Valider les notes individuelles"
@@ -141,7 +137,7 @@ const DIALOG_DESCRIPTION
 
 		<ErrorText v-if="errorBonuses || errorIndividual" class="mb-2">Une erreur est survenue.</ErrorText>
 
-		
+
 		<div v-if="individualGradesByTeam?.length > 0">
 			<p v-for="(author, index) in individualGradesByTeam" :key="index">{{ author.count }}
 				note(s) attribuée(s) par {{ author.name }}, {{ author.validCount }} validées</p>
