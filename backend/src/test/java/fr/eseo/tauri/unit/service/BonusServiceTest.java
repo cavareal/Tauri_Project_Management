@@ -6,7 +6,6 @@ import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.service.*;
-import jakarta.validation.constraints.Null;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -165,26 +164,6 @@ class BonusServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    /*@Test
-    void setValidationBonusesByTeamShouldCreateValidationBonusesWhenStudentsExist() {
-        Integer teamId = 1;
-        Integer sprintId = 1;
-        Integer userId = 1;
-        Student student1 = new Student();
-        student1.id(1);
-        Student student2 = new Student();
-        student2.id(2);
-        List<Student> students = Arrays.asList(student1, student2);
-        Bonus bonus = new Bonus().id(1);
-
-        when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(bonusRepository.findStudentBonus(any(), eq(false), eq(sprintId))).thenReturn(bonus);
-
-        bonusService.setValidationBonusesByTeam(teamId, sprintId, userId);
-
-        verify(validationBonusService, times(students.size())).createValidationBonus(any());
-    }*/
-
     @Test
     void setValidationBonusesByTeamShouldNotCreateValidationBonusesWhenNoStudentsExist() {
         Integer teamId = 1;
@@ -282,15 +261,15 @@ class BonusServiceTest {
     }
 
     @Test
-    void testUpdateLimitedBonusValueExceeds4() {
+    void testUpdateLimitedBonusValueExceeds4() throws RuntimeException{
         // Arrange
         Bonus bonus = new Bonus();
         bonus.limited(true);
         bonus.value(5F); // Exceeds the limit
         when(bonusRepository.findById(anyInt())).thenReturn(java.util.Optional.of(bonus));
 
-        // Act & Assert
-        assertThrows(NullPointerException.class, () -> bonusService.updateBonus(1, new Bonus()));
+
+        assertThrows(IllegalArgumentException.class, () -> bonusService.updateBonus(1, bonus));
         verify(bonusRepository, never()).save(any());
     }
 
@@ -337,4 +316,115 @@ class BonusServiceTest {
             bonusService.updateBonus(2, unlimitedBonus);
         });
     }
+
+    @Test
+    void testSetValidationBonusesByTeam_NoStudents() {
+        // Setup
+        when(studentRepository.findByTeam(anyInt())).thenReturn(Collections.emptyList());
+
+        // Exercise
+        bonusService.setValidationBonusesByTeam(1, 1, 1);
+
+        // Verify
+        verify(validationBonusService, never()).createValidationBonus(any());
+    }
+
+    @Test
+    void testUpdateBonusWithinRange() {
+        // Mock Bonus object with value within range [-4, 4]
+        Bonus mockBonus = new Bonus();
+        mockBonus.id(1);
+        mockBonus.value(3F);
+        mockBonus.limited(true);
+
+        User mockUser = new User();
+        mockUser.id(1);
+
+
+        Student mockStudent = new Student();
+        mockStudent.id(2);
+
+        mockBonus.author(mockUser);
+        mockBonus.student(mockStudent);
+
+        Team mockTeam = new Team();
+        mockTeam.id(1);
+        mockTeam.leader(mockUser);
+
+        // Mock dependencies
+        when(bonusRepository.findById(any(Integer.class))).thenReturn(java.util.Optional.of(mockBonus));
+        when(teamRepository.findTeamByStudentId(any(Integer.class))).thenReturn(mockTeam);
+        when(teamRepository.findLeaderByTeamId(any(Integer.class))).thenReturn(mockUser);
+        when(validationBonusService.getValidationByAuthorId(any(Integer.class))).thenReturn(new ArrayList<>());
+
+        // Call method
+        assertDoesNotThrow(() -> bonusService.updateBonus(1, mockBonus));
+    }
+
+    @Test
+    void testUpdateBonusWithinRangeWithAuthorAndComment() {
+        // Mock Bonus object with value within range [-4, 4] and updated author/comment
+        Bonus mockBonus = new Bonus();
+        mockBonus.id(1);
+        mockBonus.value(3F);
+        mockBonus.limited(true);
+
+        User mockUser = new User();
+        mockUser.id(1);
+
+        Student mockStudent = new Student();
+        mockStudent.id(2);
+
+        mockBonus.author(mockUser);
+        mockBonus.student(mockStudent);
+
+        Team mockTeam = new Team();
+        mockTeam.id(1);
+        mockTeam.leader(mockUser);
+
+        // Mock dependencies
+        when(bonusRepository.findById(any(Integer.class))).thenReturn(java.util.Optional.of(mockBonus));
+        when(teamRepository.findTeamByStudentId(any(Integer.class))).thenReturn(mockTeam);
+        when(teamRepository.findLeaderByTeamId(any(Integer.class))).thenReturn(mockUser);
+        when(validationBonusService.getValidationByAuthorId(any(Integer.class))).thenReturn(new ArrayList<>());
+
+        // Call method with updated author and comment
+        Bonus updatedBonus = new Bonus();
+        updatedBonus.value(3F);
+        updatedBonus.authorId(1);
+        updatedBonus.comment("Updated comment");
+        bonusService.updateBonus(1, updatedBonus);
+
+        // Verify that the bonus's author and comment are updated
+        verify(userService, times(1)).getUserById(1);
+        verify(bonusRepository, times(1)).save(mockBonus);
+    }
+
+    @Test
+    void testSetValidationBonusesByTeam() {
+        // Mock data
+        Integer teamId = 1;
+        Integer sprintId = 1;
+        Integer userId = 1;
+
+        // Mock students
+        List<Student> students = new ArrayList<>();
+        Student student1 = new Student();
+        student1.id(1);
+        students.add(student1);
+
+        when(studentRepository.findByTeam(any(Integer.class))).thenReturn(students);
+
+        // Mock bonus
+        Bonus bonus = new Bonus();
+        bonus.id(1);
+        when(bonusRepository.findStudentBonus(any(Integer.class), anyBoolean(), any(Integer.class))).thenReturn(bonus);
+
+        // Call method
+        bonusService.setValidationBonusesByTeam(teamId, sprintId, userId);
+
+        // Verify that createValidationBonus method is called for each student
+        verify(validationBonusService, times(1)).createValidationBonus(any(ValidationBonus.class));
+    }
+
 }
