@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { SidebarTemplate } from "@/components/templates"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import { hasPermission } from "@/services/user"
 import { useMutation, useQuery } from "@tanstack/vue-query"
 import { Header } from "@/components/molecules/header"
@@ -20,7 +20,6 @@ import { LoadingButton } from "../molecules/buttons"
 import { createToast } from "@/utils/toast"
 import { NotAuthorized } from "@/components/organisms/errors"
 import GradeNotSelected from "../organisms/Grade/GradeNotSelected.vue"
-import { wait } from "@/utils/time"
 import SprintsAndTeamsNotCreated from "@/components/organisms/Grade/SprintsAndTeamsNotCreated.vue"
 import { getCurrentPhase } from "@/services/project"
 
@@ -30,14 +29,14 @@ const sprintId = ref<string | null>(null)
 const authorized = hasPermission("GRADES_PAGE")
 const canConfirmOwnTeamGrade = hasPermission("GRADE_CONFIRMATION")
 const { data: currentPhase } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
-
+let isGradesConfirmed = ref(false)
 
 const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()], queryFn: () => getTeamByUserId(Cookies.getUserId()) })
 
-const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
+const { refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
 	queryFn: async() => {
-		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
+		isGradesConfirmed.value = await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
 	}
 })
 
@@ -55,6 +54,10 @@ const { mutate: studentValidLimitedBonus, isPending: studentBtnLoading } = useMu
 const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
 const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 
+watch(() => [teamId, sprintId], () => {
+	refetchGradesConfirmation()
+})
+
 </script>
 
 <template>
@@ -69,7 +72,7 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 					<Button variant="outline">Validation des notes</Button>
 				</ValidGradesDialog>
 				<LoadingButton :variant="'outline'" v-if="Cookies.getRole() == 'OPTION_STUDENT' && actualTeam?.id.toString() == teamId"
-					type="submit" @click="studentValidLimitedBonus" :loading="studentBtnLoading">
+							   type="submit" @click="studentValidLimitedBonus" :loading="studentBtnLoading">
 					Valider les bonus limités
 				</LoadingButton>
 				<SprintSelect v-model="sprintId" />
@@ -82,7 +85,7 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 			</Header>
 			<Column v-if="teamId !== null && sprintId !== null">
 				<Grade v-if="authorized" :teamId="teamId ?? ''" :sprintId="sprintId ?? ''"
-					:is-grades-confirmed="isGradesConfirmed ?? false" />
+					   :is-grades-confirmed="isGradesConfirmed ?? false" />
 			</Column>
 			<SprintsAndTeamsNotCreated v-else-if="currentPhase === 'COMPOSING' || currentPhase === 'PREPUBLISHED'"/>
 			<GradeNotSelected v-else />
