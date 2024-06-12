@@ -6,6 +6,7 @@ import Skeleton from "@/components/ui/skeleton/Skeleton.vue"
 import { cn } from "@/utils/style"
 import { getCurrentSprint, getGradedSprints } from "@/services/sprint"
 import { formatSprintEndType } from "@/types/sprint"
+import { getCurrentPhase } from "@/services/project"
 
 defineProps<{
 	modelValue: string | null
@@ -20,6 +21,7 @@ const onValueChange = (newValue: string) => {
 	emit("update:modelValue", newValue)
 }
 
+const { data: currentPhase } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
 const { data: sprints } = useQuery({
 	queryKey: ["sprints"],
 	queryFn: async() => {
@@ -58,9 +60,9 @@ let sprint = unfilteredSprints.find(sprint => {
 </script>
 
 <template>
-	<Skeleton v-if="!sprints || sprints.length === 0" :class="style" />
+<!--	<Skeleton v-if="!sprints || sprints.length === 0" :class="style" />-->
 
-	<Select v-else :model-value="modelValue ?? undefined" @update:model-value="onValueChange">
+	<Select v-if="currentPhase === 'PUBLISHED'" :model-value="modelValue ?? undefined" @update:model-value="onValueChange">
 		<SelectTrigger :class="style">
 			<SelectValue />
 		</SelectTrigger>

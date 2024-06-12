@@ -34,9 +34,7 @@ const getCookie = <T = string>(name: CookieName): T => {
  * @param value The value of the cookie
  */
 const setCookie = (name: CookieName, value: string): void => {
-	console.log("Setting cookie", name, value)
 	const encryptedValue = encrypt(value)
-	console.log("Encrypted value", encryptedValue)
 	document.cookie = `${name}=${encryptedValue}; path=/; max-age=${COOKIE_EXPIRATION}`
 }
 

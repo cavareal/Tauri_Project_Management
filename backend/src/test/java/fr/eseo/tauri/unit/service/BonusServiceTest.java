@@ -165,26 +165,6 @@ class BonusServiceTest {
     }
 
     @Test
-    void setValidationBonusesByTeamShouldCreateValidationBonusesWhenStudentsExist() {
-        Integer teamId = 1;
-        Integer sprintId = 1;
-        Integer userId = 1;
-        Student student1 = new Student();
-        student1.id(1);
-        Student student2 = new Student();
-        student2.id(2);
-        List<Student> students = Arrays.asList(student1, student2);
-        Bonus bonus = new Bonus().id(1);
-
-        when(studentRepository.findByTeam(teamId)).thenReturn(students);
-        when(bonusRepository.findStudentBonus(any(), eq(false), eq(sprintId))).thenReturn(bonus);
-
-        bonusService.setValidationBonusesByTeam(teamId, sprintId, userId);
-
-        verify(validationBonusService, times(students.size())).createValidationBonus(any());
-    }
-
-    @Test
     void setValidationBonusesByTeamShouldNotCreateValidationBonusesWhenNoStudentsExist() {
         Integer teamId = 1;
         Integer sprintId = 1;
@@ -209,34 +189,6 @@ class BonusServiceTest {
         bonusService.updateBonus(id, updatedBonus);
 
         verify(bonusRepository, times(1)).save(any());
-    }
-
-    @Test
-    void updateBonusShouldUpdateBonusWhenBonusIsValidAndLimitedInRange() {
-        Integer id = 1;
-        Bonus updatedBonus = new Bonus().value(2F);
-
-        when(bonusRepository.findById(id)).thenReturn(Optional.of(new Bonus().limited(true)));
-        when(userService.getUserById(any())).thenReturn(new User().id(1));
-        when(bonusRepository.save(any())).thenReturn(updatedBonus);
-
-        bonusService.updateBonus(id, updatedBonus);
-
-        verify(bonusRepository, times(1)).save(any());
-    }
-
-    @Test
-    void updateBonusShouldDeleteAllValidationBonusesWhenBonusIsLimited() {
-        Integer id = 1;
-        Bonus updatedBonus = new Bonus().value(2F);
-
-        when(bonusRepository.findById(id)).thenReturn(Optional.of(new Bonus().limited(true)));
-        when(userService.getUserById(any())).thenReturn(new User().id(1));
-        when(bonusRepository.save(any())).thenReturn(updatedBonus);
-
-        bonusService.updateBonus(id, updatedBonus);
-
-        verify(validationBonusService, times(1)).deleteAllValidationBonuses(id);
     }
 
     @Test
@@ -306,6 +258,173 @@ class BonusServiceTest {
 
         assertEquals(1, result.size());
         assertTrue(result.contains(leaderBonus));
+    }
+
+    @Test
+    void testUpdateLimitedBonusValueExceeds4() throws RuntimeException{
+        // Arrange
+        Bonus bonus = new Bonus();
+        bonus.limited(true);
+        bonus.value(5F); // Exceeds the limit
+        when(bonusRepository.findById(anyInt())).thenReturn(java.util.Optional.of(bonus));
+
+
+        assertThrows(IllegalArgumentException.class, () -> bonusService.updateBonus(1, bonus));
+        verify(bonusRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateUnlimitedBonus() {
+        // Arrange
+        Bonus bonus = new Bonus();
+        bonus.limited(false);
+        when(bonusRepository.findById(anyInt())).thenReturn(java.util.Optional.of(bonus));
+
+        // Act
+        bonusService.updateBonus(1, new Bonus().value(3F));
+
+        // Assert
+        verify(bonusRepository, times(1)).save(any());
+    }
+
+    @Test
+    void testLimitedBonusValueCheck() {
+        Bonus limitedBonus;
+        Bonus unlimitedBonus;
+
+        limitedBonus = new Bonus();
+        limitedBonus.id(1);
+        limitedBonus.value(5F); // Value greater than 4
+        limitedBonus.limited(true);
+
+        unlimitedBonus = new Bonus();
+        unlimitedBonus.id(2);
+        unlimitedBonus.value(3F); // Value within the range (-4, 4)
+        unlimitedBonus.limited(false);
+
+        // Mocking necessary dependencies and their behavior
+        when(bonusRepository.findById(1)).thenReturn(java.util.Optional.of(limitedBonus));
+        when(bonusRepository.findById(2)).thenReturn(java.util.Optional.of(unlimitedBonus));
+        // Test a limited bonus with a value greater than 4
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            bonusService.updateBonus(1, limitedBonus);
+        });
+        assertEquals("The value of a limited bonus must be between -4 and 4", exception.getMessage());
+
+        // Test a limited bonus with a value within the range (-4, 4)
+        assertDoesNotThrow(() -> {
+            bonusService.updateBonus(2, unlimitedBonus);
+        });
+    }
+
+    @Test
+    void testSetValidationBonusesByTeam_NoStudents() {
+        // Setup
+        when(studentRepository.findByTeam(anyInt())).thenReturn(Collections.emptyList());
+
+        // Exercise
+        bonusService.setValidationBonusesByTeam(1, 1, 1);
+
+        // Verify
+        verify(validationBonusService, never()).createValidationBonus(any());
+    }
+
+    @Test
+    void testUpdateBonusWithinRange() {
+        // Mock Bonus object with value within range [-4, 4]
+        Bonus mockBonus = new Bonus();
+        mockBonus.id(1);
+        mockBonus.value(3F);
+        mockBonus.limited(true);
+
+        User mockUser = new User();
+        mockUser.id(1);
+
+
+        Student mockStudent = new Student();
+        mockStudent.id(2);
+
+        mockBonus.author(mockUser);
+        mockBonus.student(mockStudent);
+
+        Team mockTeam = new Team();
+        mockTeam.id(1);
+        mockTeam.leader(mockUser);
+
+        // Mock dependencies
+        when(bonusRepository.findById(any(Integer.class))).thenReturn(java.util.Optional.of(mockBonus));
+        when(teamRepository.findTeamByStudentId(any(Integer.class))).thenReturn(mockTeam);
+        when(teamRepository.findLeaderByTeamId(any(Integer.class))).thenReturn(mockUser);
+        when(validationBonusService.getValidationByAuthorId(any(Integer.class))).thenReturn(new ArrayList<>());
+
+        // Call method
+        assertDoesNotThrow(() -> bonusService.updateBonus(1, mockBonus));
+    }
+
+    @Test
+    void testUpdateBonusWithinRangeWithAuthorAndComment() {
+        // Mock Bonus object with value within range [-4, 4] and updated author/comment
+        Bonus mockBonus = new Bonus();
+        mockBonus.id(1);
+        mockBonus.value(3F);
+        mockBonus.limited(true);
+
+        User mockUser = new User();
+        mockUser.id(1);
+
+        Student mockStudent = new Student();
+        mockStudent.id(2);
+
+        mockBonus.author(mockUser);
+        mockBonus.student(mockStudent);
+
+        Team mockTeam = new Team();
+        mockTeam.id(1);
+        mockTeam.leader(mockUser);
+
+        // Mock dependencies
+        when(bonusRepository.findById(any(Integer.class))).thenReturn(java.util.Optional.of(mockBonus));
+        when(teamRepository.findTeamByStudentId(any(Integer.class))).thenReturn(mockTeam);
+        when(teamRepository.findLeaderByTeamId(any(Integer.class))).thenReturn(mockUser);
+        when(validationBonusService.getValidationByAuthorId(any(Integer.class))).thenReturn(new ArrayList<>());
+
+        // Call method with updated author and comment
+        Bonus updatedBonus = new Bonus();
+        updatedBonus.value(3F);
+        updatedBonus.authorId(1);
+        updatedBonus.comment("Updated comment");
+        bonusService.updateBonus(1, updatedBonus);
+
+        // Verify that the bonus's author and comment are updated
+        verify(userService, times(1)).getUserById(1);
+        verify(bonusRepository, times(1)).save(mockBonus);
+    }
+
+    @Test
+    void testSetValidationBonusesByTeam() {
+        // Mock data
+        Integer teamId = 1;
+        Integer sprintId = 1;
+        Integer userId = 1;
+
+        // Mock students
+        List<Student> students = new ArrayList<>();
+        Student student1 = new Student();
+        student1.id(1);
+        students.add(student1);
+
+        when(studentRepository.findByTeam(any(Integer.class))).thenReturn(students);
+
+        // Mock bonus
+        Bonus bonus = new Bonus();
+        bonus.id(1);
+        when(bonusRepository.findStudentBonus(any(Integer.class), anyBoolean(), any(Integer.class))).thenReturn(bonus);
+
+        // Call method
+        bonusService.setValidationBonusesByTeam(teamId, sprintId, userId);
+
+        // Verify that createValidationBonus method is called for each student
+        verify(validationBonusService, times(1)).createValidationBonus(any(ValidationBonus.class));
     }
 
 }

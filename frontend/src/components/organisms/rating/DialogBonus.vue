@@ -79,8 +79,7 @@ const handleBonusInput = (event: InputEvent, index: number, inputType: "value" |
 }
 
 const { isPending, error, mutate: update } = useMutation({ mutationKey: ["update-bonuses"], mutationFn: async() => {
-	console.log(updatedStudentBonuses)
-	await Promise.all(updatedStudentBonuses.map(studentBonus => updateBonus(studentBonus.id, { studentId:studentBonus.id ,value: studentBonus.value, comment: studentBonus.comment })))
+	await Promise.all(updatedStudentBonuses.map(studentBonus => updateBonus(studentBonus.id, { studentId: studentBonus.id, value: studentBonus.value, comment: studentBonus.comment })))
 		.then(() => open.value = false)
 		.then(() => createToast("Les bonus ont été mis à jour."))
 		.then(() => refetchBonuses())

@@ -47,7 +47,6 @@ const { refetch: refetchIndividualGrades } = useQuery({
 	queryKey: ["student-grades", props.teamId, props.sprintId],
 	queryFn: async() => {
 		if (!teamStudents.value || !gradeType.value) return
-		console.log(gradeType.value)
 		for (let i = 0; i < teamStudents.value.length; i++) {
 			studentsIndividualGrade[i] = await getGradeByGradeTypeAndAuthorAndSprint(teamStudents.value[i].id, gradeType.value.id, currentUserId, Number(props.sprintId))
 			studentsIndividualGradeRef[i] = JSON.parse(JSON.stringify(studentsIndividualGrade[i]))
@@ -116,7 +115,6 @@ const handleGradeInput = (event: InputEvent, index: number, inputType: "value" |
 			studentsIndividualGrade[index] = null
 		}
 
-		console.log(studentsIndividualGrade[index])
 	} else  {
 
 		if (inputType === "value") {

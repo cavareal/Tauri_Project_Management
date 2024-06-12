@@ -32,7 +32,7 @@ const displayPresentationOrder = computed(
 
 <template>
 	<Column class="border rounded-md p-6 gap-4 bg-white">
-		<Row class="items-center">
+		<Row class="items-center gap-4">
 			<Column class="items-start justify-center flex-1 gap-1">
 				<Subtitle>{{ TITLE }}</Subtitle>
 				<InfoText>{{ DESCRIPTION }}</InfoText>

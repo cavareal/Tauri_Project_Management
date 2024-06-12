@@ -86,9 +86,10 @@ const checkGradeScaleUploaded = async() => {
 
 const { mutate, isPending, isError } = useMutation({
 	mutationFn: async(index: number) => {
-		status.value = "LOADING"
+		if (!teamStudents.value) return
 
-		if (grades.value[index] !== oldValues.value.grades[index] && comments.value[index] !== oldValues.value.comments[index] && feedbacks.value[index] !== oldValues.value.feedbacks[index]) return
+		if (grades.value[index] === oldValues.value.grades[index] && comments.value[index] === oldValues.value.comments[index] && feedbacks.value[index] === oldValues.value.feedbacks[index]) return
+		status.value = "LOADING"
 
 		if (grades.value[index] !== oldValues.value.grades[index]) {
 			await createOrUpdateGrade({
@@ -178,15 +179,17 @@ const download = useMutation({
 			<InfoText class="flex-1">{{ getGradeTypeDescription(gradeTypeName) }}</InfoText>
 		</Row>
 
-		<Row class="flex-wrap">
-			<Row class="w-2/3 mb-4 pr-4" v-for="(student, index) in teamStudents" :key="student.id">
-				<Row class="items-center justify-between gap-2">
+		<Row class="flex-wrap gap-4">
+			<Column class="w-full gap-2" v-for="(student, index) in teamStudents" :key="student.id">
+				<Row class="items-center justify-between gap-6">
 					<Subtitle>{{ student.name }}</Subtitle>
 					<Input v-if="props.gradeAuthorization" class="w-16" type="number" min="0" max="20" v-model="grades[index]" @update:model-value="value => onGradeChange(value, index)" :disabled="isPending" v-on:blur="mutate(index)" />
-					<Textarea v-if="props.commentAuthorization" class="resize-none" v-model="comments[index]"  placeholder="Ajouter un commentaire" :disabled="isPending" v-on:blur="mutate(index)" />
-					<Textarea v-if="props.commentAuthorization" class="resize-none" v-model="feedbacks[index]"  placeholder="Ajouter un feedback" :disabled="isPending" v-on:blur="mutate(index)" />
 				</Row>
-			</Row>
+				<Row class="items-stretch justify-between gap-2">
+					<Textarea v-if="props.commentAuthorization" v-model="comments[index]"  placeholder="Ajouter un commentaire" :disabled="isPending" v-on:blur="mutate(index)" />
+					<Textarea v-if="props.commentAuthorization" v-model="feedbacks[index]"  placeholder="Ajouter un feedback" :disabled="isPending" v-on:blur="mutate(index)" />
+				</Row>
+			</Column>
 		</Row>
 		<ErrorText v-if="status === 'DONE' && isError">Une erreur est survenue.</ErrorText>
 		<Row class="items-center justify-end mt-4" v-if="isGradeScaleUploaded">
