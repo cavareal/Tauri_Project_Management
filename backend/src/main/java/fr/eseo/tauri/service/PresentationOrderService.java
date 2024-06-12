@@ -2,6 +2,7 @@ package fr.eseo.tauri.service;
 
 import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.PresentationOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,23 @@ public class PresentationOrderService {
 
     public List<PresentationOrder> getPresentationOrderByTeamIdAndSprintId(Integer teamId, Integer sprintId) {
         return presentationOrderRepository.findByTeamIdAndSprintId(teamId, sprintId);
+    }
+
+    public void updatePresentationOrderByTeamIdAndSprintId(Integer teamId, Integer sprintId, List<Student> students) {
+        var orders = getPresentationOrderByTeamIdAndSprintId(teamId, sprintId);
+		for (var order : orders) {
+			Integer newValue = null;
+			for (int j = 0; j < students.size(); j++) {
+				if (students.get(j).id().equals(order.student().id())) {
+					newValue = j + 1;
+					break;
+				}
+			}
+			if (newValue != null) {
+                order.value(newValue);
+				presentationOrderRepository.save(order);
+			}
+		}
     }
 
 }

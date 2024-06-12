@@ -5,7 +5,7 @@ import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
 import { PresentationOrderSchema } from "@/types/presentation-order"
-import type { Student } from "@/types/student"
+import { StudentSchema, type Student } from "@/types/student"
 
 
 export const getTeams = async(): Promise<Team[]> => {
@@ -159,9 +159,21 @@ export const getPresentationOrder = async(teamId: string, sprintId: string): Pro
 		throw new Error(response.error)
 	}
 
-	console.log(response.data)
-
 	return response.data
 		.sort((a, b) => a.value - b.value)
 		.map(order => order.student)
+}
+
+export const updatePresentationOrder = async(teamId: string, sprintId: string, order: Student[]): Promise<void> => {
+	const response = await mutateAndValidate({
+		route: `teams/${teamId}/presentation-order`,
+		params: { sprintId },
+		method: "PATCH",
+		body: order,
+		bodySchema: StudentSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }
