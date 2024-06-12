@@ -2,6 +2,7 @@ package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.PresentationOrder;
+import fr.eseo.tauri.model.Student;
 import fr.eseo.tauri.repository.PresentationOrderRepository;
 import fr.eseo.tauri.service.PresentationOrderService;
 import org.junit.jupiter.api.BeforeEach;
@@ -159,6 +160,46 @@ class PresentationOrderServiceTest {
         List<PresentationOrder> result = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(teamId, sprintId);
 
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void updatePresentationOrderByTeamIdAndSprintIdShouldUpdateOrderValuesWhenMatchingStudentsExist() {
+        Integer teamId = 1;
+        Integer sprintId = 1;
+        Student student = new Student();
+        student.id(1);
+        PresentationOrder order = new PresentationOrder();
+        order.student(student);
+        List<PresentationOrder> orders = Collections.singletonList(order);
+        List<Student> students = Collections.singletonList(student);
+
+        when(presentationOrderService.getPresentationOrderByTeamIdAndSprintId(teamId, sprintId)).thenReturn(orders);
+
+        presentationOrderService.updatePresentationOrderByTeamIdAndSprintId(teamId, sprintId, students);
+
+        assertEquals(1, order.value());
+        verify(presentationOrderRepository, times(1)).save(order);
+    }
+
+    @Test
+    void updatePresentationOrderByTeamIdAndSprintIdShouldNotUpdateOrderValuesWhenNoMatchingStudentsExist() {
+        Integer teamId = 1;
+        Integer sprintId = 1;
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        PresentationOrder order = new PresentationOrder();
+        order.student(student1);
+        List<PresentationOrder> orders = Collections.singletonList(order);
+        List<Student> students = Collections.singletonList(student2);
+
+        when(presentationOrderService.getPresentationOrderByTeamIdAndSprintId(teamId, sprintId)).thenReturn(orders);
+
+        presentationOrderService.updatePresentationOrderByTeamIdAndSprintId(teamId, sprintId, students);
+
+        assertNull(order.value());
+        verify(presentationOrderRepository, times(0)).save(order);
     }
 
 }
