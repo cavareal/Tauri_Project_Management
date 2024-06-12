@@ -262,23 +262,25 @@ public class GradeService {
 
     public Boolean getGradesConfirmation(Integer sprintId, Integer teamId, Integer projectId) {
         try {
+            Boolean gradesConfirmed = true;
             List<Student> students = studentRepository.findByTeam(teamId);
             if (students.isEmpty()) {
-                return false;
+                return gradesConfirmed;
             }
-
             for (Student student : students) {
                 GradeType gradeType = gradeTypeRepository.findByNameAndProjectId(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId);
-                Grade grade = gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id());
-
-                if (Boolean.FALSE.equals(grade.confirmed())) {
-                    return true;
+                List<Grade> grades = gradeRepository.findIsConfirmedBySprindAndStudents(sprintId, student.id(), gradeType.id());
+                for (Grade g : grades){
+                    if (Boolean.FALSE.equals(g.confirmed())) {
+                        gradesConfirmed = false;
+                    }
                 }
+
             }
-            return false;
+            return gradesConfirmed;
         } catch (NullPointerException e) {
             CustomLogger.info("No student or no grades found");
-            return false;
+            return true;
         }
     }
 

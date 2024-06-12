@@ -32,10 +32,10 @@ const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()],
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
 	queryFn: async () => {
-		if (sprintId.value === null || teamId.value === null || actualTeam.value?.id == undefined) return false
 		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value), actualTeam.value?.id)
 	}
 })
+
 
 
 const { mutate: studentValidLimitedBonus, isPending: studentBtnLoading } = useMutation({
@@ -70,7 +70,6 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 					type="submit" @click="studentValidLimitedBonus" :loading="studentBtnLoading">
 					Valider les bonus limités
 				</LoadingButton>
-
 				<SprintSelect v-model="sprintId" />
 				<TeamSelect v-model="teamId" v-if="canViewAllWg || canViewAllOg" />
 				<TeamSelect2 v-model="teamId" v-else />
