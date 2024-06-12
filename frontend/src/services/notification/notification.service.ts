@@ -105,11 +105,12 @@ export const sendNotificationsByRole = async(message: string, roles: RoleType[],
 	}
 
 	const users = await getUsersByRoles(roles)
+	const userIds = users.map(user => user.id)
 
-	await sendNotificationsByUsers(message, users, type)
+	await sendNotificationsByUsers(message, userIds, type)
 }
 
-export const sendNotificationsByUsers = async(message: string, users: User[], type: string): Promise<void> => {
+export const sendNotificationsByUsers = async(message: string, users: number[], type: string): Promise<void> => {
 
 	const userFromId = Cookies.getUserId()
 
@@ -118,7 +119,7 @@ export const sendNotificationsByUsers = async(message: string, users: User[], ty
 			message: message,
 			checked: false,
 			type: type,
-			userToId: userTo.id,
+			userToId: userTo,
 			userFromId: userFromId
 		}
 
@@ -135,12 +136,13 @@ export const sendNotificationsByUsers = async(message: string, users: User[], ty
 	}))
 }
 
-export const sendNotificationsByTeam = async(message: string, teamId: number, type: string): Promise<void> => {
+export const sendNotificationsByTeam = async(message: string, teamId: number, type: string, leader: boolean): Promise<void> => {
 
-	const students = await  getStudentsByTeamId(teamId)
+	const students = await  getStudentsByTeamId(teamId, false)
+	const studentIds = students.map(student => student.id)
 	const team = await getTeamById(teamId)
-	if (team.leader != null) {
-		await sendNotificationsByUsers(message, [team.leader], type)
+	if (team.leader != null && leader) {
+		await sendNotificationsByUsers(message, [team.leader.id], type)
 	}
-	await sendNotificationsByUsers(message, students, type)
+	await sendNotificationsByUsers(message, studentIds, type)
 }

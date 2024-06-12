@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button"
 import { downloadGradeScaleTXT } from "@/services/grade-type"
 import { getGradeTypeByName } from "@/services/grade-type"
 import type { Grade } from "@/types/grade"
-import { sendNotificationsByTeam } from "@/services/notification"
 
 const props = defineProps<{
 	gradeTypeName: GradeTypeName,
@@ -64,20 +63,19 @@ const { mutate, isPending, isError } = useMutation({
 			return
 		}
 
-	status.value = "LOADING"
-	await createOrUpdateGrade({
-		value: Number(grade.value),
-		comment: comment.value,
-		sprintId: Number(props.sprintId),
-		teamId: props.teamId ? Number(props.teamId) : null,
-		studentId: props.studentId ? Number(props.studentId) : null,
-		gradeTypeName: props.gradeTypeName
-	})
-		.then(() => createToast("La note a bien été enregistrée."))
-		.then(() => oldValues.value = { grade: grade.value, comment: comment.value })
-		.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
-		.then(() => sendNotificationsByTeam(`La note "${props.gradeTypeName}" du sprint ${props.sprintId} a été évalué.`, Number(props.teamId), "CREATE_GRADE"))
-} })
+		status.value = "LOADING"
+		await createOrUpdateGrade({
+			value: Number(grade.value),
+			comment: comment.value,
+			sprintId: Number(props.sprintId),
+			teamId: props.teamId ? Number(props.teamId) : null,
+			studentId: props.studentId ? Number(props.studentId) : null,
+			gradeTypeName: props.gradeTypeName
+		})
+			.then(() => createToast("La note a bien été enregistrée."))
+			.then(() => oldValues.value = { grade: grade.value, comment: comment.value })
+			.then(() => queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] }))
+	} })
 
 const onGradeChange = (value: string | number) => {
 	const parsedValue = Number(value)
