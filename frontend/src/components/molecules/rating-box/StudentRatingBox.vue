@@ -11,12 +11,12 @@ import type { Student } from "@/types/student"
 import { useMutation, useQueryClient } from "@tanstack/vue-query"
 import { onMounted, ref, watch } from "vue"
 import { createOrUpdateGrade, getRatedGrade } from "@/services/grade"
-import { getStudentsByTeamId } from "@/services/student"
 import { createToast } from "@/utils/toast"
 import { downloadGradeScaleTXT, getGradeTypeByName } from "@/services/grade-type"
 import { Button } from "@/components/ui/button"
 import { getTeamStudentsCommentsBySprintAndAuthor, createComment, updateComment } from "@/services/feedback"
 import type { Feedback } from "@/types/feedback"
+import { getPresentationOrder } from "@/services/team"
 
 const props = defineProps<{
 	gradeTypeName: GradeTypeName,
@@ -139,12 +139,12 @@ watch(status, (newValue) => {
 })
 
 watch(() => [props.teamId, props.sprintId], async() => {
-	teamStudents.value = await getStudentsByTeamId(Number(props.teamId), true)
+	teamStudents.value = await getPresentationOrder(props.teamId, props.sprintId)
 	updateGrades()
 })
 
 onMounted(async() => {
-	teamStudents.value = await getStudentsByTeamId(Number(props.teamId), true)
+	teamStudents.value = await getPresentationOrder(props.teamId, props.sprintId)
 	studentComments.value = await getTeamStudentsCommentsBySprintAndAuthor(props.sprintId, props.teamId)
 	updateGrades()
 	checkGradeScaleUploaded()
