@@ -42,6 +42,14 @@ class TeamServiceTest {
     @Mock
     private RoleRepository roleRepository;
 
+    @Mock
+    private SprintService sprintService;
+
+    @Mock
+    private PresentationOrderService presentationOrderService;
+
+    @Mock
+    private StudentService studentService;
 
     @InjectMocks
     private TeamService teamService;
@@ -681,6 +689,164 @@ class TeamServiceTest {
         when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN, projectId)).thenReturn(men);
 
         assertThrows(IllegalArgumentException.class, () -> teamService.generateTeams(projectId, projectDetails, autoWomenRatio));
+    }
+
+    @Test
+    void testGetStudentsByTeamIdOrderedTrueWithCurrentSprint() {
+        Integer teamId = 1;
+        Integer projectId = 1;
+        Integer sprintId = 1;
+
+        Team team = new Team();
+        team.id(teamId);
+        Project project = new Project();
+        project.id(projectId);
+        team.project(project);
+
+        Sprint currentSprint = new Sprint();
+        currentSprint.id(sprintId);
+
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        List<Student> students = new ArrayList<>(List.of(student1, student2));
+        PresentationOrder presentationOrder1 = new PresentationOrder();
+        presentationOrder1.student(student2);
+        presentationOrder1.value(2);
+
+        PresentationOrder presentationOrder2 = new PresentationOrder();
+        presentationOrder2.student(student1);
+        presentationOrder2.value(1);
+
+        List<PresentationOrder> presentationOrder = new ArrayList<>(List.of(presentationOrder2, presentationOrder1));
+
+        when(teamRepository.findById(teamId)).thenReturn(java.util.Optional.of(team));
+        when(sprintService.getCurrentSprint(projectId)).thenReturn(currentSprint);
+        when(studentRepository.findByTeam(teamId)).thenReturn(students);
+        when(presentationOrderService.getPresentationOrderByTeamIdAndSprintId(teamId, sprintId)).thenReturn(presentationOrder);
+
+        List<Student> result = teamService.getStudentsByTeamId(teamId, true);
+
+        verify(teamRepository, times(1)).findById(teamId);
+        verify(sprintService, times(1)).getCurrentSprint(projectId);
+        verify(studentRepository, times(2)).findByTeam(teamId);
+        verify(presentationOrderService, times(1)).getPresentationOrderByTeamIdAndSprintId(teamId, sprintId);
+
+        assertEquals(2, result.size());
+        assertEquals(1, result.get(0).id());
+        assertEquals(2, result.get(1).id());
+    }
+
+    @Test
+    void testGetStudentsByTeamIdOrderedTrueWithoutCurrentSprint() {
+        Integer teamId = 1;
+        Integer projectId = 1;
+
+        Team team = new Team();
+        team.id(teamId);
+        Project project = new Project();
+        project.id(projectId);
+        team.project(project);
+
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        List<Student> students = new ArrayList<>(List.of(student1, student2));
+
+        when(teamRepository.findById(teamId)).thenReturn(java.util.Optional.of(team));
+        when(sprintService.getCurrentSprint(projectId)).thenReturn(null);
+        when(studentRepository.findByTeam(teamId)).thenReturn(students);
+
+        List<Student> result = teamService.getStudentsByTeamId(teamId, true);
+
+        verify(teamRepository, times(1)).findById(teamId);
+        verify(sprintService, times(1)).getCurrentSprint(projectId);
+        verify(studentRepository, times(2)).findByTeam(teamId);
+        verify(presentationOrderService, times(0)).getPresentationOrderByTeamIdAndSprintId(anyInt(), anyInt());
+
+        assertEquals(2, result.size());
+        assertEquals(1, result.get(0).id());
+        assertEquals(2, result.get(1).id());
+    }
+
+    @Test
+    void testGenerateTeamsWithSufficientStudents() {
+        Integer projectId = 1;
+        Project projectDetails = new Project();
+        projectDetails.nbTeams(2);
+        projectDetails.nbWomen(1);
+
+        List<Student> women = List.of(new Student(), new Student());
+        List<Student> men = List.of(new Student(), new Student(), new Student(), new Student());
+
+        when(studentRepository.findByGenderAndProjectId(Gender.WOMAN, projectId)).thenReturn(women);
+        when(studentRepository.findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN, projectId)).thenReturn(men);
+
+        List<Team> createdTeams = List.of(new Team(), new Team());
+        when(teamRepository.save(any(Team.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(teamRepository.findAllOrderByAvgGradeOrderByAsc(anyInt())).thenReturn(createdTeams);
+
+        doNothing().when(projectService).updateProject(eq(projectId), any(Project.class));
+        doReturn(createdTeams).when(teamService).createTeams(anyInt(), anyInt());
+        doNothing().when(teamService).fillTeams(anyList(), anyList(), anyList(), anyInt(), anyBoolean(), anyInt());
+
+        teamService.generateTeams(projectId, projectDetails, false);
+
+        verify(studentRepository, times(1)).findByGenderAndProjectId(Gender.WOMAN, projectId);
+        verify(studentRepository, times(1)).findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN, projectId);
+        verify(projectService, times(1)).updateProject(eq(projectId), eq(projectDetails));
+        verify(teamService, times(1)).createTeams(projectId, projectDetails.nbTeams());
+        verify(teamService, times(1)).fillTeams(createdTeams, women, men, projectDetails.nbWomen(), false, projectId);
+    }
+
+    @Test
+    void testGetSprintGradesWithStudentsAndBonuses() {
+        int teamId = 1;
+        int sprintId = 1;
+
+        double teamGrade = 15.0;
+        when(teamRepository.findAvgGradeByTeam(any(Team.class))).thenReturn(teamGrade);
+
+        Team team = new Team();
+        team.id(teamId);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+
+        List<Student> students = List.of(new Student(), new Student());
+        when(studentRepository.findByTeam(teamId)).thenReturn(students);
+        Bonus bonus1 = new Bonus();
+        bonus1.value(5.0F);
+        Bonus bonus2 = new Bonus();
+        bonus2.value(3.0F);
+
+        List<Bonus> bonuses = List.of(bonus1, bonus2);
+        when(studentService.getStudentBonuses(anyInt(), anyInt())).thenReturn(bonuses);
+
+        List<Double> individualGrades = List.of(14.0, 16.0);
+        doReturn(individualGrades).when(teamService).getIndividualTotalGrades(teamId, sprintId);
+
+        List<Double> sprintGrades = teamService.getSprintGrades(teamId, sprintId);
+
+        assertEquals(2, sprintGrades.size());
+    }
+
+    @Test
+    void testGetSprintGradesWithoutStudents() {
+        int teamId = 1;
+        int sprintId = 1;
+        Team team = new Team();
+        team.id(teamId);
+
+        double teamGrade = 15.0;
+        when(teamRepository.findAvgGradeByTeam(any(Team.class))).thenReturn(teamGrade);
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(team));
+        when(studentRepository.findByTeam(teamId)).thenReturn(Collections.emptyList());
+
+        List<Double> sprintGrades = teamService.getSprintGrades(teamId, sprintId);
+
+        assertEquals(1, sprintGrades.size());
+        assertEquals(-1.0, sprintGrades.get(0));
     }
 
 }
