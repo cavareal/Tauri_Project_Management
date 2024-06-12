@@ -7,11 +7,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Column, Row } from "@/components/atoms/containers"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/vue-query"
 import { onMounted, ref, watch } from "vue"
-import { getStudentsByTeamId } from "@/services/student"
 import { getStudentBonus, updateBonus } from "@/services/bonus"
 import { createToast } from "@/utils/toast"
 import type { Student } from "@/types/student"
 import { sendNotificationsByTeam } from "@/services/notification"
+import { getPresentationOrder } from "@/services/team"
 
 const props = defineProps<{
 	sprintId: string,
@@ -118,7 +118,8 @@ watch(() => [teamStudents.value, props.sprintId], () => {
 })
 
 onMounted(async() => {
-	teamStudents.value = await getStudentsByTeamId(Number(props.teamId), true)
+	teamStudents.value = await getPresentationOrder(props.teamId, props.sprintId)
+	console.log(teamStudents.value)
 	updateBonuses()
 })
 </script>
