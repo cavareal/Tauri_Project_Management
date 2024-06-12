@@ -182,7 +182,7 @@ export const getStudentsAverageByTeam = async(teamId: number, sprintId: string):
 export const getTeamTotalGrade = async(teamId: number, sprintId: number): Promise<number> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/sprint/${sprintId}/total`,
-		responseSchema: z.coerce.number()
+		responseSchema: z.any()
 	})
 
 	if (response.status === "error") {
@@ -234,7 +234,7 @@ export const getIndividualTotalGrades = async(teamId: number, sprintId: number):
 export const getSprintGrades = async(teamId: number, sprintId: number): Promise<number[]> => {
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/sprint/${sprintId}/grades`,
-		responseSchema: z.number().array()
+		responseSchema: z.any()
 	})
 
 	if (response.status === "error") {
