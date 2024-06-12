@@ -116,8 +116,12 @@ const { mutate: mutateBonuses, isPending: isPendingBonuses, error: errorBonuses 
 	mutationKey: ["limited-bonus"], mutationFn: async () => {
 		console.log(props)
 		await setValidationBonusesByTeam(Number(props.selectedTeam), Number(props.selectedSprint), Cookies.getUserId())
-			.then(() => emits("valid:limited-bonus"))
-			.then(() => createToast("Les bonus limités ont été validées."))
+			.then(() => {
+				emits("valid:limited-bonus")
+				createToast("Les bonus limités ont été validées.")
+				refetchIndividualGradesByTeam()
+				refetchValidationBonusesByTeam()
+			})
 	}
 })
 
@@ -139,9 +143,8 @@ const DIALOG_DESCRIPTION
 
 		
 		<div v-if="individualGradesByTeam?.length > 0">
-			<p v-for="(author, index) in individualGradesByTeam" :key="index">{{ author.validCount }}/{{ author.count }}
-				note(s)
-				validées, attribuée(s) par {{ author.name }}</p>
+			<p v-for="(author, index) in individualGradesByTeam" :key="index">{{ author.count }}
+				note(s) attribuée(s) par {{ author.name }}, {{ author.validCount }} validées</p>
 		</div>
 		<div v-else>
 			<p>Aucune note individuelle n'a été attribuées.</p>
