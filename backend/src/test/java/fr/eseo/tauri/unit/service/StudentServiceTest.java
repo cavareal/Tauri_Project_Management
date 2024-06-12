@@ -8,6 +8,7 @@ import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.BonusRepository;
+import fr.eseo.tauri.repository.CommentRepository;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.*;
@@ -70,6 +71,9 @@ class StudentServiceTest {
 
     @Mock
     private PresentationOrderService presentationOrderService;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @InjectMocks
     private StudentService studentService;
@@ -850,6 +854,120 @@ class StudentServiceTest {
         verify(presentationOrderService, times(sprints.size())).createPresentationOrder(any(PresentationOrder.class));
 
         verify(bonusService, times(sprints.size() * 2)).createBonus(any(Bonus.class));
+    }
+
+    @Test
+    void getFeedbacksByStudentAndSprintShouldReturnFeedbacksWhenTheyExist() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+        List<Comment> expectedComments = Arrays.asList(new Comment(), new Comment());
+
+        when(commentRepository.findAllByStudentIdAndSprintId(studentId, sprintId)).thenReturn(expectedComments);
+
+        List<Comment> result = studentService.getFeedbacksByStudentAndSprint(studentId, sprintId);
+
+        assertEquals(expectedComments, result);
+    }
+
+    @Test
+    void getFeedbacksByStudentAndSprintShouldReturnEmptyListWhenNoFeedbacksExist() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+
+        when(commentRepository.findAllByStudentIdAndSprintId(studentId, sprintId)).thenReturn(Collections.emptyList());
+
+        List<Comment> result = studentService.getFeedbacksByStudentAndSprint(studentId, sprintId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testPopulateDatabaseFromCSV_Success() throws IOException, CsvValidationException {
+        String csvContent = "John Doe,M,B,15.5,16.0\nJane Smith,F,,18.0,17.5";
+        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
+
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.isEmpty()).thenReturn(false);
+        when(mockFile.getInputStream()).thenReturn(inputStream);
+
+        GradeType gradeType1 = new GradeType();
+        GradeType gradeType2 = new GradeType();
+        List<GradeType> gradeTypes = Arrays.asList(gradeType1, gradeType2);
+
+        when(gradeTypeService.createGradeTypesFromCSV(any(InputStream.class))).thenReturn(gradeTypes);
+
+        Map<String, Object> extractedData = new HashMap<>();
+        extractedData.put(StudentService.MAP_KEY_NAMES, Arrays.asList("John Doe", "Jane Smith"));
+        extractedData.put(StudentService.MAP_KEY_GENDERS, Arrays.asList("M", "F"));
+        extractedData.put(StudentService.MAP_KEY_BACHELORS, Arrays.asList("B", ""));
+        extractedData.put(StudentService.MAP_KEY_GRADES, Arrays.asList(
+                Arrays.asList("15.5", "16.0"),
+                Arrays.asList("18.0", "17.5")
+        ));
+
+        // Use spy to stub methods on the studentService instance
+        StudentService spyStudentService = spy(studentService);
+        doReturn(extractedData).when(spyStudentService).extractNamesGenderBachelorAndGrades(any(InputStream.class));
+
+        Student student1 = new Student();
+        Student student2 = new Student();
+
+        doReturn(student1).when(spyStudentService).createStudentFromData("John Doe", "M", "B", 1);
+        doReturn(student2).when(spyStudentService).createStudentFromData("Jane Smith", "F", "", 1);
+
+        spyStudentService.populateDatabaseFromCSV(mockFile, 1);
+
+        verify(gradeTypeService, times(1)).createGradeTypesFromCSV(any(InputStream.class));
+        verify(spyStudentService, times(1)).extractNamesGenderBachelorAndGrades(any(InputStream.class));
+        verify(spyStudentService, times(2)).createStudent(student1);
+        verify(spyStudentService, times(2)).createStudent(student2);
+
+        verify(gradeService, times(4)).createGrade(any(Grade.class)); // 4 grades in total
+    }
+
+    @Test
+    void testPopulateDatabaseFromCSV_GradeParsingError() throws IOException, CsvValidationException {
+        String csvContent = "John Doe,M,B,15.5,abc\nJane Smith,F,,18.0,17.5";
+        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
+
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.isEmpty()).thenReturn(false);
+        when(mockFile.getInputStream()).thenReturn(inputStream);
+
+        GradeType gradeType1 = new GradeType();
+        GradeType gradeType2 = new GradeType();
+        List<GradeType> gradeTypes = Arrays.asList(gradeType1, gradeType2);
+
+        when(gradeTypeService.createGradeTypesFromCSV(any(InputStream.class))).thenReturn(gradeTypes);
+
+        Map<String, Object> extractedData = new HashMap<>();
+        extractedData.put(StudentService.MAP_KEY_NAMES, Arrays.asList("John Doe", "Jane Smith"));
+        extractedData.put(StudentService.MAP_KEY_GENDERS, Arrays.asList("M", "F"));
+        extractedData.put(StudentService.MAP_KEY_BACHELORS, Arrays.asList("B", ""));
+        extractedData.put(StudentService.MAP_KEY_GRADES, Arrays.asList(
+                Arrays.asList("15.5", "abc"),
+                Arrays.asList("18.0", "17.5")
+        ));
+
+        // Use spy to stub methods on the studentService instance
+        StudentService spyStudentService = spy(studentService);
+        doReturn(extractedData).when(spyStudentService).extractNamesGenderBachelorAndGrades(any(InputStream.class));
+
+        Student student1 = new Student();
+        Student student2 = new Student();
+
+        doReturn(student1).when(spyStudentService).createStudentFromData("John Doe", "M", "B", 1);
+        doReturn(student2).when(spyStudentService).createStudentFromData("Jane Smith", "F", "", 1);
+
+        spyStudentService.populateDatabaseFromCSV(mockFile, 1);
+
+        verify(gradeTypeService, times(1)).createGradeTypesFromCSV(any(InputStream.class));
+        verify(spyStudentService, times(1)).extractNamesGenderBachelorAndGrades(any(InputStream.class));
+        verify(spyStudentService, times(2)).createStudent(student1);
+        verify(spyStudentService, times(2)).createStudent(student2);
+
+        // Ensure createGrade is called only for valid grades
+        verify(gradeService, times(3)).createGrade(any(Grade.class)); // 3 valid grades in total
     }
 
 }
