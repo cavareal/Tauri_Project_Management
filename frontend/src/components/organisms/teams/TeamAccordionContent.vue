@@ -71,19 +71,19 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 
 		<Column v-if="criteria" class="w-auto border rounded px-4 py-3 min-w-56">
 			<Subtitle class="mb-1">Critères de génération</Subtitle>
-			<Row class="gap-1">
+			<Row class="gap-1 items-center">
 				<CheckIcon :checked="criteria.validCriteriaWoman" />
 				<Text>Nombre de femmes : {{ criteria.nbWomens }}</Text>
 			</Row>
-			<Row class="gap-1">
+			<Row class="gap-1 items-center">
 				<CheckIcon :checked="criteria.validCriteriaBachelor" />
 				<Text>Nombre de bachelors : {{ criteria.nbBachelors }}</Text>
 			</Row>
-			<Row class="gap-1" v-if="average">
+			<Row class="gap-1 items-center" v-if="average">
 				<CheckIcon :checked="true" />
 				<Text>Moyenne : {{ average.toPrecision(4) }}</Text>
 			</Row>
-			<Row class="gap-1">
+			<Row class="gap-1 items-center">
 				<CheckIcon :checked="students.length > 0" />
 				<Text>Nombre d'étudiants : {{ students.length }}</Text>
 			</Row>
