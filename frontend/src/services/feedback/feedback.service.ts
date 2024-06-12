@@ -97,3 +97,16 @@ export const getCommentsByTeamAndSprintAndAuthor = async(teamId: string, sprintI
 
 	return response.data
 }
+
+export const getIndividualsCommentsBySprintIdAndTeamId = async(sprintId: string, teamId: string): Promise<Feedback[]> => {
+	const response = await queryAndValidate({
+		route: `teams/${teamId}/sprints/${sprintId}/individual-comments`,
+		responseSchema: FeedbackSchema.array()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
