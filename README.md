@@ -2,11 +2,11 @@
 
 ## Présentation
 
-Ce projet à pour but de développer une application afin de permettre une gestion de projet, des équipes, des notes... pour la matière Projet Génie Logiciel
+Ce projet à pour but de développer une application afin de permettre une gestion de projet, des équipes, des notes... pour la matière Projet Génie Logiciel !
 
 
 
-## Setup application
+## Lancement de l'application en local
 
 ### Backend
 
@@ -22,7 +22,7 @@ https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 
 3. Cliquer sur `Import Gradle Project` dans la fenêtre de notification
 
-4. Modifier dans le fichier "application.properties" : datasource.url, datasource.username et datasource.password
+4. Copier/coller le fichier `backend/src/main/resources/.env.example` et renomer en .env. Puis ajouter l'utilisateur et mot de passe de la BDD.
 
 4. Cliquer sur l'icône `Gradle` dans la sidebar de droite et cliquer sur `Tasks > application > bootRun`
 
