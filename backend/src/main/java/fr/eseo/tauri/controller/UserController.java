@@ -39,77 +39,84 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<User> getUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-		User user = userService.getUserById(token, id);
+	public ResponseEntity<User> getUserById(@PathVariable Integer id) {
+		User user = userService.getUserById(id);
 		return ResponseEntity.ok(user);
 	}
 
 	@GetMapping(path = "/roles/{roleType}")
-	public Iterable<User> getUsersByRole(@RequestHeader("Authorization") String token, @PathVariable RoleType roleType) {
-		return roleService.getUsersByRoleType(token, roleType);
+	public Iterable<User> getUsersByRole(@PathVariable RoleType roleType) {
+		return roleService.getUsersByRoleType(roleType);
 	}
 
 	@PostMapping
-	public ResponseEntity<User> createUser(@Validated(Create.class) @RequestBody User user) {
+	public ResponseEntity<User> createUser(@Validated(Create.class) @RequestBody User user) throws IllegalArgumentException {
 		return ResponseEntity.ok(userService.createUser(user));
 	}
 
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<String> updateUser(@RequestHeader("Authorization") String token, @PathVariable Integer id, @Validated(Update.class) @RequestBody User user) {
-		userService.updateUser(token, id, user);
+	public ResponseEntity<String> updateUser(@PathVariable Integer id, @Validated(Update.class) @RequestBody User user) {
+		userService.updateUser(id, user);
 		CustomLogger.info(responseMessage.update());
 		return ResponseEntity.ok(responseMessage.update());
 	}
 
 	@DeleteMapping(path = "/delete/{id}")
-	public ResponseEntity<String> deleteUserById(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-		userService.deleteUserById(token, id);
+	public ResponseEntity<String> deleteUserById(@PathVariable Integer id) {
+		userService.deleteUserById(id);
 		CustomLogger.info(responseMessage.delete());
 		return ResponseEntity.ok(responseMessage.delete());
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> deleteAllUsers(@RequestHeader("Authorization") String token) {
-		userService.deleteAllUsers(token);
+	public ResponseEntity<String> deleteAllUsers() {
+		userService.deleteAllUsers();
 		CustomLogger.info(responseMessage.deleteAll());
 		return ResponseEntity.ok(responseMessage.deleteAll());
 	}
 
 	@GetMapping(path = "/{id}/permissions/{permissionType}")
-	public ResponseEntity<Boolean> hasPermission(@RequestHeader("Authorization") String token, @PathVariable Integer id, @PathVariable PermissionType permissionType) {
-		var hasPermission = userService.hasPermission(token, id, permissionType);
+	public ResponseEntity<Boolean> hasPermission(@PathVariable Integer id, @PathVariable PermissionType permissionType) {
+		var hasPermission = userService.hasPermission(id, permissionType);
 		return ResponseEntity.ok(hasPermission);
 	}
 
 	@GetMapping(path = "/{id}/permissions")
-	public ResponseEntity<List<PermissionType>> getAllPermissions(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-		var permissions = userService.getPermissionsByUser(token, id);
+	public ResponseEntity<List<PermissionType>> getAllPermissions(@PathVariable Integer id) {
+		var permissions = userService.getPermissionsByUser(id);
 		return ResponseEntity.ok(permissions);
 	}
 
 	@GetMapping("{id}/team")
-	public ResponseEntity<Team> getTeamByMemberId(@RequestHeader("Authorization") String token, @PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
-		Team team = userService.getTeamByMemberId(token, id, projectId);
+	public ResponseEntity<Team> getTeamByMemberId(@PathVariable Integer id, @RequestParam("projectId") Integer projectId) {
+		Team team = userService.getTeamByMemberId(id, projectId);
+		CustomLogger.info("Team found: " + team);
 		return ResponseEntity.ok(team);
 	}
 
 	@GetMapping("{id}/roles")
-	public ResponseEntity<List<RoleType>> getRolesByUserId(@RequestHeader("Authorization") String token, @PathVariable Integer id) {
-		List<RoleType> roles = userService.getRolesByUserId(token, id);
+	public ResponseEntity<List<RoleType>> getRolesByUserId(@PathVariable Integer id) {
+		List<RoleType> roles = userService.getRolesByUserId(id);
 		return ResponseEntity.ok(roles);
 	}
 
 	@GetMapping("/{userId}/notifications")
-	public ResponseEntity<List<Notification>> getAllNotificationsUser(@RequestHeader("Authorization") String token, @PathVariable Integer userId) {
-		List<Notification> notifications = notificationService.getNotificationsByUser(token, userId);
+	public ResponseEntity<List<Notification>> getAllNotificationsUser(@PathVariable Integer userId) {
+		List<Notification> notifications = notificationService.getNotificationsByUser(userId);
 		return ResponseEntity.ok(notifications);
 	}
 
 	@GetMapping("/{authorId}/rated-grades")
-	public ResponseEntity<List<Grade>> getRatedGradesByAuthorId(@RequestHeader("Authorization") String token, @PathVariable Integer authorId) {
+	public ResponseEntity<List<Grade>> getRatedGradesByAuthorId(@PathVariable Integer authorId) {
 		var grades = gradeService.getRatedGradesByAuthorId(authorId);
 		return ResponseEntity.ok(grades);
+	}
+
+	@GetMapping("/name/{name}")
+	public ResponseEntity<User> getUserByName(@PathVariable String name){
+		User user = userService.getUserByName(name);
+		return ResponseEntity.ok(user);
 	}
 
 }

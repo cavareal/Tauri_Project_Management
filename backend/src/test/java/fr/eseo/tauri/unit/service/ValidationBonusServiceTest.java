@@ -4,7 +4,6 @@ import fr.eseo.tauri.model.Bonus;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.ValidationBonusRepository;
-import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.BonusService;
 import fr.eseo.tauri.service.UserService;
 import fr.eseo.tauri.service.ValidationBonusService;
@@ -23,8 +22,6 @@ import static org.mockito.Mockito.*;
 
 class ValidationBonusServiceTest {
 
-    @Mock
-    AuthService authService;
 
     @Mock
     ValidationBonusRepository validationBonusRepository;
@@ -45,84 +42,71 @@ class ValidationBonusServiceTest {
 
     @Test
     void getValidationBonusByAuthorIdShouldReturnBonusWhenAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(validationBonusRepository.findByAuthorIdAndBonusId(anyInt(), anyInt())).thenReturn(new ValidationBonus());
 
-        ValidationBonus result = validationBonusService.getValidationBonusByAuthorId("token", 1, 1);
+        ValidationBonus result = validationBonusService.getValidationBonusByAuthorId(1, 1);
 
         assertNotNull(result);
     }
 
     @Test
-    void getValidationBonusByAuthorIdShouldThrowExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> validationBonusService.getValidationBonusByAuthorId("token", 1, 1));
-    }
-
-    @Test
     void getAllValidationBonusesShouldReturnBonusesWhenAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(validationBonusRepository.findAllByBonusId(anyInt())).thenReturn(Arrays.asList(new ValidationBonus(), new ValidationBonus()));
 
-        List<ValidationBonus> result = validationBonusService.getAllValidationBonuses("token", 1);
+        List<ValidationBonus> result = validationBonusService.getAllValidationBonuses(1);
 
         assertEquals(2, result.size());
     }
 
     @Test
-    void getAllValidationBonusesShouldThrowExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> validationBonusService.getAllValidationBonuses("token", 1));
-    }
-
-    @Test
     void getAllValidationBonusesShouldReturnEmptyListWhenNoBonuses() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(validationBonusRepository.findAllByBonusId(anyInt())).thenReturn(Collections.emptyList());
 
-        List<ValidationBonus> result = validationBonusService.getAllValidationBonuses("token", 1);
+        List<ValidationBonus> result = validationBonusService.getAllValidationBonuses(1);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
     void createValidationBonusShouldSaveBonusWhenAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-        when(bonusService.getBonusById(anyString(), anyInt())).thenReturn(new Bonus());
-        when(userService.getUserById(anyString(), anyInt())).thenReturn(new User());
+        when(bonusService.getBonusById(anyInt())).thenReturn(new Bonus());
+        when(userService.getUserById(anyInt())).thenReturn(new User());
         ValidationBonus validationBonus = new ValidationBonus();
         validationBonus.bonusId(1);
         validationBonus.authorId(1);
 
-        validationBonusService.createValidationBonus("token", validationBonus);
+        validationBonusService.createValidationBonus(validationBonus);
 
         verify(validationBonusRepository, times(1)).save(any(ValidationBonus.class));
     }
 
     @Test
-    void createValidationBonusShouldThrowExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-        ValidationBonus validationBonus = new ValidationBonus();
-
-        assertThrows(SecurityException.class, () -> validationBonusService.createValidationBonus("token", validationBonus));
-    }
-
-    @Test
     void deleteAllValidationBonusesShouldDeleteBonusesWhenAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-
-        validationBonusService.deleteAllValidationBonuses("token", 1);
+        validationBonusService.deleteAllValidationBonuses(1);
 
         verify(validationBonusRepository, times(1)).deleteAllByBonusId(anyInt());
     }
 
     @Test
-    void deleteAllValidationBonusesShouldThrowExceptionWhenNotAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+    void getValidationByAuthorIdShouldReturnValidationBonusesWhenTheyExist() {
+        Integer authorId = 1;
+        List<ValidationBonus> expectedBonuses = Arrays.asList(new ValidationBonus(), new ValidationBonus());
 
-        assertThrows(SecurityException.class, () -> validationBonusService.deleteAllValidationBonuses("token", 1));
+        when(validationBonusRepository.getValidationByAuthorId(authorId)).thenReturn(expectedBonuses);
+
+        List<ValidationBonus> result = validationBonusService.getValidationByAuthorId(authorId);
+
+        assertEquals(expectedBonuses, result);
     }
 
+    @Test
+    void getValidationByAuthorIdShouldReturnEmptyListWhenNoValidationBonusesExist() {
+        Integer authorId = 1;
+
+        when(validationBonusRepository.getValidationByAuthorId(authorId)).thenReturn(Collections.emptyList());
+
+        List<ValidationBonus> result = validationBonusService.getValidationByAuthorId(authorId);
+
+        assertTrue(result.isEmpty());
+    }
 }

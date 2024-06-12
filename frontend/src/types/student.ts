@@ -6,12 +6,12 @@ import { z } from "zod"
 export const GenderSchema = z.enum([
 	"MAN",
 	"WOMAN"
-])
+]).nullable()
 export type Gender = z.infer<typeof GenderSchema>
 
 export const StudentSchema = UserSchema.extend({
 	gender: GenderSchema,
-	bachelor: z.boolean(),
+	bachelor: z.boolean().nullable(),
 	teamRole: z.string().nullable().optional(),
 	team: TeamSchema.nullable(),
 	project: ProjectSchema
@@ -23,6 +23,9 @@ export const CreateStudentSchema = StudentSchema.omit({
 	team: true,
 	project: true
 }).extend({
+	gender: GenderSchema,
+	bachelor: z.boolean(),
+	name: z.string(),
 	teamId: z.coerce.number().optional(),
 	projectId: z.coerce.number()
 })

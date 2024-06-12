@@ -5,6 +5,8 @@ export const fakeProject = (): Project => {
 		id: 1,
 		nbTeams: 6,
 		nbWomen: 1,
-		phase: "COMPOSING"
+		phase: "COMPOSING",
+		actual: true,
+		name: "Project 1"
 	}
 }

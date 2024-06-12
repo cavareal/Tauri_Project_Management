@@ -1,6 +1,7 @@
 package fr.eseo.tauri.repository;
 
 import fr.eseo.tauri.model.Team;
+import fr.eseo.tauri.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -39,12 +40,16 @@ public interface TeamRepository extends JpaRepository<Team, Integer> {
     @Query("SELECT t.name FROM Team t")
     List<String> findAllTeamNames();
 
-    @Query("SELECT s.team FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gt.name = 'Moyenne' and s.team IS NOT NULL GROUP BY s.team ORDER BY AVG(gr.value) ASC")
-    List<Team> findAllOrderByAvgGradeOrderByAsc();
+    @Query("SELECT s.team FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE gr.gradeType.project.id = :projectId AND gt.name = 'Moyenne' AND s.team IS NOT NULL GROUP BY s.team ORDER BY AVG(gr.value) ASC")
+    List<Team> findAllOrderByAvgGradeOrderByAsc(Integer projectId);
 
     @Query("SELECT AVG(gr.value) FROM Grade gr JOIN gr.student s JOIN gr.gradeType gt WHERE s.team = ?1 AND gt.name = 'Moyenne'")
     Double findAvgGradeByTeam(Team team);
 
     @Query("SELECT s.team FROM Student s WHERE s.id = :studentId")
     Team findTeamByStudentId(int studentId);
+
+    @Query("SELECT t.leader FROM Team t WHERE t.id = :teamId AND t.project.actual = true")
+    User findLeaderByTeamId(Integer teamId);
+
 }

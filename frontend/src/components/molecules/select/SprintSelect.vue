@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/vue-query"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Skeleton from "@/components/ui/skeleton/Skeleton.vue"
 import { cn } from "@/utils/style"
-import { getCurrentSprint, getSprints } from "@/services/sprint"
+import { getCurrentSprint, getGradedSprints } from "@/services/sprint"
 import { formatSprintEndType } from "@/types/sprint"
 
 defineProps<{
@@ -23,8 +23,7 @@ const onValueChange = (newValue: string) => {
 const { data: sprints } = useQuery({
 	queryKey: ["sprints"],
 	queryFn: async() => {
-		let sprints = await getSprints()
-		sprints = sprints.filter(sprint => sprint.endType === "NORMAL_SPRINT" || sprint.endType === "FINAL_SPRINT")
+		const sprints = await getGradedSprints()
 		if (sprints && sprints.length > 0) {
 			const currentSprint = getCurrentSprint(sprints)
 			onValueChange(currentSprint?.id.toString() ?? sprints[0].id.toString())

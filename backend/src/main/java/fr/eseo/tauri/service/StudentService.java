@@ -4,16 +4,15 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
 import fr.eseo.tauri.exception.EmptyResourceException;
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.BonusRepository;
+import fr.eseo.tauri.repository.CommentRepository;
 import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
-import fr.eseo.tauri.security.ApplicationSecurity;
 import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
@@ -27,7 +26,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class StudentService {
 
-    private final AuthService authService;
     private final StudentRepository studentRepository;
     private final ProjectService projectService;
     private final TeamService teamService;
@@ -39,90 +37,81 @@ public class StudentService {
     private final PresentationOrderService presentationOrderService;
     private final BonusRepository bonusRepository;
     private final BonusService bonusService;
-    private final ApplicationSecurity applicationSecurity;
     private final GradeRepository gradeRepository;
     private final UserService userService;
+    private final CommentRepository commentRepository;
 
     public static final String MAP_KEY_NAMES = "names";
     public static final String MAP_KEY_GENDERS = "genders";
     public static final String MAP_KEY_BACHELORS = "bachelors";
     public static final String MAP_KEY_GRADES = "grades";
-    private static final String PASSWORD = "password";
 
-    public Student getStudentById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readStudent"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Student getStudentById(Integer id) {
         return studentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("student", id));
     }
 
-    public List<Student> getAllStudentsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readStudents"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Student> getAllStudentsByProject(Integer projectId) {
         return studentRepository.findAllByProject(projectId);
     }
 
-    public void createStudent(String token, Student student) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
+    public void createStudent(Student student) {
+        if(student.projectId() != null) student.project(projectService.getProjectById(student.projectId()));
+        if(student.teamId() != null)student.team(teamService.getTeamById(student.teamId()));
+        if(Objects.equals(student.email(), "")){
+            String[] nameParts = student.name().split(" ");
+            student.email(nameParts[1].toLowerCase() + "." + nameParts[0].toLowerCase() + "@reseau.eseo.fr");
         }
-        if(student.projectId() != null) student.project(projectService.getProjectById(token, student.projectId()));
-        if(student.teamId() != null)student.team(teamService.getTeamById(token, student.teamId()));
         studentRepository.save(student);
 
         Role role = new Role();
         role.user(student);
         role.type(RoleType.OPTION_STUDENT);
-        roleService.createRole(token, role);
+        roleService.createRole(role);
 
-        List<Sprint> sprints = sprintService.getAllSprintsByProject(token, student.projectId());
+        List<Sprint> sprints = sprintService.getAllSprintsByProject(student.projectId());
         if(!sprints.isEmpty()) {
+            var teamsIndexes = new HashMap<Integer, Integer>();
+            for (var team : teamService.getAllTeamsByProject(student.projectId())) {
+                teamsIndexes.put(team.id(), 0);
+            }
             for (Sprint sprint : sprints) {
-                PresentationOrder presentationOrder = new PresentationOrder(sprint, student);
-                presentationOrderService.createPresentationOrder(token, presentationOrder);
+                var presentationOrder = new PresentationOrder(sprint, student);
+                var value = teamsIndexes.get(student.team().id());
+                presentationOrder.value(value);
+                teamsIndexes.put(student.team().id(), value + 1);
+                presentationOrderService.createPresentationOrder(presentationOrder);
                 Bonus limitedBonus = new Bonus((float) 0, true, sprint, student);
                 Bonus unlimitedBonus = new Bonus((float) 0, false, sprint, student);
-                bonusService.createBonus(token, limitedBonus);
-                bonusService.createBonus(token, unlimitedBonus);
+                bonusService.createBonus(limitedBonus);
+                bonusService.createBonus(unlimitedBonus);
             }
         }
     }
 
-    public void updateStudent(String token, Integer id, Student updatedStudent) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateStudent"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        Student student = getStudentById(token, id);
+    public void updateStudent(Integer id, Student updatedStudent) {
+        Student student = getStudentById(id);
 
         if (updatedStudent.gender() != null) student.gender(updatedStudent.gender());
         if (updatedStudent.bachelor() != null) student.bachelor(updatedStudent.bachelor());
         if (updatedStudent.teamRole() != null) student.teamRole(updatedStudent.teamRole());
-        if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(token, updatedStudent.projectId()));
-        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(token, updatedStudent.teamId()));
+        if (updatedStudent.projectId() != null) student.project(projectService.getProjectById(updatedStudent.projectId()));
+        if (updatedStudent.teamId() != null) student.team(teamService.getTeamById(updatedStudent.teamId()));
 
         studentRepository.save(student);
     }
 
-    public void deleteStudent(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteStudent"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        getStudentById(token, id);
+    public void deleteStudent(Integer id) {
+        getStudentById(id);
         studentRepository.deleteById(id);
     }
 
-    public void deleteAllStudentsByProject(String token, Integer projectId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteStudent"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        var students = getAllStudentsByProject(token, projectId);
+    public void deleteAllStudentsByProject(Integer projectId) {
+        var students = getAllStudentsByProject(projectId);
         for (var student : students) {
-            userService.deleteUserById(token, student.id());
+            userService.deleteUserById(student.id());
         }
-        gradeTypeService.deleteAllImportedGradeTypes(token);
-        teamService.deleteAllTeamsByProject(token, projectId);
+        gradeTypeService.deleteAllImportedGradeTypes();
+        teamService.deleteAllTeamsByProject(projectId);
     }
 
 
@@ -195,7 +184,7 @@ public class StudentService {
      * @return the created Student object
      * @throws IllegalArgumentException if the name or gender is null or empty, or if the bachelor status is null
      */
-    public Student createStudentFromData(String token, String name, String gender, String bachelor, Integer projectId) {
+    public Student createStudentFromData(String name, String gender, String bachelor, Integer projectId) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
@@ -210,8 +199,7 @@ public class StudentService {
         student.name(name);
         student.gender(gender.equals("M") ? Gender.MAN : Gender.WOMAN);
         student.bachelor(!bachelor.isEmpty());
-        student.project(projectService.getProjectById(token, projectId));
-//        student.password(applicationSecurity.passwordEncoder().encode(PASSWORD));
+        student.project(projectService.getProjectById(projectId));
         student.privateKey("privateKey");
         String[] nameParts = name.split(" "); // Divise le nom en deux parties basées sur l'espace
         student.email(nameParts[1].toLowerCase() + "." + nameParts[0].toLowerCase() + "@reseau.eseo.fr");
@@ -230,17 +218,13 @@ public class StudentService {
      * @param file The CSV file containing the student data.
      */
     @SuppressWarnings("unchecked")
-    public void populateDatabaseFromCSV(String token, MultipartFile file, Integer projectId) throws IOException, CsvValidationException {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addStudent"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public void populateDatabaseFromCSV(MultipartFile file, Integer projectId) throws IOException, CsvValidationException {
         if (file.isEmpty()) {
             CustomLogger.info("Uploaded file is empty");
             throw new EmptyResourceException("uploaded file");
         }
 
-        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(token, file.getInputStream());
+        List<GradeType> gradeTypes = gradeTypeService.createGradeTypesFromCSV(file.getInputStream());
         CustomLogger.info("Successfully created GradeType objects from the CSV file.");
         Map<String, Object> extractedData = extractNamesGenderBachelorAndGrades(file.getInputStream());
 
@@ -250,8 +234,8 @@ public class StudentService {
         List<List<String>> grades = (List<List<String>>) extractedData.get(MAP_KEY_GRADES);
 
         for (int i = 0; i < names.size(); i++) {
-            Student student = createStudentFromData(token, names.get(i), genders.get(i), bachelors.get(i), projectId);
-            createStudent(token, student);
+            Student student = createStudentFromData(names.get(i), genders.get(i), bachelors.get(i), projectId);
+            createStudent(student);
             for (int j = 0; j < grades.get(i).size(); j++) {
 
                 if(!grades.get(i).get(j).trim().isEmpty()) {
@@ -260,7 +244,7 @@ public class StudentService {
                         grade.value(Float.parseFloat(grades.get(i).get(j).trim()));
                         grade.student(student);
                         grade.gradeType(gradeTypes.get(j));
-                        gradeService.createGrade(token, grade);
+                        gradeService.createGrade(grade);
                     } catch (NumberFormatException ignored) {
                         // Do nothing // If the grade is not a number, it is ignored
                     }
@@ -281,17 +265,13 @@ public class StudentService {
      * @return A byte array representing the CSV file.
      * @throws RuntimeException if an IOException occurs while creating the CSV file.
      */
-    public byte[] createStudentsCSV(String token, Integer projectId) throws IOException {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "exportStudents"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public byte[] createStudentsCSV(Integer projectId) throws IOException {
         CustomLogger.info("Downloading students CSV");
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(byteArrayOutputStream);
-        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(token);
-        List<Student> students = getAllStudentsByProject(token, projectId);
+        List<GradeType> importedGrades = gradeTypeService.getAllImportedGradeTypes(projectId);
+        List<Student> students = getAllStudentsByProject(projectId);
 
         CSVWriter csvWriter = new CSVWriter(writer);
         writeHeaders(csvWriter, importedGrades);
@@ -404,25 +384,16 @@ public class StudentService {
         csvWriter.writeNext(row);
     }
 
-    public Bonus getStudentBonus(String token, Integer idStudent, Boolean limited, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readBonuses"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public Bonus getStudentBonus(Integer idStudent, Boolean limited, Integer sprintId) {
         return bonusRepository.findStudentBonus(idStudent, limited, sprintId);
     }
 
-    public List<Bonus> getStudentBonuses(String token, Integer idStudent, Integer sprintId) {
-
+    public List<Bonus> getStudentBonuses(Integer idStudent, Integer sprintId) {
         return bonusRepository.findAllStudentBonuses(idStudent, sprintId);
     }
 
-    public Double getIndividualTotalGrade(String token, Integer id, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrades"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        Integer teamId = userService.getTeamByMemberId(token, id, getStudentById(token, id).projectId()).id();
+    public Double getIndividualTotalGrade(Integer id, Integer sprintId) {
+        Integer teamId = userService.getTeamByMemberId(id, getStudentById(id).projectId()).id();
 
         Double studentGradedTeamGrade = gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName());
 
@@ -431,26 +402,22 @@ public class StudentService {
         return (2*individualGrade + studentGradedTeamGrade)/3;
     }
 
-    public Double getSprintGrade(String token, Integer studentId, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Double getSprintGrade(Integer studentId, Integer sprintId) {
+        Integer teamId = userService.getTeamByMemberId(studentId, getStudentById(studentId).projectId()).id();
 
-        Integer teamId = userService.getTeamByMemberId(token, studentId, getStudentById(token, studentId).projectId()).id();
+        double teamGrade = teamService.getTeamTotalGrade(teamId, sprintId);
 
-        double teamGrade = teamService.getTeamTotalGrade(token, teamId, sprintId);
+        List<Bonus> studentBonuses = getStudentBonuses(studentId, sprintId);
 
-        List<Bonus> studentBonuses = getStudentBonuses(token, studentId, sprintId);
-
-        return 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrade(token, studentId, sprintId));
+        return 0.7*(Math.min(teamGrade + studentBonuses.stream().mapToDouble(Bonus::value).sum(), 20.0)) + 0.3*(getIndividualTotalGrade(studentId, sprintId));
     }
 
-    public Grade getGradeByTypeAndAuthor(String token, Integer id, Integer gradeTypeId, Integer authorId, Integer sprintId) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readGrade"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
+    public Grade getGradeByTypeAndAuthor(Integer id, Integer gradeTypeId, Integer authorId, Integer sprintId) {
         return gradeRepository.findByStudentAndGradeTypeAndAuthor(id, gradeTypeId, authorId, sprintId);
+    }
+
+    public List<Comment> getFeedbacksByStudentAndSprint(Integer studentId, Integer sprintId) {
+        return commentRepository.findAllByStudentIdAndSprintId(studentId, sprintId);
     }
 
 }

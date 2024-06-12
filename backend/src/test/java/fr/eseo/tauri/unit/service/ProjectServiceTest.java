@@ -1,10 +1,12 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.GradeType;
 import fr.eseo.tauri.model.Project;
+import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.model.enumeration.ProjectPhase;
+import fr.eseo.tauri.repository.GradeTypeRepository;
 import fr.eseo.tauri.repository.ProjectRepository;
-import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.ProjectService;
 import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
@@ -25,7 +27,7 @@ class ProjectServiceTest {
     private ProjectRepository projectRepository;
 
     @Mock
-    private AuthService authService;
+    private GradeTypeRepository gradeTypeRepository;
 
     @InjectMocks
     private ProjectService projectService;
@@ -38,63 +40,28 @@ class ProjectServiceTest {
     @Test
     void getProjectByIdShouldReturnProjectWhenAuthorizedAndIdExists() {
         Project project = new Project();
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(projectRepository.findById(anyInt())).thenReturn(Optional.of(project));
 
-        Project result = projectService.getProjectById("token", 1);
+        Project result = projectService.getProjectById(1);
 
         assertEquals(project, result);
     }
 
     @Test
-    void getProjectByIdShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> projectService.getProjectById("token", 1));
-    }
-
-    @Test
     void getProjectByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> projectService.getProjectById("token", 1));
+        assertThrows(ResourceNotFoundException.class, () -> projectService.getProjectById(1));
     }
 
     @Test
     void getAllProjectsShouldReturnProjectsWhenAuthorized() {
         List<Project> projects = new ArrayList<>();
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(projectRepository.findAll()).thenReturn(projects);
 
-        List<Project> result = projectService.getAllProjects("token");
+        List<Project> result = projectService.getAllProjects();
 
         assertEquals(projects, result);
-    }
-
-    @Test
-    void getAllProjectsShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> projectService.getAllProjects("token"));
-    }
-
-    @Test
-    void createProjectShouldCreateWhenAuthorized() {
-        Project project = new Project();
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-
-        projectService.createProject("token", project);
-
-        verify(projectRepository, times(1)).save(project);
-    }
-
-    @Test
-    void createProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        Project project = new Project();
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> projectService.createProject("token", project));
     }
 
     @Test
@@ -104,69 +71,106 @@ class ProjectServiceTest {
         updatedProject.nbTeams(5);
         updatedProject.nbWomen(3);
         updatedProject.phase(ProjectPhase.COMPOSING);
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(projectRepository.findById(anyInt())).thenReturn(Optional.of(project));
 
-        projectService.updateProject("token", 1, updatedProject);
+        projectService.updateProject(1, updatedProject);
 
         verify(projectRepository, times(1)).save(project);
     }
 
     @Test
-    void updateProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        Project updatedProject = new Project();
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> projectService.updateProject("token", 1, updatedProject));
-    }
-
-    @Test
     void updateProjectShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
         Project updatedProject = new Project();
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> projectService.updateProject("token", 1, updatedProject));
+        assertThrows(ResourceNotFoundException.class, () -> projectService.updateProject(1, updatedProject));
     }
 
     @Test
     void deleteAllProjectsShouldDeleteWhenAuthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
-
-        projectService.deleteAllProjects("token");
+        projectService.deleteAllProjects();
 
         verify(projectRepository, times(1)).deleteAll();
     }
 
     @Test
-    void deleteAllProjectsShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> projectService.deleteAllProjects("token"));
-    }
-
-    @Test
     void deleteProjectByIdShouldDeleteWhenAuthorizedAndIdExists() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
         when(projectRepository.findById(anyInt())).thenReturn(Optional.of(new Project()));
 
-        projectService.deleteProjectById("token", 1);
+        projectService.deleteProjectById(1);
 
         verify(projectRepository, times(1)).deleteById(1);
     }
 
     @Test
-    void deleteProjectByIdShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(false);
+    void deleteProjectByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+        when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(SecurityException.class, () -> projectService.deleteProjectById("token", 1));
+        assertThrows(ResourceNotFoundException.class, () -> projectService.deleteProjectById(1));
     }
 
     @Test
-    void deleteProjectByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
-        when(authService.checkAuth(anyString(), anyString())).thenReturn(true);
+    void getActualProjectShouldReturnProjectWhenExists() {
+        Project project = new Project();
+        when(projectRepository.findFirstByActualTrue()).thenReturn(Optional.of(project));
+
+        Project result = projectService.getActualProject();
+
+        assertEquals(project, result);
+    }
+
+    @Test
+    void getActualProjectShouldThrowResourceNotFoundExceptionWhenDoesNotExist() {
+        when(projectRepository.findFirstByActualTrue()).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> projectService.getActualProject());
+    }
+
+    @Test
+    void setActualProjectShouldSetWhenIdExists() {
+        Project project = new Project();
+        Project actualProject = new Project();
+        when(projectRepository.findById(anyInt())).thenReturn(Optional.of(project));
+        when(projectRepository.findFirstByActualTrue()).thenReturn(Optional.of(actualProject));
+
+        projectService.setActualProject(1);
+
+        verify(projectRepository, times(2)).save(any(Project.class));
+    }
+
+    @Test
+    void setActualProjectShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
         when(projectRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> projectService.deleteProjectById("token", 1));
+        assertThrows(ResourceNotFoundException.class, () -> projectService.setActualProject(1));
     }
+
+    @Test
+    void createProjectShouldSaveProjectAndCreateGradeTypesWhenAuthorized() {
+        Project project = new Project();
+
+        projectService.createProject(project);
+
+        verify(projectRepository, times(1)).save(project);
+        verify(gradeTypeRepository, times(GradeTypeName.values().length - 1)).save(any(GradeType.class));
+    }
+
+    @Test
+    void createProjectShouldNotCreateAverageGradeType() {
+        Project project = new Project();
+
+        projectService.createProject(project);
+
+        verify(gradeTypeRepository, never()).save(argThat(gradeType -> gradeType.name().equals(GradeTypeName.AVERAGE.displayName())));
+    }
+
+    @Test
+    void createProjectShouldSetForGroupToFalseForIndividualPerformanceGradeType() {
+        Project project = new Project();
+
+        projectService.createProject(project);
+
+        verify(gradeTypeRepository).save(argThat(gradeType -> gradeType.name().equals(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName()) && !gradeType.forGroup()));
+    }
+
 }

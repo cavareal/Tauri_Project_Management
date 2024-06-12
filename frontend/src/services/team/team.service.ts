@@ -4,6 +4,9 @@ import { TeamSchema } from "@/types/team"
 import { z } from "zod"
 import type { Criteria } from "@/types/criteria"
 import { CriteriaSchema } from "@/types/criteria"
+import { PresentationOrderSchema } from "@/types/presentation-order"
+import type { Student } from "@/types/student"
+
 
 export const getTeams = async(): Promise<Team[]> => {
 	const response = await queryAndValidate({
@@ -68,10 +71,11 @@ export const setTeamLeader = async(id: number, value: string): Promise<void> => 
 	}
 }
 
-export const generateTeams = async(nbTeams: string, nbWomen: string): Promise<void> => {
+export const generateTeams = async(nbTeams: string, nbWomen: string, autoWomenRatio: boolean): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
 		route: "teams",
+		params: { autoWomenRatio: autoWomenRatio.toString() },
 		body: { nbTeams, nbWomen },
 		bodySchema: z.any()
 	})
@@ -144,14 +148,20 @@ export const getTeamByLeaderId = async(leaderId: string | null, projectId: strin
 	return response.data
 }
 
-export const moveTeamStudent = async(teamId: number, studentId: number): Promise<void> => {
-	const response = await apiQuery({
-		route: `teams/${teamId}/move-student?studentId=${studentId}`,
-		responseSchema: TeamSchema,
-		method: "PUT"
+export const getPresentationOrder = async(teamId: string, sprintId: string): Promise<Student[]> => {
+	const response = await queryAndValidate({
+		route: `teams/${teamId}/presentation-order`,
+		params: { sprintId },
+		responseSchema: PresentationOrderSchema.array()
 	})
 
 	if (response.status === "error") {
 		throw new Error(response.error)
 	}
+
+	console.log(response.data)
+
+	return response.data
+		.sort((a, b) => a.value - b.value)
+		.map(order => order.student)
 }

@@ -8,10 +8,7 @@ export const RoleTypeSchema = z.enum([
 	"OPTION_STUDENT",
 	"TEAM_MEMBER",
 	"SYSTEM_ADMINISTRATOR",
-	"TECHNICAL_COACH",
-	"JURY_MEMBER",
-	"ESEO_ADMINISTRATION",
-	"IDENTIFIED_USER"
+	"TECHNICAL_COACH"
 ])
 export type RoleType = z.infer<typeof RoleTypeSchema>
 
@@ -22,7 +19,6 @@ export const RoleSchema = z.object({
 	user: UserSchema
 })
 export type Role = z.infer<typeof RoleSchema>
-
 
 
 export const formatRole = (role: RoleType) => {

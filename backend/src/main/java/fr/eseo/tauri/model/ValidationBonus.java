@@ -11,7 +11,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "validation_bonuses")
+@Table(name = "validation_bonuses", uniqueConstraints = @UniqueConstraint(columnNames = {"author_id", "bonus_id"}))
 @IdClass(ValidationBonusId.class)
 @Data
 public class ValidationBonus {

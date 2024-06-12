@@ -4,34 +4,37 @@ import { ref } from "vue"
 import { SidebarTemplate } from "@/components/templates"
 import { Header } from "@/components/molecules/header"
 import { Column } from "@/components/atoms/containers"
-import { ListChecks } from "lucide-vue-next"
 import { hasPermission } from "@/services/user/user.service"
 import { NotAuthorized } from "@/components/organisms/errors"
 import Rating from "@/components/organisms/Rate/Rating.vue"
 import { SprintSelect, TeamSelect } from "../molecules/select"
+import GradeNotSelected from "../organisms/Grade/GradeNotSelected.vue"
+import { useQuery } from "@tanstack/vue-query"
+import { getCurrentPhase } from "@/services/project"
+import SprintsAndTeamsNotCreated from "@/components/organisms/Grade/SprintsAndTeamsNotCreated.vue"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
+
+const { data: currentPhase } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
 
 </script>
 
 <template>
 	<SidebarTemplate>
 		<NotAuthorized v-if="!hasPermission('RATING_PAGE')" />
-		<Column v-else class="gap-4">
+		<Column v-else class="gap-4 h-full">
 			<Header title="Évaluations">
-				<SprintSelect v-model="sprintId" />
-				<TeamSelect v-model="teamId" />
+				<SprintSelect v-model="sprintId" v-if="currentPhase ===  'PUBLISHED'"/>
+				<TeamSelect v-model="teamId" v-if="currentPhase ===  'PUBLISHED'"/>
 			</Header>
 
-			<Column v-if="teamId !== null && sprintId !== null" class="gap-4">
+			<Column v-if="teamId !== null && sprintId !== null && currentPhase ===  'PUBLISHED' " class="gap-4">
 				<Rating :teamId="teamId" :sprintId="sprintId" />
 			</Column>
 
-            <Column v-else class="items-center py-4 gap-2 border border-gray-300 border-dashed rounded-lg">
-				<ListChecks class="size-12 stroke-1 text-dark-blue" />
-                <p class="text-dark-blue text-sm">Vous n'avez pas sélectionné de sprint et/ou une équipe à évaluer.</p>
-            </Column>
+			<SprintsAndTeamsNotCreated v-else-if="currentPhase === 'COMPOSING' || currentPhase === 'PREPUBLISHED'" />
+            <GradeNotSelected v-else />
 		</Column>
 	</SidebarTemplate>
 </template>

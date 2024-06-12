@@ -59,3 +59,31 @@ export const getStudentBonuses = async(studentId: number, sprintId: string): Pro
 
 	return response.data
 }
+
+export const getValidationBonusesByTeam = async(teamId: number, sprintId: number): Promise<Bonus[]> => {
+	const response = await queryAndValidate({
+		route: `bonuses/teams/${teamId}`,
+		responseSchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
+
+
+export const setValidationBonusesByTeam = async (teamId: number, sprintId: number, userId: number): Promise<void> => {
+
+	const response = await mutateAndValidate({
+		method: "PATCH",
+		route: `bonuses/teams/${teamId}/${sprintId}/${userId}`,
+		bodySchema: z.any()
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}

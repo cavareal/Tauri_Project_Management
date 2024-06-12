@@ -14,7 +14,10 @@ public class ProjectSeeder {
 	public void seed() {
 		if (projectRepository.count() == 0) {
 			// Add a default project if the table is empty
-			projectRepository.save(new Project());
+			Project project = new Project();
+			project.name("Premier projet");
+			project.actual(true);
+			projectRepository.save(project);
 		}
 	}
 }

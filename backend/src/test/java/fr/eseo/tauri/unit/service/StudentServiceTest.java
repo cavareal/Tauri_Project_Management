@@ -8,6 +8,8 @@ import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.Gender;
 import fr.eseo.tauri.model.enumeration.GradeTypeName;
 import fr.eseo.tauri.repository.BonusRepository;
+import fr.eseo.tauri.repository.CommentRepository;
+import fr.eseo.tauri.repository.GradeRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,22 +46,34 @@ class StudentServiceTest {
     private TeamService teamService;
 
     @Mock
-    private AuthService authService;
-
-    @Mock
     private ProjectService projectService;
 
     @Mock
     private SprintService sprintService;
 
     @Mock
-    private UserService userService;
-
-    @Mock
     private RoleService roleService;
 
     @Mock
     private BonusRepository bonusRepository;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private GradeTypeService gradeTypeService;
+
+    @Mock
+    private GradeRepository gradeRepository;
+
+    @Mock
+    private BonusService bonusService;
+
+    @Mock
+    private PresentationOrderService presentationOrderService;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @InjectMocks
     private StudentService studentService;
@@ -72,86 +86,51 @@ class StudentServiceTest {
     @Test
     void getStudentByIdShouldReturnStudentWhenAuthorizedAndIdExists() {
         Student student = new Student();
-        when(authService.checkAuth(anyString(), eq("readStudent"))).thenReturn(true);
         when(studentRepository.findById(anyInt())).thenReturn(Optional.of(student));
 
-        Student result = studentService.getStudentById("token", 1);
+        Student result = studentService.getStudentById(1);
 
         assertEquals(student, result);
     }
 
     @Test
-    void getStudentByIdShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("readStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getStudentById("token", 1));
-    }
-
-    @Test
     void getStudentByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
-        when(authService.checkAuth(anyString(), eq("readStudent"))).thenReturn(true);
         when(studentRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> studentService.getStudentById("token", 1));
+        assertThrows(ResourceNotFoundException.class, () -> studentService.getStudentById(1));
     }
 
     @Test
     void getAllStudentsByProjectShouldReturnStudentsWhenAuthorized() {
-        when(authService.checkAuth(anyString(), eq("readStudents"))).thenReturn(true);
         when(studentRepository.findAllByProject(anyInt())).thenReturn(Arrays.asList(new Student(), new Student()));
 
-        List<Student> result = studentService.getAllStudentsByProject("token", 1);
+        List<Student> result = studentService.getAllStudentsByProject(1);
 
         assertEquals(2, result.size());
     }
 
     @Test
-    void getAllStudentsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("readStudents"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getAllStudentsByProject("token", 1));
-    }
-
-    @Test
     void getAllStudentsByProjectShouldReturnEmptyListWhenNoStudentsExist() {
-        when(authService.checkAuth(anyString(), eq("readStudents"))).thenReturn(true);
         when(studentRepository.findAllByProject(anyInt())).thenReturn(Collections.emptyList());
 
-        List<Student> result = studentService.getAllStudentsByProject("token", 1);
+        List<Student> result = studentService.getAllStudentsByProject(1);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
     void createStudentShouldSaveWhenAuthorizedAndProjectAndTeamExist() {
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(true);
-        when(projectService.getProjectById(anyString(), anyInt())).thenReturn(new Project());
-        when(teamService.getTeamById(anyString(), anyInt())).thenReturn(new Team());
-        when(sprintService.getAllSprintsByProject(anyString(), anyInt())).thenReturn(Collections.emptyList());
+        when(projectService.getProjectById(anyInt())).thenReturn(new Project());
+        when(teamService.getTeamById(anyInt())).thenReturn(new Team());
+        when(sprintService.getAllSprintsByProject(anyInt())).thenReturn(Collections.emptyList());
 
         Student student = new Student();
         student.projectId(1);
         student.teamId(1);
-        studentService.createStudent("token", student);
+        studentService.createStudent(student);
 
         verify(studentRepository, times(1)).save(student);
-        verify(roleService, times(1)).createRole(anyString(), any(Role.class));
-    }
-
-
-    @Test
-    void deleteStudentShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("deleteStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.deleteStudent("token", 1));
-    }
-
-
-    @Test
-    void deleteAllStudentsByProjectShouldThrowSecurityExceptionWhenUnauthorized() {
-        when(authService.checkAuth(anyString(), eq("deleteStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.deleteAllStudentsByProject("token", 1));
+        verify(roleService, times(1)).createRole(any(Role.class));
     }
 
     @Test
@@ -234,51 +213,35 @@ class StudentServiceTest {
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenNameIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", null, "M", "B", 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData(null, "M", "B", 1));
     }
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenNameIsEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", "", "M", "B", 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("", "M", "B", 1));
     }
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenGenderIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", "John Doe", null, "B", 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", null, "B", 1));
     }
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenGenderIsEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", "John Doe", "", "B", 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", "", "B", 1));
     }
 
     @Test
     void createStudentFromDataShouldThrowExceptionWhenBachelorIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("token", "John Doe", "M", null, 1));
-    }
-
-    @Test
-    void populateDatabaseFromCSVShouldThrowSecurityExceptionWhenUnauthorized() {
-        MultipartFile file = mock(MultipartFile.class);
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.populateDatabaseFromCSV("token", file, 1));
+        assertThrows(IllegalArgumentException.class, () -> studentService.createStudentFromData("John Doe", "M", null, 1));
     }
 
     @Test
     void populateDatabaseFromCSVShouldThrowEmptyResourceExceptionWhenFileIsEmpty() {
         MultipartFile file = mock(MultipartFile.class);
         when(file.isEmpty()).thenReturn(true);
-        when(authService.checkAuth(anyString(), eq("addStudent"))).thenReturn(true);
 
-        assertThrows(EmptyResourceException.class, () -> studentService.populateDatabaseFromCSV("token", file, 1));
-    }
-
-    @Test
-    void createStudentsCSVShouldThrowSecurityExceptionWhenUnauthorized() throws IOException {
-        when(authService.checkAuth(anyString(), eq("exportStudents"))).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.createStudentsCSV("token", 1));
+        assertThrows(EmptyResourceException.class, () -> studentService.populateDatabaseFromCSV(file, 1));
     }
 
     @Test
@@ -494,108 +457,517 @@ class StudentServiceTest {
 
     @Test
     void getStudentBonusShouldReturnBonusWhenAuthorizedAndBonusExists() {
-        String token = "validToken";
         Integer idStudent = 1;
         Boolean limited = true;
         Bonus bonus = new Bonus();
         Integer idSprint = 1;
 
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
         when(bonusRepository.findStudentBonus(idStudent, limited, idSprint)).thenReturn(bonus);
 
-        Bonus result = studentService.getStudentBonus(token, idStudent, limited, idSprint);
+        Bonus result = studentService.getStudentBonus(idStudent, limited, idSprint);
 
         assertEquals(bonus, result);
     }
 
     @Test
-    void getStudentBonusShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer idStudent = 1;
-        Boolean limited = true;
-        Integer idSprint = 1;
-
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> studentService.getStudentBonus(token, idStudent, limited, idSprint));
-    }
-
-    @Test
     void getStudentBonusShouldReturnNullWhenNoBonusFound() {
-        String token = "validToken";
         Integer idStudent = 1;
         Boolean limited = true;
         Integer idSprint = 1;
 
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
         when(bonusRepository.findStudentBonus(idStudent, limited, idSprint)).thenReturn(null);
 
-        Bonus result = studentService.getStudentBonus(token, idStudent, limited, idSprint);
+        Bonus result = studentService.getStudentBonus(idStudent, limited, idSprint);
 
         assertNull(result);
     }
 
     @Test
     void getStudentBonusesShouldReturnBonusesWhenAuthorizedAndBonusesExist() {
-        String token = "validToken";
         Integer idStudent = 1;
         List<Bonus> bonuses = Arrays.asList(new Bonus(), new Bonus());
         Integer idSprint = 1;
 
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
         when(bonusRepository.findAllStudentBonuses(idStudent, idSprint)).thenReturn(bonuses);
 
-        List<Bonus> result = studentService.getStudentBonuses(token, idStudent, idSprint);
+        List<Bonus> result = studentService.getStudentBonuses(idStudent, idSprint);
 
         assertEquals(bonuses, result);
     }
 
-    // @Test
-    // void getStudentBonusesShouldThrowSecurityExceptionWhenUnauthorized() {
-    //     String token = "validToken";
-    //     Integer idStudent = 1;
-    //     Integer idSprint = 1;
-
-    //     when(authService.checkAuth(token, "readBonuses")).thenReturn(false);
-
-    //     assertThrows(SecurityException.class, () -> studentService.getStudentBonuses(token, idStudent, idSprint));
-    // }
-
     @Test
     void getStudentBonusesShouldReturnEmptyListWhenNoBonusesFound() {
-        String token = "validToken";
         Integer idStudent = 1;
         Integer idSprint = 1;
 
-        when(authService.checkAuth(token, "readBonuses")).thenReturn(true);
         when(bonusRepository.findAllStudentBonuses(idStudent, idSprint)).thenReturn(Collections.emptyList());
 
-        List<Bonus> result = studentService.getStudentBonuses(token, idStudent, idSprint);
+        List<Bonus> result = studentService.getStudentBonuses(idStudent, idSprint);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void getIndividualTotalGradeShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
+    void updateStudentShouldUpdateGenderWhenProvided() {
         Integer id = 1;
-        Integer sprintId = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.gender(Gender.MAN);
 
-        when(authService.checkAuth(token, "readGrades")).thenReturn(false);
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
 
-        assertThrows(SecurityException.class, () -> studentService.getIndividualTotalGrade(token, id, sprintId));
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(updatedStudent.gender(), existingStudent.gender());
+        verify(studentRepository, times(1)).save(existingStudent);
     }
 
     @Test
-    void getSprintGradeShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
+    void updateStudentShouldUpdateTeamRoleWhenProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.teamRole("NewRole");
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(updatedStudent.teamRole(), existingStudent.teamRole());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateProjectWhenProjectIdIsProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.projectId(2);
+        Project project = new Project();
+        project.id(2);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+        when(projectService.getProjectById(updatedStudent.projectId())).thenReturn(project);
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(project, existingStudent.project());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldUpdateTeamWhenTeamIdIsProvided() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+        Student updatedStudent = new Student();
+        updatedStudent.teamId(2);
+        Team team = new Team();
+        team.id(2);
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+        when(teamService.getTeamById(updatedStudent.teamId())).thenReturn(team);
+
+        studentService.updateStudent(id, updatedStudent);
+
+        assertEquals(team, existingStudent.team());
+        verify(studentRepository, times(1)).save(existingStudent);
+    }
+
+    @Test
+    void updateStudentShouldThrowResourceNotFoundExceptionWhenStudentDoesNotExist() {
+        Integer id = 1;
+        Student updatedStudent = new Student();
+
+        when(studentRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> studentService.updateStudent(id, updatedStudent));
+    }
+
+    @Test
+    void deleteStudentShouldDeleteStudentWhenStudentExists() {
+        Integer id = 1;
+        Student existingStudent = new Student();
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(existingStudent));
+
+        studentService.deleteStudent(id);
+
+        verify(studentRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteStudentShouldThrowResourceNotFoundExceptionWhenStudentDoesNotExist() {
+        Integer id = 1;
+
+        when(studentRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> studentService.deleteStudent(id));
+    }
+
+    @Test
+    void deleteAllStudentsByProjectShouldDeleteAllStudentsWhenStudentsExist() {
+        Integer projectId = 1;
+        Student student1 = new Student();
+        student1.id(1);
+        Student student2 = new Student();
+        student2.id(2);
+        List<Student> students = Arrays.asList(student1, student2);
+
+        when(studentRepository.findAllByProject(projectId)).thenReturn(students);
+
+        studentService.deleteAllStudentsByProject(projectId);
+
+        verify(userService, times(1)).deleteUserById(student1.id());
+        verify(userService, times(1)).deleteUserById(student2.id());
+        verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes();
+        verify(teamService, times(1)).deleteAllTeamsByProject(projectId);
+    }
+
+    @Test
+    void deleteAllStudentsByProjectShouldNotDeleteAnyStudentWhenNoStudentsExist() {
+        Integer projectId = 1;
+
+        when(studentRepository.findAllByProject(projectId)).thenReturn(Collections.emptyList());
+
+        studentService.deleteAllStudentsByProject(projectId);
+
+        verify(userService, times(0)).deleteUserById(anyInt());
+        verify(gradeTypeService, times(1)).deleteAllImportedGradeTypes();
+        verify(teamService, times(1)).deleteAllTeamsByProject(projectId);
+    }
+
+    @Test
+    void createStudentsCSVShouldReturnByteArrayWhenStudentsExist() throws IOException {
+        Integer projectId = 1;
+        Student student = new Student();
+        student.projectId(projectId);
+        student.gender(Gender.MAN);
+        List<Student> students = Collections.singletonList(student);
+
+        when(gradeTypeService.getAllImportedGradeTypes(projectId)).thenReturn(Collections.emptyList());
+        when(studentService.getAllStudentsByProject(projectId)).thenReturn(students);
+
+        byte[] result = studentService.createStudentsCSV(projectId);
+
+        assertNotNull(result);
+        assertEquals(157, result.length);
+    }
+
+    @Test
+    void getIndividualTotalGradeShouldReturnCorrectGradeWhenGradesExist() {
+        Integer id = 1;
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Double expectedGrade = 16.666666666666668;
+
+        when(studentRepository.findById(id)).thenReturn(Optional.of(new Student().projectId(1)));
+        when(userService.getTeamByMemberId(id, studentService.getStudentById(id).projectId())).thenReturn(new Team().id(teamId));
+        when(gradeRepository.findAverageByGradeTypeForTeam(teamId, sprintId, GradeTypeName.GLOBAL_TEAM_PERFORMANCE.displayName())).thenReturn(10.0);
+        when(gradeRepository.findAverageByGradeTypeForStudent(id, sprintId, GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName())).thenReturn(20.0);
+
+        Double result = studentService.getIndividualTotalGrade(id, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getSprintGradeShouldReturnCorrectGradeWhenBonusesAndGradesExist() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Double expectedGrade = 17.0;
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(new Student().projectId(1)));
+        when(userService.getTeamByMemberId(studentId, studentService.getStudentById(studentId).projectId())).thenReturn(new Team().id(teamId));
+        when(teamService.getTeamTotalGrade(teamId, sprintId)).thenReturn(20.0);
+        when(studentService.getStudentBonuses(studentId, sprintId)).thenReturn(Arrays.asList(new Bonus().value(2.0F), new Bonus().value(3.0F)));
+        when(studentService.getIndividualTotalGrade(studentId, sprintId)).thenReturn(15.0);
+
+        Double result = studentService.getSprintGrade(studentId, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getSprintGradeShouldReturnCorrectGradeWhenNoBonusesExist() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Double expectedGrade = 17.0;
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(new Student().projectId(1)));
+        when(userService.getTeamByMemberId(studentId, studentService.getStudentById(studentId).projectId())).thenReturn(new Team().id(teamId));
+        when(teamService.getTeamTotalGrade(teamId, sprintId)).thenReturn(20.0);
+        when(studentService.getStudentBonuses(studentId, sprintId)).thenReturn(Collections.emptyList());
+        when(studentService.getIndividualTotalGrade(studentId, sprintId)).thenReturn(15.0);
+
+        Double result = studentService.getSprintGrade(studentId, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getSprintGradeShouldReturnCorrectGradeWhenTeamGradeExceedsTwentyWithBonuses() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Double expectedGrade = 17.0;
+
+        when(studentRepository.findById(studentId)).thenReturn(Optional.of(new Student().projectId(1)));
+        when(userService.getTeamByMemberId(studentId, studentService.getStudentById(studentId).projectId())).thenReturn(new Team().id(teamId));
+        when(teamService.getTeamTotalGrade(teamId, sprintId)).thenReturn(25.0);
+        when(studentService.getStudentBonuses(studentId, sprintId)).thenReturn(Arrays.asList(new Bonus().value(2.0F), new Bonus().value(3.0F)));
+        when(studentService.getIndividualTotalGrade(studentId, sprintId)).thenReturn(15.0);
+
+        Double result = studentService.getSprintGrade(studentId, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getGradeByTypeAndAuthorShouldReturnGradeWhenGradeExists() {
+        Integer id = 1;
+        Integer gradeTypeId = 1;
+        Integer authorId = 1;
+        Integer sprintId = 1;
+        Grade expectedGrade = new Grade();
+
+        when(gradeRepository.findByStudentAndGradeTypeAndAuthor(id, gradeTypeId, authorId, sprintId)).thenReturn(expectedGrade);
+
+        Grade result = studentService.getGradeByTypeAndAuthor(id, gradeTypeId, authorId, sprintId);
+
+        assertEquals(expectedGrade, result);
+    }
+
+    @Test
+    void getGradeByTypeAndAuthorShouldReturnNullWhenGradeDoesNotExist() {
+        Integer id = 1;
+        Integer gradeTypeId = 1;
+        Integer authorId = 1;
+        Integer sprintId = 1;
+
+        when(gradeRepository.findByStudentAndGradeTypeAndAuthor(id, gradeTypeId, authorId, sprintId)).thenReturn(null);
+
+        Grade result = studentService.getGradeByTypeAndAuthor(id, gradeTypeId, authorId, sprintId);
+
+        assertNull(result);
+    }
+
+    @Test
+    void createStudentFromData_ShouldCreateStudent() {
+        String name = "John Doe";
+        String gender = "M";
+        String bachelor = "yes";
+        Integer projectId = 1;
+
+        Project project = new Project();
+        project.id(projectId);
+
+        when(projectService.getProjectById(projectId)).thenReturn(project);
+
+        Student student = studentService.createStudentFromData(name, gender, bachelor, projectId);
+
+        assertNotNull(student);
+        assertEquals(name, student.name());
+        assertEquals(Gender.MAN, student.gender());
+        assertTrue(student.bachelor());
+        assertEquals(project, student.project());
+        assertEquals("doe.john@reseau.eseo.fr", student.email());
+
+        verify(projectService, times(1)).getProjectById(projectId);
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenNameIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData(null, "M", "yes", 1);
+        });
+        assertEquals("Name cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenNameIsEmpty() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData("   ", "M", "yes", 1);
+        });
+        assertEquals("Name cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenGenderIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData("John Doe", null, "yes", 1);
+        });
+        assertEquals("Gender cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenGenderIsEmpty() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData("John Doe", "   ", "yes", 1);
+        });
+        assertEquals("Gender cannot be null or empty", exception.getMessage());
+    }
+
+    @Test
+    void createStudentFromData_ShouldThrowException_WhenBachelorIsNull() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            studentService.createStudentFromData("John Doe", "M", null, 1);
+        });
+        assertEquals("Bachelor status cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void createStudent_ShouldCreateStudentAndAssignRolesAndBonuses() {
+        Integer projectId = 1;
+        Integer teamId = 1;
+        Student student = new Student();
+        student.projectId(projectId);
+        student.teamId(teamId);
+
+        Project project = new Project();
+        project.id(projectId);
+
+        Team team = new Team();
+        team.id(teamId);
+
+        Sprint sprint1 = new Sprint();
+        Sprint sprint2 = new Sprint();
+        sprint1.projectId(projectId);
+        sprint2.projectId(projectId);
+
+        List<Sprint> sprints = List.of(sprint1, sprint2);
+        List<Team> teams = List.of(team);
+
+        when(projectService.getProjectById(projectId)).thenReturn(project);
+        when(teamService.getTeamById(teamId)).thenReturn(team);
+        when(studentRepository.save(student)).thenReturn(student);
+        when(sprintService.getAllSprintsByProject(projectId)).thenReturn(sprints);
+        when(teamService.getAllTeamsByProject(projectId)).thenReturn(teams);
+
+        studentService.createStudent(student);
+
+        verify(studentRepository, times(1)).save(student);
+
+        verify(roleService, times(1)).createRole(any(Role.class));
+
+        verify(presentationOrderService, times(sprints.size())).createPresentationOrder(any(PresentationOrder.class));
+
+        verify(bonusService, times(sprints.size() * 2)).createBonus(any(Bonus.class));
+    }
+
+    @Test
+    void getFeedbacksByStudentAndSprintShouldReturnFeedbacksWhenTheyExist() {
+        Integer studentId = 1;
+        Integer sprintId = 1;
+        List<Comment> expectedComments = Arrays.asList(new Comment(), new Comment());
+
+        when(commentRepository.findAllByStudentIdAndSprintId(studentId, sprintId)).thenReturn(expectedComments);
+
+        List<Comment> result = studentService.getFeedbacksByStudentAndSprint(studentId, sprintId);
+
+        assertEquals(expectedComments, result);
+    }
+
+    @Test
+    void getFeedbacksByStudentAndSprintShouldReturnEmptyListWhenNoFeedbacksExist() {
         Integer studentId = 1;
         Integer sprintId = 1;
 
-        when(authService.checkAuth(token, "readGrade")).thenReturn(false);
+        when(commentRepository.findAllByStudentIdAndSprintId(studentId, sprintId)).thenReturn(Collections.emptyList());
 
-        assertThrows(SecurityException.class, () -> studentService.getSprintGrade(token, studentId, sprintId));
+        List<Comment> result = studentService.getFeedbacksByStudentAndSprint(studentId, sprintId);
+
+        assertTrue(result.isEmpty());
     }
 
+    @Test
+    void testPopulateDatabaseFromCSV_Success() throws IOException, CsvValidationException {
+        String csvContent = "John Doe,M,B,15.5,16.0\nJane Smith,F,,18.0,17.5";
+        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
+
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.isEmpty()).thenReturn(false);
+        when(mockFile.getInputStream()).thenReturn(inputStream);
+
+        GradeType gradeType1 = new GradeType();
+        GradeType gradeType2 = new GradeType();
+        List<GradeType> gradeTypes = Arrays.asList(gradeType1, gradeType2);
+
+        when(gradeTypeService.createGradeTypesFromCSV(any(InputStream.class))).thenReturn(gradeTypes);
+
+        Map<String, Object> extractedData = new HashMap<>();
+        extractedData.put(StudentService.MAP_KEY_NAMES, Arrays.asList("John Doe", "Jane Smith"));
+        extractedData.put(StudentService.MAP_KEY_GENDERS, Arrays.asList("M", "F"));
+        extractedData.put(StudentService.MAP_KEY_BACHELORS, Arrays.asList("B", ""));
+        extractedData.put(StudentService.MAP_KEY_GRADES, Arrays.asList(
+                Arrays.asList("15.5", "16.0"),
+                Arrays.asList("18.0", "17.5")
+        ));
+
+        // Use spy to stub methods on the studentService instance
+        StudentService spyStudentService = spy(studentService);
+        doReturn(extractedData).when(spyStudentService).extractNamesGenderBachelorAndGrades(any(InputStream.class));
+
+        Student student1 = new Student();
+        Student student2 = new Student();
+
+        doReturn(student1).when(spyStudentService).createStudentFromData("John Doe", "M", "B", 1);
+        doReturn(student2).when(spyStudentService).createStudentFromData("Jane Smith", "F", "", 1);
+
+        spyStudentService.populateDatabaseFromCSV(mockFile, 1);
+
+        verify(gradeTypeService, times(1)).createGradeTypesFromCSV(any(InputStream.class));
+        verify(spyStudentService, times(1)).extractNamesGenderBachelorAndGrades(any(InputStream.class));
+        verify(spyStudentService, times(2)).createStudent(student1);
+        verify(spyStudentService, times(2)).createStudent(student2);
+
+        verify(gradeService, times(4)).createGrade(any(Grade.class)); // 4 grades in total
+    }
+
+    @Test
+    void testPopulateDatabaseFromCSV_GradeParsingError() throws IOException, CsvValidationException {
+        String csvContent = "John Doe,M,B,15.5,abc\nJane Smith,F,,18.0,17.5";
+        InputStream inputStream = new ByteArrayInputStream(csvContent.getBytes());
+
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.isEmpty()).thenReturn(false);
+        when(mockFile.getInputStream()).thenReturn(inputStream);
+
+        GradeType gradeType1 = new GradeType();
+        GradeType gradeType2 = new GradeType();
+        List<GradeType> gradeTypes = Arrays.asList(gradeType1, gradeType2);
+
+        when(gradeTypeService.createGradeTypesFromCSV(any(InputStream.class))).thenReturn(gradeTypes);
+
+        Map<String, Object> extractedData = new HashMap<>();
+        extractedData.put(StudentService.MAP_KEY_NAMES, Arrays.asList("John Doe", "Jane Smith"));
+        extractedData.put(StudentService.MAP_KEY_GENDERS, Arrays.asList("M", "F"));
+        extractedData.put(StudentService.MAP_KEY_BACHELORS, Arrays.asList("B", ""));
+        extractedData.put(StudentService.MAP_KEY_GRADES, Arrays.asList(
+                Arrays.asList("15.5", "abc"),
+                Arrays.asList("18.0", "17.5")
+        ));
+
+        // Use spy to stub methods on the studentService instance
+        StudentService spyStudentService = spy(studentService);
+        doReturn(extractedData).when(spyStudentService).extractNamesGenderBachelorAndGrades(any(InputStream.class));
+
+        Student student1 = new Student();
+        Student student2 = new Student();
+
+        doReturn(student1).when(spyStudentService).createStudentFromData("John Doe", "M", "B", 1);
+        doReturn(student2).when(spyStudentService).createStudentFromData("Jane Smith", "F", "", 1);
+
+        spyStudentService.populateDatabaseFromCSV(mockFile, 1);
+
+        verify(gradeTypeService, times(1)).createGradeTypesFromCSV(any(InputStream.class));
+        verify(spyStudentService, times(1)).extractNamesGenderBachelorAndGrades(any(InputStream.class));
+        verify(spyStudentService, times(2)).createStudent(student1);
+        verify(spyStudentService, times(2)).createStudent(student2);
+
+        // Ensure createGrade is called only for valid grades
+        verify(gradeService, times(3)).createGrade(any(Grade.class)); // 3 valid grades in total
+    }
 
 }

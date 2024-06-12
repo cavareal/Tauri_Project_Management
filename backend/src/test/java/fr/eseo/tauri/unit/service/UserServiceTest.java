@@ -1,14 +1,13 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.Permission;
+import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
 import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
+import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
-import fr.eseo.tauri.service.AuthService;
-import fr.eseo.tauri.service.PermissionService;
 import fr.eseo.tauri.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -32,13 +31,10 @@ class UserServiceTest {
     UserRepository userRepository;
 
     @Mock
+    TeamRepository teamRepository;
+
+    @Mock
     RoleRepository roleRepository;
-
-    @Mock
-    PermissionService permissionService;
-
-    @Mock
-    AuthService authService;
 
     @BeforeEach
     public void init() {
@@ -47,190 +43,247 @@ class UserServiceTest {
 
     @Test
     void getUserByIdReturnsUserWhenAuthorizedAndUserExists() {
-        String token = "validToken";
         Integer id = 1;
         User expectedUser = new User();
 
-        when(authService.checkAuth(token, "readUser")).thenReturn(true);
         when(userRepository.findById(id)).thenReturn(Optional.of(expectedUser));
 
-        User actualUser = userService.getUserById(token, id);
+        User actualUser = userService.getUserById(id);
 
         assertEquals(expectedUser, actualUser);
     }
 
     @Test
-    void getUserByIdThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "readUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.getUserById(token, id));
-    }
-
-    @Test
     void getUserByIdThrowsResourceNotFoundExceptionWhenUserDoesNotExist() {
-        String token = "validToken";
         Integer id = 1;
 
-        when(authService.checkAuth(token, "readUser")).thenReturn(true);
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(id));
     }
 
     @Test
     void getAllUsersReturnsAllUsersWhenAuthorized() {
-        String token = "validToken";
         List<User> expectedUsers = Arrays.asList(new User(), new User());
 
-        when(authService.checkAuth(token, "readUser")).thenReturn(true);
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
-        List<User> actualUsers = userService.getAllUsers(token);
+        List<User> actualUsers = userService.getAllUsers();
 
         assertEquals(expectedUsers, actualUsers);
-    }
-
-    @Test
-    void getAllUsersThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "readUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.getAllUsers(token));
     }
 
     @Test
     void getAllUsersReturnsEmptyListWhenNoUsers() {
-        String token = "validToken";
         List<User> expectedUsers = new ArrayList<>();
 
-        when(authService.checkAuth(token, "readUser")).thenReturn(true);
         when(userRepository.findAll()).thenReturn(expectedUsers);
 
-        List<User> actualUsers = userService.getAllUsers(token);
+        List<User> actualUsers = userService.getAllUsers();
 
         assertEquals(expectedUsers, actualUsers);
     }
 
     @Test
-    void createUserSavesUserWhenAuthorized() {
-        String token = "validToken";
+    void createUserSavesUserWhenAuthorized() throws IllegalArgumentException {
         User user = new User();
-
-        when(authService.checkAuth(token, "createUser")).thenReturn(true);
 
         userService.createUser(user);
 
         verify(userRepository, times(1)).save(user);
     }
 
-//    @Test
-//    void createUserThrowsSecurityExceptionWhenUnauthorized() {
-//        String token = "validToken";
-//        User user = new User();
-//
-//        when(authService.checkAuth(token, "createUser")).thenReturn(false);
-//
-//        assertThrows(SecurityException.class, () -> userService.createUser(user));
-//    }
-
-    @Test
-    void updateUserThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-        User updatedUser = new User();
-
-        when(authService.checkAuth(token, "updateUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.updateUser(token, id, updatedUser));
-    }
-
-    @Test
-    void deleteUserByIdThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-
-        when(authService.checkAuth(token, "deleteUser")).thenReturn(false);
-
-        assertThrows(SecurityException.class, () -> userService.deleteUserById(token, id));
-    }
 
     @Test
     void deleteAllUsersDeletesAllUsersWhenAuthorized() {
-        String token = "validToken";
-
-        when(authService.checkAuth(token, "deleteUser")).thenReturn(true);
-
-        userService.deleteAllUsers(token);
+        userService.deleteAllUsers();
 
         verify(userRepository, times(1)).deleteAll();
     }
 
     @Test
-    void deleteAllUsersThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
+    void updateUserShouldUpdateUserFieldsWhenUserExists() {
+        Integer id = 1;
+        User existingUser = new User().name("Old Name").email("old@email.com").password("oldPassword").privateKey("oldKey");
+        User updatedUser = new User().name("New Name").email("new@email.com").password("newPassword").privateKey("newKey");
 
-        when(authService.checkAuth(token, "deleteUser")).thenReturn(false);
+        when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
 
-        assertThrows(SecurityException.class, () -> userService.deleteAllUsers(token));
+        userService.updateUser(id, updatedUser);
+
+        verify(userRepository, times(1)).save(argThat(user -> user.name().equals(updatedUser.name()) &&
+                user.email().equals(updatedUser.email()) &&
+                user.password().equals(updatedUser.password()) &&
+                user.privateKey().equals(updatedUser.privateKey())));
     }
 
     @Test
-    void getRolesByUserIdThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
+    void updateUserShouldNotUpdateUserFieldsWhenUpdatedUserFieldsAreNull() {
+        Integer id = 1;
+        User existingUser = new User().name("Old Name").email("old@email.com").password("oldPassword").privateKey("oldKey");
+        User updatedUser = new User();
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
+
+        userService.updateUser(id, updatedUser);
+
+        verify(userRepository, times(1)).save(argThat(user -> user.name().equals(existingUser.name()) &&
+                user.email().equals(existingUser.email()) &&
+                user.password().equals(existingUser.password()) &&
+                user.privateKey().equals(existingUser.privateKey())));
+    }
+
+    @Test
+    void updateUserShouldThrowResourceNotFoundExceptionWhenUserDoesNotExist() {
+        Integer id = 1;
+        User updatedUser = new User();
+
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.updateUser(id, updatedUser));
+    }
+
+    @Test
+    void deleteUserByIdShouldDeleteUserAndUnassignTeamsWhenUserExistsAndIsLeader() {
+        Integer id = 1;
+        User user = new User().id(id);
+        Team team1 = new Team().leader(user);
+        Team team2 = new Team().leader(user);
+        List<Team> teams = Arrays.asList(team1, team2);
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        when(teamRepository.findAllByLeaderId(id)).thenReturn(teams);
+
+        userService.deleteUserById(id);
+
+        verify(teamRepository, times(2)).save(team1);
+        verify(teamRepository, times(2)).save(team2);
+        verify(userRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteUserByIdShouldDeleteUserAndNotUnassignTeamsWhenUserExistsAndIsNotLeader() {
+        Integer id = 1;
+        User user = new User().id(id);
+        List<Team> teams = Collections.emptyList();
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        when(teamRepository.findAllByLeaderId(id)).thenReturn(teams);
+
+        userService.deleteUserById(id);
+
+        verify(teamRepository, times(0)).save(any(Team.class));
+        verify(userRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteUserByIdShouldThrowResourceNotFoundExceptionWhenUserDoesNotExist() {
         Integer id = 1;
 
-        when(authService.checkAuth(token, "readRoleByUserId")).thenReturn(false);
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(SecurityException.class, () -> userService.getRolesByUserId(token, id));
+        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUserById(id));
     }
 
     @Test
-    void getTeamByMemberIdThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
+    void getRolesByUserIdShouldReturnRolesWhenUserExists() {
+        Integer id = 1;
+        User user = new User().id(id);
+        List<RoleType> expectedRoles = Arrays.asList(RoleType.SUPERVISING_STAFF, RoleType.TEAM_MEMBER);
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        when(roleRepository.findByUser(user)).thenReturn(expectedRoles);
+
+        List<RoleType> actualRoles = userService.getRolesByUserId(id);
+
+        assertEquals(expectedRoles, actualRoles);
+    }
+
+    @Test
+    void getRolesByUserIdShouldReturnEmptyListWhenUserHasNoRoles() {
+        Integer id = 1;
+        User user = new User().id(id);
+        List<RoleType> expectedRoles = Collections.emptyList();
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        when(roleRepository.findByUser(user)).thenReturn(expectedRoles);
+
+        List<RoleType> actualRoles = userService.getRolesByUserId(id);
+
+        assertEquals(expectedRoles, actualRoles);
+    }
+
+    @Test
+    void getRolesByUserIdShouldThrowResourceNotFoundExceptionWhenUserDoesNotExist() {
+        Integer id = 1;
+
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.getRolesByUserId(id));
+    }
+
+    @Test
+    void getTeamByMemberIdShouldReturnTeamWhenUserIsLeader() {
         Integer userId = 1;
         Integer projectId = 1;
+        User user = new User().id(userId);
+        Team expectedTeam = new Team().leader(user);
+        List<RoleType> roles = Collections.singletonList(RoleType.SUPERVISING_STAFF);
 
-        when(authService.checkAuth(token, "readTeamBySupervisor")).thenReturn(false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userService.getRolesByUserId(userId)).thenReturn(roles);
+        when(teamRepository.findByLeaderId(userId, projectId)).thenReturn(expectedTeam);
 
-        assertThrows(SecurityException.class, () -> userService.getTeamByMemberId(token, userId, projectId));
+        Team actualTeam = userService.getTeamByMemberId(userId, projectId);
+
+        assertEquals(expectedTeam, actualTeam);
     }
 
     @Test
-    void getPermissionsByUserThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
+    void getTeamByMemberIdShouldReturnTeamWhenUserIsMember() {
+        Integer userId = 1;
+        Integer projectId = 1;
+        User user = new User().id(userId);
+        Team expectedTeam = new Team().leader(user);
+        List<RoleType> roles = Collections.singletonList(RoleType.TEAM_MEMBER);
 
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userService.getRolesByUserId(userId)).thenReturn(roles);
+        when(teamRepository.findByStudentId(userId)).thenReturn(expectedTeam);
 
-        assertThrows(SecurityException.class, () -> userService.getPermissionsByUser(token, id));
+        Team actualTeam = userService.getTeamByMemberId(userId, projectId);
+
+        assertEquals(expectedTeam, actualTeam);
     }
 
     @Test
-    void hasPermissionThrowsSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
-        Integer id = 1;
-        PermissionType permission = PermissionType.ADD_ALL_TEAMS_FEEDBACK;
+    void getTeamByMemberIdShouldReturnNullWhenUserIsNotMemberOrLeader() {
+        Integer userId = 1;
+        Integer projectId = 1;
+        User user = new User().id(userId);
+        List<RoleType> roles = Collections.emptyList();
 
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userService.getRolesByUserId(userId)).thenReturn(roles);
 
-        assertThrows(SecurityException.class, () -> userService.hasPermission(token, id, permission));
+        Team actualTeam = userService.getTeamByMemberId(userId, projectId);
+
+        assertNull(actualTeam);
     }
-
 
     @Test
-    void getPermissionsByUserShouldThrowSecurityExceptionWhenUnauthorized() {
-        String token = "validToken";
+    void hasPermissionShouldReturnFalseWhenUserHasNoPermissions() {
         Integer id = 1;
+        User user = new User().id(id);
+        PermissionType permission = PermissionType.DELETE_PROJECT;
+        List<PermissionType> permissions = Collections.emptyList();
 
-        when(authService.checkAuth(token, "readPermissions")).thenReturn(false);
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        when(userService.getPermissionsByUser(id)).thenReturn(permissions);
 
-        assertThrows(SecurityException.class, () -> userService.getPermissionsByUser(token, id));
+        Boolean result = userService.hasPermission(id, permission);
+
+        assertFalse(result);
     }
-
-
 }
 

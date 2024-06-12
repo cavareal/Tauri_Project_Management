@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -72,7 +71,6 @@ public class ApplicationSecurity {
         AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
         PasswordEncoder passwordEncoder = new LdapShaPasswordEncoder();
 
-
         auth
             .ldapAuthentication()
                 .contextSource()
@@ -92,10 +90,4 @@ public class ApplicationSecurity {
         return userEmail -> userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User or password incorrect"));
     }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 }

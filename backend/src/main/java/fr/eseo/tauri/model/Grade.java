@@ -13,7 +13,10 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Table(name = "grades")
+@Table(name = "grades", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"student_id", "sprint_id", "grade_type_id", "author_id"}),
+        @UniqueConstraint(columnNames = {"team_id", "sprint_id", "grade_type_id", "author_id"})
+})
 @Data
 public class Grade {
 
@@ -29,6 +32,7 @@ public class Grade {
     private Float value;
 
     @JsonProperty
+    @Column(columnDefinition = "TEXT")
     private String comment;
 
     @ManyToOne
@@ -85,7 +89,7 @@ public class Grade {
     @JsonDeserialize
     private Integer teamId;
 
-    @NotNull(groups = { Create.class }, message = "The sprintId field is required")
+//    @NotNull(groups = { Create.class }, message = "The sprintId field is required")
     @Transient
     @JsonDeserialize
     private Integer sprintId;

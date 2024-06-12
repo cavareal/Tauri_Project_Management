@@ -18,7 +18,7 @@ const TITLE = props.firstSprint ? "Vous n'avez pas encore crée de sprint, cliqu
 </script>
 
 <template>
-    <div class="border border-gray-300 border-dashed rounded-lg hover:bg-gray-100 flex justify-center flex-col items-stretch">
+    <div class="border transition-colors rounded-lg bg-white hover:bg-muted/50 flex justify-center flex-col items-stretch">
         <AddSprintDialog @add:sprint="emitAdd('add:sprint')" :lastSprintEndDate="lastSprintEndDate" :lastSprintOrder="lastSprintOrder">
             <Column class="items-center py-4 gap-2">
 				<CalendarPlus class="size-12 stroke-1 text-dark-blue" />

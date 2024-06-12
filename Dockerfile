@@ -1,40 +1,3 @@
-# # Utiliser l'image de base selenium/standalone-chrome
-# FROM selenium/standalone-chrome
-
-# USER root
-# # Installer les dépendances nécessaires pour Gradle
-# RUN apt-get update && apt-get install -y wget unzip
-
-# # Télécharger et installer Gradle
-# ARG GRADLE_VERSION=8.4
-# RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip -P /tmp \
-#     && unzip /tmp/gradle-${GRADLE_VERSION}-bin.zip -d /opt \
-#     && ln -s /opt/gradle-${GRADLE_VERSION} /opt/gradle \
-#     && rm /tmp/gradle-${GRADLE_VERSION}-bin.zip
-
-# # Mettre à jour la variable d'environnement PATH
-# ENV GRADLE_HOME=/opt/gradle
-# ENV PATH=${GRADLE_HOME}/bin:${PATH}
-
-# # Vérifier l'installation de Gradle
-# RUN gradle --version
-
-# MRC : https://github.com/markhobson/docker-maven-chrome
-# Versions ggogle : https://googlechromelabs.github.io/chrome-for-testing/
-
-
-
-# slenium test : 
-    # private static final String URL = System.getProperty("selenium.server.url", "http://172.24.1.22/");
-    # 
-    # WebDriverManager.chromedriver().setup();
-    # ChromeOptions options = new ChromeOptions().addArguments("--headless");
-    # SeleniumLoginTest.webdriver = new ChromeDriver(options);
-    # wait = new WebDriverWait(SeleniumLoginTest.webdriver, Duration.ofSeconds(10));
-    # SeleniumLoginTest.webdriver.get(SeleniumLoginTest.URL+"login");
-
-
-
 # Utiliser une image de base avec Gradle 8.4 et JDK 17
 FROM gradle:8.4.0-jdk17
 
@@ -60,4 +23,8 @@ RUN wget -q -O /tmp/chromedriver.zip https://storage.googleapis.com/chrome-for-t
     && rm /tmp/chromedriver.zip \
     && ln -s /opt/chromedriver-linux64/chromedriver /usr/bin/chromedriver
 
+RUN chmod +x /usr/bin/chromedriver
 
+
+# Build : docker build -t charlo56/pgl-gradlew-chrome .
+# Push : docker push charlo56/pgl-gradlew-chrome

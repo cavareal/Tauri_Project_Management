@@ -41,7 +41,7 @@ const DIALOG_DESCRIPTION = `Êtes-vous bien sûr de supprimer le sprint ${props.
 			<DialogClose v-if="!isPending">
 				<Button variant="outline">Annuler</Button>
 			</DialogClose>
-			<LoadingButton type="submit" @click="mutate" :loading="isPending">
+			<LoadingButton type="submit" @click="mutate" :loading="isPending" variant="destructive">
 				Confirmer
 			</LoadingButton>
 		</template>

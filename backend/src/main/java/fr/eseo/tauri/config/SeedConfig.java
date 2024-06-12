@@ -2,7 +2,6 @@ package fr.eseo.tauri.config;
 
 import fr.eseo.tauri.seeder.*;
 import fr.eseo.tauri.util.ListUtil;
-import net.datafaker.Faker;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +11,11 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Locale;
 
 @Component
 public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 
-	private static final String FAKER_LANGUAGE = "fr-FR";
 	private static final String[] HIBERNATE_MODES = {"create", "create-drop"};
-
-	private final Faker faker;
 
 	private final UserSeeder userSeeder;
 	private final GradeTypeSeeder gradeTypeSeeder;
@@ -33,7 +28,6 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 
 	@Autowired
 	public SeedConfig(UserSeeder userSeeder, GradeTypeSeeder gradeTypeSeeder, PermissionSeeder permissionSeeder, RoleSeeder roleSeeder, ProjectSeeder projectSeeder) {
-		this.faker = new Faker(Locale.forLanguageTag(FAKER_LANGUAGE));
 
 		this.userSeeder = userSeeder;
 		this.gradeTypeSeeder = gradeTypeSeeder;
@@ -46,11 +40,11 @@ public class SeedConfig implements ApplicationListener<ContextRefreshedEvent> {
 	public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
 		if (!ListUtil.contains(List.of(HIBERNATE_MODES), hibernateMode)) return;
 
-		userSeeder.seed(faker);
-		gradeTypeSeeder.seed();
+		userSeeder.seed();
 		permissionSeeder.seed();
 		roleSeeder.seed();
 		projectSeeder.seed();
+		gradeTypeSeeder.seed();
 	}
 
 }

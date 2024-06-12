@@ -42,7 +42,6 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 					<TableHead :class="rowClass" class="w-1" v-if="canDragAndDrop"></TableHead>
 					<TableHead :class="rowClass" class="min-w-28">Nom</TableHead>
 					<TableHead :class="rowClass" class="min-w-28">Prénom</TableHead>
-					<!-- <TableHead :class="rowClass" class="min-w-28">Rôle</TableHead> -->
 					<TableHead :class="rowClass" class="min-w-16">Genre</TableHead>
 					<TableHead :class="rowClass" class="min-w-16">Bachelor</TableHead>
 				</TableRow>
@@ -60,12 +59,11 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 					</TableCell>
 					<TableCell :class="rowClass">{{ extractNames(student.name).lastName }}</TableCell>
 					<TableCell :class="rowClass">{{ extractNames(student.name).firstName }}</TableCell>
-					<!-- <TableCell :class="rowClass">{{ student.teamRole }}</TableCell> -->
 					<TableCell :class="rowClass">
 						<GenderIcon :gender="student.gender" />
 					</TableCell>
 					<TableCell :class="rowClass">
-						<CheckIcon :checked="student.bachelor ?? false" />
+						<CheckIcon :checked="student.bachelor" />
 					</TableCell>
 				</TableRow>
 			</TableBody>
@@ -73,17 +71,21 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 
 		<Column v-if="criteria" class="w-auto border rounded px-4 py-3 min-w-56">
 			<Subtitle class="mb-1">Critères de génération</Subtitle>
-			<Row class="gap-1">
+			<Row class="gap-1 items-center">
 				<CheckIcon :checked="criteria.validCriteriaWoman" />
 				<Text>Nombre de femmes : {{ criteria.nbWomens }}</Text>
 			</Row>
-			<Row class="gap-1">
+			<Row class="gap-1 items-center">
 				<CheckIcon :checked="criteria.validCriteriaBachelor" />
 				<Text>Nombre de bachelors : {{ criteria.nbBachelors }}</Text>
 			</Row>
-			<Row class="gap-1" v-if="average">
+			<Row class="gap-1 items-center" v-if="average">
 				<CheckIcon :checked="true" />
 				<Text>Moyenne : {{ average.toPrecision(4) }}</Text>
+			</Row>
+			<Row class="gap-1 items-center">
+				<CheckIcon :checked="students.length > 0" />
+				<Text>Nombre d'étudiants : {{ students.length }}</Text>
 			</Row>
 		</Column>
 	</AccordionContent>

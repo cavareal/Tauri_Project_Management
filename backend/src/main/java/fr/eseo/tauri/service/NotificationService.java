@@ -1,10 +1,8 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Notification;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.repository.NotificationRepository;
-import fr.eseo.tauri.util.CustomLogger;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,85 +12,58 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationService {
 
-	private final AuthService authService;
 	private final NotificationRepository notificationRepository;
 	private final UserService userService;
 
 	/**
 	 * Get a notification by its id
-	 * @param token the token of the user
 	 * @param id the id of the notification
 	 * @return the notification
 	 */
-	public Notification getNotificationById(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotification"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
+	public Notification getNotificationById(Integer id) {
 		return notificationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("notification", id));
 	}
 
 	/**
 	 * Get all notifications
-	 * @param token the token of the user
 	 * @return the list of notifications
 	 */
-	public List<Notification> getAllNotifications(String token) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotifications"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
+	public List<Notification> getAllNotifications() {
 		return notificationRepository.findAll();
 	}
 
 	/**
 	 * Get a notification by the user id
-	 * @param token the token of the user
 	 * @param userId the id of the user who receive the notifications (userTo)
 	 * @return the notifications
 	 */
-	public List<Notification> getNotificationsByUser(String token, Integer userId) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "readNotification"))) {
-			CustomLogger.error("there is no authorization !");
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
+	public List<Notification> getNotificationsByUser(Integer userId) {
 		return notificationRepository.findByUser(userId);
 	}
 
 	/**
 	 * Create a notification
-	 * @param token the token of the user
 	 * @param notification the notification to create
 	 */
-	public void createNotification(String token, Notification notification) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "addNotification"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
-		notification.userFrom(userService.getUserById(token, notification.userFromId()));
-		notification.userTo(userService.getUserById(token, notification.userToId()));
+	public void createNotification(Notification notification) {
+		notification.userFrom(userService.getUserById(notification.userFromId()));
+		notification.userTo(userService.getUserById(notification.userToId()));
 
 		notificationRepository.save(notification);
 	}
 
 	/**
 	 * Update a notification by its id
-	 * @param token the token of the user
 	 * @param id the id of the notification
 	 * @param updatedNotification the updated notification
 	 */
-	public void updateNotification(String token, Integer id, Notification updatedNotification) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateNotification"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
-		var notification = getNotificationById(token, id);
+	public void updateNotification(Integer id, Notification updatedNotification) {
+		var notification = getNotificationById(id);
 
 		if (updatedNotification.message() != null) notification.message(updatedNotification.message());
 		if (updatedNotification.checked() != null) notification.checked(updatedNotification.checked());
-		if (updatedNotification.userToId() != null) notification.userTo(userService.getUserById(token, updatedNotification.userToId()));
-		if (updatedNotification.userFromId() != null) notification.userFrom(userService.getUserById(token, updatedNotification.userFromId()));
+		if (updatedNotification.userToId() != null) notification.userTo(userService.getUserById(updatedNotification.userToId()));
+		if (updatedNotification.userFromId() != null) notification.userFrom(userService.getUserById(updatedNotification.userFromId()));
 
 		notificationRepository.save(notification);
 	}
@@ -100,41 +71,27 @@ public class NotificationService {
 
 	/**
 	 * Change the checked state of a notification
-	 * @param token the token of the user
 	 * @param id the id of the notification
 	 */
-	public void changeCheckedNotification(String token, Integer id){
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "updateNotification"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-		var notification = getNotificationById(token, id);
+	public void changeCheckedNotification(Integer id){
+		var notification = getNotificationById(id);
 		notification.checked(!notification.checked());
 		notificationRepository.save(notification);
 	}
 
 	/**
 	 * Delete a notification by its id
-	 * @param token the token of the user
 	 * @param id the id of the notification
 	 */
-	public void deleteNotificationById(String token, Integer id) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteNotification"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
-		getNotificationById(token, id);
+	public void deleteNotificationById(Integer id) {
+		getNotificationById(id);
 		notificationRepository.deleteById(id);
 	}
 
 	/**
 	 * Delete all notifications
-	 * @param token the token of the user
 	 */
-	public void deleteAllNotifications(String token) {
-		if (!Boolean.TRUE.equals(authService.checkAuth(token, "deleteNotification"))) {
-			throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-		}
-
+	public void deleteAllNotifications() {
 		notificationRepository.deleteAll();
 	}
 

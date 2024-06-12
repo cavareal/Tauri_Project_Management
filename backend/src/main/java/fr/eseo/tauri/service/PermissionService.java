@@ -1,6 +1,5 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.exception.GlobalExceptionHandler;
 import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.enumeration.RoleType;
@@ -13,44 +12,26 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PermissionService {
-
-    private final AuthService authService;
     private final PermissionRepository permissionRepository;
 
-    public Permission getPermissionById(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermission"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public Permission getPermissionById(Integer id) {
         return permissionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("permission", id));
     }
 
-    public List<Permission> getAllPermissions(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Permission> getAllPermissions() {
         return permissionRepository.findAll();
     }
 
-    public List<Permission> getAllPermissionsByRole(String token, RoleType roleType) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "readPermissions"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public List<Permission> getAllPermissionsByRole(RoleType roleType) {
         return permissionRepository.findByRole(roleType);
     }
 
-    public void createPermission(String token, Permission permission) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "addPermission"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void createPermission(Permission permission) {
         permissionRepository.save(permission);
     }
 
-    public void updatePermission(String token, Integer id, Permission updatedPermission) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "updatePermission"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-
-        Permission permission = getPermissionById(token, id);
+    public void updatePermission(Integer id, Permission updatedPermission) {
+        Permission permission = getPermissionById(id);
 
         if (updatedPermission.type() != null) permission.type(updatedPermission.type());
         if (updatedPermission.role() != null) permission.role(updatedPermission.role());
@@ -58,18 +39,12 @@ public class PermissionService {
         permissionRepository.save(permission);
     }
 
-    public void deletePermission(String token, Integer id) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deletePermission"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
-        getPermissionById(token, id);
+    public void deletePermission(Integer id) {
+        getPermissionById(id);
         permissionRepository.deleteById(id);
     }
 
-    public void deleteAllPermissions(String token) {
-        if (!Boolean.TRUE.equals(authService.checkAuth(token, "deletePermission"))) {
-            throw new SecurityException(GlobalExceptionHandler.UNAUTHORIZED_ACTION);
-        }
+    public void deleteAllPermissions() {
         permissionRepository.deleteAll();
     }
 

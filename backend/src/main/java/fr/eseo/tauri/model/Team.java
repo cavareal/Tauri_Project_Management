@@ -13,20 +13,19 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "teams")
+@Table(name = "teams", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "project_id"}))
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Data
 public class Team implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty
     private Integer id;
 
-    @NonNull
     @JsonProperty
     private String name;
 

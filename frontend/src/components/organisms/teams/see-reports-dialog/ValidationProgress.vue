@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps } from "vue"
+
 import type { Flag } from "@/types/flag"
 import { useQuery } from "@tanstack/vue-query"
 import { getUsersByRole } from "@/services/user"
@@ -9,7 +9,7 @@ import { Progress } from "@/components/ui/progress"
 import { ref } from "vue"
 
 const props = defineProps<{
-  validations: Flag[]
+	validations: Flag[]
 }>()
 
 const nbSS = ref(0)
@@ -22,21 +22,21 @@ const { data: validationRate } = useQuery({
 		nbValidate.value = hasValidate(props.validations, usersSS)
 		const validationRate = (nbValidate.value / nbSS.value) * 100
 		return validationRate
-	} })
+	}
+})
 
 const hasValidate = (validations: Flag[], usersSS: User[]) => {
 	const ssIds = usersSS.map(user => user.id)
 	const validated = validations.filter(validation => ssIds.includes(validation.author.id))
 	return validated.length
 }
+
 </script>
 
 <template>
-  <Text class="text-lg font-bold">Validation</Text>
-  <Text>La composition des équipes a été validée par {{ nbValidate }} référents sur {{ nbSS }} ({{validationRate}}%).</Text>
-  <Progress v-model="validationRate" />
+	<Text class="text-lg font-bold">Validation</Text>
+	<Text>
+		La composition des équipes a été validée par {{ nbValidate }} référents sur {{ nbSS }} ({{ validationRate }}%).
+	</Text>
+	<Progress v-model="validationRate" />
 </template>
-
-<style scoped>
-
-</style>

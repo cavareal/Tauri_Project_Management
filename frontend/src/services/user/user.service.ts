@@ -8,16 +8,16 @@ import { RoleTypeSchema } from "@/types/role"
 
 
 export const getAllUsers = async(): Promise<User[]> => {
-    const response = await queryAndValidate({
-        route: `users`,
-        responseSchema: UserSchema.array()
-    })
+	const response = await queryAndValidate({
+		route: "users",
+		responseSchema: UserSchema.array()
+	})
 
-    if (response.status === "error") {
-        throw new Error(response.error)
-    }
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 
-    return response.data
+	return response.data
 }
 
 export const getConnectedUser = async(): Promise<User> => {
@@ -74,6 +74,19 @@ export const getUserById = async(id: number): Promise<User> => {
 	return response.data
 }
 
+export const getUserByName = async(name: string) : Promise<User> => {
+	const response = await queryAndValidate({
+		route: `users/name/${name}`,
+		responseSchema: UserSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+
+	return response.data
+}
+
 export const getAllPermissions = async(id: number): Promise<PermissionType[]> => {
 	const response = await queryAndValidate({
 		route: `users/${id}/permissions`,
@@ -115,7 +128,7 @@ export const getAllRoles = async(id: number): Promise<RoleType[]> => {
 export const createUser = async(body: CreateUser): Promise<void> => {
 	const response = await mutateAndValidate({
 		method: "POST",
-		route: `users`,
+		route: "users",
 		body,
 		bodySchema: z.any()
 	})
@@ -127,12 +140,12 @@ export const createUser = async(body: CreateUser): Promise<void> => {
 
 
 export const deleteUser = async(id: number): Promise<void> => {
-    const response = await mutateAndValidate({
-        method: "DELETE",
-        route: `users/delete/${id}`,
-    })
+	const response = await mutateAndValidate({
+		method: "DELETE",
+		route: `users/delete/${id}`
+	})
 
-    if (response.status === "error") {
-        throw new Error(response.error)
-    }
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
 }

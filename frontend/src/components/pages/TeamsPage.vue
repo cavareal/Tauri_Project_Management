@@ -19,6 +19,7 @@ import { userHasValidateTeams } from "@/services/flag/flag.service"
 import { hasPermission } from "@/services/user/user.service"
 import { Loading } from "@/components/organisms/loading"
 import { Cookies } from "@/utils/cookie"
+import { StudentSignalTeamDialog } from "@/components/organisms/teams"
 
 const currentUserId = Cookies.getUserId()
 const hasValidateTeams = ref(true)
@@ -44,6 +45,7 @@ const canPreview = hasPermission("PREVIEW_TEAM")
 const displayAdminComposingButtons = computed(() => nbTeams.value && nbTeams.value > 0 && currentPhase.value === "COMPOSING")
 const displayAdminPrepublishedButtons = computed(() => currentPhase.value === "PREPUBLISHED")
 const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPOSING" && !hasValidateTeams.value)
+const displayStudentReportingButton = computed(() => currentPhase.value === "PREPUBLISHED" && hasPermission("ADD_FLAG_TEAM_WITH_STUDENT"))
 
 </script>
 
@@ -53,9 +55,9 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 			<DeleteTeamsDialog v-if="canCreate && displayAdminComposingButtons" @delete:teams="refetchTeams">
 				<Button variant="outline">Supprimer les équipes</Button>
 			</DeleteTeamsDialog>
-      <SeeReportsDialog v-if="canCreate && displayAdminComposingButtons">
-        <Button variant="outline">Voir les avis</Button>
-      </SeeReportsDialog>
+			<SeeReportsDialog v-if="canCreate && displayAdminComposingButtons">
+				<Button variant="outline">Voir les avis</Button>
+			</SeeReportsDialog>
 			<PrepublishDialog v-if="canCreate && displayAdminComposingButtons" @prepublish:teams="refetchCurrentPhase">
 				<Button variant="default">Prépublier</Button>
 			</PrepublishDialog>
@@ -64,10 +66,15 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 				<Button variant="default">Publier</Button>
 			</PublishDialog>
 
+			<StudentSignalTeamDialog v-if="displayStudentReportingButton">
+				<Button variant="outline">Signaler</Button>
+			</StudentSignalTeamDialog>
+
 			<SignalTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons">
 				<Button variant="outline">Signaler</Button>
 			</SignalTeamDialog>
-			<ValidTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons" @valid:teams="handleValidTeams">
+			<ValidTeamDialog v-if="canPreview && nbTeams && nbTeams > 0 && displayComposingFlagButtons"
+				@valid:teams="handleValidTeams">
 				<Button variant="default">Valider</Button>
 			</ValidTeamDialog>
 		</Header>
@@ -75,11 +82,10 @@ const displayComposingFlagButtons = computed(() => currentPhase.value === "COMPO
 		<NotAuthorized v-if="!authorized" />
 		<Loading v-else-if="loading" />
 		<RedirectImportStudents v-else-if="canCreate && nbStudents === 0" />
-		<GenerateTeams
-			v-else-if="canCreate && nbStudents && nbStudents > 0 && nbTeams === 0"
-			@generate:teams="refetchTeams" :nb-students="nbStudents"
-		/>
-		<TeamAccordion v-else-if="canCreate || (canPreview && nbTeams && nbTeams > 0) || currentPhase !== 'COMPOSING'" />
+		<GenerateTeams v-else-if="canCreate && nbStudents && nbStudents > 0 && nbTeams === 0"
+			@generate:teams="refetchTeams" :nb-students="nbStudents" />
+		<TeamAccordion
+			v-else-if="canCreate || (canPreview && nbTeams && nbTeams > 0) || currentPhase !== 'COMPOSING'" />
 		<TeamsNotCreated v-else-if="!canCreate && currentPhase === 'COMPOSING'" />
 		<NotAuthorized v-else />
 	</SidebarTemplate>
