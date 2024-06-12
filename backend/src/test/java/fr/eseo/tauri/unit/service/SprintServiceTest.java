@@ -3,6 +3,7 @@ package fr.eseo.tauri.unit.service;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.model.enumeration.SprintEndType;
+import fr.eseo.tauri.repository.CommentRepository;
 import fr.eseo.tauri.repository.SprintRepository;
 import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,9 @@ class SprintServiceTest {
 
     @Mock
     private TeamService teamService;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @InjectMocks
     private SprintService sprintService;
@@ -94,19 +98,6 @@ class SprintServiceTest {
 
         assertEquals(sprints, result);
     }
-
-    /*@Test
-    void createSprintShouldSaveSprintWhenAuthorizedAndProjectExists() {
-        Integer projectId = 1;
-        Sprint sprint = new Sprint();
-
-        when(projectService.getProjectById(projectId)).thenReturn(new Project());
-        when(studentService.getAllStudentsByProject(projectId)).thenReturn(Collections.emptyList());
-
-        sprintService.createSprint(sprint, projectId);
-
-        verify(sprintRepository, times(1)).save(sprint);
-    }*/
 
     @Test
     void deleteSprintShouldDeleteSprintWhenAuthorizedAndSprintExists() {
@@ -351,6 +342,53 @@ class SprintServiceTest {
         verify(sprintRepository, times(1)).deleteById(id);
         assertEquals(2, remainingSprint.sprintOrder());
         verify(sprintRepository, times(1)).save(remainingSprint);
+    }
+
+    @Test
+    void getTeamStudentsCommentsShouldReturnCommentsWhenTheyExist() {
+        Integer sprintId = 1;
+        Integer authorId = 1;
+        Integer teamId = 1;
+        Student student = new Student();
+        student.id(1);
+        Comment comment = new Comment();
+        List<Comment> expectedComments = Collections.singletonList(comment);
+
+        when(teamService.getStudentsByTeamId(teamId, true)).thenReturn(Collections.singletonList(student));
+        when(commentRepository.findAllByTeamAndSprintAndAuthor(student.id(), sprintId, authorId)).thenReturn(expectedComments);
+
+        List<Comment> result = sprintService.getTeamStudentsComments(sprintId, authorId, teamId);
+
+        assertEquals(expectedComments, result);
+    }
+
+    @Test
+    void getTeamStudentsCommentsShouldReturnEmptyListWhenNoStudentsInTeam() {
+        Integer sprintId = 1;
+        Integer authorId = 1;
+        Integer teamId = 1;
+
+        when(teamService.getStudentsByTeamId(teamId, true)).thenReturn(Collections.emptyList());
+
+        List<Comment> result = sprintService.getTeamStudentsComments(sprintId, authorId, teamId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getTeamStudentsCommentsShouldReturnEmptyListWhenNoCommentsExist() {
+        Integer sprintId = 1;
+        Integer authorId = 1;
+        Integer teamId = 1;
+        Student student = new Student();
+        student.id(1);
+
+        when(teamService.getStudentsByTeamId(teamId, true)).thenReturn(Collections.singletonList(student));
+        when(commentRepository.findAllByTeamAndSprintAndAuthor(student.id(), sprintId, authorId)).thenReturn(Collections.emptyList());
+
+        List<Comment> result = sprintService.getTeamStudentsComments(sprintId, authorId, teamId);
+
+        assertTrue(result.isEmpty());
     }
 
 }
