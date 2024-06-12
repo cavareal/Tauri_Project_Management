@@ -21,8 +21,11 @@ const authors = ref<User[]>([])
 const { data: studentComments, refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
 	queryKey: ["IndividualComment", props.teamId, props.sprintId],
 	queryFn: async() => {
-		const comments = await getIndividualsCommentsBySprintIdAndTeamId(props.teamId, props.sprintId)
-		const studentComments = comments.filter(comment => comment.student && (comment.student.id === currentUserId))
+		const comments = await getIndividualsCommentsBySprintIdAndTeamId(props.sprintId, props.teamId)
+		console.log(comments)
+		console.log(currentUserId)
+		const studentComments = comments.filter(comment => comment.student && (comment.student.id.toString() === currentUserId.toString()) && comment.feedback)
+		console.log(studentComments)
 		authors.value = studentComments.map(comment => comment.author)
 			.filter((author, index, self) => index === self.findIndex((t) => (
 				t.id === author.id

@@ -25,7 +25,7 @@ const students = ref<Student[]>([])
 const { data: com, refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
 	queryKey: ["IndividualComments", props.teamId, props.sprintId],
 	queryFn: async() => {
-		comments.value = await getIndividualsCommentsBySprintIdAndTeamId(props.teamId, props.sprintId)
+		comments.value = await getIndividualsCommentsBySprintIdAndTeamId(props.sprintId, props.teamId)
 		students.value = await getStudentsByTeamId(Number(props.teamId), true)
 		return comments.value
 	}
@@ -59,14 +59,14 @@ const canViewComments = hasPermission("VIEW_COMMENT")
         <Column class="justify-center w-full">
           <Text>Feedbacks</Text>
           <CommentsView class="border rounded-lg" v-if="getStudentComments(student.id, true).studentComments.length > 0" :is-feedback="true" :comments="getStudentComments(student.id, true).studentComments" :authors="getStudentComments(student.id, true).authorsStudentComment"/>
-          <Column v-else class="h-[300px] justify-center items-center border rounded-lg">
+          <Column v-else class="h-[100px] justify-center items-center border rounded-lg">
             <p>Pas de feedbacks</p>
           </Column>
         </Column>
         <Column v-if="canViewComments" class="ml-3 justify-center w-full">
           <Text>Commentaires</Text>
           <CommentsView class="border rounded-lg" v-if="getStudentComments(student.id, false).studentComments.length > 0" :is-feedback="false" :comments="getStudentComments(student.id, false).studentComments" :authors="getStudentComments(student.id, false).authorsStudentComment"/>
-          <Column v-else class="h-[300px] justify-center items-center border rounded-lg">
+          <Column v-else class="h-[100px] justify-center items-center border rounded-lg">
             <p>Pas de commentaire</p>
           </Column>
         </Column>

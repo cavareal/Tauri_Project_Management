@@ -64,14 +64,14 @@ const canViewFeedbacks = hasPermission("VIEW_FEEDBACK")
 			<FullGradeTable :sprint-id="props.sprintId" :team-id="props.teamId" :is-grades-confirmed="props.isGradesConfirmed"></FullGradeTable>
 		</div>
 	</div>
-  <Row class="justify-between">
+  <Row v-if="!currentUserTeam || (currentUserTeam && currentUserTeam.id.toString() === props.teamId)" class="justify-between">
     <FeedbacksAndCommentsView v-if="canViewAllOg || canViewAllWg || canViewOwnTeamGrade" :teamId="props.teamId" :sprintId="props.sprintId" :isFeedback="true"/>
-    <FeedbacksAndCommentsView class="ml-2" v-if="((canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched)" :sprint-id="props.teamId" :is-feedback="false" :team-id="props.teamId" />
+    <FeedbacksAndCommentsView class="ml-2" v-if="((canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched)" :sprint-id="props.sprintId" :is-feedback="false" :team-id="props.teamId" />
   </Row>
-  <FeedbacksAndCommentForStudents v-if="role !== 'TEAM_MEMBER' && canViewFeedbacks" :sprint-id="props.sprintId" :team-id="props.teamId"></FeedbacksAndCommentForStudents>
-  <IndividualFeedbacks v-else :sprint-id="props.sprintId" :teamId="props.teamId"></IndividualFeedbacks>
+  <FeedbacksAndCommentForStudents v-if="role !== 'OPTION_STUDENT' && canViewFeedbacks" :sprint-id="props.sprintId" :team-id="props.teamId"></FeedbacksAndCommentForStudents>
+  <IndividualFeedbacks v-else-if="currentUserTeam && currentUserTeam.id.toString() === props.teamId" :sprint-id="props.sprintId" :teamId="currentUserTeam.id"></IndividualFeedbacks>
 	<div  v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) !== Number(props.teamId))"  class="border bg-white rounded-md">
-		<TeamGradeTable v-if="canViewFeedbacks" :sprint-id="props.sprintId" :team-id="props.teamId"></TeamGradeTable>
+		<TeamGradeTable :sprint-id="props.sprintId" :team-id="props.teamId"></TeamGradeTable>
 	</div>
 </template>
 
