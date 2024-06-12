@@ -28,7 +28,9 @@ https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 
 4. Copier/coller le fichier `backend/src/main/resources/.env.example` et renomer en `.env`. Puis ajouter l'utilisateur et mot de passe de la BDD.
 
-4. Cliquer sur l'icône `Gradle` dans la sidebar de droite et cliquer sur `Tasks > application > bootRun`
+5. Pour le premier déploiement, et lors de modifications des models de BDD, passer la variable de `update` à `created`, dans le fichier `application.properties`, dans le backend
+
+6. Cliquer sur l'icône `Gradle` dans la sidebar de droite et cliquer sur `Tasks > application > bootRun`
 
 
 
