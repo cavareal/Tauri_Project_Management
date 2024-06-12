@@ -35,7 +35,6 @@ const { refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
 			.filter((author, index, self) => index === self.findIndex((t) => (
 				t.id === author.id
 			)))
-		console.log(commentsFiltered.value)
 		return comments
 	}
 })

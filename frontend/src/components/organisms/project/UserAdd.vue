@@ -69,7 +69,6 @@ const { error, mutate } = useMutation({
 					.catch(() => createToast("Erreur lors de la création du/des role(s)"))
 			})
 			.catch(() => {
-				console.log("Error creating user")
 				createToast("Erreur lors de la création d'un utilisateur. Il ce peut que l'email soit déjà enregistrée")
 			})
 	}

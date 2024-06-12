@@ -31,7 +31,6 @@ const handleValidate = () => {
 		setActualProject(Number(selectedProjectId.value))
 			.then(() => {
 				emits("choose:project")
-				console.log()
 				Cookies.setProjectId(Number(selectedProjectId.value))
 				createToast("Projet " + getNameById(selectedProjectId.value) + " sélectionné")
 			})
