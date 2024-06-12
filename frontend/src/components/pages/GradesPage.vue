@@ -36,10 +36,18 @@ const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()],
 const { refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
 	queryFn: async () => {
+		console.log(sprintId.value, teamId.value)
 		if (sprintId.value != null && teamId.value != null) {
 			isGradesConfirmed.value = await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
 		}
-	}
+	},
+	enabled: false
+})
+
+watch([sprintId, teamId], ([newSprintId, newTeamId]) => {
+    if (newSprintId != null && newTeamId != null) {
+        refetchGradesConfirmation()
+    }
 })
 
 
