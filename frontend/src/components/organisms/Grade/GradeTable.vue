@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
-import { cn } from "@/utils/style"
 import { watch } from "vue"
 import {
 	getTeamTotalGrade
@@ -12,6 +11,8 @@ import FullGradeTable from "@/components/organisms/Grade/FullGradeTable.vue"
 import TeamGradeTable from "@/components/organisms/Grade/TeamGradeTable.vue"
 import FeedbacksAndCommentsView from "@/components/organisms/Grade/FeedbacksAndCommentsView.vue"
 import { Row } from "@/components/atoms/containers"
+import FeedbacksAndCommentForStudents from "@/components/organisms/Grade/FeedbacksAndCommentForStudents.vue"
+import IndividualFeedbacks from "@/components/organisms/Grade/IndividualFeedbacks.vue"
 
 const props = defineProps<{
 	teamId : string,
@@ -20,6 +21,8 @@ const props = defineProps<{
 }>()
 
 let oldTeamId = ""
+
+const role = Cookies.getRole()
 
 const { data: teams, ...queryTeams } = useQuery({ queryKey: ["teams"], queryFn: getTeams })
 
@@ -48,6 +51,7 @@ watch(() => props.teamId, async() => {
 const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 const canViewOwnTeamGrade = hasPermission("VIEW_OWN_TEAM_GRADE")
 const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
+const canViewFeedbacks = hasPermission("VIEW_FEEDBACK")
 
 </script>
 
@@ -60,10 +64,12 @@ const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
 			<FullGradeTable :sprint-id="props.sprintId" :team-id="props.teamId" :is-grades-confirmed="props.isGradesConfirmed"></FullGradeTable>
 		</div>
 	</div>
-  <Row class="justify-between">
+  <Row v-if="!currentUserTeam || (currentUserTeam && currentUserTeam.id.toString() === props.teamId)" class="justify-between">
     <FeedbacksAndCommentsView v-if="canViewAllOg || canViewAllWg || canViewOwnTeamGrade" :teamId="props.teamId" :sprintId="props.sprintId" :isFeedback="true"/>
-    <FeedbacksAndCommentsView class="ml-2" v-if="((canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched)" :sprint-id="props.teamId" :is-feedback="false" :team-id="props.teamId" />
+    <FeedbacksAndCommentsView class="ml-2" v-if="((canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched)" :sprint-id="props.sprintId" :is-feedback="false" :team-id="props.teamId" />
   </Row>
+  <FeedbacksAndCommentForStudents v-if="role !== 'OPTION_STUDENT' && canViewFeedbacks" :sprint-id="props.sprintId" :team-id="props.teamId"></FeedbacksAndCommentForStudents>
+  <IndividualFeedbacks v-else-if="currentUserTeam && currentUserTeam.id.toString() === props.teamId" :sprint-id="props.sprintId" :teamId="currentUserTeam.id"></IndividualFeedbacks>
 	<div  v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) !== Number(props.teamId))"  class="border bg-white rounded-md">
 		<TeamGradeTable :sprint-id="props.sprintId" :team-id="props.teamId"></TeamGradeTable>
 	</div>

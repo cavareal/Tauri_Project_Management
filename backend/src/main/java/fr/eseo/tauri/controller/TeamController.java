@@ -127,4 +127,10 @@ public class TeamController {
         return ResponseEntity.ok(responseMessage.update());
     }
 
+
+    @GetMapping("/{teamId}/sprints/{sprintId}/individual-comments")
+    public ResponseEntity<List<Comment>> getIndividualCommentsByTeamIdAndSprintId(@PathVariable Integer teamId, @PathVariable Integer sprintId) {
+        List<Comment> comments = teamService.getIndividualCommentsByTeamIdAndSprintId(teamId, sprintId);
+        return ResponseEntity.ok(comments);
+    }
 }

@@ -70,11 +70,9 @@ const canDragAndDrop = hasPermission("TEAM_MANAGEMENT")
 					<TableCell :class="rowClass">
 						<CheckIcon :checked="student.bachelor" />
 					</TableCell>
-					<TableCell>
-						<Skeleton v-if="!grades" class="w-5/6 h-5" />
-						<span v-else>
-							{{grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')?.value?.toPrecision(4) ?? "" }}
-						</span>
+					<Skeleton v-if="!grades" class="w-5/6 h-5" />
+					<TableCell v-else class="py-0">
+						{{grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne')?.value?.toPrecision(4) ?? "" }}
 					</TableCell>
 				</TableRow>
 			</TableBody>

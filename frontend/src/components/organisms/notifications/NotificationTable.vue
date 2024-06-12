@@ -32,7 +32,7 @@ const markNotificationAsRead = async(notificationId: number) => {
 	<div v-for="(notification, i) in notifications" :key="i" class="w-full">
 		<NotificationElement
 			:title="notification.userFrom.name" :description="notification.message ?? ''" :link="searchLinkByType(notification)"
-			@read:notifications="markNotificationAsRead(notification.id)" class="w-full"
+			@read:notifications="markNotificationAsRead(notification.id)" class="w-full bg-white"
 		/>
 	</div>
 </template>
