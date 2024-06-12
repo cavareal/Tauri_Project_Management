@@ -1,26 +1,28 @@
 <script setup lang="ts">
+
 import { ref } from "vue"
 import { useMutation } from "@tanstack/vue-query"
 import { createToast } from "@/utils/toast"
-import { Trash } from "lucide-vue-next"
+import { Trash2 } from "lucide-vue-next"
 import { deleteProject } from "@/services/project/project.service"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@/components/ui/table"
 import { type Project } from "@/types/project"
 import { Column } from "@/components/atoms/containers"
+import { Subtitle } from "@/components/atoms/texts"
+import { cn } from "@/utils/style"
+import { CheckIcon } from "@/components/atoms/icons"
 
 defineProps<{
-    projects: Array<Project>
+	projects: Array<Project>
 }>()
+
+const rowClass = cn("py-2 h-auto")
 
 const emits = defineEmits(["delete:project"])
 const projectToDelete = ref<number | null>(null)
 const isDialogOpen = ref<boolean>(false)
-
-const openDelete = (projectId: number) => {
-	projectToDelete.value = projectId
-	isDialogOpen.value = true
-}
 
 const { mutate: deleteProjectMutate } = useMutation({
 	mutationKey: ["delete-project"],
@@ -41,36 +43,56 @@ const { mutate: deleteProjectMutate } = useMutation({
 </script>
 
 <template>
-    <Column class="mx-10">
-        <h2 class="text-xl font-semibold text-center mb-4 mt-6">Liste des projets existants</h2>
-        <div v-for="project in projects" :key="project.id" class="w-full flex justify-between items-center p-2 mb-5 border-b border-gray-500">
-                <p class="font-medium">{{ project.name }}</p>
-                <p class="text-gray-500">Nombre d'équipes : {{ project.nbTeams ? project.nbTeams : "pas encore générées" }}</p>
-                <p class="text-gray-500">Phase : {{ project.phase }}</p>
-                <p :class="project.actual ? 'text-green-500' : 'text-red-500'">
-                    {{ project.actual ? 'Actuel' : 'Non Actuel' }}
-                </p>
-            <Dialog v-model:open="isDialogOpen" v-if="!project.actual">
-                <DialogTrigger as-child>
-                    <Button @click="openDelete(project.id)">
-                        <Trash class="w-5 h-5" />
-                    </Button>
-                </DialogTrigger>
-                <DialogContent class="sm:max-w-[425px]">
-                    <DialogHeader>
-                        <DialogTitle>Confirmer la suppression</DialogTitle>
-                        <DialogDescription>
-                            Êtes-vous sûr de vouloir supprimer ce projet ?
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button @click="isDialogOpen = false">Annuler</Button>
-                        <Button class="bg-red-500 hover:bg-red-700 text-white" @click="deleteProjectMutate">
-                            Supprimer
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </div>
-    </Column>
+	<Column class="gap-2">
+		<Subtitle>Liste des projets existants</Subtitle>
+
+		<Table v-if="projects">
+			<TableHeader class="h-fit">
+				<TableRow class="h-10 pb-1">
+					<TableHead :class="rowClass" class="min-w-36">Nom</TableHead>
+					<TableHead :class="rowClass" class="min-w-36">Nombre d'équipes</TableHead>
+					<TableHead :class="rowClass" class="min-w-28">Phase</TableHead>
+					<TableHead :class="rowClass" class="min-w-28">Projet actuel</TableHead>
+					<TableHead :class="rowClass" class="w-10"></TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody v-if="projects">
+				<TableRow v-for="project in projects" :key="project.id">
+					<TableCell class="font-medium min-w-36" :class="rowClass">
+						{{ project.name }}
+					</TableCell>
+					<TableCell class="min-w-36" :class="rowClass">
+						{{ project.nbTeams ? project.nbTeams : "Pas encore générées" }}
+					</TableCell>
+					<TableCell class="min-w-28" :class="rowClass">
+						{{ project.phase }}
+					</TableCell>
+					<TableCell class="min-w-28" :class="rowClass">
+						<CheckIcon :checked="project.actual" />
+					</TableCell>
+					<TableCell :class="rowClass">
+						<Dialog v-model:open="isDialogOpen" v-if="!project.actual">
+							<DialogTrigger as-child>
+								<Trash2 class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors cursor-pointer" />
+							</DialogTrigger>
+							<DialogContent class="sm:max-w-[425px]">
+								<DialogHeader>
+									<DialogTitle>Supprimer le projet</DialogTitle>
+									<DialogDescription>
+										Êtes-vous sûr de vouloir supprimer ce projet ? Cette action est irréversible.
+									</DialogDescription>
+								</DialogHeader>
+								<DialogFooter class="space-x-2">
+									<Button @click="isDialogOpen = false" variant="outline">Annuler</Button>
+									<Button @click="deleteProjectMutate" variant="destructive">
+										Supprimer
+									</Button>
+								</DialogFooter>
+							</DialogContent>
+						</Dialog>
+					</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
+	</Column>
 </template>

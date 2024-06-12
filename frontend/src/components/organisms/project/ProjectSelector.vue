@@ -6,12 +6,14 @@ import { Cookies } from "@/utils/cookie/cookie.util"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { type Project } from "@/types/project"
 import { setActualProject } from "@/services/project"
-import Column from "@/components/atoms/containers/Column.vue"
+import { Subtitle } from "@/components/atoms/texts"
+import { Row } from "@/components/atoms/containers"
+import ProjectAdd from "./ProjectAdd.vue"
 
-const emits = defineEmits(["choose:project"])
+const emits = defineEmits(["choose:project", "add:project"])
 
 const props = defineProps<{
-    projects: Array<Project>
+	projects: Array<Project>
 }>()
 
 const selectedProjectId = ref<string | null>(null)
@@ -48,20 +50,23 @@ onMounted(() => {
 </script>
 
 <template>
-    <Column class="mx-5">
-        <h2 class="text-xl font-semibold text-center">Projet actuel</h2>
-        <Select :model-value="selectedProjectId ?? undefined" @update:model-value="handleSelectChange">
-            <SelectTrigger class="mt-4 p-2 border rounded">
-                <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem v-for="project in projects" :key="project.id" :value="project.id.toString()">
-                    {{ project.name }}
-                </SelectItem>
-            </SelectContent>
-        </Select>
-        <div class="flex justify-center">
-            <Button @click="handleValidate" class="mt-4">Valider le choix</Button>
-        </div>
-    </Column>
+	<Row class="items-center justify-between gap-4">
+		<Row class="items-center justify-start gap-4">
+			<Subtitle>Projet actuel :</Subtitle>
+
+			<Select :model-value="selectedProjectId ?? undefined" @update:model-value="handleSelectChange">
+				<SelectTrigger class="w-64">
+					<SelectValue />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem v-for="project in projects" :key="project.id" :value="project.id.toString()">
+						{{ project.name }}
+					</SelectItem>
+				</SelectContent>
+			</Select>
+
+			<Button @click="handleValidate" variant="outline">Valider</Button>
+		</Row>
+		<ProjectAdd @add:project="emits('add:project')" />
+	</Row>
 </template>

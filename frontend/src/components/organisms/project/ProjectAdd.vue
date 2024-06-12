@@ -8,6 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 
 import { type CreateProject, ProjectPhaseSchema } from "@/types/project"
 import Column from "@/components/atoms/containers/Column.vue"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Row } from "@/components/atoms/containers"
 
 const emits = defineEmits(["add:project"])
 const isDialogOpen = ref<boolean>(false)
@@ -36,30 +39,26 @@ const { error, mutate } = useMutation({
 </script>
 
 <template>
-  <Column class="mt-5 mb-2">
-    <Dialog v-model:open="isDialogOpen">
-      <DialogTrigger as-child>
-        <div class="flex justify-center">
-            <Button class="">Ajouter projet</Button>
-        </div>
-      </DialogTrigger>
-      <DialogContent class="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Confirmer l'ajout</DialogTitle>
-          <DialogDescription>
-            Êtes-vous sûr de vouloir ajouter un nouveau projet ?
-          </DialogDescription>
-        </DialogHeader>
-        <div class="mb-4">
-          <label for="project-name" class="block text-sm font-medium text-gray-700">Nom du projet</label>
-          <input id="project-name" v-model="projectName" class="mt-1 block w-full rounded-md" />
-        </div>
-        <DialogFooter>
-          <Button class="bg-red-500 hover:bg-red-600" @click="isDialogOpen = false">Annuler</Button>
-          <Button @click="mutate">Confirmer</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-    <p v-if="error">Erreur lors de la création d'un projet</p>
-  </Column>
+	<Dialog v-model:open="isDialogOpen">
+		<DialogTrigger as-child>
+			<Button class="">Ajouter un projet</Button>
+		</DialogTrigger>
+		<DialogContent class="sm:max-w-[425px]">
+			<DialogHeader>
+				<DialogTitle>Ajouter un projet</DialogTitle>
+				<DialogDescription>
+					Pour ajouter un nouveau projet, il vous suffit de renseigner son nom.
+				</DialogDescription>
+			</DialogHeader>
+			<Row class="items-center my-2">
+				<Label for="project-name" class="w-1/3">Nom du projet</Label>
+				<Input id="project-name" v-model="projectName" class="w-2/3" />
+			</Row>
+			<p v-if="error">Erreur lors de la création d'un projet</p>
+			<DialogFooter class="space-x-2">
+				<Button @click="isDialogOpen = false" variant="outline">Annuler</Button>
+				<Button @click="mutate">Confirmer</Button>
+			</DialogFooter>
+		</DialogContent>
+	</Dialog>
 </template>

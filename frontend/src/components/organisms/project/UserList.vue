@@ -1,13 +1,14 @@
 <script setup lang="ts">
+
 import { ref, watch } from "vue"
 import { Column } from "@/components/atoms/containers"
 import { Button } from "@/components/ui/button"
 import { useMutation } from "@tanstack/vue-query"
 import { createToast } from "@/utils/toast"
 import { type User } from "@/types/user"
-import { Trash } from "lucide-vue-next"
 import { deleteUser } from "@/services/user/user.service"
 import { formatRole, type RoleType } from "@/types/role"
+import { Table, TableBody, TableCell, TableRow, TableHead, TableHeader } from "@/components/ui/table"
 import {
 	Dialog,
 	DialogContent,
@@ -17,7 +18,9 @@ import {
 	DialogTitle,
 	DialogTrigger
 } from "@/components/ui/dialog"
-import { Cookies } from "@/utils/cookie"
+import { Subtitle } from "@/components/atoms/texts"
+import { cn } from "@/utils/style"
+import { Trash2 } from "lucide-vue-next"
 
 defineProps<{
 	users: Array<User & { role: RoleType[] }>
@@ -31,12 +34,8 @@ defineProps<{
 const emits = defineEmits(["delete:user"])
 const userToDelete = ref<number | null>(null)
 const isDialogOpen = ref<boolean>(false)
-const pojectLeaderId = Cookies.getUserId()
 
-const openDelete = (userId: number) => {
-	userToDelete.value = userId
-	isDialogOpen.value = true
-}
+const rowClass = cn("py-2 h-auto")
 
 const getRoleDescription = (role: RoleType[]) => {
 	return role.map(formatRole)
@@ -65,44 +64,54 @@ watch(isDialogOpen, (newVal) => {
 </script>
 
 <template>
-	<Column class="items-center mx-5">
-		<h2 class="text-xl font-semibold text-center mt-10 mb-4">Gestion des utilisateurs</h2>
-		<template v-if="usersLoading || rolesLoading">
-			<div>Chargement...</div>
-		</template>
-		<template v-else-if="usersError || rolesError">
-			<div>Erreur lors du chargement des données.</div>
-		</template>
-		<template v-else v-for="user in users" :key="user.id">
-			<div v-if="pojectLeaderId != user.id && user.role[0] != 'OPTION_STUDENT'"
-				class="flex justify-between items-center w-full p-2 border-t border-gray-300">
-				<div>
-					<p class="font-medium">{{ user.name }}</p>
-					<p class="text-gray-500">{{ user.email }}</p>
-					<p class="text-gray-400">{{ getRoleDescription(user.role).join(', ') }}</p>
-				</div>
-				<Dialog v-model:open="isDialogOpen">
-					<DialogTrigger as-child>
-						<Button @click="openDelete(user.id)">
-							<Trash class="w-5 h-5" />
-						</Button>
-					</DialogTrigger>
-					<DialogContent class="sm:max-w-[425px]">
-						<DialogHeader>
-							<DialogTitle>Confirmer la suppression</DialogTitle>
-							<DialogDescription>
-								Êtes-vous sûr de vouloir supprimer cet utilisateur ?
-							</DialogDescription>
-						</DialogHeader>
-						<DialogFooter>
-							<Button @click="isDialogOpen = false">Annuler</Button>
-							<Button class="bg-red-500 hover:bg-red-700 text-white" @click="deleteUserMutate">
-								Supprimer
-							</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
-			</div>
-		</template>
+	<Column class="gap-2">
+		<Subtitle>Gestion des utilisateurs</Subtitle>
+		<div v-if="usersLoading || rolesLoading">Chargement...</div>
+		<div v-else-if="usersError || rolesError">Erreur lors du chargement des données.</div>
+
+		<Table v-else>
+			<TableHeader class="h-fit">
+				<TableRow class="h-10 pb-1">
+					<TableHead :class="rowClass" class="min-w-36">Nom</TableHead>
+					<TableHead :class="rowClass" class="min-w-36">Email</TableHead>
+					<TableHead :class="rowClass" class="min-w-28">Rôle(s)</TableHead>
+					<TableHead :class="rowClass" class="w-10"></TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody v-if="users">
+				<TableRow v-for="user in users.filter(u => u.role[0] !== 'OPTION_STUDENT')" :key="user.id">
+					<TableCell class="font-medium min-w-36" :class="rowClass">
+						{{ user.name }}
+					</TableCell>
+					<TableCell class="min-w-36" :class="rowClass">
+						{{ user.email }}
+					</TableCell>
+					<TableCell class="min-w-28" :class="rowClass">
+						{{ getRoleDescription(user.role).join(', ') }}
+					</TableCell>
+					<TableCell :class="rowClass">
+						<Dialog v-model:open="isDialogOpen">
+							<DialogTrigger as-child>
+								<Trash2 class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors cursor-pointer" />
+							</DialogTrigger>
+							<DialogContent class="sm:max-w-[425px]">
+								<DialogHeader>
+									<DialogTitle>Supprimer un utilisateur</DialogTitle>
+									<DialogDescription>
+										Êtes-vous sûr de vouloir supprimer l'utilisateur {{ user.name }} ?
+									</DialogDescription>
+								</DialogHeader>
+								<DialogFooter class="space-x-2">
+									<Button @click="isDialogOpen = false" variant="outline">Annuler</Button>
+									<Button @click="deleteUserMutate" variant="destructive">
+										Supprimer
+									</Button>
+								</DialogFooter>
+							</DialogContent>
+						</Dialog>
+					</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
 	</Column>
 </template>

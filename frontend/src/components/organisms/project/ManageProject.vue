@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue"
 import { Column } from "@/components/atoms/containers"
-import ProjectAdd from "./ProjectAdd.vue"
 import ProjectList from "./ProjectList.vue"
 import ProjectSelector from "./ProjectSelector.vue"
 import { getAllProjects } from "@/services/project/project.service"
@@ -30,13 +29,12 @@ const refetch = async() => {
 </script>
 
 <template>
-	<Column class="items-center border rounded-md bg-white">
+	<Column class="items-center border rounded-md bg-white px-5 py-4">
 		<p v-if="projectsLoading">Chargement...</p>
 		<p v-else-if="projectsError">Erreur lors du chargement des projets.</p>
-		<div v-else class="w-full">
-			<ProjectSelector :projects="projects" @choose:project="refetch" />
+		<Column v-else class="w-full gap-8">
+			<ProjectSelector :projects="projects" @choose:project="refetch" @add:project="refetch" />
 			<ProjectList :projects="projects" @delete:project="refetch" />
-			<ProjectAdd @add:project="refetch" />
-		</div>
+		</Column>
 	</Column>
 </template>

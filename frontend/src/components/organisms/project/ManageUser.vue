@@ -61,14 +61,14 @@ const getListOfRoles = (user: User) => {
 </script>
 
 <template>
-    <Column class="items-center border rounded-md bg-white">
+    <Column class="items-center border rounded-md bg-white px-5 py-4">
         <p v-if="usersLoading || rolesLoading">Chargement...</p>
         <p v-else-if="usersError || rolesError">Erreur lors du chargement des projets.</p>
-        <div v-else class="w-full">
+        <Column v-else class="w-full gap-8">
             <UserAdd v-if="hasPermission('ADD_USER')" @add:user="refetch" />
             <UserList v-if="hasPermission('DELETE_USER')" :users="combinedData" :users-loading="usersLoading"
                 :users-error="usersError" :roles-loading="rolesLoading" :roles-error="rolesError"
                 @delete:user="refetch" />
-        </div>
+        </Column>
     </Column>
 </template>
