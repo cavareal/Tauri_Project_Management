@@ -1,6 +1,6 @@
-import type { CreateFeedback } from "@/types/feedback"
+import type { CreateFeedback, UpdateFeedback } from "@/types/feedback"
 import { mutateAndValidate, queryAndValidate } from "@/utils/api"
-import { CreateFeedbackSchema, FeedbackSchema } from "@/types/feedback"
+import { CreateFeedbackSchema, FeedbackSchema, UpdateFeedbackSchema } from "@/types/feedback"
 import { Cookies } from "@/utils/cookie"
 import type { Feedback } from "@/types/feedback"
 
@@ -12,6 +12,19 @@ export const addComment = async(feedback: CreateFeedback): Promise<void> => {
 		route: "comments",
 		body: feedback,
 		bodySchema: CreateFeedbackSchema
+	})
+
+	if (response.status === "error") {
+		throw new Error(response.error)
+	}
+}
+
+export const updateComment = async(id: number, feedback: UpdateFeedback): Promise<void> => {
+	const response = await mutateAndValidate({
+		method: "PATCH",
+		route: `comments/${id}`,
+		body: feedback,
+		bodySchema: UpdateFeedbackSchema
 	})
 
 	if (response.status === "error") {

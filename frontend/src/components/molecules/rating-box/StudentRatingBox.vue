@@ -15,7 +15,7 @@ import { getStudentsByTeamId } from "@/services/student"
 import { createToast } from "@/utils/toast"
 import { downloadGradeScaleTXT, getGradeTypeByName } from "@/services/grade-type"
 import { Button } from "@/components/ui/button"
-import {  getTeamStudentsCommentsBySprintAndAuthor } from "@/services/feedback"
+import { getTeamStudentsCommentsBySprintAndAuthor, createComment, updateComment } from "@/services/feedback"
 import type { Feedback } from "@/types/feedback"
 
 const props = defineProps<{
@@ -23,12 +23,8 @@ const props = defineProps<{
 	teamId: string,
 	sprintId: string,
 	allGrades: Grade[],
-	/*canGradeIndividualPerformance : boolean,
-	canCommentIndividualPerformance : boolean,
-	canGradeLimitedBonus : boolean,
-	canValidateLimitedBonus : boolean
-	canGradeUnlimitedBonus : boolean,
-	canCommentUnlimitedBonus : boolean*/
+	gradeAuthorization: boolean
+	commentAuthorization: boolean
 }>()
 
 const queryClient = useQueryClient()
@@ -42,6 +38,7 @@ const oldValues = ref({ grades: JSON.parse(JSON.stringify(grades.value)), commen
 const isGradeScaleUploaded = ref(false)
 
 const updateGrades = async() => {
+	studentComments.value = await getTeamStudentsCommentsBySprintAndAuthor(props.sprintId, props.teamId)
 	for (let i = 0; i < teamStudents.value.length; i++) {
 		const grade = getRatedGrade(props.allGrades, {
 			sprintId: Number(props.sprintId),
@@ -52,14 +49,11 @@ const updateGrades = async() => {
 
 		grades.value[i] = grade?.value?.toString() ?? ""
 		let filteredComment = studentComments.value?.filter(comment => !comment.feedback && comment.student.id === teamStudents.value[i].id)
-		let filteredFeedback = studentComments.value?.filter(comment => comment.feedback && comment.student.id === teamStudents.value[i].id)
+		let filteredFeedback = studentComments.value?.filter(feedback => feedback.feedback && feedback.student.id === teamStudents.value[i].id)
 		comments.value[i] = (filteredComment && filteredComment.length > 0) ? filteredComment[0].content : ""
 		feedbacks.value[i] = (filteredFeedback && filteredFeedback.length > 0) ? filteredFeedback[0].content : ""
 		oldValues.value = {	grades: JSON.parse(JSON.stringify(grades.value)), comments: JSON.parse(JSON.stringify(comments.value)), feedbacks: JSON.parse(JSON.stringify(feedbacks.value)) }
 	}
-	console.log(grades.value)
-	console.log(comments.value)
-	console.log(feedbacks.value)
 	status.value = "IDLE"
 }
 
@@ -94,6 +88,8 @@ const { mutate, isPending, isError } = useMutation({
 	mutationFn: async(index: number) => {
 		status.value = "LOADING"
 
+		if (grades.value[index] !== oldValues.value.grades[index] && comments.value[index] !== oldValues.value.comments[index] && feedbacks.value[index] !== oldValues.value.feedbacks[index]) return
+
 		if (grades.value[index] !== oldValues.value.grades[index]) {
 			await createOrUpdateGrade({
 				value: Number(grades.value[index]),
@@ -104,15 +100,28 @@ const { mutate, isPending, isError } = useMutation({
 				gradeTypeName: props.gradeTypeName
 			})
 		} else if (comments.value[index] !== oldValues.value.comments[index]) {
-			return
+			const studentComment = studentComments.value?.find(comment => comment.student.id === teamStudents.value[index].id && !comment.feedback)
+			if (studentComment) {
+				await updateComment(studentComment.id, {
+					content: comments.value[index]
+				})
+			} else {
+				await createComment(null, teamStudents.value[index].id, comments.value[index], props.sprintId, false)
+			}
 		} else if (feedbacks.value[index] !== oldValues.value.feedbacks[index]) {
-			return
+			const studentFeedback = studentComments.value?.find(feedback => feedback.student.id === teamStudents.value[index].id && feedback.feedback)
+			if (studentFeedback) {
+				await updateComment(studentFeedback.id, {
+					content: feedbacks.value[index]
+				})
+			} else {
+				await createComment(null, teamStudents.value[index].id, feedbacks.value[index], props.sprintId, true)
+			}
 		}
-
-
 		createToast("La note a bien été enregistrée.")
 		oldValues.value = { grades: JSON.parse(JSON.stringify(grades.value)), comments: JSON.parse(JSON.stringify(comments.value)), feedbacks: JSON.parse(JSON.stringify(feedbacks.value)) }
 		queryClient.invalidateQueries({ queryKey: ["all-rated-grades"] })
+		studentComments.value = await getTeamStudentsCommentsBySprintAndAuthor(props.sprintId, props.teamId)
 	}
 })
 
@@ -130,7 +139,8 @@ watch(status, (newValue) => {
 	}
 })
 
-watch(() => [props.teamId, props.sprintId], () => {
+watch(() => [props.teamId, props.sprintId], async() => {
+	teamStudents.value = await getStudentsByTeamId(Number(props.teamId), true)
 	updateGrades()
 })
 
@@ -172,9 +182,9 @@ const download = useMutation({
 			<Row class="w-2/3 mb-4 pr-4" v-for="(student, index) in teamStudents" :key="student.id">
 				<Row class="items-center justify-between gap-2">
 					<Subtitle>{{ student.name }}</Subtitle>
-					<Input class="w-16" type="number" min="0" max="20" v-model="grades[index]" @update:model-value="value => onGradeChange(value, index)" :disabled="isPending" v-on:blur="mutate(index)" />
-					<Textarea class="resize-none" v-model="comments[index]"  placeholder="Ajouter un commentaire" :disabled="isPending" v-on:blur="mutate(index)" />
-					<Textarea class="resize-none" v-model="feedbacks[index]"  placeholder="Ajouter un feedback" :disabled="isPending" v-on:blur="mutate(index)" />
+					<Input v-if="props.gradeAuthorization" class="w-16" type="number" min="0" max="20" v-model="grades[index]" @update:model-value="value => onGradeChange(value, index)" :disabled="isPending" v-on:blur="mutate(index)" />
+					<Textarea v-if="props.commentAuthorization" class="resize-none" v-model="comments[index]"  placeholder="Ajouter un commentaire" :disabled="isPending" v-on:blur="mutate(index)" />
+					<Textarea v-if="props.commentAuthorization" class="resize-none" v-model="feedbacks[index]"  placeholder="Ajouter un feedback" :disabled="isPending" v-on:blur="mutate(index)" />
 				</Row>
 			</Row>
 		</Row>
