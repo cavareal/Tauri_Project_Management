@@ -1,6 +1,7 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
+import fr.eseo.tauri.model.Permission;
 import fr.eseo.tauri.model.Team;
 import fr.eseo.tauri.model.User;
 import fr.eseo.tauri.model.enumeration.PermissionType;
@@ -8,6 +9,7 @@ import fr.eseo.tauri.model.enumeration.RoleType;
 import fr.eseo.tauri.repository.RoleRepository;
 import fr.eseo.tauri.repository.TeamRepository;
 import fr.eseo.tauri.repository.UserRepository;
+import fr.eseo.tauri.service.PermissionService;
 import fr.eseo.tauri.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +34,9 @@ class UserServiceTest {
 
     @Mock
     TeamRepository teamRepository;
+
+    @Mock
+    PermissionService permissionService;
 
     @Mock
     RoleRepository roleRepository;
@@ -284,6 +289,78 @@ class UserServiceTest {
         Boolean result = userService.hasPermission(id, permission);
 
         assertFalse(result);
+    }
+
+    @Test
+    void getUserByNameReturnsUserWhenUserExists() {
+        String name = "John Doe";
+        User expectedUser = new User();
+
+        when(userRepository.findByName(name)).thenReturn(expectedUser);
+
+        User actualUser = userService.getUserByName(name);
+
+        assertEquals(expectedUser, actualUser);
+    }
+
+    @Test
+    void getUserByNameReturnsNullWhenUserDoesNotExist() {
+        String name = "Nonexistent User";
+
+        when(userRepository.findByName(name)).thenReturn(null);
+
+        User actualUser = userService.getUserByName(name);
+
+        assertNull(actualUser);
+    }
+
+    @Test
+    void testGetPermissionsByUser_UserFound_WithRoles_WithPermissions() {
+        // Arrange
+        Integer userId = 1;
+        User user = new User().id(userId);
+        RoleType role1 = RoleType.TEAM_MEMBER;
+        RoleType role2 = RoleType.OPTION_LEADER;
+        PermissionType permission1 = PermissionType.MANAGE_PROJECT;
+        PermissionType permission2 = PermissionType.DELETE_PROJECT;
+        when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(user));
+        when(roleRepository.findByUser(user)).thenReturn(List.of(role1, role2));
+        when(permissionService.getAllPermissionsByRole(role1)).thenReturn(List.of(new Permission().type(permission1)));
+        when(permissionService.getAllPermissionsByRole(role2)).thenReturn(List.of(new Permission().type(permission2)));
+
+        // Act
+        List<PermissionType> permissions = userService.getPermissionsByUser(userId);
+
+        // Assert
+        assertEquals(2, permissions.size());
+        assertEquals(List.of(permission1, permission2), permissions);
+    }
+
+    @Test
+    void testCreateUser_UserExists() {
+        // Arrange
+        String existingEmail = "existing@example.com";
+        User user = new User().email(existingEmail);
+        when(userRepository.findByEmail(existingEmail)).thenReturn(Optional.of(new User()));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> userService.createUser(user));
+    }
+
+    @Test
+    void testCreateUser_UserDoesNotExist() {
+        // Arrange
+        String newEmail = "new@example.com";
+        User user = new User().email(newEmail);
+        when(userRepository.findByEmail(newEmail)).thenReturn(Optional.empty());
+        when(userRepository.save(user)).thenReturn(user);
+
+        // Act
+        User createdUser = userService.createUser(user);
+
+        // Assert
+        assertNotNull(createdUser);
+        assertEquals(newEmail, createdUser.email());
     }
 }
 
