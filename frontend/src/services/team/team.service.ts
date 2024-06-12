@@ -149,8 +149,6 @@ export const getTeamByLeaderId = async(leaderId: string | null, projectId: strin
 }
 
 export const getPresentationOrder = async(teamId: string, sprintId: string): Promise<Student[]> => {
-	console.log("teamId", teamId)
-	console.log("sprintId", sprintId)
 	const response = await queryAndValidate({
 		route: `teams/${teamId}/presentation-order`,
 		params: { sprintId },
