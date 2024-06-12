@@ -10,9 +10,9 @@ Ce projet a pour but de développer une application afin de permettre une gestio
 
 ### BDD
 
-1. Avoir installé MariaDB ou MYSQL sur sa machine, sur le port 3306 de préférence
+1. Avoir installé MariaDB ou MYSQL sur sa machine, sur le port 3306 de préférence. Sinon, modifier le l'adresse de la BDD dans le fichier `backend/src/main/resources/application/properties`, variable `spring.datasource.url`
 
-### Backend
+### Backend, avec Intellij
 
 1. Installer le JDK 17 :
 
@@ -26,7 +26,7 @@ https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
 
 3. Cliquer sur `Import Gradle Project` dans la fenêtre de notification
 
-4. Copier/coller le fichier `backend/src/main/resources/.env.example` et renomer en .env. Puis ajouter l'utilisateur et mot de passe de la BDD.
+4. Copier/coller le fichier `backend/src/main/resources/.env.example` et renomer en `.env`. Puis ajouter l'utilisateur et mot de passe de la BDD.
 
 4. Cliquer sur l'icône `Gradle` dans la sidebar de droite et cliquer sur `Tasks > application > bootRun`
 
