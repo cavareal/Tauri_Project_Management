@@ -26,7 +26,7 @@ const props = defineProps<{
 }>()
 
 const currentUserId = Cookies.getUserId()
-const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], queryFn: async () => getTeamByUserId(currentUserId) })
+const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], queryFn: async() => getTeamByUserId(currentUserId) })
 const { data: allGrades } = useQuery({ queryKey: ["all-rated-grades"], queryFn: getAllRatedGradesFromConnectedUser })
 const canGradeGlobalPerformance = hasPermission("GRADE_GLOBAL_PERFORMANCE")
 const canCommentGlobalPerformance = hasPermission("COMMENT_GLOBAL_PERFORMANCE")
@@ -94,10 +94,10 @@ const canSeePrivateComments = hasPermission("VIEW_COMMENT")
 			</Column>
 
 			<Column class="gap-4 flex-1">
-			<CommentsContainer v-if="canSeeFeedbacks" class="flex-1" :isFeedback="true" :sprintId="props.sprintId"
-				:teamId="props.teamId" />
-			<CommentsContainer v-if="canSeePrivateComments" class="flex-1" :isFeedback="false"
-				:sprintId="props.sprintId" :teamId="props.teamId" />
+				<CommentsContainer v-if="canSeeFeedbacks" class="flex-1" :isFeedback="true" :sprintId="props.sprintId"
+					:teamId="props.teamId" />
+				<CommentsContainer v-if="canSeePrivateComments" class="flex-1" :isFeedback="false"
+					:sprintId="props.sprintId" :teamId="props.teamId" />
 			</Column>
 		</Row>
 
