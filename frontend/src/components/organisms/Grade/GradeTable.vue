@@ -12,6 +12,7 @@ import FullGradeTable from "@/components/organisms/Grade/FullGradeTable.vue"
 import TeamGradeTable from "@/components/organisms/Grade/TeamGradeTable.vue"
 import FeedbacksAndCommentsView from "@/components/organisms/Grade/FeedbacksAndCommentsView.vue"
 import { Row } from "@/components/atoms/containers"
+import FeedbacksAndCommentForStudents from "@/components/organisms/Grade/FeedbacksAndCommentForStudents.vue"
 
 const props = defineProps<{
 	teamId : string,
@@ -64,6 +65,7 @@ const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
     <FeedbacksAndCommentsView v-if="canViewAllOg || canViewAllWg || canViewOwnTeamGrade" :teamId="props.teamId" :sprintId="props.sprintId" :isFeedback="true"/>
     <FeedbacksAndCommentsView class="ml-2" v-if="((canViewAllWg || canViewAllOg) && queryTotalGrade.isFetched)" :sprint-id="props.teamId" :is-feedback="false" :team-id="props.teamId" />
   </Row>
+  <FeedbacksAndCommentForStudents :sprint-id="props.sprintId" :team-id="props.teamId"></FeedbacksAndCommentForStudents>
 	<div  v-if="(canViewOwnTeamGrade && currentUserTeam && Number(currentUserTeam.id) !== Number(props.teamId))"  class="border bg-white rounded-md">
 		<TeamGradeTable :sprint-id="props.sprintId" :team-id="props.teamId"></TeamGradeTable>
 	</div>

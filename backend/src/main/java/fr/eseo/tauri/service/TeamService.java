@@ -337,4 +337,8 @@ public class TeamService {
         return Double.parseDouble(String.format("%.2f", result).replace(',', '.'));
     }
 
+    public List<Comment> getIndividualCommentsByTeamIdAndSprintId(int teamId, int sprintId) {
+        return this.commentRepository.findIndividualCommentsByTeamIdAndSprintId(teamId, sprintId);
+    }
+
 }

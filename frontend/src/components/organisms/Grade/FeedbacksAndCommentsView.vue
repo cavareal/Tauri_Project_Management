@@ -14,6 +14,7 @@ const props = defineProps<{
   sprintId: string,
   isFeedback: boolean
 }>()
+
 const authorsComments = ref<User[]>([])
 const commentsFiltered = ref<Feedback[]>([])
 const typeComments = props.isFeedback ? "feedbacks" : "comments"

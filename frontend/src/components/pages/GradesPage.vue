@@ -31,7 +31,7 @@ const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()],
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
-	queryFn: async () => {
+	queryFn: async() => {
 		if (sprintId.value === null || teamId.value === null || actualTeam.value?.id == undefined) return false
 		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value), actualTeam.value?.id)
 	}
@@ -39,7 +39,7 @@ const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery
 
 const { refetch: studentValidLimitedBonus, isLoading: studentBtnLoading } = useQuery({
 	queryKey: ["student-valid-bonus", sprintId.value, teamId.value],
-	queryFn: async () => {
+	queryFn: async() => {
 		if (sprintId.value === null || teamId.value === null || actualTeam.value?.id == undefined) return false
 		await setValidationBonusesByTeam(parseInt(teamId.value), parseInt(sprintId.value), Cookies.getUserId())
 			.then(() => createToast("Les bonus limités ont été validés avec succès"))
