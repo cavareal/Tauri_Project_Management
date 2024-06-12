@@ -16,5 +16,6 @@ defineProps<{
 		<slot />
 		<Subtitle>{{ title }}</Subtitle>
 		<InfoText>{{ description }}</InfoText>
+		<slot name="action" />
 	</Column>
 </template>
