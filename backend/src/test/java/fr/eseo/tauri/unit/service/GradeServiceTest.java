@@ -925,28 +925,6 @@ class GradeServiceTest {
     }
 
     @Test
-    void setGradesConfirmationShouldReturnTrueWhenGradesExistAndAreNotConfirmed() {
-        Integer sprintId = 1;
-        Integer teamId = 1;
-        Integer projectId = 1;
-        Student student = new Student();
-        student.id(1);
-        GradeType gradeType = new GradeType();
-        gradeType.id(1);
-        Grade grade = new Grade();
-        grade.confirmed(false);
-
-        when(studentRepository.findByTeam(teamId)).thenReturn(Collections.singletonList(student));
-        when(gradeTypeRepository.findByNameAndProjectId(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId)).thenReturn(gradeType);
-        when(gradeRepository.findIsConfirmedBySprindAndStudent(sprintId, student.id(), gradeType.id())).thenReturn(grade);
-
-        Boolean result = gradeService.setGradesConfirmation(sprintId, teamId, projectId);
-
-        assertTrue(result);
-        verify(gradeRepository, times(1)).save(grade);
-    }
-
-    @Test
     void getIndividualGradesByTeamShouldReturnGradesWhenExist() {
         Integer sprintId = 1;
         Integer teamId = 1;
@@ -969,6 +947,50 @@ class GradeServiceTest {
         List<Grade> actualGrades = gradeService.getIndividualGradesByTeam(sprintId, teamId);
 
         assertTrue(actualGrades.isEmpty());
+    }
+
+    @Test
+    void setGradesConfirmationShouldReturnTrueWhenGradesExistAndAreNotConfirmed() {
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Integer projectId = 1;
+        Student student = new Student();
+        student.id(1);
+        GradeType gradeType = new GradeType();
+        gradeType.id(1);
+        Grade grade = new Grade();
+        grade.confirmed(false);
+
+        when(studentRepository.findByTeam(teamId)).thenReturn(Collections.singletonList(student));
+        when(gradeTypeRepository.findByNameAndProjectId(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId)).thenReturn(gradeType);
+        when(gradeRepository.findIsConfirmedBySprindAndStudents(sprintId, student.id(), gradeType.id())).thenReturn(Collections.singletonList(grade));
+
+        Boolean result = gradeService.setGradesConfirmation(sprintId, teamId, projectId);
+
+        assertTrue(result);
+        verify(gradeRepository, times(1)).setConfirmedBySprintAndStudent(grade.id());
+    }
+
+    @Test
+    void setGradesConfirmationShouldReturnTrueWhenGradesExistAndAreConfirmed() {
+        Integer sprintId = 1;
+        Integer teamId = 1;
+        Integer projectId = 1;
+        Student student = new Student();
+        student.id(1);
+        GradeType gradeType = new GradeType();
+        gradeType.id(1);
+        Grade grade = new Grade();
+        grade.confirmed(true);
+
+        when(studentRepository.findByTeam(teamId)).thenReturn(Collections.singletonList(student));
+        when(gradeTypeRepository.findByNameAndProjectId(GradeTypeName.INDIVIDUAL_PERFORMANCE.displayName(), projectId)).thenReturn(gradeType);
+        when(gradeRepository.findIsConfirmedBySprindAndStudents(sprintId, student.id(), gradeType.id())).thenReturn(Collections.singletonList(grade));
+
+        Boolean result = gradeService.setGradesConfirmation(sprintId, teamId, projectId);
+
+        assertTrue(result);
+        verify(gradeRepository, never()).setConfirmedBySprintAndStudent(anyInt());
     }
 
 }
