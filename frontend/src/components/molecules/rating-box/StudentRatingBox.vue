@@ -86,6 +86,7 @@ const checkGradeScaleUploaded = async() => {
 
 const { mutate, isPending, isError } = useMutation({
 	mutationFn: async(index: number) => {
+		console.log(props.teamId)
 		if (!teamStudents.value) return
 
 		if (grades.value[index] === oldValues.value.grades[index] && comments.value[index] === oldValues.value.comments[index] && feedbacks.value[index] === oldValues.value.feedbacks[index]) return
@@ -103,18 +104,14 @@ const { mutate, isPending, isError } = useMutation({
 		} else if (comments.value[index] !== oldValues.value.comments[index]) {
 			const studentComment = studentComments.value?.find(comment => comment.student.id === teamStudents.value[index].id && !comment.feedback)
 			if (studentComment) {
-				await updateComment(studentComment.id, {
-					content: comments.value[index]
-				})
+				await updateComment(studentComment.id, { content: comments.value[index] })
 			} else {
 				await createComment(null, teamStudents.value[index].id, comments.value[index], props.sprintId, false)
 			}
 		} else if (feedbacks.value[index] !== oldValues.value.feedbacks[index]) {
 			const studentFeedback = studentComments.value?.find(feedback => feedback.student.id === teamStudents.value[index].id && feedback.feedback)
 			if (studentFeedback) {
-				await updateComment(studentFeedback.id, {
-					content: feedbacks.value[index]
-				})
+				await updateComment(studentFeedback.id, { content: feedbacks.value[index] })
 			} else {
 				await createComment(null, teamStudents.value[index].id, feedbacks.value[index], props.sprintId, true)
 			}
