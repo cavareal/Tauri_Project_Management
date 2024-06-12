@@ -796,7 +796,7 @@ class TeamServiceTest {
 
         verify(studentRepository, times(1)).findByGenderAndProjectId(Gender.WOMAN, projectId);
         verify(studentRepository, times(1)).findByGenderOrderByBachelorAndImportedAvgDesc(Gender.MAN, projectId);
-        verify(projectService, times(1)).updateProject(eq(projectId), eq(projectDetails));
+        verify(projectService, times(1)).updateProject(projectId, projectDetails);
         verify(teamService, times(1)).createTeams(projectId, projectDetails.nbTeams());
         verify(teamService, times(1)).fillTeams(createdTeams, women, men, projectDetails.nbWomen(), false, projectId);
     }
