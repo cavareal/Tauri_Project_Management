@@ -190,8 +190,8 @@ watch(() => props.sprintId, async() => {
 				<TableCell :class="cellClass">{{averageTeam ? averageTeam["Contenu de la présentation"] : ''}}</TableCell>
 				<TableCell :class="cellClass"> {{totalGrade ? totalGrade : ''}} </TableCell>
 				<TableCell :class="cellClass">{{ studentBonuses ? studentBonuses[index][1].value : ''}} </TableCell>
-				<TableCell :class="cellClass">{{ studentBonuses ? studentBonuses[index][0].value : '' }} </TableCell>
-				<TableCell v-if="studentBonuses " :class="cellClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + (studentBonuses[index][0].value ? studentBonuses[index][0].value : 0) }} </TableCell>
+				<TableCell :class="cellClass">{{ (studentBonuses && isGradesConfirmed) ? studentBonuses[index][0].value : '' }} </TableCell>
+				<TableCell v-if="studentBonuses " :class="cellClass">  {{ (studentBonuses[index][1].value ? studentBonuses[index][1].value : 0) + ((studentBonuses[index][0].value && isGradesConfirmed) ? studentBonuses[index][0].value : 0) }} </TableCell>
 				<TableCell v-if="averageTeam" :class="cellClass"> {{averageTeam["Performance globale de l'équipe"]}} </TableCell>
 				<TableCell v-if="averageStudents" :class="cn(cellClass, isGradesConfirmed ? gradeConfirmed : gradeNotConfirmed )">{{ (role === 'OPTION_STUDENT' && !isGradesConfirmed) ? '' : averageStudents[student.id]?.toFixed(2)}}</TableCell>
 				<TableCell v-if="totalIndividualGrades" :class="cellClass"> {{totalIndividualGrades[index].toPrecision(4) ? totalIndividualGrades[index] : 0}} </TableCell>
