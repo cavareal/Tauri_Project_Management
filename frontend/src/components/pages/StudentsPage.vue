@@ -25,6 +25,10 @@ const refetch = async() => {
 	await gradesQuery.refetch()
 }
 
+const buttonVariant = computed(() => {
+	return (currentPhase.value === "PREPUBLISHED" || currentPhase.value ===  "PUBLISHED") ? "default" : "outline"
+})
+
 const authorized = hasPermission("STUDENTS_PAGE")
 const displayButtons = computed(() => authorized && students.value && students.value.length > 0)
 const canEdit = hasPermission("EDIT_IMPORTED_GRADE_TYPES")
@@ -44,9 +48,9 @@ const canExport = hasPermission("EXPORT_STUDENT_LIST") && hasPermission("EXPORT_
 				<Button variant="outline">Modifier les coefficients</Button>
 			</GradeFactorsDialog>
 			<ExportStudents v-if="displayButtons && canExport">
-				<Button variant="outline">Exporter</Button>
+				<Button :variant="buttonVariant">Exporter</Button>
 			</ExportStudents>
-			<AddStudentDialog v-if="displayButtons && canExport" @add:student="refetch">
+			<AddStudentDialog v-if="displayButtons  && currentPhase  === 'COMPOSING' && canEdit" @add:student="refetch">
 				<Button variant="default">Ajouter un étudiant</Button>
 			</AddStudentDialog>
 		</Header>

@@ -31,4 +31,4 @@ export const CreateFeedbackSchema = FeedbackSchema.omit({
 export type Feedback = z.infer<typeof FeedbackSchema>
 export type CreateFeedback = z.infer<typeof CreateFeedbackSchema>
 export const UpdateFeedbackSchema = CreateFeedbackSchema.partial()
-export type UpdateGrade = z.infer<typeof UpdateFeedbackSchema>
+export type UpdateFeedback = z.infer<typeof UpdateFeedbackSchema>

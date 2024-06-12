@@ -59,7 +59,7 @@ export const getGradeFormula = (total: "TE" | "TB" | "TI" | "NF"): string[] => {
 	case "TE":
 		return [
 			`\\footnotesize{\\color{#301F70}{
-\\text{Total individuel} = \\frac {\\textbf{ST} + \\textbf{GP} + \\textbf{CS} + \\textbf{PR}} 3
+\\text{Total équipe} = \\frac {\\textbf{ST} + \\textbf{GP} + \\textbf{CS} + \\textbf{PR}} 4
 }} \\\\`,
 			`\\scriptsize{\\textcolor{gray}{\\textit{\\textbf{ST} \\textit{: Solution Technique}}}} \\\\
 \\scriptsize{\\textcolor{gray}{\\textit{\\textbf{GP} \\textit{: Gestion de Projet}}}} \\\\
