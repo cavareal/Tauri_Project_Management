@@ -7,6 +7,7 @@ import Skeleton from "@/components/ui/skeleton/Skeleton.vue"
 import type { Team } from "@/types/team"
 import { Cookies } from "@/utils/cookie"
 import { cn } from "@/utils/style"
+import { getCurrentPhase } from "@/services/project"
 
 const userId = Cookies.getUserId()
 
@@ -22,6 +23,8 @@ const emit = defineEmits<{
 const onValueChange = (newValue: string) => {
 	emit("update:modelValue", newValue)
 }
+
+const { data: currentPhase } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
 
 const { data: teams } = useQuery({
 	queryKey: ["teams"],
@@ -53,9 +56,8 @@ const style = cn("w-56")
 </script>
 
 <template>
-	<Skeleton v-if="!teams || teams.length === 0" :class="style" />
 
-	<Select v-else :model-value="modelValue ?? undefined" @update:model-value="onValueChange">
+	<Select v-if="currentPhase === 'PUBLISHED'" :model-value="modelValue ?? undefined" @update:model-value="onValueChange">
 		<SelectTrigger :class="style">
 			<SelectValue />
 		</SelectTrigger>

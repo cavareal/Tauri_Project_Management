@@ -21,37 +21,38 @@ import { createToast } from "@/utils/toast"
 import { NotAuthorized } from "@/components/organisms/errors"
 import GradeNotSelected from "../organisms/Grade/GradeNotSelected.vue"
 import { wait } from "@/utils/time"
+import SprintsAndTeamsNotCreated from "@/components/organisms/Grade/SprintsAndTeamsNotCreated.vue"
+import { getCurrentPhase } from "@/services/project"
 
 const teamId = ref<string | null>(null)
 const sprintId = ref<string | null>(null)
 
 const authorized = hasPermission("GRADES_PAGE")
 const canConfirmOwnTeamGrade = hasPermission("GRADE_CONFIRMATION")
+const { data: currentPhase } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
+
 
 const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()], queryFn: () => getTeamByUserId(Cookies.getUserId()) })
 
 const { data: isGradesConfirmed, refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
-	queryFn: async () => {
+	queryFn: async() => {
 		console.log(sprintId.value, teamId.value)
 		// if (sprintId.value != null && teamId.value != null){
-			return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
-		// }	
+		return await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
+		// }
 	}
 })
 
 
-
 const { mutate: studentValidLimitedBonus, isPending: studentBtnLoading } = useMutation({
-	mutationKey: ["student-valid-bonus", sprintId.value, teamId.value], mutationFn: async () => {
+	mutationKey: ["student-valid-bonus", sprintId.value, teamId.value], mutationFn: async() => {
 		if (sprintId.value === null || teamId.value === null || actualTeam.value?.id == undefined) return false
 		await setValidationBonusesByTeam(parseInt(teamId.value), parseInt(sprintId.value), Cookies.getUserId())
 			.then(() => createToast("Les bonus limités ont été validés avec succès"))
 			.catch(() => createToast("Erreur lors de la validation des bonus limités"))
 	}
 })
-
-
 
 
 const canViewAllOg = hasPermission("VIEW_ALL_ORAL_GRADES")
@@ -85,9 +86,8 @@ const canViewAllWg = hasPermission("VIEW_ALL_WRITING_GRADES")
 			<Column v-if="teamId !== null && sprintId !== null">
 				<Grade v-if="authorized" :teamId="teamId ?? ''" :sprintId="sprintId ?? ''"
 					:is-grades-confirmed="isGradesConfirmed ?? false" />
-				<NotAutorized v-else />
 			</Column>
-
+			<SprintsAndTeamsNotCreated v-else-if="currentPhase === 'COMPOSING' || currentPhase === 'PREPUBLISHED'"/>
 			<GradeNotSelected v-else />
 		</Column>
 	</SidebarTemplate>
