@@ -41,6 +41,7 @@ const { refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
 
 const { mutate } = useMutation({
 	mutationKey: ["add-comment"], mutationFn: async() => {
+		if (comment.value.trim() === "") return
 		await createComment(props.teamId, null, comment.value, props.sprintId, props.isFeedback)
 			.then(() => refetchFeedbacks())
 			.then(() => comment.value = "")
@@ -51,7 +52,7 @@ const { mutate } = useMutation({
 watch(() => props.teamId, () => refetchFeedbacks())
 watch(() => props.sprintId, () => refetchFeedbacks())
 
-const placeholderText = props.isFeedback ? "feedback" : "commentaire"
+const placeholderText = props.isFeedback ? "Ajouter un feedback" : "Ajouter un commentaire"
 const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le commentaire a été enregistré."
 </script>
 

@@ -39,5 +39,4 @@ const { data: notifications, refetch } = useQuery({ queryKey: ["notifications"],
 			</div>
 		</SheetContent>
 	</Sheet>
-
 </template>

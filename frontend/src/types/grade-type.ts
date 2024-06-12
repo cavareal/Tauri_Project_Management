@@ -41,7 +41,7 @@ export const getGradeTypeDescription = (gradeTypeName: GradeTypeName): string =>
 	case "Gestion de projet":
 		return "Vous devez évaluer chaque équipe sur sa gestion du projet."
 	case "Contenu de la présentation":
-		return "Qualité du contenu de la présentation"
+		return "Vous devez évaluer chaque équipe sur le contenu de sa présentation."
 	// case "Support de présentation":
 	// 	return "Vous devez évaluer chaque équipe sur son support de présentation."
 	case "Performance globale de l'équipe":

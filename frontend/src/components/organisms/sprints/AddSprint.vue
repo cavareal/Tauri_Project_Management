@@ -4,6 +4,7 @@ import { AddSprintDialog } from "."
 import { CalendarPlus } from "lucide-vue-next"
 import type { CalendarDate } from "@internationalized/date"
 import { Column } from "@/components/atoms/containers"
+import AddFirstSprint from "./AddFirstSprint.vue"
 
 const emitAdd = defineEmits(["add:sprint"])
 
@@ -18,7 +19,8 @@ const TITLE = props.firstSprint ? "Vous n'avez pas encore crée de sprint, cliqu
 </script>
 
 <template>
-    <div class="border transition-colors rounded-lg bg-white hover:bg-muted/50 flex justify-center flex-col items-stretch">
+	<AddFirstSprint v-if="firstSprint" @add:sprint="emitAdd('add:sprint')" :lastSprintEndDate="lastSprintEndDate" :lastSprintOrder="lastSprintOrder" />
+    <div v-else class="border transition-colors rounded-lg bg-white hover:bg-muted/50 flex justify-center flex-col items-stretch">
         <AddSprintDialog @add:sprint="emitAdd('add:sprint')" :lastSprintEndDate="lastSprintEndDate" :lastSprintOrder="lastSprintOrder">
             <Column class="items-center py-4 gap-2">
 				<CalendarPlus class="size-12 stroke-1 text-dark-blue" />
