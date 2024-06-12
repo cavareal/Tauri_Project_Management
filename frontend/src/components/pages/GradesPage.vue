@@ -35,14 +35,16 @@ const { data: actualTeam } = useQuery({ queryKey: ["team", Cookies.getUserId()],
 
 const { refetch: refetchGradesConfirmation } = useQuery({
 	queryKey: ["grades-confirmation", sprintId.value, teamId.value],
-	queryFn: async() => {
-		isGradesConfirmed.value = await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
+	queryFn: async () => {
+		if (!isNaN(sprintId.value) && !isNaN(teamId.value)) {
+			isGradesConfirmed.value = await getGradesConfirmation(parseInt(sprintId.value), parseInt(teamId.value))
+		}
 	}
 })
 
 
 const { mutate: studentValidLimitedBonus, isPending: studentBtnLoading } = useMutation({
-	mutationKey: ["student-valid-bonus", sprintId.value, teamId.value], mutationFn: async() => {
+	mutationKey: ["student-valid-bonus", sprintId.value, teamId.value], mutationFn: async () => {
 		if (sprintId.value === null || teamId.value === null || actualTeam.value?.id == undefined) return false
 		await setValidationBonusesByTeam(parseInt(teamId.value), parseInt(sprintId.value), Cookies.getUserId())
 			.then(() => createToast("Les bonus limités ont été validés avec succès"))
@@ -71,8 +73,9 @@ watch(() => [teamId, sprintId], () => {
 					:selectedSprint="sprintId">
 					<Button variant="outline">Validation des notes</Button>
 				</ValidGradesDialog>
-				<LoadingButton :variant="'outline'" v-if="Cookies.getRole() == 'OPTION_STUDENT' && actualTeam?.id.toString() == teamId"
-							   type="submit" @click="studentValidLimitedBonus" :loading="studentBtnLoading">
+				<LoadingButton :variant="'outline'"
+					v-if="Cookies.getRole() == 'OPTION_STUDENT' && actualTeam?.id.toString() == teamId" type="submit"
+					@click="studentValidLimitedBonus" :loading="studentBtnLoading">
 					Valider les bonus limités
 				</LoadingButton>
 				<SprintSelect v-model="sprintId" />
@@ -85,9 +88,9 @@ watch(() => [teamId, sprintId], () => {
 			</Header>
 			<Column v-if="teamId !== null && sprintId !== null">
 				<Grade v-if="authorized" :teamId="teamId ?? ''" :sprintId="sprintId ?? ''"
-					   :is-grades-confirmed="isGradesConfirmed ?? false" />
+					:is-grades-confirmed="isGradesConfirmed ?? false" />
 			</Column>
-			<SprintsAndTeamsNotCreated v-else-if="currentPhase === 'COMPOSING' || currentPhase === 'PREPUBLISHED'"/>
+			<SprintsAndTeamsNotCreated v-else-if="currentPhase === 'COMPOSING' || currentPhase === 'PREPUBLISHED'" />
 			<GradeNotSelected v-else />
 		</Column>
 	</SidebarTemplate>
