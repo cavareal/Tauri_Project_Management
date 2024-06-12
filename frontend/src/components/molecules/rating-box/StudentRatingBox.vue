@@ -176,7 +176,7 @@ const download = useMutation({
 		</Row>
 
 		<Row class="items-center justify-between gap-6">
-			<InfoText class="flex-1">{{ getGradeTypeDescription(gradeTypeName) }}</InfoText>
+			<InfoText class="flex-1 mb-5">{{ getGradeTypeDescription(gradeTypeName) }}</InfoText>
 		</Row>
 
 		<Row class="flex-wrap gap-4">
@@ -186,8 +186,8 @@ const download = useMutation({
 					<Input v-if="props.gradeAuthorization" class="w-16" type="number" min="0" max="20" v-model="grades[index]" @update:model-value="value => onGradeChange(value, index)" :disabled="isPending" v-on:blur="mutate(index)" />
 				</Row>
 				<Row class="items-stretch justify-between gap-2">
-					<Textarea v-if="props.commentAuthorization" v-model="comments[index]"  placeholder="Ajouter un commentaire" :disabled="isPending" v-on:blur="mutate(index)" />
-					<Textarea v-if="props.commentAuthorization" v-model="feedbacks[index]"  placeholder="Ajouter un feedback" :disabled="isPending" v-on:blur="mutate(index)" />
+					<Textarea v-if="props.commentAuthorization" v-model="comments[index]" placeholder="Ajouter un commentaire" :disabled="isPending" v-on:blur="mutate(index)" class="min-h-10 h-10" />
+					<Textarea v-if="props.commentAuthorization" v-model="feedbacks[index]" placeholder="Ajouter un feedback" :disabled="isPending" v-on:blur="mutate(index)" class="min-h-10 h-10" />
 				</Row>
 			</Column>
 		</Row>
@@ -199,7 +199,3 @@ const download = useMutation({
 		</Row>
 	</Column>
 </template>
-
-<style scoped>
-
-</style>

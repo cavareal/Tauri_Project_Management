@@ -132,14 +132,16 @@ onMounted(async() => {
 		<Row class="items-center justify-between gap-6">
 			<InfoText class="flex-1">{{ props.limited ? DIALOG_DESCRIPTION_LIMITE : DIALOG_DESCRIPTION_ILLIMITE	 }}</InfoText>
 		</Row>
-		<Row class="flex-wrap">
-			<Row class="w-2/3 mb-4 pr-4" v-for="(student, index) in teamStudents" :key="student.id">
-				<Row class="items-center justify-between gap-2">
+		<Row class="flex-wrap gap-4">
+			<Column class="w-full gap-2" v-for="(student, index) in teamStudents" :key="student.id">
+				<Row class="items-center justify-between gap-6">
 					<Subtitle class="w-1/2">{{ student.name }}</Subtitle>
-					<Input class="w-16 mr-4" type="number" v-model="bonuses[index]" @update:model-value="value => onBonusChange(value, index)" :disabled="isPending" v-on:blur="mutate" />
-					<Textarea v-if="!props.limited" class="resize-none" v-model="comments[index]"  placeholder="Ajouter un commentaire" :disabled="isPending" v-on:blur="mutate" />
+					<Input class="w-16" type="number" v-model="bonuses[index]" @update:model-value="value => onBonusChange(value, index)" :disabled="isPending" v-on:blur="mutate" />
 				</Row>
-			</Row>
+				<Row class="items-stretch justify-between gap-2">
+					<Textarea v-if="!props.limited" class="min-h-10 h-10" v-model="comments[index]"  placeholder="Ajouter un commentaire" :disabled="isPending" v-on:blur="mutate" />
+				</Row>
+			</Column>
 		</Row>
 
 		<ErrorText v-if="status === 'DONE' && isError">Une erreur est survenue.</ErrorText>

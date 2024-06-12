@@ -51,7 +51,7 @@ const { mutate } = useMutation({
 watch(() => props.teamId, () => refetchFeedbacks())
 watch(() => props.sprintId, () => refetchFeedbacks())
 
-const placeholderText = props.isFeedback ? "feedback" : "commentaire"
+const placeholderText = props.isFeedback ? "Ajouter un feedback" : "Ajouter un commentaire"
 const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le commentaire a été enregistré."
 </script>
 

@@ -10,9 +10,9 @@ import { Column, Row } from "@/components/atoms/containers"
 import { MessageCircleMore, MessageSquareReply } from "lucide-vue-next"
 
 const props = defineProps<{
-  teamId: string,
-  sprintId: string,
-  isFeedback: boolean
+	teamId: string,
+	sprintId: string,
+	isFeedback: boolean
 }>()
 const authorsComments = ref<User[]>([])
 const commentsFiltered = ref<Feedback[]>([])
@@ -35,26 +35,23 @@ watch(() => props.teamId, () => refetchFeedbacks())
 watch(() => props.sprintId, () => refetchFeedbacks())
 
 const TITLE = props.isFeedback ? "Feedbacks" : "Commentaires"
-const noComments =  props.isFeedback ? "Aucun feedbacks donné" : "Aucun commentaire donné"
+const noComments = props.isFeedback ? "Aucun feedbacks donné" : "Aucun commentaire donné"
 
 </script>
 
 <template>
-    <Column class="pr-5 h-full flex justify-start border bg-white rounded-md mt-2 w-full">
-        <Row class="p-5">
-          <MessageSquareReply  class="mr-2" v-if="props.isFeedback" :size="40" :stroke-width="1"/>
-          <MessageCircleMore v-else :size="40" :stroke-width="1"/>
-          <Subtitle class="text-center">{{TITLE}}</Subtitle>
-        </Row>
-      <div v-if="!comments || commentsFiltered.length === 0" class="h-[100px] items-center">
-        <Text class="text-center">{{ noComments }}</Text>
-      </div>
-      <div v-else>
-        <CommentsView class="bg-white" :authors="authorsComments" :comments="commentsFiltered" :isFeedback="props.isFeedback"/>
-      </div>
-    </Column>
+	<Column class="pr-5 h-full flex justify-start border bg-white rounded-md mt-2 w-full">
+		<Row class="p-5 gap-2">
+			<MessageSquareReply v-if="props.isFeedback" class="size-6 stroke-[1.33] text-dark-blue" />
+			<MessageCircleMore v-else class="size-6 stroke-[1.33] text-dark-blue" />
+			<Subtitle class="text-center">{{ TITLE }}</Subtitle>
+		</Row>
+		<div v-if="!comments || commentsFiltered.length === 0" class="h-[100px] items-center">
+			<Text class="text-center">{{ noComments }}</Text>
+		</div>
+		<div v-else>
+			<CommentsView class="bg-white" :authors="authorsComments" :comments="commentsFiltered"
+				:isFeedback="props.isFeedback" />
+		</div>
+	</Column>
 </template>
-
-<style scoped>
-
-</style>

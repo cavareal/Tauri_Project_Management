@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import {
 	Users,
 	LucideCircleFadingPlus,
@@ -25,7 +26,7 @@ const props = defineProps<{
 }>()
 
 const currentUserId = Cookies.getUserId()
-const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], queryFn: async() => getTeamByUserId(currentUserId) })
+const { data: currentUserTeam } = useQuery({ queryKey: ["team", currentUserId], queryFn: async () => getTeamByUserId(currentUserId) })
 const { data: allGrades } = useQuery({ queryKey: ["all-rated-grades"], queryFn: getAllRatedGradesFromConnectedUser })
 const canGradeGlobalPerformance = hasPermission("GRADE_GLOBAL_PERFORMANCE")
 const canCommentGlobalPerformance = hasPermission("COMMENT_GLOBAL_PERFORMANCE")
@@ -49,47 +50,73 @@ const canSeePrivateComments = hasPermission("VIEW_COMMENT")
 <template>
 	<Loading v-if="!allGrades" />
 
-	<Row v-else class="items-start flex">
-		<Column class="items-stretch justify-start gap-4 flex-1">
-			<TeamRatingBox v-if="(canGradeGlobalPerformance || canCommentGlobalPerformance) && currentUserTeam && currentUserTeam.id.toString() !== props.teamId" class="flex-1"
-				:all-grades="allGrades" grade-type-name="Performance globale de l'équipe" :sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradeGlobalPerformance" :comment-authorization="canCommentGlobalPerformance">
-				<Users class="size-6 stroke-[1.33] text-dark-blue" />
-			</TeamRatingBox>
+	<Column v-else class="items-stretch flex gap-4 mb-8">
+		<Row class="items-stretch justify-start gap-4 flex-1">
+			<Column class="gap-4 flex-1">
+				<TeamRatingBox
+					v-if="(canGradeGlobalPerformance || canCommentGlobalPerformance) && currentUserTeam && currentUserTeam.id.toString() !== props.teamId"
+					class="flex-1" :all-grades="allGrades" grade-type-name="Performance globale de l'équipe"
+					:sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradeGlobalPerformance"
+					:comment-authorization="canCommentGlobalPerformance">
+					<Users class="size-6 stroke-[1.33] text-dark-blue" />
+				</TeamRatingBox>
 
-			<TeamRatingBox v-if="(canGradeProjectManagement && currentUserTeam && currentUserTeam.id.toString() === props.teamId) || canCommentProjectManagement" class="flex-1"
-				:all-grades="allGrades" grade-type-name="Gestion de projet" :sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradeProjectManagement" :comment-authorization="canCommentProjectManagement">
-				<SquareGanttChart class="size-6 stroke-[1.33] text-dark-blue" />
-			</TeamRatingBox>
+				<TeamRatingBox
+					v-if="(canGradeProjectManagement && currentUserTeam && currentUserTeam.id.toString() === props.teamId) || canCommentProjectManagement"
+					class="flex-1" :all-grades="allGrades" grade-type-name="Gestion de projet"
+					:sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradeProjectManagement"
+					:comment-authorization="canCommentProjectManagement">
+					<SquareGanttChart class="size-6 stroke-[1.33] text-dark-blue" />
+				</TeamRatingBox>
 
-			<TeamRatingBox v-if="(canGradeTechnicalSolution && currentUserTeam && currentUserTeam.id.toString() === props.teamId) || canCommentTechnicalSolution" class="flex-1"
-				:all-grades="allGrades" grade-type-name="Solution Technique" :sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradeTechnicalSolution" :comment-authorization="canCommentTechnicalSolution">
-				<Blocks class="size-6 stroke-[1.33] text-dark-blue" />
-			</TeamRatingBox>
+				<TeamRatingBox
+					v-if="(canGradeTechnicalSolution && currentUserTeam && currentUserTeam.id.toString() === props.teamId) || canCommentTechnicalSolution"
+					class="flex-1" :all-grades="allGrades" grade-type-name="Solution Technique"
+					:sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradeTechnicalSolution"
+					:comment-authorization="canCommentTechnicalSolution">
+					<Blocks class="size-6 stroke-[1.33] text-dark-blue" />
+				</TeamRatingBox>
 
-			<TeamRatingBox v-if="(canGradeSprintConformity && currentUserTeam && currentUserTeam.id.toString() === props.teamId) || canCommentSprintConformity" class="flex-1"
-				:all-grades="allGrades" grade-type-name="Conformité au sprint" :sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradeSprintConformity" :comment-authorization="canCommentSprintConformity">
-				<Play class="size-6 stroke-[1.33] text-dark-blue" />
-			</TeamRatingBox>
+				<TeamRatingBox
+					v-if="(canGradeSprintConformity && currentUserTeam && currentUserTeam.id.toString() === props.teamId) || canCommentSprintConformity"
+					class="flex-1" :all-grades="allGrades" grade-type-name="Conformité au sprint"
+					:sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradeSprintConformity"
+					:comment-authorization="canCommentSprintConformity">
+					<Play class="size-6 stroke-[1.33] text-dark-blue" />
+				</TeamRatingBox>
 
-			<TeamRatingBox v-if="canGradePresentationContent || canCommentPresentationContent" class="flex-1"
-				:all-grades="allGrades" grade-type-name="Contenu de la présentation" :sprint-id="props.sprintId" :team-id="props.teamId" :grade-authorization="canGradePresentationContent" :comment-authorization="canCommentPresentationContent">
-				<Presentation class="size-6 stroke-[1.33] text-dark-blue" />
-			</TeamRatingBox>
+				<TeamRatingBox v-if="canGradePresentationContent || canCommentPresentationContent" class="flex-1"
+					:all-grades="allGrades" grade-type-name="Contenu de la présentation" :sprint-id="props.sprintId"
+					:team-id="props.teamId" :grade-authorization="canGradePresentationContent"
+					:comment-authorization="canCommentPresentationContent">
+					<Presentation class="size-6 stroke-[1.33] text-dark-blue" />
+				</TeamRatingBox>
+			</Column>
 
-			<CommentsContainer v-if="canSeeFeedbacks" class="flex-1" :isFeedback="true" :sprintId="props.sprintId" :teamId="props.teamId"></CommentsContainer>
-			<CommentsContainer v-if="canSeePrivateComments" class="flex-1" :isFeedback="false" :sprintId="props.sprintId" :teamId="props.teamId"></CommentsContainer>
+			<Column class="gap-4 flex-1">
+			<CommentsContainer v-if="canSeeFeedbacks" class="flex-1" :isFeedback="true" :sprintId="props.sprintId"
+				:teamId="props.teamId" />
+			<CommentsContainer v-if="canSeePrivateComments" class="flex-1" :isFeedback="false"
+				:sprintId="props.sprintId" :teamId="props.teamId" />
+			</Column>
+		</Row>
 
-		</Column>
-
-
-		<Column class="items-stretch justify-start gap-4 flex-1">
-			<StudentRatingBox v-if="canGradeIndividualPerformance || canCommentIndividualPerformance" class="flex-1 ml-6" grade-type-name="Performance individuelle" :team-id="props.teamId" :sprint-id="props.sprintId" :all-grades="allGrades" :grade-authorization="canGradeIndividualPerformance" :comment-authorization="canCommentIndividualPerformance">
+		<Row class="items-stretch justify-start gap-4 flex-1">
+			<StudentRatingBox v-if="canGradeIndividualPerformance || canCommentIndividualPerformance" class="flex-1"
+				grade-type-name="Performance individuelle" :team-id="props.teamId" :sprint-id="props.sprintId"
+				:all-grades="allGrades" :grade-authorization="canGradeIndividualPerformance"
+				:comment-authorization="canCommentIndividualPerformance">
 				<User class="size-6 stroke-[1.33] text-dark-blue" />
 			</StudentRatingBox>
-			<BonusRatingBox v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)" class="flex-1 ml-6" :sprint-id="props.sprintId" :team-id="props.teamId" :limited="canGradeLimitedBonus && !canGradeUnlimitedBonus">
-				<LucideCirclePlus v-if="canGradeUnlimitedBonus" class="size-6 stroke-[1.33] text-dark-blue"/>
-				<LucideCircleFadingPlus v-if="canGradeLimitedBonus && !canGradeUnlimitedBonus" class="size-6 stroke-[1.33] text-dark-blue"/>
+
+			<BonusRatingBox
+				v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)"
+				class="flex-1" :sprint-id="props.sprintId" :team-id="props.teamId"
+				:limited="canGradeLimitedBonus && !canGradeUnlimitedBonus">
+				<LucideCirclePlus v-if="canGradeUnlimitedBonus" class="size-6 stroke-[1.33] text-dark-blue" />
+				<LucideCircleFadingPlus v-if="canGradeLimitedBonus && !canGradeUnlimitedBonus"
+					class="size-6 stroke-[1.33] text-dark-blue" />
 			</BonusRatingBox>
-		</Column>
-	</Row>
+		</Row>
+	</Column>
 </template>
