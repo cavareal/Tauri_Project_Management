@@ -23,6 +23,7 @@ module.exports = {
 	ignorePatterns: [
 		"src/components/ui/**/*.vue",
 		"src/components/ui/**/*.ts",
+		"src/components/atoms/illustration/*.vue",
 		"tailwind.config.js",
 		"postcss.config.js",
 		"vite.config.js"

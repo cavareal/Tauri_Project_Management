@@ -90,7 +90,6 @@ const { mutate, isPending, isError } = useMutation({
 			createToast("Les bonus ont bien été mis à jour.")
 			oldValues.value = { bonuses: JSON.parse(JSON.stringify(bonuses.value)), comments: JSON.parse(JSON.stringify(comments.value)) }
 			queryClient.invalidateQueries({ queryKey: ["student-bonuses", props.teamId, props.sprintId, props.limited] })
-			console.log(oldValues.value)
 		}
 	}
 })

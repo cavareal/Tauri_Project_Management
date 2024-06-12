@@ -83,7 +83,7 @@ const canSeePrivateComments = hasPermission("VIEW_COMMENT")
 
 
 		<Column class="items-stretch justify-start gap-4 flex-1">
-			<StudentRatingBox v-if="canGradeIndividualPerformance || canCommentIndividualPerformance" class="flex-1 ml-6" grade-type-name="Performance individuelle" :team-id="props.teamId" :sprint-id="props.sprintId" :all-grades="allGrades">
+			<StudentRatingBox v-if="canGradeIndividualPerformance || canCommentIndividualPerformance" class="flex-1 ml-6" grade-type-name="Performance individuelle" :team-id="props.teamId" :sprint-id="props.sprintId" :all-grades="allGrades" :grade-authorization="canGradeIndividualPerformance" :comment-authorization="canCommentIndividualPerformance">
 				<User class="size-6 stroke-[1.33] text-dark-blue" />
 			</StudentRatingBox>
 			<BonusRatingBox v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)" class="flex-1 ml-6" :sprint-id="props.sprintId" :team-id="props.teamId" :limited="canGradeLimitedBonus && !canGradeUnlimitedBonus">
@@ -92,42 +92,4 @@ const canSeePrivateComments = hasPermission("VIEW_COMMENT")
 			</BonusRatingBox>
 		</Column>
 	</Row>
-
-
-	<!--
-
-
-<ContainerGradeType v-if="canGradeIndividualPerformance || canCommentIndividualPerformance"
-	title="Performance individuelle"
-	infotext="Vous devez évaluer chaque étudiant sur sa performance individuelle lors de sa présentation.">
-	<template #icon>
-			<User :size="40" :stroke-width="1"/>
-		</template>
-	<template #dialog>
-			<DialogIndividualRate title="Note de performance" description="Veuillez noter la performance individuelle de chaque étudiants" :teamId="props.teamId" :sprintId="props.sprintId" :canGrade="canGradeIndividualPerformance" :canComment="canCommentIndividualPerformance" gradeTypeString="Performance individuelle"></DialogIndividualRate>
-		</template>
-</ContainerGradeType>
-
-<CommentContainer v-if="canSeeFeedbacks" title="Feedbacks"
-	infoText="Vous pouvez donner un feedback sur les performances de l'équipe durant le sprint"
-	:sprintId="props.sprintId" :teamId="props.teamId" :feedback="true" />
-<CommentContainer v-if="canSeePrivateComments" title="Commentaires"
-	info-text="Vous pouvez faire des commentaires sur les performances de l'équipe durant le sprint" :feedback="false"
-	:sprintId="props.sprintId" :teamId="props.teamId" />
-
-<ContainerGradeType
-	v-if="(canGradeLimitedBonus || canGradeUnlimitedBonus) && currentUserTeam && currentUserTeam.id === Number(props.teamId)"
-	title="Bonus et malus de mon équipe" infotext="Vous pouvez attribuer des bonus et des malus à votre équipe">
-	<template #icon>
-			<LucideCircleFadingPlus v-if="canGradeLimitedBonus && !canGradeUnlimitedBonus" :size="40" :stroke-width="1"/>
-			<LucideCirclePlus v-if="canGradeUnlimitedBonus" :size="40" :stroke-width="1"/>
-		</template>
-	<template #dialog>
-			<DialogBonus
-				:limited="canGradeLimitedBonus && !canGradeUnlimitedBonus"
-				:teamId="props.teamId"
-				:sprintId="props.sprintId"
-			></DialogBonus>
-		</template>
-</ContainerGradeType> -->
 </template>

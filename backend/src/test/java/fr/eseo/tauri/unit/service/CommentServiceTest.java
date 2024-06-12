@@ -1,10 +1,7 @@
 package fr.eseo.tauri.unit.service;
 
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.Comment;
-import fr.eseo.tauri.model.Sprint;
-import fr.eseo.tauri.model.Team;
-import fr.eseo.tauri.model.User;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.repository.CommentRepository;
 import fr.eseo.tauri.service.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +31,9 @@ class CommentServiceTest {
 
     @Mock
     SprintService sprintService;
+
+    @Mock
+    StudentService studentService;
 
     @InjectMocks
     CommentService commentService;
@@ -169,6 +169,63 @@ class CommentServiceTest {
         verify(userService, times(1)).getUserById(updatedComment.authorId());
         verify(teamService, times(1)).getTeamById(updatedComment.teamId());
         verify(commentRepository, times(1)).save(existingComment);
+    }
+
+    @Test
+    void testCreateComment_TeamIdNull_StudentIdNotNull() {
+        Comment comment = new Comment();
+        comment.authorId(1);
+        comment.sprintId(1);
+        comment.studentId(1);
+        comment.teamId(null);
+
+        when(userService.getUserById(1)).thenReturn(new User());
+        when(sprintService.getSprintById(1)).thenReturn(new Sprint());
+        when(studentService.getStudentById(1)).thenReturn(new Student());
+
+        commentService.createComment(comment);
+
+        assertNull(comment.team());
+        assertNotNull(comment.student());
+        verify(commentRepository, times(1)).save(comment);
+    }
+
+    @Test
+    void testCreateComment_TeamIdNotNull_StudentIdNull() {
+        Comment comment = new Comment();
+        comment.authorId(1);
+        comment.sprintId(1);
+        comment.studentId(null);
+        comment.teamId(1);
+
+        when(userService.getUserById(1)).thenReturn(new User());
+        when(sprintService.getSprintById(1)).thenReturn(new Sprint());
+        when(teamService.getTeamById(1)).thenReturn(new Team());
+
+        commentService.createComment(comment);
+
+        assertNotNull(comment.team());
+        assertNull(comment.student());
+        verify(commentRepository, times(1)).save(comment);
+    }
+
+    @Test
+    void testCreateComment_BothTeamIdAndStudentIdNull() {
+        Comment comment = new Comment();
+        comment.authorId(1);
+        comment.sprintId(1);
+        comment.studentId(null);
+        comment.teamId(null);
+
+        when(userService.getUserById(1)).thenReturn(new User());
+        when(sprintService.getSprintById(1)).thenReturn(new Sprint());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            commentService.createComment(comment);
+        });
+
+        assertEquals("Both team and student attributes cannot be either null or not null at the same time", exception.getMessage());
+        verify(commentRepository, never()).save(any(Comment.class));
     }
 
 
