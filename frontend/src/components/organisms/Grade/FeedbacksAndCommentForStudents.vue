@@ -10,6 +10,8 @@ import { Column, Row } from "@/components/atoms/containers"
 import { getStudentsByTeamId } from "@/services/student"
 import { Subtitle, Text } from "@/components/atoms/texts"
 import CommentsView from "@/components/molecules/rateContainer/CommentsView.vue"
+import { MessageCircleReply } from "lucide-vue-next"
+import { hasPermission } from "@/services/user"
 
 const props = defineProps<{
   sprintId: string,
@@ -17,19 +19,20 @@ const props = defineProps<{
 }>()
 
 const commentsFiltered = ref<Feedback[]>([])
+const comments = ref<Feedback[]>([])
 const students = ref<Student[]>([])
 
-const { data: comments } = useQuery<Feedback[], Error>({
+const { data: com } = useQuery<Feedback[], Error>({
 	queryKey: ["IndividualComments", props.teamId, props.sprintId],
 	queryFn: async() => {
-		const comments = await getIndividualsCommentsBySprintIdAndTeamId(props.teamId, props.sprintId)
+		comments.value = await getIndividualsCommentsBySprintIdAndTeamId(props.teamId, props.sprintId)
 		students.value = await getStudentsByTeamId(Number(props.teamId), true)
-		commentsFiltered.value = comments.filter(comment => !comment.feedback)
-		return comments
+		return comments.value
 	}
 })
 
-const getStudentComments = (studentId: number) => {
+const getStudentComments = (studentId: number, isFeedback: boolean) => {
+	commentsFiltered.value = comments.value.filter(comment => comment.feedback === isFeedback)
 	const studentComments = commentsFiltered.value.filter(comment => comment.student && comment.student.id === studentId)
 	const authorsStudentComment = studentComments.map(comment => comment.author)
 		.filter((author, index, self) => index === self.findIndex((t) => (
@@ -37,21 +40,33 @@ const getStudentComments = (studentId: number) => {
 		)))
 	return { studentComments, authorsStudentComment }
 }
+
+
+const canViewComments = hasPermission("VIEW_COMMENT")
 </script>
 
 <template>
   <Column class="bg-white border rounded-lg mt-4 p-2 w-full">
+    <Row class="mb-5">
+      <MessageCircleReply class="mr-2" :size="40" :stroke-width="1"/>
+      <Subtitle class="mb-4 text-center">Feedbacks Et Commentaire Individuels</Subtitle>
+    </Row>
     <div v-for="student in students" :key="student.id" class="mb-3">
-      <Subtitle>{{student.name}}</Subtitle>
+      <Subtitle class="mb-5">{{student.name}}</Subtitle>
       <Row class="w-full justify-center">
-        <Column class="justify-center">
-          <Text>Commentaires</Text>
-          <CommentsView v-if="getStudentComments(student.id).studentComments.length > 0" :is-feedback="false" :comments="getStudentComments(student.id).studentComments" :authors="getStudentComments(student.id).authorsStudentComment"/>
-          <p v-else>Pas de commentaire</p>
-        </Column>
-        <Column class="ml-3 justify-center" >
+        <Column class="justify-center w-full">
           <Text>Feedbacks</Text>
-          <p>Pas de feedbacks</p>
+          <CommentsView class="border rounded-lg" v-if="getStudentComments(student.id, true).studentComments.length > 0" :is-feedback="false" :comments="getStudentComments(student.id, true).studentComments" :authors="getStudentComments(student.id, true).authorsStudentComment"/>
+          <Column v-else class="h-[300px] justify-center items-center border rounded-lg">
+            <p>Pas de feedbacks</p>
+          </Column>
+        </Column>
+        <Column v-if="canViewComments" class="ml-3 justify-center w-full">
+          <Text>Commentaires</Text>
+          <CommentsView class="border rounded-lg" v-if="getStudentComments(student.id, false).studentComments.length > 0" :is-feedback="false" :comments="getStudentComments(student.id, false).studentComments" :authors="getStudentComments(student.id, false).authorsStudentComment"/>
+          <Column v-else class="h-[300px] justify-center items-center border rounded-lg">
+            <p>Pas de commentaire</p>
+          </Column>
         </Column>
       </Row>
     </div>
