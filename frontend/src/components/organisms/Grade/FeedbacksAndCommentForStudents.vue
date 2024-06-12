@@ -3,7 +3,7 @@ import IndividualComments from "@/components/organisms/Grade/IndividualComments.
 import { useQuery } from "@tanstack/vue-query"
 import type { Feedback } from "@/types/feedback"
 import { getIndividualsCommentsBySprintIdAndTeamId } from "@/services/feedback"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import type { User } from "@/types/user"
 import type { Student } from "@/types/student"
 import { Column, Row } from "@/components/atoms/containers"
@@ -22,7 +22,7 @@ const commentsFiltered = ref<Feedback[]>([])
 const comments = ref<Feedback[]>([])
 const students = ref<Student[]>([])
 
-const { data: com } = useQuery<Feedback[], Error>({
+const { data: com, refetch: refetchFeedbacks } = useQuery<Feedback[], Error>({
 	queryKey: ["IndividualComments", props.teamId, props.sprintId],
 	queryFn: async() => {
 		comments.value = await getIndividualsCommentsBySprintIdAndTeamId(props.teamId, props.sprintId)
@@ -41,6 +41,8 @@ const getStudentComments = (studentId: number, isFeedback: boolean) => {
 	return { studentComments, authorsStudentComment }
 }
 
+watch(() => props.teamId, () => refetchFeedbacks())
+watch(() => props.sprintId, () => refetchFeedbacks())
 
 const canViewComments = hasPermission("VIEW_COMMENT")
 </script>
@@ -56,7 +58,7 @@ const canViewComments = hasPermission("VIEW_COMMENT")
       <Row class="w-full justify-center">
         <Column class="justify-center w-full">
           <Text>Feedbacks</Text>
-          <CommentsView class="border rounded-lg" v-if="getStudentComments(student.id, true).studentComments.length > 0" :is-feedback="false" :comments="getStudentComments(student.id, true).studentComments" :authors="getStudentComments(student.id, true).authorsStudentComment"/>
+          <CommentsView class="border rounded-lg" v-if="getStudentComments(student.id, true).studentComments.length > 0" :is-feedback="true" :comments="getStudentComments(student.id, true).studentComments" :authors="getStudentComments(student.id, true).authorsStudentComment"/>
           <Column v-else class="h-[300px] justify-center items-center border rounded-lg">
             <p>Pas de feedbacks</p>
           </Column>
