@@ -1,6 +1,12 @@
 # Tauri
 
-## Setup
+## Présentation
+
+Ce projet à pour but de développer une application afin de permettre une gestion de projet, des équipes, des notes... pour la matière Projet Génie Logiciel
+
+
+
+## Setup application
 
 ### Backend
 
@@ -54,6 +60,11 @@ pnpm install
 pnpm dev
 ```
 
+
+
+## Environnement des serveurs de dev/prod
+
+Un document dans le wiki de l'application OpenProject de l'équipe Nath Tauri, explique en détail toutes les étapes et installations afin d'obtenir le même environnement serveur. Section `Serveur/Préparation serveur`
 
 ## Lancement des testes backend
 
