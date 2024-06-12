@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
-import { cn } from "@/utils/style"
 import { watch } from "vue"
 import {
 	getTeamTotalGrade
