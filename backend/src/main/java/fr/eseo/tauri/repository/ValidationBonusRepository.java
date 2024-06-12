@@ -13,6 +13,10 @@ public interface ValidationBonusRepository extends JpaRepository<ValidationBonus
     @Query("SELECT vb FROM ValidationBonus vb WHERE vb.author.id = :authorId AND vb.bonus.id = :bonusId")
     ValidationBonus findByAuthorIdAndBonusId(Integer bonusId, Integer authorId);
 
+    @Query("SELECT vb FROM ValidationBonus vb WHERE vb.author.id = :authorId")
+    List<ValidationBonus> getValidationByAuthorId(Integer authorId);
+
+
     @Query("SELECT vb FROM ValidationBonus vb WHERE vb.bonus.id = :bonusId")
     List<ValidationBonus> findAllByBonusId(Integer bonusId);
 

@@ -34,7 +34,7 @@ const { data: gradeType } = useQuery({ queryKey: ["grade-type", props.gradeTypeS
 
 const { data: teamStudents, refetch: refetchTeamStudents } = useQuery({ queryKey: ["team-students", props.teamId], queryFn: async() => {
 	if (!props.teamId) return
-	return await getStudentsByTeamId(Number(props.teamId))
+	return await getStudentsByTeamId(Number(props.teamId), true)
 } })
 
 // Initialize studentsIndividualGrade with null values

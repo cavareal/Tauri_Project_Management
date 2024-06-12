@@ -30,11 +30,19 @@ public class CommentService {
         comment.author(userService.getUserById(comment.authorId()));
         comment.sprint(sprintService.getSprintById(comment.sprintId()));
 
-        if ((comment.team() == null) == (comment.student() == null)) {
-            throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
+        if(comment.teamId() == null) {
+            comment.team(null);
         } else {
             comment.team(teamService.getTeamById(comment.teamId()));
+        }
+
+        if(comment.teamId() == null) {
+            comment.team(null);
             comment.student(studentService.getStudentById(comment.studentId()));
+        }
+
+        if ((comment.team() == null) == (comment.student() == null)) {
+            throw new IllegalArgumentException("Both team and student attributes cannot be either null or not null at the same time");
         }
 
         commentRepository.save(comment);

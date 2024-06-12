@@ -8,10 +8,10 @@ import { ErrorText } from "@/components/atoms/texts"
 import { LoadingButton } from "@/components/molecules/buttons"
 import { createToast } from "@/utils/toast"
 import { setGradesConfirmation, getIndividualGradesByTeam } from "@/services/grade/grade.service"
-import { setBonusesTeamValidation, getValidationBonusesByTeam } from "@/services/bonus/bonus.service"
+import { setValidationBonusesByTeam, getValidationBonusesByTeam } from "@/services/bonus/bonus.service"
 import { Cookies } from "@/utils/cookie"
 
-const emits = defineEmits(["valid:individual-grades"])
+const emits = defineEmits(["valid:individual-grades", "valid:limited-bonus"])
 const open = ref(false)
 
 const props = defineProps<{
@@ -26,19 +26,54 @@ const selectedSprint = ref(props.selectedSprint)
 
 const fetchIndividualGradesByTeam = async() => {
 	if (selectedTeam.value && selectedSprint.value) {
-		return getIndividualGradesByTeam(Number(selectedSprint.value), Number(selectedTeam.value))
+		const data = await getIndividualGradesByTeam(Number(selectedSprint.value), Number(selectedTeam.value))
+		const authorMap = {};
+		data.forEach(grade => {
+				if (grade.author == null) {
+					return
+				}
+				const authorId = grade.author.id
+				if (!authorMap[authorId]) {
+					authorMap[authorId] = { name: grade.author.name, count: 0, validCount: 0, students: [] };
+				}
+				authorMap[authorId].count++;
+				if (grade.confirmed) {
+					authorMap[authorId].validCount++;
+				}
+				authorMap[authorId].students.push({ id: grade.student.id, name: grade.student.name, grade: grade.value });
+			});
+			return Object.values(authorMap);
 	}
 }
 
 
-const fetchValidationBonusesByTeam = async() => {
+const fetchValidationBonusesByTeam = async () => {
 	if (selectedTeam.value) {
-		return getValidationBonusesByTeam(Number(selectedTeam.value), Number(selectedSprint.value))
+		const data = await getValidationBonusesByTeam(Number(selectedTeam.value), Number(selectedSprint.value));
+		const bonusMap = {};
+
+		data.forEach(record => {
+			const bonusId = record.bonus.id;
+			if (!bonusMap[bonusId]) {
+				bonusMap[bonusId] = {
+					bonus: record.bonus,
+					authorCount: 0,
+					authors: []
+				};
+			}
+			bonusMap[bonusId].authorCount++;
+			bonusMap[bonusId].authors.push({
+				id: record.author.id,
+				name: record.author.name,
+			});
+		});
+		return Object.values(bonusMap);
 	}
-}
+};
 
 
-const { data: individualsGradeByTeam, refetch: refetchIndividualGradesByTeam } = useQuery({
+
+const { data: individualGradesByTeam, refetch: refetchIndividualGradesByTeam } = useQuery({
 	queryKey: ["individual-grade-team", selectedTeam, selectedSprint],
 	queryFn: fetchIndividualGradesByTeam,
 	enabled: !!selectedTeam.value && !!selectedSprint.value
@@ -46,10 +81,11 @@ const { data: individualsGradeByTeam, refetch: refetchIndividualGradesByTeam } =
 
 
 const { data: validationBonusesByTeam, refetch: refetchValidationBonusesByTeam } = useQuery({
-	queryKey: ["validation-bonuses-team", selectedTeam],
+	queryKey: ["validation-bonuses-team", selectedTeam, selectedSprint],
 	queryFn: fetchValidationBonusesByTeam,
-	enabled: !!selectedTeam.value
-})
+	enabled: !!selectedTeam.value && !!selectedSprint.value
+});
+
 
 
 watch(
@@ -64,30 +100,32 @@ watch(
 
 
 const { mutate: mutateIndividual, isPending: isPendingIndividual, error: errorIndividual } = useMutation({
-	mutationKey: ["individual-grades"], mutationFn: async() => {
-		console.log(props)
+	mutationKey: ["individual-grades"], mutationFn: async () => {
 		await setGradesConfirmation(Number(props.selectedTeam), Number(props.selectedSprint))
-			.then(() => open.value = false)
-			.then(() => emits("valid:individual-grades"))
-			.then(() => createToast("Les notes individuelles ont été validées."))
+			.then(() => {
+				emits("valid:individual-grades")
+				createToast("Les notes individuelles ont été validées.")
+				refetchIndividualGradesByTeam()
+				refetchValidationBonusesByTeam()
+			})
 	}
 })
 
 
 const { mutate: mutateBonuses, isPending: isPendingBonuses, error: errorBonuses } = useMutation({
-	mutationKey: ["individual-grades"], mutationFn: async() => {
+	mutationKey: ["limited-bonus"], mutationFn: async () => {
 		console.log(props)
-		await setBonusesTeamValidation(Number(props.selectedTeam), Number(props.selectedSprint), Cookies.getUserId())
-			.then(() => open.value = false)
-			.then(() => emits("valid:individual-grades"))
-			.then(() => createToast("Les notes individuelles ont été validées."))
+		await setValidationBonusesByTeam(Number(props.selectedTeam), Number(props.selectedSprint), Cookies.getUserId())
+			.then(() => emits("valid:limited-bonus"))
+			.then(() => createToast("Les bonus limités ont été validées."))
 	}
 })
 
 
+
 const DIALOG_TITLE = "Valider les notes individuelles"
 const DIALOG_DESCRIPTION
-	= "Êtes-vous bien sûr de valider les notes individuelles de chacun des membres de votre équipes ?"
+	= "Vous pouvez ici valider les bonus limité, et les notes individuelles."
 
 </script>
 
@@ -99,9 +137,24 @@ const DIALOG_DESCRIPTION
 
 		<ErrorText v-if="errorBonuses || errorIndividual" class="mb-2">Une erreur est survenue.</ErrorText>
 
-		individualsGradeByTeam : {{ individualsGradeByTeam }}
+		
+		<div v-if="individualGradesByTeam?.length > 0">
+			<p v-for="(author, index) in individualGradesByTeam" :key="index">{{ author.validCount }}/{{ author.count }}
+				note(s)
+				validées, attribuée(s) par {{ author.name }}</p>
+		</div>
+		<div v-else>
+			<p>Aucune note individuelle n'a été attribuées.</p>
+		</div>
 
-		Mmebres ayant validé le bonus (students + ss) : {{ validationBonusesByTeam }}
+		<div v-if="validationBonusesByTeam?.length > 0">
+			<p v-for="(bonusRecord, index) in validationBonusesByTeam" :key="index">Bonus de {{ bonusRecord.bonus.value
+				}} pour {{ bonusRecord.bonus.student.name }}, {{ bonusRecord.authorCount }} validation(s)</p>
+		</div>
+		<div v-else>
+			<p>Aucun bonus limité n'a été attribué.</p>
+		</div>
+
 		<template #footer>
 			<DialogClose v-if="!isPendingBonuses || !isPendingIndividual">
 				<Button variant="outline">Annuler</Button>
@@ -109,7 +162,8 @@ const DIALOG_DESCRIPTION
 			<LoadingButton type="submit" @click="mutateBonuses" :loading="isPendingBonuses">
 				Valider les bonus limités
 			</LoadingButton>
-			<LoadingButton v-if="Cookies.getRole() == 'SUPERVISING_STAFF'" type="submit" @click="mutateIndividual" :loading="isPendingIndividual">
+			<LoadingButton v-if="Cookies.getRole() == 'SUPERVISING_STAFF'" type="submit" @click="mutateIndividual"
+				:loading="isPendingIndividual">
 				Valider les notes individuelles
 			</LoadingButton>
 		</template>

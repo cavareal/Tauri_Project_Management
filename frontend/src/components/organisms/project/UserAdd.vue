@@ -70,7 +70,7 @@ const { error, mutate } = useMutation({
 			})
 			.catch(() => {
 				console.log("Error creating user")
-				createToast("Erreur lors de la création d'un utilisateur. Il se peut que l'email soit déjà enregistrée")
+				createToast("Erreur lors de la création d'un utilisateur. Il ce peut que l'email soit déjà enregistrée")
 			})
 	}
 })
