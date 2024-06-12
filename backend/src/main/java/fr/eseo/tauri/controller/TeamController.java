@@ -120,4 +120,11 @@ public class TeamController {
         List<PresentationOrder> presentationOrder = presentationOrderService.getPresentationOrderByTeamIdAndSprintId(id, sprintId);
         return ResponseEntity.ok(presentationOrder);
     }
+
+    @PatchMapping("/{id}/presentation-order")
+    public ResponseEntity<String> updatePresentationOrderByTeamIdAndSprintId(@PathVariable Integer id, @RequestParam Integer sprintId, @RequestBody List<Student> students) {
+        presentationOrderService.updatePresentationOrderByTeamIdAndSprintId(id, sprintId, students);
+        return ResponseEntity.ok(responseMessage.update());
+    }
+
 }

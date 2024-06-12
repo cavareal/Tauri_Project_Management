@@ -1,6 +1,5 @@
 package fr.eseo.tauri.selenium;
 
-import fr.eseo.tauri.util.CustomLogger;
 import org.junit.jupiter.api.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebElement;

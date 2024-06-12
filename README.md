@@ -53,3 +53,17 @@ pnpm install
 ```bash
 pnpm dev
 ```
+
+
+## Lancement des testes backend
+
+### Via IntelliJ
+
+1. Testes unitaire : lancement via le bouton "play" sur le côté de la class test
+2. Testes Selenium : commenter dans le build.gradle ligne 53 env. : `exclude "**/selenium/**"`. Rebuild le gradle via l'icon éléphant en haut à droite. Puis executer les tests via le bouton "play" dans la class de test Selenium
+
+
+### Via ligne de commande 
+
+1. Testes unitaire : gradlew test
+2. Testes Selenium : gradlew seleniumTest

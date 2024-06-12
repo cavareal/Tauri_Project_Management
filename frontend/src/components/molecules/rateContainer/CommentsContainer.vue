@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button"
 import { createToast } from "@/utils/toast"
 
 const props = defineProps<{
-  isFeedback: boolean,
-  teamId: string,
-  sprintId: string
+	isFeedback: boolean,
+	teamId: string,
+	sprintId: string
 }>()
 
 const commentsFiltered = ref<Feedback[]>([])
@@ -57,31 +57,29 @@ const toastText = props.isFeedback ? "Le feedback a été enregistré." : "Le co
 </script>
 
 <template>
-  <Row class="border rounded-lg p-2 md:p-6 bg-white">
-    <Column class="w-1/2 pr-5 flex justify-between">
-      <div>
-        <Row class="pb-5">
-          <MessageSquareReply v-if="props.isFeedback" class="w-[20%]" :size="40" :stroke-width="1"/>
-          <MessageCircleMore v-else class="w-[20%]" :size="40" :stroke-width="1"/>
-          <Subtitle class="text-center w-[80%]">{{title}}</Subtitle>
-        </Row>
-      <InfoText>{{infoText}}</InfoText>
-      </div>
-      <Row class="">
-        <Textarea v-model="comment" :placeholder="placeholderText" class="w-full mr-2 resize-none min-h-[10px] max-h-[40px] overflow-auto "/>
-        <Button variant="default" size="icon" class="rounded-full h-10 w-14" @click="mutate">
-          <SendHorizontal class="w-5 h-5"/>
-        </Button>
-      </Row>
-    </Column>
-    <div class="w-1/2">
-      <div class="bg-background">
-        <CommentsView class="bg-gray-50" :authors="authorsComments" :comments="commentsFiltered" :isFeedback="props.isFeedback"/>
-      </div>
-    </div>
-  </Row>
+	<Row class="border rounded-lg p-2 md:p-6 bg-white">
+		<Column class="w-1/2 pr-5 flex justify-between">
+			<Column class="gap-2">
+				<Row class="items-center justify-start gap-2">
+					<MessageSquareReply v-if="props.isFeedback" class="size-6 stroke-[1.33] text-dark-blue" />
+					<MessageCircleMore v-else class="size-6 stroke-[1.33] text-dark-blue" />
+					<Subtitle>{{ title }}</Subtitle>
+				</Row>
+				<InfoText>{{ infoText }}</InfoText>
+			</Column>
+			<Row class="">
+				<Textarea v-model="comment" :placeholder="placeholderText"
+					class="w-full mr-2 resize-none min-h-[10px] max-h-[40px] overflow-auto " />
+				<Button variant="default" size="icon" class="rounded-full h-10 w-14" @click="mutate">
+					<SendHorizontal class="w-5 h-5" />
+				</Button>
+			</Row>
+		</Column>
+		<div class="w-1/2">
+			<div class="bg-background">
+				<CommentsView class="bg-gray-50" :authors="authorsComments" :comments="commentsFiltered"
+					:isFeedback="props.isFeedback" />
+			</div>
+		</div>
+	</Row>
 </template>
-
-<style scoped>
-
-</style>
