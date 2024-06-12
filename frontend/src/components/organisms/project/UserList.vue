@@ -92,9 +92,10 @@ watch(isDialogOpen, (newVal) => {
 					<TableCell :class="rowClass">
 						<Dialog v-model:open="isDialogOpen">
 							<DialogTrigger as-child>
-								<Trash2 class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors cursor-pointer" />
+								<Trash2 class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors cursor-pointer"
+								@click="userToDelete = user.id" />
 							</DialogTrigger>
-							<DialogContent class="sm:max-w-[425px]">
+							<DialogContent>
 								<DialogHeader>
 									<DialogTitle>Supprimer un utilisateur</DialogTitle>
 									<DialogDescription>

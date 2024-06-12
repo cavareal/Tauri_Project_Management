@@ -98,45 +98,41 @@ const onSubmit = handleSubmit((values) => {
 </script>
 
 <template>
-	<Column class="gap-4 w-1/2">
+	<Column class="gap-4 w-full">
 		<Subtitle>Ajouter un utilisateur</Subtitle>
 
-		<Column class="w-full gap-2">
-			<Row class="items-center gap-2">
-				<Label for="email" class="w-1/3">Email</Label>
-				<Input id="email"
-					class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-					type="text" v-model="userMail" />
+		<Row class="w-full gap-24 justify-between">
+			<Row class="items-center justify-between gap-6 flex-1">
+				<Label for="email">Email</Label>
+				<Input id="email" type="text" v-model="userMail" class="" />
 			</Row>
 
-			<Row class="items-center gap-2">
-				<Label for="username" class="w-1/3">Nom</Label>
-				<Input id="username"
-					class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-					type="text" v-model="userName" />
+			<Row class="items-center justify-between gap-6 flex-1">
+				<Label for="username">Nom</Label>
+				<Input id="username" type="text" v-model="userName" class="" />
 			</Row>
-		</Column>
+		</Row>
 
 		<form @submit.prevent="onSubmit" class="flex flex-col gap-4">
 			<FormField name="items">
-				<FormItem>
-					<div class="mb-4">
-						<Label class="text-base">
-							Rôle(s)
-						</Label>
-					</div>
-					<FormField v-for="roleType in RoleTypeSchema.options" v-slot="{ value, handleChange }"
-						:key="roleType" type="checkbox" :value="roleType" :unchecked-value="false" name="roles">
-						<FormItem v-if="roleType != 'OPTION_STUDENT'"
-							class="flex flex-row items-start space-x-3 space-y-0">
-							<FormControl>
-								<Checkbox :checked="value.includes(roleType)" @update:checked="handleChange" />
-							</FormControl>
-							<FormLabel class="font-normal">
-								{{ formatRole(roleType) }}
-							</FormLabel>
-						</FormItem>
-					</FormField>
+				<FormItem class="flex-row justify-between flex items-center">
+					<Label>
+						Rôle(s)
+					</Label>
+					<Row class="items-center gap-10">
+						<FormField v-for="roleType in RoleTypeSchema.options" v-slot="{ value, handleChange }"
+							:key="roleType" type="checkbox" :value="roleType" :unchecked-value="false" name="roles">
+							<FormItem v-if="roleType != 'OPTION_STUDENT'"
+								class="flex flex-row items-center space-x-3 space-y-0">
+								<FormControl>
+									<Checkbox :checked="value.includes(roleType)" @update:checked="handleChange" />
+								</FormControl>
+								<FormLabel class="font-normal">
+									{{ formatRole(roleType) }}
+								</FormLabel>
+							</FormItem>
+						</FormField>
+					</Row>
 					<FormMessage />
 				</FormItem>
 			</FormField>
