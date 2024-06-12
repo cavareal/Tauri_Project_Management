@@ -3,7 +3,6 @@ package fr.eseo.tauri.unit.service;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
 import fr.eseo.tauri.model.PresentationOrder;
 import fr.eseo.tauri.repository.PresentationOrderRepository;
-import fr.eseo.tauri.service.AuthService;
 import fr.eseo.tauri.service.PresentationOrderService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;

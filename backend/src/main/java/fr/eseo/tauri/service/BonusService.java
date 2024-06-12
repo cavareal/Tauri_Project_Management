@@ -1,10 +1,7 @@
 package fr.eseo.tauri.service;
 
-import fr.eseo.tauri.model.Bonus;
+import fr.eseo.tauri.model.*;
 import fr.eseo.tauri.exception.ResourceNotFoundException;
-import fr.eseo.tauri.model.Student;
-import fr.eseo.tauri.model.User;
-import fr.eseo.tauri.model.ValidationBonus;
 import fr.eseo.tauri.repository.BonusRepository;
 import fr.eseo.tauri.repository.StudentRepository;
 import fr.eseo.tauri.repository.TeamRepository;
@@ -71,7 +68,22 @@ public class BonusService {
 
         bonusRepository.save(bonus);
 
-        if(isLimited) validationBonusService.deleteAllValidationBonuses(id);
+        if(isLimited) {
+            Team team = teamRepository.findTeamByStudentId(bonus.student().id());
+            List <ValidationBonus> validationBonuses = getValidationBonusesByTeam(team.id());
+
+            for (ValidationBonus validationBonus : validationBonuses){
+                validationBonusService.deleteAllValidationBonuses(validationBonus.bonus().id());
+            }
+
+            User leader = teamRepository.findLeaderByTeamId(team.id());
+            CustomLogger.info("ss id : " + leader);
+            List<ValidationBonus> validationBonusSs = validationBonusService.getValidationByAuthorId(leader.id());
+            for (ValidationBonus validationBonus : validationBonusSs){
+                CustomLogger.info("ouai "+ validationBonus);
+                validationBonusService.deleteAllValidationBonuses(validationBonus.bonus().id());
+            }
+        }
     }
 
     /**
@@ -98,7 +110,6 @@ public class BonusService {
         // Students bonuses
         for(Student student : students) {
             List<ValidationBonus> validationBonus = validationBonusService.getValidationByAuthorId(student.id());
-            CustomLogger.info("ValidationBonus : " + validationBonus);
             validationBonuses.addAll(validationBonus);
         }
 
@@ -115,7 +126,7 @@ public class BonusService {
         List <Student> students = studentRepository.findByTeam(teamId);
 
         for(Student student : students) {
-            Bonus bonus = bonusRepository.findStudentBonus(student.id(), false, sprintId);
+            Bonus bonus = bonusRepository.findStudentBonus(student.id(), true, sprintId);
 
             ValidationBonus validationBonus = new ValidationBonus();
             validationBonus.bonusId(bonus.id());

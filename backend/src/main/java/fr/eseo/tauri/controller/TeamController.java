@@ -121,6 +121,13 @@ public class TeamController {
         return ResponseEntity.ok(presentationOrder);
     }
 
+    @PatchMapping("/{id}/presentation-order")
+    public ResponseEntity<String> updatePresentationOrderByTeamIdAndSprintId(@PathVariable Integer id, @RequestParam Integer sprintId, @RequestBody List<Student> students) {
+        presentationOrderService.updatePresentationOrderByTeamIdAndSprintId(id, sprintId, students);
+        return ResponseEntity.ok(responseMessage.update());
+    }
+
+
     @GetMapping("/{teamId}/sprints/{sprintId}/individual-comments")
     public ResponseEntity<List<Comment>> getIndividualCommentsByTeamIdAndSprintId(@PathVariable Integer teamId, @PathVariable Integer sprintId) {
         List<Comment> comments = teamService.getIndividualCommentsByTeamIdAndSprintId(teamId, sprintId);

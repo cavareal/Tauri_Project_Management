@@ -14,17 +14,25 @@ import EditStudentDialog from "@/components/organisms/students/EditStudentDialog
 import { Trash2, Pencil  } from "lucide-vue-next"
 import DeleteStudentDialog from "@/components/organisms/students/DeleteStudentDialog.vue"
 import { Row } from "@/components/atoms/containers"
+import { useQuery } from "@tanstack/vue-query"
+import { getCurrentPhase } from "@/services/project"
+import { hasPermission } from "@/services/user"
 
 
 const rowClass = cn("py-2 h-auto")
 
 const emit = defineEmits(["delete:student", "update:student"])
+const { data: currentPhase } = useQuery({ queryKey: ["project-phase"], queryFn: getCurrentPhase })
+
 
 defineProps<{
 	students: Student[] | null
 	gradeTypes: GradeType[] | null
 	grades: Grade[] | null
 }>()
+
+const canEdit = hasPermission("EDIT_IMPORTED_GRADE_TYPES")
+
 
 </script>
 
@@ -66,10 +74,10 @@ defineProps<{
 					</TableCell>
 					<TableCell :class="rowClass">
 						<Row class="items-center gap-1">
-							<EditStudentDialog @update:student="emit('update:student')" :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne') ?? null">
+							<EditStudentDialog v-if="currentPhase  === 'COMPOSING' && canEdit" @update:student="emit('update:student')" :student="student" :mark="grades?.find(grade => grade.student?.id === student.id && grade.gradeType.name === 'Moyenne') ?? null">
 								<Pencil class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors" />
 							</EditStudentDialog>
-							<DeleteStudentDialog :student="student" @delete:student="emit('delete:student')">
+							<DeleteStudentDialog  v-if="currentPhase  === 'COMPOSING' && canEdit" :student="student" @delete:student="emit('delete:student')">
 								<Trash2 class="stroke-gray-600 mr-2 h-4 w-4 hover:stroke-primary transition-colors" />
 							</DeleteStudentDialog>
 						</Row>
