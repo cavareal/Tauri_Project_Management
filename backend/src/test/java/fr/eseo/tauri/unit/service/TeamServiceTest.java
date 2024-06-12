@@ -369,66 +369,6 @@ class TeamServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> teamService.getSprintGrades(1, 1));
     }
 
-//    @Test
-//    void getStudentsByTeamIdOrderedShouldReturnOrderedStudentsWhenCurrentSprintExistsAndPresentationOrderMatchesStudentSize() {
-//        Integer id = 1;
-//        Team team = new Team();
-//        Sprint currentSprint = new Sprint();
-//        Project project = new Project();
-//        project.id(1);
-//        team.project(project);
-//        List<Student> students = Arrays.asList(new Student(), new Student());
-//
-//        when(teamRepository.findById(id)).thenReturn(Optional.of(team));
-//        when(teamService.getTeamById(id)).thenReturn(team);
-//        when(sprintService.getCurrentSprint(team.project().id())).thenReturn(currentSprint);
-//        when(studentRepository.findByTeam(id)).thenReturn(students);
-//
-//        List<Student> result = teamService.getStudentsByTeamIdOrdered(id);
-//
-//        assertEquals(students.get(1), result.get(0));
-//        assertEquals(students.get(0), result.get(1));
-//    }
-
-//    @Test
-//    void getStudentsByTeamIdOrderedShouldReturnUnorderedStudentsWhenCurrentSprintExistsAndPresentationOrderDoesNotMatchStudentSize() {
-//        Integer id = 1;
-//        Team team = new Team();
-//        Project project = new Project();
-//        project.id(1);
-//        team.project(project);
-//        Sprint currentSprint = new Sprint();
-//        List<Student> students = Arrays.asList(new Student(), new Student());
-//
-//        when(teamRepository.findById(id)).thenReturn(Optional.of(team));
-//        when(teamService.getTeamById(id)).thenReturn(team);
-//        when(sprintService.getCurrentSprint(team.project().id())).thenReturn(currentSprint);
-//        when(studentRepository.findByTeam(id)).thenReturn(students);
-//
-//        List<Student> result = teamService.getStudentsByTeamIdOrdered(id);
-//
-//        assertEquals(students, result);
-//    }
-//
-//    @Test
-//    void getStudentsByTeamIdOrderedShouldReturnUnorderedStudentsWhenCurrentSprintDoesNotExist() {
-//        Integer id = 1;
-//        Team team = new Team();
-//        Project project = new Project();
-//        project.id(1);
-//        team.project(project);
-//        List<Student> students = Arrays.asList(new Student(), new Student());
-//
-//        when(teamRepository.findById(id)).thenReturn(Optional.of(team));
-//        when(teamService.getTeamById(id)).thenReturn(team);
-//        when(sprintService.getCurrentSprint(team.project().id())).thenReturn(null);
-//        when(studentRepository.findByTeam(id)).thenReturn(students);
-//
-//        List<Student> result = teamService.getStudentsByTeamIdOrdered(id);
-//
-//        assertEquals(students, result);
-//    }
-
     @Test
     void getAverageSprintGradesShouldReturnAverageGradesWhenTeamsExist() {
         Integer sprintId = 1;

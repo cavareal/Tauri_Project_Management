@@ -99,19 +99,6 @@ class SprintServiceTest {
         assertEquals(sprints, result);
     }
 
-    /*@Test
-    void createSprintShouldSaveSprintWhenAuthorizedAndProjectExists() {
-        Integer projectId = 1;
-        Sprint sprint = new Sprint();
-
-        when(projectService.getProjectById(projectId)).thenReturn(new Project());
-        when(studentService.getAllStudentsByProject(projectId)).thenReturn(Collections.emptyList());
-
-        sprintService.createSprint(sprint, projectId);
-
-        verify(sprintRepository, times(1)).save(sprint);
-    }*/
-
     @Test
     void deleteSprintShouldDeleteSprintWhenAuthorizedAndSprintExists() {
         Integer id = 1;
